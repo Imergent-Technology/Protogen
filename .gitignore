@@ -50,4 +50,10 @@ bootstrap/cache/
 
 # Temporary files
 *.tmp
-*.temp 
+*.temp
+
+# Security and secrets
+docs/SECRETS_MANAGEMENT.md
+*.secrets
+*.key
+*.pem 

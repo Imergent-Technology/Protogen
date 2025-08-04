@@ -50,9 +50,9 @@ services:
       dockerfile: Dockerfile
     container_name: ui
     working_dir: /app
-    command: ["npm", "start"]
     volumes:
       - ./ui:/app
+      - /app/node_modules
     ports:
       - "3000:3000"
     networks:
