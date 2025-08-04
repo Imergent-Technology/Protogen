@@ -9,7 +9,7 @@ services:
     volumes:
       - ./api:/var/www
     depends_on:
-      - mysql
+      - postgres
     networks:
       - app-network
 
@@ -27,20 +27,19 @@ services:
     networks:
       - app-network
 
-  # MySQL
-  mysql:
-    image: mysql:8.0
-    container_name: mysql
+  # PostgreSQL
+  postgres:
+    image: postgres:15-alpine
+    container_name: postgres
     restart: unless-stopped
     environment:
-      MYSQL_DATABASE: laravel
-      MYSQL_USER: laravel
-      MYSQL_PASSWORD: secret
-      MYSQL_ROOT_PASSWORD: rootsecret
+      POSTGRES_DB: protogen_dev
+      POSTGRES_USER: protogen
+      POSTGRES_PASSWORD: protogen_dev_password
     ports:
-      - "3306:3306"
+      - "5432:5432"
     volumes:
-      - mysqldata:/var/lib/mysql
+      - postgresdata:/var/lib/postgresql/data
     networks:
       - app-network
 
@@ -60,7 +59,7 @@ services:
       - app-network
 
 volumes:
-  mysqldata:
+  postgresdata:
 
 networks:
   app-network:

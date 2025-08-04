@@ -53,30 +53,72 @@ This is a monorepo containing:
 
 ### Development Setup
 
+#### Option 1: Quick Setup (Recommended)
+```bash
+# Clone the repository
+git clone https://github.com/Imergent-Technology/Protogen.git
+cd Protogen
+
+# Run the setup script (Linux/macOS)
+chmod +x scripts/setup-dev.sh
+./scripts/setup-dev.sh
+
+# Or manually run the commands:
+# 1. Start PostgreSQL container
+docker-compose up -d postgres
+
+# 2. Create .env file with development settings
+# (Copy the content from scripts/setup-dev.sh)
+
+# 3. Install dependencies and run migrations
+cd api
+composer install
+php artisan key:generate
+php artisan migrate
+npm install
+```
+
+#### Option 2: Manual Setup
 1. **Clone the repository**
    ```bash
    git clone https://github.com/Imergent-Technology/Protogen.git
    cd Protogen
    ```
 
-2. **Backend Setup (api/)**
+2. **Start PostgreSQL container**
+   ```bash
+   docker-compose up -d postgres
+   ```
+
+3. **Backend Setup (api/)**
    ```bash
    cd api
    composer install
-   cp .env.example .env
-   # Configure your .env file with database settings
+   # Create .env file with development database settings
    php artisan key:generate
    php artisan migrate
    npm install
    npm run dev
    ```
 
-3. **Frontend Setup (ui/)**
+4. **Frontend Setup (ui/)**
    ```bash
    cd ui
    npm install
    npm run dev
    ```
+
+### Running the Application
+
+```bash
+# Start all services
+docker-compose up
+
+# Access the application
+# Laravel API: http://localhost:8080
+# React UI: http://localhost:3000
+# PostgreSQL: localhost:5432
+```
 
 ## Database Schema
 
@@ -87,6 +129,16 @@ The system uses a graph-like structure stored in PostgreSQL:
 - **Graph Edges**: Connections between nodes
 - **Feedback**: User feedback with privacy levels
 - **Stage Links**: Abstract links between contexts
+
+## Secrets Management
+
+For secure handling of credentials and sensitive configuration data, see our [Secrets Management Guide](docs/SECRETS_MANAGEMENT.md).
+
+### Quick Security Notes:
+- Never commit `.env` files to version control
+- Use different credentials for development and production
+- Consider using a password manager for credential storage
+- Rotate passwords regularly
 
 ## Contributing
 
