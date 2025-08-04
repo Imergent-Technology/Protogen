@@ -20,7 +20,7 @@ This is a monorepo containing:
   - Ready for Sigma.js integration and future AGE extension
 
 - **`ui/`** - Standalone React frontend
-  - Alternative client interface
+  - Unconventional client interface
   - Can consume APIs from the main application
 
 ## Key Features
