@@ -1,0 +1,67 @@
+services:
+  # Laravel App
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: api
+    working_dir: /var/www
+    volumes:
+      - ./api:/var/www
+    depends_on:
+      - mysql
+    networks:
+      - app-network
+
+  # Nginx for Laravel
+  webserver:
+    image: nginx:alpine
+    container_name: webserver
+    ports:
+      - "8080:80"
+    volumes:
+      - ./docker/nginx:/etc/nginx/conf.d
+      - ./api:/var/www
+    depends_on:
+      - api
+    networks:
+      - app-network
+
+  # MySQL
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: laravel
+      MYSQL_USER: laravel
+      MYSQL_PASSWORD: secret
+      MYSQL_ROOT_PASSWORD: rootsecret
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysqldata:/var/lib/mysql
+    networks:
+      - app-network
+
+  # React frontend dev server
+  ui:
+    build:
+      context: ./ui
+      dockerfile: Dockerfile
+    container_name: ui
+    working_dir: /app
+    command: ["npm", "start"]
+    volumes:
+      - ./ui:/app
+    ports:
+      - "3000:3000"
+    networks:
+      - app-network
+
+volumes:
+  mysqldata:
+
+networks:
+  app-network:
+    driver: bridge
