@@ -20,13 +20,16 @@ return new class extends Migration
             $table->string('label')->nullable();
             $table->text('description')->nullable();
             $table->enum('type', ['relationship', 'influence', 'dependency', 'association', 'custom'])->default('relationship');
-            $table->json('properties')->nullable(); // Edge-specific properties
-            $table->json('style')->nullable(); // Visual styling properties
+            $table->jsonb('properties')->nullable(); // Edge-specific properties - using JSONB for better performance
+            $table->jsonb('style')->nullable(); // Visual styling properties
             $table->boolean('is_active')->default(true);
             $table->timestamps();
             
+            // PostgreSQL-specific indexes
             $table->index(['stage_id', 'edge_id']);
             $table->index(['source_node_id', 'target_node_id']);
+            $table->index(['type', 'is_active']);
+            $table->index(['stage_id', 'type', 'is_active']);
         });
     }
 

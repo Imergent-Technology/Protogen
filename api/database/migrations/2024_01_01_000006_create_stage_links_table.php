@@ -18,14 +18,18 @@ return new class extends Migration
             $table->string('label')->nullable();
             $table->text('description')->nullable();
             $table->enum('type', ['contextual', 'hierarchical', 'related', 'custom'])->default('contextual');
-            $table->json('context')->nullable(); // Context information about the link
-            $table->json('metadata')->nullable(); // Additional metadata
+            $table->jsonb('context')->nullable(); // Context information about the link
+            $table->jsonb('metadata')->nullable(); // Additional metadata
             $table->boolean('is_active')->default(true);
             $table->timestamps();
             
+            // PostgreSQL-specific indexes
             $table->unique(['source_stage_id', 'target_stage_id']);
             $table->index(['source_stage_id', 'type']);
             $table->index(['target_stage_id', 'type']);
+            $table->index(['type', 'is_active']);
+            $table->index(['source_stage_id', 'type', 'is_active']);
+            $table->index(['target_stage_id', 'type', 'is_active']);
         });
     }
 

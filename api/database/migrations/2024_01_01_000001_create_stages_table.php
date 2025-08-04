@@ -17,11 +17,15 @@ return new class extends Migration
             $table->string('slug')->unique();
             $table->text('description')->nullable();
             $table->enum('type', ['graph', 'document', 'table', 'custom'])->default('graph');
-            $table->json('config')->nullable(); // Stage-specific configuration
-            $table->json('metadata')->nullable(); // Additional metadata
+            $table->jsonb('config')->nullable(); // Stage-specific configuration - using JSONB for better performance
+            $table->jsonb('metadata')->nullable(); // Additional metadata
             $table->boolean('is_active')->default(true);
             $table->integer('sort_order')->default(0);
             $table->timestamps();
+            
+            // PostgreSQL-specific indexes for JSONB columns
+            $table->index(['type', 'is_active']);
+            $table->index(['sort_order', 'is_active']);
         });
     }
 

@@ -17,12 +17,15 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('parent_id')->nullable()->constrained('feedback_comments')->onDelete('cascade'); // For nested comments
             $table->text('content');
-            $table->json('metadata')->nullable(); // Additional metadata
+            $table->jsonb('metadata')->nullable(); // Additional metadata
             $table->boolean('is_active')->default(true);
             $table->timestamps();
             
+            // PostgreSQL-specific indexes
             $table->index(['feedback_id', 'parent_id']);
             $table->index(['user_id', 'created_at']);
+            $table->index(['feedback_id', 'is_active']);
+            $table->index(['parent_id', 'is_active']);
         });
     }
 

@@ -18,13 +18,16 @@ return new class extends Migration
             $table->string('label');
             $table->text('description')->nullable();
             $table->enum('type', ['concept', 'person', 'organization', 'event', 'resource', 'custom'])->default('concept');
-            $table->json('properties')->nullable(); // Node-specific properties
-            $table->json('position')->nullable(); // x, y coordinates for visualization
-            $table->json('style')->nullable(); // Visual styling properties
+            $table->jsonb('properties')->nullable(); // Node-specific properties - using JSONB for better performance
+            $table->jsonb('position')->nullable(); // x, y coordinates for visualization
+            $table->jsonb('style')->nullable(); // Visual styling properties
             $table->boolean('is_active')->default(true);
             $table->timestamps();
             
+            // PostgreSQL-specific indexes
             $table->index(['stage_id', 'node_id']);
+            $table->index(['type', 'is_active']);
+            $table->index(['stage_id', 'type', 'is_active']);
         });
     }
 

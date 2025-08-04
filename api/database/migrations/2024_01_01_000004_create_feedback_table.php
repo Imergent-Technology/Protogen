@@ -19,13 +19,16 @@ return new class extends Migration
             $table->enum('privacy', ['private', 'group', 'public'])->default('public');
             $table->string('title');
             $table->text('content');
-            $table->json('context')->nullable(); // For contextual feedback - references to specific nodes/edges
-            $table->json('metadata')->nullable(); // Additional metadata
+            $table->jsonb('context')->nullable(); // For contextual feedback - references to specific nodes/edges
+            $table->jsonb('metadata')->nullable(); // Additional metadata
             $table->boolean('is_active')->default(true);
             $table->timestamps();
             
+            // PostgreSQL-specific indexes
             $table->index(['stage_id', 'level']);
             $table->index(['user_id', 'privacy']);
+            $table->index(['level', 'privacy', 'is_active']);
+            $table->index(['stage_id', 'level', 'is_active']);
         });
     }
 

@@ -16,8 +16,8 @@ This is a monorepo containing:
 - **`api/`** - Laravel backend with Inertia.js + React frontend
   - Stage manager system for multi-context navigation
   - Graph-based feedback system with privacy controls
-  - MySQL database with graph-like structure
-  - Ready for Sigma.js integration
+  - PostgreSQL database with graph-like structure (JSONB optimized)
+  - Ready for Sigma.js integration and future AGE extension
 
 - **`ui/`** - Standalone React frontend
   - Alternative client interface
@@ -47,7 +47,7 @@ This is a monorepo containing:
 ### Prerequisites
 - PHP 8.1+
 - Node.js 18+
-- MySQL 8.0+
+- PostgreSQL 12+
 - Composer
 - npm/yarn
 
@@ -80,7 +80,7 @@ This is a monorepo containing:
 
 ## Database Schema
 
-The system uses a graph-like structure stored in MySQL:
+The system uses a graph-like structure stored in PostgreSQL:
 
 - **Stages**: Different contexts and views
 - **Graph Nodes**: Vertices in the graph structure
