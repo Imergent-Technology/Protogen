@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('slug')->unique();
             $table->text('description')->nullable();
-            $table->enum('type', ['graph', 'document', 'table', 'custom'])->default('graph');
+            $table->enum('type', ['basic', 'graph', 'document', 'table', 'custom'])->default('basic');
             $table->jsonb('config')->nullable(); // Stage-specific configuration - using JSONB for better performance
             $table->jsonb('metadata')->nullable(); // Additional metadata
             $table->boolean('is_active')->default(true);

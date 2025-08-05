@@ -21,6 +21,8 @@ This is a monorepo containing:
 
 - **`ui/`** - Standalone React frontend
   - Unconventional client interface
+  - Multi-model stage manager
+  - Graph traversal and interactions
   - Can consume APIs from the main application
 
 ## Key Features
