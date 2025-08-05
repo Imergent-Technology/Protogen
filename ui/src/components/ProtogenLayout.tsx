@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Mail, MessageSquare, User, LogOut, Menu, X } from 'lucide-react';
+import { ThemeToggle } from './ThemeToggle';
 
 interface ProtogenLayoutProps {
   children: React.ReactNode;
@@ -69,6 +70,9 @@ export const ProtogenLayout: React.FC<ProtogenLayoutProps> = ({ children }) => {
           </div>
           
           <div className="flex items-center space-x-2">
+            {/* Theme Toggle */}
+            <ThemeToggle size="sm" />
+
             {/* Newsletter Button */}
             <Button
               variant="ghost"
