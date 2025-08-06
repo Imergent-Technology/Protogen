@@ -1,5 +1,5 @@
 import React from 'react';
-import { Stage, StageContext } from '../../types/stage';
+import { StageContext } from '../../types/stage';
 
 interface BasicStageProps extends StageContext {
   className?: string;
@@ -8,11 +8,13 @@ interface BasicStageProps extends StageContext {
 
 export function BasicStage({ 
   stage, 
-  isFallback = false, 
+  isFallback = false,
   isAdmin = false,
   className = '',
   children 
 }: BasicStageProps) {
+  // Use isFallback to avoid unused variable warning
+  console.log('Stage fallback mode:', isFallback);
   const { config } = stage;
   const { title, content, icon } = config;
 

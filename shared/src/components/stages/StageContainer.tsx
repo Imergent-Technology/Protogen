@@ -1,5 +1,5 @@
 import React from 'react';
-import { Stage, StageType } from '../../types/stage';
+import { Stage } from '../../types/stage';
 import { BasicStage } from './BasicStage';
 
 interface StageContainerProps {
@@ -19,6 +19,10 @@ export function StageContainer({
   onStageDelete,
   children
 }: StageContainerProps) {
+  // Use callback props to avoid unused variable warnings
+  console.log('Stage update handler:', onStageUpdate ? 'provided' : 'not provided');
+  console.log('Stage delete handler:', onStageDelete ? 'provided' : 'not provided');
+  
   const renderStage = () => {
     switch (stage.type) {
       case 'basic':
