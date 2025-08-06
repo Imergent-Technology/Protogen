@@ -2,4 +2,6 @@ export * from './ThemeToggle';
 export * from './stages/BasicStage';
 export * from './stages/StageContainer';
 export * from './ui';
-export * from './modals'; 
+export * from './modals';
+export * from './toolbar';
+export * from './demo'; 
