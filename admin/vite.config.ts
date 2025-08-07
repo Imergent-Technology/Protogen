@@ -13,7 +13,7 @@ export default defineConfig({
   },
   server: {
     host: '0.0.0.0',  // Allow access from outside the container
-    port: 3000,       // Match exposed port in Docker
-    strictPort: true  // Fail if 3000 is not available
+    port: 3001,       // Match exposed port in Docker
+    strictPort: true  // Fail if 3001 is not available
   }
-})
+}) 

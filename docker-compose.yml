@@ -58,6 +58,22 @@ services:
     networks:
       - app-network
 
+  # React admin dev server
+  admin:
+    build:
+      context: ./admin
+      dockerfile: Dockerfile
+    container_name: admin
+    working_dir: /app
+    volumes:
+      - ./admin:/app
+      - ./shared:/shared
+      - /app/node_modules
+    ports:
+      - "3001:3001"
+    networks:
+      - app-network
+
 volumes:
   postgresdata:
 
