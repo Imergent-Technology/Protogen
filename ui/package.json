@@ -6,13 +6,14 @@
   "scripts": {
     "start": "vite",
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "npx tsc --noEmit && vite build",
     "preview": "vite preview",
     "lint": "eslint .",
-    "check": "tsc --noEmit && npm run lint"
+    "check": "npx tsc --noEmit && npm run lint"
   },
   "dependencies": {
     "@auth0/auth0-react": "^2.4.0",
+    "@progress/shared": "file:../shared",
     "@radix-ui/react-slot": "^1.2.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

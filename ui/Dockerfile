@@ -2,10 +2,13 @@ FROM node:22
 
 WORKDIR /app
 
+# Copy package files
 COPY package*.json ./
-RUN npm install --include=dev
-RUN npm list vite
 
+# Install dependencies
+RUN npm install --include=dev
+
+# Copy app source
 COPY . .
 
 EXPOSE 3000

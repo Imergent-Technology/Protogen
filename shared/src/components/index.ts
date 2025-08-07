@@ -5,4 +5,5 @@ export * from './ui';
 export * from './modals';
 export * from './toolbar';
 export * from './demo';
-export * from './routing'; 
+export * from './routing';
+export * from './breadcrumb'; 

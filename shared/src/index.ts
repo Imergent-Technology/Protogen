@@ -11,5 +11,7 @@ export * from './components/ui';
 export * from './components/modals';
 export * from './components/toolbar';
 export * from './components/routing';
+export * from './components/breadcrumb';
+export * from './components/demo';
 export * from './services';
 export * from './types/stage'; 

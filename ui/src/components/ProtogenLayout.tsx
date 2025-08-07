@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
-import { Mail, MessageSquare, User, LogOut, Menu, X } from 'lucide-react';
+import { Mail, MessageSquare, User, LogOut, X } from 'lucide-react';
 import { ThemeToggle } from './ThemeToggle';
 
 interface ProtogenLayoutProps {
