@@ -52,6 +52,7 @@ services:
     working_dir: /app
     volumes:
       - ./ui:/app
+      - ./shared:/shared
       - /app/node_modules
     ports:
       - "3000:3000"

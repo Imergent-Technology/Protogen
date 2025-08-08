@@ -29,10 +29,12 @@ class AdminAuthController extends Controller
             ]);
         }
 
-        Auth::login($user);
+        // Create Sanctum token for API access
+        $token = $user->createToken('admin-token')->plainTextToken;
         
         return response()->json([
             'user' => $user,
+            'token' => $token,
             'message' => 'Admin logged in successfully'
         ]);
     }
@@ -42,10 +44,7 @@ class AdminAuthController extends Controller
      */
     public function logout(Request $request)
     {
-        Auth::logout();
-        
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        $request->user()->currentAccessToken()->delete();
         
         return response()->json(['message' => 'Admin logged out successfully']);
     }

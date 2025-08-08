@@ -1,11 +1,128 @@
-import React, { useState } from 'react';
-import { Settings, Layers, Users, BarChart3, Home } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Settings, Layers, Users, BarChart3, Home, LogOut } from 'lucide-react';
 import { StagesList } from '@progress/shared';
+import { UsersList } from './components/UsersList';
+import { AdminLogin } from './components/AdminLogin';
 import { ToastContainer, useToasts } from './components/Toast';
+
+interface AdminUser {
+  id: number;
+  name: string;
+  email: string;
+  is_admin: boolean;
+}
 
 function App() {
   const [currentView, setCurrentView] = useState<'dashboard' | 'stages' | 'analytics' | 'users'>('dashboard');
-  const { toasts, removeToast, showSuccess, showError } = useToasts();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [adminUser, setAdminUser] = useState<AdminUser | null>(null);
+  const [authToken, setAuthToken] = useState<string | null>(null);
+  const [loginLoading, setLoginLoading] = useState(false);
+  const [loginError, setLoginError] = useState<string | null>(null);
+  const { toasts, removeToast, showSuccess } = useToasts();
+
+  useEffect(() => {
+    // Check if we have a stored token
+    const token = localStorage.getItem('admin_token');
+    if (token) {
+      setAuthToken(token);
+      checkAuthStatus(token);
+    }
+  }, []);
+
+  const checkAuthStatus = async (token?: string) => {
+    try {
+      const response = await fetch('http://localhost:8080/api/auth/admin/check', {
+        headers: {
+          'Authorization': `Bearer ${token || authToken}`,
+          'Content-Type': 'application/json',
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (data.authenticated) {
+          setIsAuthenticated(true);
+          setAdminUser(data.user);
+        } else {
+          // Token is invalid, clear it
+          localStorage.removeItem('admin_token');
+          setAuthToken(null);
+          setIsAuthenticated(false);
+          setAdminUser(null);
+        }
+      } else {
+        // Token is invalid, clear it
+        localStorage.removeItem('admin_token');
+        setAuthToken(null);
+        setIsAuthenticated(false);
+        setAdminUser(null);
+      }
+    } catch (error) {
+      console.log('Not authenticated');
+      localStorage.removeItem('admin_token');
+      setAuthToken(null);
+      setIsAuthenticated(false);
+      setAdminUser(null);
+    }
+  };
+
+  const handleLogin = async (email: string, password: string) => {
+    setLoginLoading(true);
+    setLoginError(null);
+
+    try {
+      const response = await fetch('http://localhost:8080/api/auth/admin/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const token = data.token;
+        
+        // Store the token
+        localStorage.setItem('admin_token', token);
+        setAuthToken(token);
+        setIsAuthenticated(true);
+        setAdminUser(data.user);
+        showSuccess('Login Successful', 'Welcome to the admin panel!');
+      } else {
+        const errorData = await response.json();
+        setLoginError(errorData.message || 'Login failed');
+      }
+    } catch (error) {
+      setLoginError('Network error. Please try again.');
+    } finally {
+      setLoginLoading(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      if (authToken) {
+        await fetch('http://localhost:8080/api/auth/admin/logout', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${authToken}`,
+            'Content-Type': 'application/json',
+          }
+        });
+      }
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+    
+    // Clear token and state
+    localStorage.removeItem('admin_token');
+    setAuthToken(null);
+    setIsAuthenticated(false);
+    setAdminUser(null);
+    showSuccess('Logged Out', 'You have been successfully logged out');
+  };
 
   const handleStageSelect = (stage: any) => {
     console.log('Stage selected:', stage);
@@ -20,6 +137,21 @@ function App() {
   const handleStageDelete = (stageId: number) => {
     console.log('Stage deleted:', stageId);
     showSuccess('Stage Deleted', 'Stage has been successfully deleted');
+  };
+
+  const handleUserSelect = (user: any) => {
+    console.log('User selected:', user);
+    // TODO: Navigate to user detail view
+  };
+
+  const handleUserEdit = (user: any) => {
+    console.log('Edit user:', user);
+    showSuccess('User Updated', `Successfully updated "${user.name}"`);
+  };
+
+  const handleUserDelete = (userId: number) => {
+    console.log('User deleted:', userId);
+    showSuccess('User Deleted', 'User has been successfully deleted');
   };
 
   const renderMainContent = () => {
@@ -42,11 +174,11 @@ function App() {
         );
       case 'users':
         return (
-          <div className="text-center py-12">
-            <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-semibold mb-2">User Management</h3>
-            <p className="text-muted-foreground">User management coming soon...</p>
-          </div>
+          <UsersList
+            onUserSelect={handleUserSelect}
+            onUserEdit={handleUserEdit}
+            onUserDelete={handleUserDelete}
+          />
         );
       default:
         return (
@@ -115,7 +247,10 @@ function App() {
                   </div>
                 </button>
 
-                <button className="flex items-center space-x-3 p-4 border border-border rounded-lg hover:bg-muted transition-colors">
+                <button 
+                  onClick={() => setCurrentView('users')}
+                  className="flex items-center space-x-3 p-4 border border-border rounded-lg hover:bg-muted transition-colors"
+                >
                   <Users className="h-5 w-5 text-primary" />
                   <div className="text-left">
                     <p className="font-medium">Manage Users</p>
@@ -165,6 +300,17 @@ function App() {
     }
   };
 
+  // Show login screen if not authenticated
+  if (!isAuthenticated) {
+    return (
+      <AdminLogin
+        onLogin={handleLogin}
+        loading={loginLoading}
+        error={loginError || undefined}
+      />
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <ToastContainer toasts={toasts} onRemove={removeToast} />
@@ -179,13 +325,16 @@ function App() {
               </div>
             </div>
             <div className="flex items-center space-x-4">
-              <button className="flex items-center space-x-2 px-4 py-2 text-sm text-muted-foreground hover:text-foreground">
+              <div className="flex items-center space-x-2 text-sm text-muted-foreground">
                 <Users className="h-4 w-4" />
-                <span>Admin User</span>
-              </button>
-              <button className="flex items-center space-x-2 px-4 py-2 text-sm text-muted-foreground hover:text-foreground">
-                <Settings className="h-4 w-4" />
-                <span>Settings</span>
+                <span>{adminUser?.name || 'Admin'}</span>
+              </div>
+              <button
+                onClick={handleLogout}
+                className="flex items-center space-x-2 px-4 py-2 text-sm text-muted-foreground hover:text-foreground"
+              >
+                <LogOut className="h-4 w-4" />
+                <span>Logout</span>
               </button>
             </div>
           </div>

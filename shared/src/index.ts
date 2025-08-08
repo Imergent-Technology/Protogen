@@ -15,6 +15,7 @@ export * from './components/breadcrumb';
 export * from './components/demo';
 export * from './components/StagesList';
 export * from './components/StageForm';
+export * from './components/UsersList';
 export * from './services';
 export * from './types/stage';
 export * from './services/ApiClient';

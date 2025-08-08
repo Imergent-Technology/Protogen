@@ -12,7 +12,7 @@
     "check": "npx tsc --noEmit && npm run lint"
   },
   "dependencies": {
-    "@progress/shared": "file:/shared",
+    "@progress/shared": "file:../shared",
     "@tailwindcss/typography": "^0.5.16",
     "@tailwindcss/vite": "^4.1.11",
     "class-variance-authority": "^0.7.1",

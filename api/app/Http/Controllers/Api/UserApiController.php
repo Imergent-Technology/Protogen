@@ -14,33 +14,37 @@ class UserApiController extends Controller
      */
     public function index(Request $request)
     {
-        $query = User::with('oauthProviders');
+        try {
+            $query = User::with('oauthProviders');
 
-        // Search by name or email
-        if ($request->has('search')) {
-            $search = $request->get('search');
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%");
-            });
+            // Search by name or email
+            if ($request->has('search')) {
+                $search = $request->get('search');
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%");
+                });
+            }
+
+            // Filter by admin status
+            if ($request->has('is_admin')) {
+                $query->where('is_admin', $request->boolean('is_admin'));
+            }
+
+            // Filter by reputation range
+            if ($request->has('reputation_min')) {
+                $query->where('reputation', '>=', $request->float('reputation_min'));
+            }
+            if ($request->has('reputation_max')) {
+                $query->where('reputation', '<=', $request->float('reputation_max'));
+            }
+
+            $users = $query->paginate($request->get('per_page', 15));
+
+            return response()->json($users);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
         }
-
-        // Filter by admin status
-        if ($request->has('is_admin')) {
-            $query->where('is_admin', $request->boolean('is_admin'));
-        }
-
-        // Filter by reputation range
-        if ($request->has('reputation_min')) {
-            $query->where('reputation', '>=', $request->float('reputation_min'));
-        }
-        if ($request->has('reputation_max')) {
-            $query->where('reputation', '<=', $request->float('reputation_max'));
-        }
-
-        $users = $query->paginate($request->get('per_page', 15));
-
-        return response()->json($users);
     }
 
     /**
@@ -48,8 +52,11 @@ class UserApiController extends Controller
      */
     public function show(User $user)
     {
-        $user->load('oauthProviders');
-        return response()->json($user);
+        try {
+            return response()->json($user);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 
     /**
@@ -57,16 +64,20 @@ class UserApiController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        $request->validate([
-            'name' => 'sometimes|string|max:255',
-            'email' => 'sometimes|email|unique:users,email,' . $user->id,
-            'reputation' => 'sometimes|numeric|min:0|max:1',
-            'is_admin' => 'sometimes|boolean',
-        ]);
+        try {
+            $request->validate([
+                'name' => 'sometimes|string|max:255',
+                'email' => 'sometimes|email|unique:users,email,' . $user->id,
+                'reputation' => 'sometimes|numeric|min:0|max:1',
+                'is_admin' => 'sometimes|boolean',
+            ]);
 
-        $user->update($request->only(['name', 'email', 'reputation', 'is_admin']));
+            $user->update($request->only(['name', 'email', 'reputation', 'is_admin']));
 
-        return response()->json($user);
+            return response()->json($user);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 
     /**
@@ -74,8 +85,12 @@ class UserApiController extends Controller
      */
     public function destroy(User $user)
     {
-        $user->delete();
-        return response()->json(['message' => 'User deleted successfully']);
+        try {
+            $user->delete();
+            return response()->json(['message' => 'User deleted successfully']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 
     /**
@@ -83,18 +98,22 @@ class UserApiController extends Controller
      */
     public function stats()
     {
-        $stats = [
-            'total_users' => User::count(),
-            'admin_users' => User::where('is_admin', true)->count(),
-            'oauth_users' => User::whereHas('oauthProviders')->count(),
-            'average_reputation' => User::avg('reputation'),
-            'reputation_distribution' => [
-                'low' => User::where('reputation', '<', 0.3)->count(),
-                'medium' => User::whereBetween('reputation', [0.3, 0.7])->count(),
-                'high' => User::where('reputation', '>', 0.7)->count(),
-            ]
-        ];
+        try {
+            $stats = [
+                'total_users' => User::count(),
+                'admin_users' => User::where('is_admin', true)->count(),
+                'oauth_users' => User::whereHas('oauthProviders')->count(),
+                'average_reputation' => User::avg('reputation'),
+                'reputation_distribution' => [
+                    'low' => User::where('reputation', '<', 0.3)->count(),
+                    'medium' => User::whereBetween('reputation', [0.3, 0.7])->count(),
+                    'high' => User::where('reputation', '>', 0.7)->count(),
+                ]
+            ];
 
-        return response()->json($stats);
+            return response()->json($stats);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 }

@@ -25,7 +25,7 @@ Route::prefix('auth/oauth')->group(function () {
     Route::post('logout', [OAuthController::class, 'logout'])->middleware('auth:sanctum');
 });
 
-// Admin authentication routes
+// Admin authentication routes (use Sanctum for API auth)
 Route::prefix('auth/admin')->group(function () {
     Route::post('login', [AdminAuthController::class, 'login']);
     Route::post('logout', [AdminAuthController::class, 'logout'])->middleware('auth:sanctum');
@@ -48,7 +48,7 @@ Route::prefix('stages')->group(function () {
     Route::get('/{stage}/relationships', [StageApiController::class, 'relationships']);
 });
 
-// Admin-only user management routes
+// Admin-only user management routes (use Sanctum for API auth)
 Route::prefix('users')->middleware(['auth:sanctum', 'admin'])->group(function () {
     Route::get('/', [UserApiController::class, 'index']);
     Route::get('/stats', [UserApiController::class, 'stats']);
