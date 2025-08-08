@@ -3,6 +3,9 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\StageApiController;
+use App\Http\Controllers\Api\UserApiController;
+use App\Http\Controllers\Auth\OAuthController;
+use App\Http\Controllers\Auth\AdminAuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,6 +17,21 @@ use App\Http\Controllers\Api\StageApiController;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+
+// OAuth routes
+Route::prefix('auth/oauth')->group(function () {
+    Route::get('{provider}/redirect', [OAuthController::class, 'redirect']);
+    Route::get('{provider}/callback', [OAuthController::class, 'callback']);
+    Route::post('logout', [OAuthController::class, 'logout'])->middleware('auth:sanctum');
+});
+
+// Admin authentication routes
+Route::prefix('auth/admin')->group(function () {
+    Route::post('login', [AdminAuthController::class, 'login']);
+    Route::post('logout', [AdminAuthController::class, 'logout'])->middleware('auth:sanctum');
+    Route::get('user', [AdminAuthController::class, 'user'])->middleware('auth:sanctum');
+    Route::get('check', [AdminAuthController::class, 'check'])->middleware('auth:sanctum');
+});
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
@@ -28,4 +46,13 @@ Route::prefix('stages')->group(function () {
     Route::put('/{stage}', [StageApiController::class, 'update']);
     Route::delete('/{stage}', [StageApiController::class, 'destroy']);
     Route::get('/{stage}/relationships', [StageApiController::class, 'relationships']);
+});
+
+// Admin-only user management routes
+Route::prefix('users')->middleware(['auth:sanctum', 'admin'])->group(function () {
+    Route::get('/', [UserApiController::class, 'index']);
+    Route::get('/stats', [UserApiController::class, 'stats']);
+    Route::get('/{user}', [UserApiController::class, 'show']);
+    Route::put('/{user}', [UserApiController::class, 'update']);
+    Route::delete('/{user}', [UserApiController::class, 'destroy']);
 }); 

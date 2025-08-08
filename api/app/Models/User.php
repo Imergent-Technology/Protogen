@@ -22,6 +22,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'reputation',
+        'is_admin',
     ];
 
     /**
@@ -44,7 +46,17 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'reputation' => 'float',
+            'is_admin' => 'boolean',
         ];
+    }
+
+    /**
+     * Get the OAuth providers for this user.
+     */
+    public function oauthProviders(): HasMany
+    {
+        return $this->hasMany(OAuthProvider::class);
     }
 
     /**
@@ -61,5 +73,29 @@ class User extends Authenticatable
     public function feedbackComments(): HasMany
     {
         return $this->hasMany(FeedbackComment::class);
+    }
+
+    /**
+     * Check if the user is an admin.
+     */
+    public function isAdmin(): bool
+    {
+        return $this->is_admin;
+    }
+
+    /**
+     * Get OAuth provider by name.
+     */
+    public function getOAuthProvider(string $provider): ?OAuthProvider
+    {
+        return $this->oauthProviders()->where('provider', $provider)->first();
+    }
+
+    /**
+     * Check if user has OAuth provider.
+     */
+    public function hasOAuthProvider(string $provider): bool
+    {
+        return $this->oauthProviders()->where('provider', $provider)->exists();
     }
 }
