@@ -9,6 +9,8 @@ class OAuthProvider extends Model
 {
     use HasFactory;
 
+    protected $table = 'oauth_providers';
+
     protected $fillable = [
         'user_id',
         'provider',
