@@ -1,4 +1,6 @@
 import { ProtogenLayout } from './components/ProtogenLayout';
+import { OAuthLogin } from './components/OAuthLogin';
+import { useState, useEffect } from 'react';
 // Temporary placeholder components for testing
 const StageManagerDemo = () => <div>Stage Manager Demo - Coming Soon</div>;
 const ToolbarDemo = () => <div>Toolbar Demo - Coming Soon</div>;
@@ -9,8 +11,59 @@ const useToast = () => ({ toast: (options: any) => console.log('Toast:', options
 import { Button } from './components/ui/button';
 import { Layers, Network, MessageSquare, Play } from 'lucide-react';
 
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  reputation: number;
+  is_admin: boolean;
+}
+
 function App() {
   const { toast } = useToast();
+  const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(null);
+
+  // Check for existing authentication on app load
+  useEffect(() => {
+    const savedToken = localStorage.getItem('oauth_token');
+    const savedUser = localStorage.getItem('oauth_user');
+    
+    if (savedToken && savedUser) {
+      try {
+        setToken(savedToken);
+        setUser(JSON.parse(savedUser));
+      } catch (error) {
+        console.error('Failed to restore authentication state:', error);
+        localStorage.removeItem('oauth_token');
+        localStorage.removeItem('oauth_user');
+      }
+    }
+  }, []);
+
+  const handleLogin = (user: User, token: string) => {
+    setUser(user);
+    setToken(token);
+    localStorage.setItem('oauth_token', token);
+    localStorage.setItem('oauth_user', JSON.stringify(user));
+    
+    toast({
+      title: "Welcome back!",
+      description: `Successfully signed in as ${user.name}`,
+    });
+  };
+
+  const handleLogout = () => {
+    setUser(null);
+    setToken(null);
+    localStorage.removeItem('oauth_token');
+    localStorage.removeItem('oauth_user');
+    
+    toast({
+      title: "Signed out",
+      description: "You have been successfully signed out",
+    });
+  };
 
   const handleShowToast = () => {
     toast({
@@ -18,6 +71,26 @@ function App() {
       description: "The stage manager and modal system are now integrated.",
     });
   };
+
+  // Show login screen if not authenticated
+  if (!user || !token) {
+    return (
+      <ModalProvider>
+        <ProtogenLayout>
+          <div className="pt-16 min-h-screen flex items-center justify-center">
+            <OAuthLogin 
+              onLogin={handleLogin}
+              onLogout={handleLogout}
+              user={user}
+              token={token}
+            />
+          </div>
+          <ModalRenderer />
+          <Toaster />
+        </ProtogenLayout>
+      </ModalProvider>
+    );
+  }
 
   return (
     <ModalProvider>
@@ -33,6 +106,9 @@ function App() {
               <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
                 A community-driven platform for collaborative feedback and knowledge synthesis through interactive graph visualizations.
               </p>
+              <div className="mt-4 text-sm text-muted-foreground">
+                Signed in as <strong>{user.name}</strong> • Reputation: {(user.reputation * 100).toFixed(0)}%
+              </div>
             </div>
 
             {/* Feature Preview Cards */}
@@ -111,7 +187,7 @@ function App() {
               <div className="inline-flex items-center px-4 py-2 bg-muted rounded-full">
                 <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
                 <span className="text-sm text-muted-foreground">
-                  Stage Manager & Modal System Integrated - Ready for Development
+                  OAuth Authentication & Stage Manager Integrated - Ready for Development
                 </span>
               </div>
             </div>

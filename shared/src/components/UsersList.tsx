@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, MoreHorizontal, Edit, Trash2, Eye, Shield, User, Mail, Star } from 'lucide-react';
+import { Search, Edit, Trash2, Eye, Shield, User, Mail, Star } from 'lucide-react';
 
 interface User {
   id: number;
@@ -224,7 +224,7 @@ export const UsersList: React.FC<UsersListProps> = ({
                         <div className="flex items-center space-x-2">
                           <p className="text-sm font-medium">{user.name}</p>
                           {user.is_admin && (
-                            <Shield className="h-4 w-4 text-primary" title="Admin" />
+                            <Shield className="h-4 w-4 text-primary" />
                           )}
                         </div>
                         <div className="flex items-center space-x-1 text-sm text-muted-foreground">

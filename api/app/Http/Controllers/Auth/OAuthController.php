@@ -33,7 +33,18 @@ class OAuthController extends Controller
     public function callback(Request $request, string $provider)
     {
         try {
+            // Validate provider
+            $validProviders = ['google', 'facebook', 'instagram'];
+            if (!in_array($provider, $validProviders)) {
+                throw new \Exception('Invalid OAuth provider');
+            }
+
             $socialUser = Socialite::driver($provider)->user();
+            
+            // Validate social user data
+            if (!$socialUser->getEmail()) {
+                throw new \Exception('Email is required from OAuth provider');
+            }
             
             // Find or create user
             $user = $this->findOrCreateUser($socialUser, $provider);
@@ -42,16 +53,46 @@ class OAuthController extends Controller
             $this->updateOAuthProvider($user, $socialUser, $provider);
             
             // Generate Sanctum token for API access
-            $token = $user->createToken('oauth-token')->plainTextToken;
+            $token = $user->createToken('oauth-token', ['*'], now()->addDays(30))->plainTextToken;
             
-            return response()->json([
-                'user' => $user,
-                'token' => $token,
-                'provider' => $provider
+            // Log successful authentication
+            \Log::info("OAuth authentication successful", [
+                'provider' => $provider,
+                'user_id' => $user->id,
+                'user_email' => $user->email
             ]);
             
+            // Redirect back to frontend with user data and token
+            $userData = urlencode(json_encode([
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'reputation' => $user->reputation,
+                'is_admin' => $user->is_admin,
+            ]));
+            
+            $redirectUrl = "http://localhost:3000/?token={$token}&user={$userData}&provider={$provider}";
+            
+            return redirect($redirectUrl);
+            
+        } catch (\Laravel\Socialite\Two\InvalidStateException $e) {
+            \Log::error("OAuth invalid state error", [
+                'provider' => $provider,
+                'error' => $e->getMessage()
+            ]);
+            $error = urlencode('OAuth state validation failed. Please try again.');
+            return redirect("http://localhost:3000/?error={$error}");
+            
         } catch (\Exception $e) {
-            return response()->json(['error' => 'OAuth authentication failed'], 500);
+            \Log::error("OAuth authentication error", [
+                'provider' => $provider,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            // Redirect to frontend with specific error
+            $error = urlencode('OAuth authentication failed: ' . $e->getMessage());
+            return redirect("http://localhost:3000/?error={$error}");
         }
     }
 
