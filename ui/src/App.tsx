@@ -53,7 +53,24 @@ function App() {
     });
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      // Call logout API if we have a token
+      if (token) {
+        await fetch('http://localhost:8080/api/auth/oauth/logout', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+      }
+    } catch (error) {
+      console.error('Logout API call failed:', error);
+      // Continue with local logout even if API call fails
+    }
+
+    // Clear local state
     setUser(null);
     setToken(null);
     localStorage.removeItem('oauth_token');
@@ -76,7 +93,7 @@ function App() {
   if (!user || !token) {
     return (
       <ModalProvider>
-        <ProtogenLayout>
+        <ProtogenLayout user={user} onLogout={handleLogout}>
           <div className="pt-16 min-h-screen flex items-center justify-center">
             <OAuthLogin 
               onLogin={handleLogin}
@@ -94,7 +111,7 @@ function App() {
 
   return (
     <ModalProvider>
-      <ProtogenLayout>
+      <ProtogenLayout user={user} onLogout={handleLogout}>
         {/* Main Content Area */}
         <div className="pt-16 min-h-screen">
           {/* Welcome Section */}

@@ -4,20 +4,24 @@ import { Input } from './ui/input';
 import { Mail, MessageSquare, User, LogOut, X } from 'lucide-react';
 import { ThemeToggle } from './ThemeToggle';
 
-interface ProtogenLayoutProps {
-  children: React.ReactNode;
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  reputation: number;
+  is_admin: boolean;
 }
 
-export const ProtogenLayout: React.FC<ProtogenLayoutProps> = ({ children }) => {
+interface ProtogenLayoutProps {
+  children: React.ReactNode;
+  user?: User | null;
+  onLogout?: () => void;
+}
+
+export const ProtogenLayout: React.FC<ProtogenLayoutProps> = ({ children, user, onLogout }) => {
   const [isNewsletterOpen, setIsNewsletterOpen] = useState(false);
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userProfile, setUserProfile] = useState<{
-    name: string;
-    email: string;
-    picture?: string;
-  } | null>(null);
 
   const handleNewsletterSignup = (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,22 +41,9 @@ export const ProtogenLayout: React.FC<ProtogenLayoutProps> = ({ children }) => {
     setIsFeedbackOpen(false);
   };
 
-  const handleSocialLogin = (provider: string) => {
-    // TODO: Implement social login
-    console.log('Social login with:', provider);
-    // For now, simulate authentication
-    setIsAuthenticated(true);
-    setUserProfile({
-      name: 'John Doe',
-      email: 'john@example.com',
-      picture: 'https://via.placeholder.com/40'
-    });
-  };
-
   const handleLogout = () => {
-    setIsAuthenticated(false);
-    setUserProfile(null);
     setIsUserMenuOpen(false);
+    onLogout?.();
   };
 
   return (
@@ -96,7 +87,7 @@ export const ProtogenLayout: React.FC<ProtogenLayoutProps> = ({ children }) => {
             </Button>
 
             {/* User Menu */}
-            {isAuthenticated ? (
+            {user ? (
               <div className="relative">
                 <Button
                   variant="ghost"
@@ -104,29 +95,27 @@ export const ProtogenLayout: React.FC<ProtogenLayoutProps> = ({ children }) => {
                   onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                   className="flex items-center space-x-2"
                 >
-                  {userProfile?.picture ? (
-                    <img
-                      src={userProfile.picture}
-                      alt={userProfile.name}
-                      className="h-8 w-8 rounded-full"
-                    />
-                  ) : (
-                    <User className="h-4 w-4" />
-                  )}
-                  <span className="hidden sm:inline">{userProfile?.name}</span>
+                  <User className="h-4 w-4" />
+                  <span className="hidden sm:inline">{user.name}</span>
                 </Button>
 
                 {isUserMenuOpen && (
-                  <div className="absolute right-0 top-full mt-2 w-48 bg-popover border border-border rounded-md shadow-lg">
+                  <div className="absolute right-0 top-full mt-2 w-56 bg-popover border border-border rounded-md shadow-lg">
                     <div className="p-2">
-                      <div className="px-3 py-2 text-sm text-muted-foreground">
-                        {userProfile?.email}
+                      <div className="px-3 py-2 text-sm">
+                        <div className="font-medium">{user.name}</div>
+                        <div className="text-muted-foreground">{user.email}</div>
+                        <div className="text-xs text-muted-foreground mt-1">
+                          Reputation: {(user.reputation * 100).toFixed(0)}%
+                          {user.is_admin && " • Admin"}
+                        </div>
                       </div>
+                      <div className="border-t border-border my-1"></div>
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={handleLogout}
-                        className="w-full justify-start"
+                        className="w-full justify-start text-destructive hover:text-destructive"
                       >
                         <LogOut className="h-4 w-4 mr-2" />
                         Logout
