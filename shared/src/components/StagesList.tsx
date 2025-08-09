@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useStages } from '../hooks/useApi';
 import { StageForm } from './StageForm';
 import { 
@@ -43,11 +43,15 @@ export function StagesList({
     loadStages, 
     deleteStage
   } = useStages({
-    autoLoad: true,
-    onError: (error) => {
+    autoLoad: true
+  });
+
+  // Handle errors in a stable way
+  useEffect(() => {
+    if (error) {
       console.error('Failed to load stages:', error);
     }
-  });
+  }, [error]);
 
   const handleDeleteStage = async (stageId: number) => {
     if (window.confirm('Are you sure you want to delete this stage?')) {

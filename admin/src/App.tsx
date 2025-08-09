@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Settings, Layers, Users, BarChart3, Home, LogOut } from 'lucide-react';
-import { StagesList } from '@progress/shared';
+import { StagesList, apiClient } from '@progress/shared';
 import { UsersList } from './components/UsersList';
 import { AdminLogin } from './components/AdminLogin';
 import { ToastContainer, useToasts } from './components/Toast';
@@ -32,9 +32,10 @@ function App() {
 
   const checkAuthStatus = async (token?: string) => {
     try {
+      const tokenToUse = token || authToken;
       const response = await fetch('http://localhost:8080/api/auth/admin/check', {
         headers: {
-          'Authorization': `Bearer ${token || authToken}`,
+          'Authorization': `Bearer ${tokenToUse}`,
           'Content-Type': 'application/json',
         }
       });
@@ -44,12 +45,17 @@ function App() {
         if (data.authenticated) {
           setIsAuthenticated(true);
           setAdminUser(data.user);
+          // Set the auth token on the shared API client
+          if (tokenToUse) {
+            apiClient.setAuthToken(tokenToUse);
+          }
         } else {
           // Token is invalid, clear it
           localStorage.removeItem('admin_token');
           setAuthToken(null);
           setIsAuthenticated(false);
           setAdminUser(null);
+          apiClient.clearAuthToken();
         }
       } else {
         // Token is invalid, clear it
@@ -57,6 +63,7 @@ function App() {
         setAuthToken(null);
         setIsAuthenticated(false);
         setAdminUser(null);
+        apiClient.clearAuthToken();
       }
     } catch (error) {
       console.log('Not authenticated');
@@ -64,6 +71,7 @@ function App() {
       setAuthToken(null);
       setIsAuthenticated(false);
       setAdminUser(null);
+      apiClient.clearAuthToken();
     }
   };
 
@@ -89,6 +97,10 @@ function App() {
         setAuthToken(token);
         setIsAuthenticated(true);
         setAdminUser(data.user);
+        
+        // Set the auth token on the shared API client
+        apiClient.setAuthToken(token);
+        
         showSuccess('Login Successful', 'Welcome to the admin panel!');
       } else {
         const errorData = await response.json();
@@ -121,6 +133,10 @@ function App() {
     setAuthToken(null);
     setIsAuthenticated(false);
     setAdminUser(null);
+    
+    // Clear the auth token from the shared API client
+    apiClient.clearAuthToken();
+    
     showSuccess('Logged Out', 'You have been successfully logged out');
   };
 

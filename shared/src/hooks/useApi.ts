@@ -152,9 +152,10 @@ export function useStages(options: UseStagesOptions = {}): UseStagesReturn {
   // Auto-load on mount if requested
   useEffect(() => {
     if (autoLoad) {
-      loadStages(initialParams);
+      // Don't pass initialParams on auto-load to prevent infinite loops
+      loadStages();
     }
-  }, [autoLoad, loadStages]); // Removed initialParams from deps to prevent infinite loops
+  }, [autoLoad, loadStages]);
 
   return {
     stages,
