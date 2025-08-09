@@ -40,6 +40,9 @@ export function useStages(options: UseStagesOptions = {}): UseStagesReturn {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
+  // Extract callbacks to avoid dependency issues
+  const { onSuccess, onError, autoLoad, initialParams } = options;
+
   const loadStages = useCallback(async (params?: UseStagesOptions['initialParams']) => {
     try {
       setLoading(true);
@@ -49,7 +52,7 @@ export function useStages(options: UseStagesOptions = {}): UseStagesReturn {
       
       if (response.success) {
         setStages(response.data);
-        options.onSuccess?.(response.data);
+        onSuccess?.(response.data);
         return response.data;
       } else {
         throw new Error('Failed to load stages');
@@ -57,12 +60,12 @@ export function useStages(options: UseStagesOptions = {}): UseStagesReturn {
     } catch (err) {
       const error = err instanceof Error ? err : new Error('Unknown error');
       setError(error);
-      options.onError?.(error);
+      onError?.(error);
       throw error;
     } finally {
       setLoading(false);
     }
-  }, [options]);
+  }, [onSuccess, onError]);
 
   const createStage = useCallback(async (data: CreateStageRequest) => {
     try {
@@ -73,7 +76,7 @@ export function useStages(options: UseStagesOptions = {}): UseStagesReturn {
       
       if (response.success) {
         setStages(prev => [...prev, response.data]);
-        options.onSuccess?.(response.data);
+        onSuccess?.(response.data);
         return response.data;
       } else {
         throw new Error('Failed to create stage');
@@ -81,12 +84,12 @@ export function useStages(options: UseStagesOptions = {}): UseStagesReturn {
     } catch (err) {
       const error = err instanceof Error ? err : new Error('Unknown error');
       setError(error);
-      options.onError?.(error);
+      onError?.(error);
       throw error;
     } finally {
       setLoading(false);
     }
-  }, [options]);
+  }, [onSuccess, onError]);
 
   const updateStage = useCallback(async (id: number, data: Partial<CreateStageRequest>) => {
     try {
@@ -99,7 +102,7 @@ export function useStages(options: UseStagesOptions = {}): UseStagesReturn {
         setStages(prev => prev.map(stage => 
           stage.id === id ? response.data : stage
         ));
-        options.onSuccess?.(response.data);
+        onSuccess?.(response.data);
         return response.data;
       } else {
         throw new Error('Failed to update stage');
@@ -107,12 +110,12 @@ export function useStages(options: UseStagesOptions = {}): UseStagesReturn {
     } catch (err) {
       const error = err instanceof Error ? err : new Error('Unknown error');
       setError(error);
-      options.onError?.(error);
+      onError?.(error);
       throw error;
     } finally {
       setLoading(false);
     }
-  }, [options]);
+  }, [onSuccess, onError]);
 
   const deleteStage = useCallback(async (id: number) => {
     try {
@@ -123,7 +126,7 @@ export function useStages(options: UseStagesOptions = {}): UseStagesReturn {
       
       if (response.success) {
         setStages(prev => prev.filter(stage => stage.id !== id));
-        options.onSuccess?.(true);
+        onSuccess?.(true);
         return true;
       } else {
         throw new Error('Failed to delete stage');
@@ -131,27 +134,27 @@ export function useStages(options: UseStagesOptions = {}): UseStagesReturn {
     } catch (err) {
       const error = err instanceof Error ? err : new Error('Unknown error');
       setError(error);
-      options.onError?.(error);
+      onError?.(error);
       throw error;
     } finally {
       setLoading(false);
     }
-  }, [options]);
+  }, [onSuccess, onError]);
 
   const clearError = useCallback(() => {
     setError(null);
   }, []);
 
   const refresh = useCallback(() => {
-    return loadStages(options.initialParams);
-  }, [loadStages, options.initialParams]);
+    return loadStages(initialParams);
+  }, [loadStages, initialParams]);
 
   // Auto-load on mount if requested
   useEffect(() => {
-    if (options.autoLoad) {
-      loadStages(options.initialParams);
+    if (autoLoad) {
+      loadStages(initialParams);
     }
-  }, [options.autoLoad, options.initialParams, loadStages]);
+  }, [autoLoad, loadStages]); // Removed initialParams from deps to prevent infinite loops
 
   return {
     stages,
@@ -190,16 +193,19 @@ export function useStage(options: UseStageOptions): UseStageReturn {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
+  // Extract callbacks to avoid dependency issues
+  const { id, onSuccess, onError, autoLoad } = options;
+
   const loadStage = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
       
-      const response = await apiClient.getStage(options.id);
+      const response = await apiClient.getStage(id);
       
       if (response.success) {
         setStage(response.data);
-        options.onSuccess?.(response.data);
+        onSuccess?.(response.data);
         return response.data;
       } else {
         throw new Error('Failed to load stage');
@@ -207,23 +213,23 @@ export function useStage(options: UseStageOptions): UseStageReturn {
     } catch (err) {
       const error = err instanceof Error ? err : new Error('Unknown error');
       setError(error);
-      options.onError?.(error);
+      onError?.(error);
       throw error;
     } finally {
       setLoading(false);
     }
-  }, [options.id, options]);
+  }, [id, onSuccess, onError]);
 
   const updateStage = useCallback(async (data: Partial<CreateStageRequest>) => {
     try {
       setLoading(true);
       setError(null);
       
-      const response = await apiClient.updateStage(options.id, data);
+      const response = await apiClient.updateStage(id, data);
       
       if (response.success) {
         setStage(response.data);
-        options.onSuccess?.(response.data);
+        onSuccess?.(response.data);
         return response.data;
       } else {
         throw new Error('Failed to update stage');
@@ -231,12 +237,12 @@ export function useStage(options: UseStageOptions): UseStageReturn {
     } catch (err) {
       const error = err instanceof Error ? err : new Error('Unknown error');
       setError(error);
-      options.onError?.(error);
+      onError?.(error);
       throw error;
     } finally {
       setLoading(false);
     }
-  }, [options.id, options]);
+  }, [id, onSuccess, onError]);
 
   const clearError = useCallback(() => {
     setError(null);
@@ -248,10 +254,10 @@ export function useStage(options: UseStageOptions): UseStageReturn {
 
   // Auto-load on mount if requested
   useEffect(() => {
-    if (options.autoLoad) {
+    if (autoLoad) {
       loadStage();
     }
-  }, [options.autoLoad, loadStage]);
+  }, [autoLoad, loadStage]);
 
   return {
     stage,
@@ -288,16 +294,19 @@ export function useFeedback(options: UseFeedbackOptions = {}): UseFeedbackReturn
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
-  const loadFeedback = useCallback(async (stageId?: number) => {
+  // Extract callbacks to avoid dependency issues
+  const { stageId, onSuccess, onError } = options;
+
+  const loadFeedback = useCallback(async (stageIdParam?: number) => {
     try {
       setLoading(true);
       setError(null);
       
-      const response = await apiClient.getStageFeedback(stageId || options.stageId!);
+      const response = await apiClient.getStageFeedback(stageIdParam || stageId!);
       
       if (response.success) {
         setFeedback(response.data);
-        options.onSuccess?.(response.data);
+        onSuccess?.(response.data);
         return response.data;
       } else {
         throw new Error('Failed to load feedback');
@@ -305,12 +314,12 @@ export function useFeedback(options: UseFeedbackOptions = {}): UseFeedbackReturn
     } catch (err) {
       const error = err instanceof Error ? err : new Error('Unknown error');
       setError(error);
-      options.onError?.(error);
+      onError?.(error);
       throw error;
     } finally {
       setLoading(false);
     }
-  }, [options.stageId, options]);
+  }, [stageId, onSuccess, onError]);
 
   const submitFeedback = useCallback(async (data: FeedbackData) => {
     try {
@@ -321,7 +330,7 @@ export function useFeedback(options: UseFeedbackOptions = {}): UseFeedbackReturn
       
       if (response.success) {
         setFeedback(prev => [...prev, response.data]);
-        options.onSuccess?.(response.data);
+        onSuccess?.(response.data);
         return response.data;
       } else {
         throw new Error('Failed to submit feedback');
@@ -329,12 +338,12 @@ export function useFeedback(options: UseFeedbackOptions = {}): UseFeedbackReturn
     } catch (err) {
       const error = err instanceof Error ? err : new Error('Unknown error');
       setError(error);
-      options.onError?.(error);
+      onError?.(error);
       throw error;
     } finally {
       setLoading(false);
     }
-  }, [options]);
+  }, [onSuccess, onError]);
 
   const clearError = useCallback(() => {
     setError(null);

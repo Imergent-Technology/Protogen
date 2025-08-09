@@ -15,7 +15,7 @@ class UserApiController extends Controller
     public function index(Request $request)
     {
         try {
-            $query = User::query(); // Temporarily removed 'oauthProviders' relationship
+            $query = User::with('oauthProviders');
 
             // Search by name or email
             if ($request->has('search')) {
