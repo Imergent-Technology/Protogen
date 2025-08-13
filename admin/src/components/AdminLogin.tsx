@@ -8,8 +8,8 @@ interface AdminLoginProps {
 }
 
 export const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin, loading = false, error }) => {
-  const [email, setEmail] = useState('admin@protogen.com');
-  const [password, setPassword] = useState('admin123');
+  const [email, setEmail] = useState('admin@example.com');
+  const [password, setPassword] = useState('password');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -75,8 +75,8 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin, loading = false
 
         <div className="mt-6 text-center text-sm text-muted-foreground">
           <p>Demo Credentials:</p>
-          <p>Email: admin@protogen.com</p>
-          <p>Password: admin123</p>
+          <p>Email: admin@example.com</p>
+          <p>Password: password</p>
         </div>
       </div>
     </div>
