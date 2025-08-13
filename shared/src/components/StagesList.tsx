@@ -18,6 +18,7 @@ interface StagesListProps {
   onStageSelect?: (stage: any) => void;
   onStageEdit?: (stage: any) => void;
   onStageDelete?: (stageId: number) => void;
+  onStagePreview?: (stage: any) => void;
   showCreateButton?: boolean;
   showActions?: boolean;
   className?: string;
@@ -27,6 +28,7 @@ export function StagesList({
   onStageSelect, 
   onStageEdit, 
   onStageDelete, 
+  onStagePreview,
   showCreateButton = true,
   showActions = true,
   className = ""
@@ -219,6 +221,15 @@ export function StagesList({
                   <Eye className="h-3 w-3" />
                   <span>View</span>
                 </button>
+                {onStagePreview && (
+                  <button
+                    onClick={() => onStagePreview(stage)}
+                    className="flex items-center space-x-1 px-3 py-1 text-sm text-blue-600 hover:bg-blue-50 rounded transition-colors"
+                  >
+                    <Eye className="h-3 w-3" />
+                    <span>Preview</span>
+                  </button>
+                )}
                 {onStageEdit && (
                   <button
                     onClick={() => setEditingStage(stage)}

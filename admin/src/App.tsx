@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Settings, Layers, Users, BarChart3, Home, LogOut } from 'lucide-react';
-import { StagesList, apiClient } from '@progress/shared';
+import { StagesList, apiClient, Stage } from '@progress/shared';
 import { UsersList } from './components/UsersList';
 import { AdminLogin } from './components/AdminLogin';
+import { StagePreviewModal } from './components/StagePreviewModal';
 import { ToastContainer, useToasts } from './components/Toast';
 
 interface AdminUser {
@@ -19,6 +20,8 @@ function App() {
   const [authToken, setAuthToken] = useState<string | null>(null);
   const [loginLoading, setLoginLoading] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
+  const [previewStage, setPreviewStage] = useState<Stage | null>(null);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const { toasts, removeToast, showSuccess } = useToasts();
 
   useEffect(() => {
@@ -140,6 +143,16 @@ function App() {
     showSuccess('Logged Out', 'You have been successfully logged out');
   };
 
+  const handlePreviewStage = (stage: Stage) => {
+    setPreviewStage(stage);
+    setIsPreviewOpen(true);
+  };
+
+  const handleClosePreview = () => {
+    setIsPreviewOpen(false);
+    setPreviewStage(null);
+  };
+
   const handleStageSelect = (stage: any) => {
     console.log('Stage selected:', stage);
     // TODO: Navigate to stage detail view
@@ -178,6 +191,7 @@ function App() {
             onStageSelect={handleStageSelect}
             onStageEdit={handleStageEdit}
             onStageDelete={handleStageDelete}
+            onStagePreview={handlePreviewStage}
           />
         );
       case 'analytics':
@@ -423,6 +437,25 @@ function App() {
           {renderMainContent()}
         </main>
       </div>
+
+      {/* Stage Preview Modal */}
+      <StagePreviewModal
+        stage={previewStage}
+        isOpen={isPreviewOpen}
+        onClose={handleClosePreview}
+        onEdit={() => {
+          handleClosePreview();
+          // TODO: Open edit form for the previewed stage
+        }}
+        onShare={() => {
+          // TODO: Implement share functionality
+          console.log('Share stage:', previewStage);
+        }}
+        onViewAnalytics={() => {
+          // TODO: Implement analytics view
+          console.log('View analytics for stage:', previewStage);
+        }}
+      />
     </div>
   );
 }
