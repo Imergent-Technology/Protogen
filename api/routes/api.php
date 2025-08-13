@@ -4,7 +4,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\StageApiController;
 use App\Http\Controllers\Api\UserApiController;
-use App\Http\Controllers\Auth\OAuthController;
 use App\Http\Controllers\Auth\AdminAuthController;
 
 /*
@@ -18,12 +17,7 @@ use App\Http\Controllers\Auth\AdminAuthController;
 |
 */
 
-// OAuth routes
-Route::prefix('auth/oauth')->group(function () {
-    Route::get('{provider}/redirect', [OAuthController::class, 'redirect']);
-    Route::get('{provider}/callback', [OAuthController::class, 'callback']);
-    Route::post('logout', [OAuthController::class, 'logout'])->middleware('auth:sanctum');
-});
+// OAuth routes moved to web.php for session support
 
 // Admin authentication routes (use Sanctum for API auth)
 Route::prefix('auth/admin')->group(function () {

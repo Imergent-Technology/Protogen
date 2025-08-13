@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button } from './ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Separator } from './ui/separator';
-import { Chrome, Facebook, Instagram, User, LogOut } from 'lucide-react';
+import { Chrome, User, LogOut } from 'lucide-react';
 
 interface User {
   id: number;
@@ -137,25 +137,11 @@ export const OAuthLogin: React.FC<OAuthLoginProps> = ({
             {isLoading === 'google' ? 'Connecting...' : 'Continue with Google'}
           </Button>
 
-          <Button 
-            onClick={() => handleOAuthLogin('facebook')}
-            disabled={isLoading !== null}
-            className="w-full"
-            variant="outline"
-          >
-            <Facebook className="h-4 w-4 mr-2" />
-            {isLoading === 'facebook' ? 'Connecting...' : 'Continue with Facebook'}
-          </Button>
-
-          <Button 
-            onClick={() => handleOAuthLogin('instagram')}
-            disabled={isLoading !== null}
-            className="w-full"
-            variant="outline"
-          >
-            <Instagram className="h-4 w-4 mr-2" />
-            {isLoading === 'instagram' ? 'Connecting...' : 'Continue with Instagram'}
-          </Button>
+          {/* Facebook and Instagram OAuth temporarily disabled - requires business verification */}
+          <div className="w-full p-3 bg-muted rounded-md text-center text-sm text-muted-foreground">
+            <p>Additional providers coming soon</p>
+            <p className="text-xs mt-1">Facebook/Instagram require business verification</p>
+          </div>
 
           <div className="text-xs text-muted-foreground text-center">
             By signing in, you agree to our terms of service and privacy policy
