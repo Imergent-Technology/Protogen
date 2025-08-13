@@ -55,6 +55,8 @@ export function StagesList({
     }
   }, [error]);
 
+
+
   const handleDeleteStage = async (stageId: number) => {
     if (window.confirm('Are you sure you want to delete this stage?')) {
       try {
@@ -100,6 +102,8 @@ export function StagesList({
     const matchesFilter = filterType === 'all' || stage.type === filterType;
     return matchesSearch && matchesFilter;
   });
+
+
 
   if (loading) {
     return (
