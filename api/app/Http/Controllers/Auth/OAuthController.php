@@ -55,12 +55,12 @@ class OAuthController extends Controller
             // Generate Sanctum token for API access
             $token = $user->createToken('oauth-token', ['*'], now()->addDays(30))->plainTextToken;
             
-            // Log successful authentication
-            \Log::info("OAuth authentication successful", [
-                'provider' => $provider,
-                'user_id' => $user->id,
-                'user_email' => $user->email
-            ]);
+            // Log successful authentication (temporarily disabled due to permission issues)
+            // \Log::info("OAuth authentication successful", [
+            //     'provider' => $provider,
+            //     'user_id' => $user->id,
+            //     'user_email' => $user->email
+            // ]);
             
             // Redirect back to frontend with user data and token
             $userData = urlencode(json_encode([
@@ -76,19 +76,19 @@ class OAuthController extends Controller
             return redirect($redirectUrl);
             
         } catch (\Laravel\Socialite\Two\InvalidStateException $e) {
-            \Log::error("OAuth invalid state error", [
-                'provider' => $provider,
-                'error' => $e->getMessage()
-            ]);
+            // \Log::error("OAuth invalid state error", [
+            //     'provider' => $provider,
+            //     'error' => $e->getMessage()
+            // ]);
             $error = urlencode('OAuth state validation failed. Please try again.');
             return redirect("http://localhost:3000/?error={$error}");
             
         } catch (\Exception $e) {
-            \Log::error("OAuth authentication error", [
-                'provider' => $provider,
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
+            // \Log::error("OAuth authentication error", [
+            //     'provider' => $provider,
+            //     'error' => $e->getMessage(),
+            //     'trace' => $e->getTraceAsString()
+            // ]);
             
             // Redirect to frontend with specific error
             $error = urlencode('OAuth authentication failed: ' . $e->getMessage());
