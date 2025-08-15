@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "Community-driven platform for collaborative feedback and knowledge synthesis",
   "scripts": {
-    "build:css": "npx @tailwindcss/cli -i ./shared/src/styles/input.css -o ./shared/src/styles/output.css --watch",
-    "build:css:prod": "npx @tailwindcss/cli -i ./shared/src/styles/input.css -o ./shared/src/styles/output.css --minify",
+    "build:css": "npx @tailwindcss/cli -i ./tailwind.css -o ./shared/src/styles/output.css --watch",
+    "build:css:prod": "npx @tailwindcss/cli -i ./tailwind.css -o ./shared/src/styles/output.css --minify",
     "dev": "npm run build:css"
   },
   "devDependencies": {

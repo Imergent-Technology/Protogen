@@ -19,6 +19,7 @@ class Stage extends Model
         'config',
         'metadata',
         'is_active',
+        'is_system',
         'sort_order',
     ];
 
@@ -26,6 +27,7 @@ class Stage extends Model
         'config' => 'array',
         'metadata' => 'array',
         'is_active' => 'boolean',
+        'is_system' => 'boolean',
     ];
 
     /**
@@ -92,5 +94,21 @@ class Stage extends Model
     public function scopeOfType($query, $type)
     {
         return $query->where('type', $type);
+    }
+
+    /**
+     * Scope to get only system stages.
+     */
+    public function scopeSystem($query)
+    {
+        return $query->where('is_system', true);
+    }
+
+    /**
+     * Scope to get only non-system stages.
+     */
+    public function scopeNonSystem($query)
+    {
+        return $query->where('is_system', false);
     }
 } 

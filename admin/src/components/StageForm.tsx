@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { useStages, EnhancedStageForm } from '@progress/shared';
 import { Stage } from '@progress/shared';
 

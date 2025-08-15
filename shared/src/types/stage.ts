@@ -17,6 +17,7 @@ export interface Stage {
   config: StageConfig;
   metadata?: Record<string, any>;
   is_active: boolean;
+  is_system?: boolean; // Flag for system-created stages (admin stage, etc.)
   sort_order: number;
   created_at?: string;
   updated_at?: string;

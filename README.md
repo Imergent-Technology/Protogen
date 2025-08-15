@@ -55,6 +55,17 @@ This is a monorepo containing:
 
 ### Development Setup
 
+#### CSS Build Process
+Before starting development, you need to build the shared CSS:
+
+```bash
+# Build shared CSS (required for styling)
+npm run build:css:prod
+
+# Or watch for changes during development
+npm run build:css
+```
+
 #### Option 1: Quick Setup (Recommended)
 ```bash
 # Clone the repository

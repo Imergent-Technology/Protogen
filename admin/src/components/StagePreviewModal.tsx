@@ -1,4 +1,3 @@
-import React from 'react';
 import { StagePreview } from '@progress/shared';
 import { Stage } from '@progress/shared';
 import { X, Edit, Share, BarChart3 } from 'lucide-react';
