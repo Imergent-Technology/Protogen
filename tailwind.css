@@ -1,55 +1,191 @@
 @import "tailwindcss";
 
 @theme {
-  --color-background: hsl(0 0% 100%);
-  --color-foreground: hsl(222.2 84% 4.9%);
-  --color-card: hsl(0 0% 100%);
-  --color-card-foreground: hsl(222.2 84% 4.9%);
-  --color-popover: hsl(0 0% 100%);
-  --color-popover-foreground: hsl(222.2 84% 4.9%);
-  --color-primary: hsl(221.2 83.2% 53.3%);
-  --color-primary-foreground: hsl(210 40% 98%);
-  --color-secondary: hsl(210 40% 96%);
-  --color-secondary-foreground: hsl(222.2 84% 4.9%);
-  --color-muted: hsl(210 40% 96%);
-  --color-muted-foreground: hsl(215.4 16.3% 46.9%);
-  --color-accent: hsl(210 40% 96%);
-  --color-accent-foreground: hsl(222.2 84% 4.9%);
-  --color-destructive: hsl(0 84.2% 60.2%);
-  --color-destructive-foreground: hsl(210 40% 98%);
-  --color-border: hsl(214.3 31.8% 91.4%);
-  --color-input: hsl(214.3 31.8% 91.4%);
-  --color-ring: hsl(221.2 83.2% 53.3%);
+  --color-background: rgb(255, 255, 255);
+  --color-foreground: rgb(10, 10, 10);
+  --color-card: rgb(255, 255, 255);
+  --color-card-foreground: rgb(10, 10, 10);
+  --color-popover: rgb(255, 255, 255);
+  --color-popover-foreground: rgb(10, 10, 10);
+  --color-primary: rgb(59, 130, 246);
+  --color-primary-foreground: rgb(248, 250, 252);
+  --color-secondary: rgb(241, 245, 249);
+  --color-secondary-foreground: rgb(10, 10, 10);
+  --color-muted: rgb(241, 245, 249);
+  --color-muted-foreground: rgb(100, 116, 139);
+  --color-accent: rgb(241, 245, 249);
+  --color-accent-foreground: rgb(10, 10, 10);
+  --color-destructive: rgb(239, 68, 68);
+  --color-destructive-foreground: rgb(248, 250, 252);
+  --color-border: rgb(226, 232, 240);
+  --color-input: rgb(226, 232, 240);
+  --color-ring: rgb(59, 130, 246);
   --radius: 0.5rem;
 }
 
+/* Dark theme variables - will be overridden by theme system */
 .dark {
-  --background: 222.2 84% 4.9%;
-  --foreground: 210 40% 98%;
-  --card: 222.2 84% 4.9%;
-  --card-foreground: 210 40% 98%;
-  --popover: 222.2 84% 4.9%;
-  --popover-foreground: 210 40% 98%;
-  --primary: 217.2 91.2% 59.8%;
-  --primary-foreground: 222.2 84% 4.9%;
-  --secondary: 217.2 32.6% 17.5%;
-  --secondary-foreground: 210 40% 98%;
-  --muted: 217.2 32.6% 17.5%;
-  --muted-foreground: 215 20.2% 65.1%;
-  --accent: 217.2 32.6% 17.5%;
-  --accent-foreground: 210 40% 98%;
-  --destructive: 0 62.8% 30.6%;
-  --destructive-foreground: 210 40% 98%;
-  --border: 217.2 32.6% 17.5%;
-  --input: 217.2 32.6% 17.5%;
-  --ring: 224.3 76.3% 94.1%;
+  --color-background: rgb(10, 10, 10);
+  --color-foreground: rgb(250, 250, 250);
+  --color-card: rgb(10, 10, 10);
+  --color-card-foreground: rgb(250, 250, 250);
+  --color-popover: rgb(10, 10, 10);
+  --color-popover-foreground: rgb(250, 250, 250);
+  --color-primary: rgb(34, 197, 94);
+  --color-primary-foreground: rgb(254, 247, 240);
+  --color-secondary: rgb(39, 39, 42);
+  --color-secondary-foreground: rgb(250, 250, 250);
+  --color-muted: rgb(39, 39, 42);
+  --color-muted-foreground: rgb(161, 161, 170);
+  --color-accent: rgb(39, 39, 42);
+  --color-accent-foreground: rgb(250, 250, 250);
+  --color-destructive: rgb(127, 29, 29);
+  --color-destructive-foreground: rgb(250, 250, 250);
+  --color-border: rgb(39, 39, 42);
+  --color-input: rgb(39, 39, 42);
+  --color-ring: rgb(34, 197, 94);
 }
 
+/* Base styles that automatically adapt to theme */
 * {
-  border-color: hsl(var(--border));
+  border-color: var(--color-border);
+}
+
+html {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
 }
 
 body {
-  background-color: hsl(var(--background));
-  color: hsl(var(--foreground));
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.6;
+}
+
+/* Automatic text color inheritance for common elements */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--color-foreground);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+p, span, div, li, td, th {
+  color: var(--color-foreground);
+}
+
+/* Force text color on all elements */
+* {
+  color: var(--color-foreground);
+}
+
+/* Override for specific elements that need different colors */
+.bg-background {
+  color: var(--color-foreground);
+}
+
+.text-foreground {
+  color: var(--color-foreground) !important;
+}
+
+/* Muted text for secondary content */
+.text-muted, .text-muted-foreground {
+  color: var(--color-muted-foreground) !important;
+}
+
+/* Links */
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--color-primary);
+  opacity: 0.8;
+}
+
+/* Form elements */
+input, textarea, select {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  border: 1px solid var(--color-border);
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 2px;
+}
+
+/* Buttons */
+button {
+  color: var(--color-foreground);
+  background-color: var(--color-background);
+  border: 1px solid var(--color-border);
+  transition: all 0.2s ease;
+}
+
+button:hover {
+  background-color: var(--color-muted);
+}
+
+/* Cards and containers */
+.card, .bg-card {
+  background-color: var(--color-card);
+  color: var(--color-card-foreground);
+  border: 1px solid var(--color-border);
+}
+
+/* Popovers and dropdowns */
+.popover, .bg-popover {
+  background-color: var(--color-popover);
+  color: var(--color-popover-foreground);
+  border: 1px solid var(--color-border);
+}
+
+/* Code blocks */
+code, pre {
+  background-color: var(--color-muted);
+  color: var(--color-foreground);
+  border: 1px solid var(--color-border);
+}
+
+/* Tables */
+table {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+}
+
+th, td {
+  border-color: var(--color-border);
+}
+
+/* Scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-muted);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-muted-foreground);
+}
+
+/* Focus styles for accessibility */
+*:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 2px;
+}
+
+/* Smooth transitions for theme changes */
+*, *::before, *::after {
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }

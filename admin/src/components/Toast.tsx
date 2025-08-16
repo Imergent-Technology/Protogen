@@ -65,23 +65,23 @@ export function ToastComponent({ toast, onRemove }: ToastProps) {
   return (
     <div
       className={`${getBackgroundColor()} border rounded-lg p-4 shadow-lg transition-all duration-300 ${
-        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2'
+        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
       }`}
     >
       <div className="flex items-start space-x-3">
         {getIcon()}
         <div className="flex-1">
-          <h4 className="text-sm font-medium text-gray-900">{toast.title}</h4>
-          {toast.message && (
-            <p className="text-sm text-gray-600 mt-1">{toast.message}</p>
-          )}
+          <h4 className="text-sm font-medium text-foreground">{toast.title}</h4>
+                      {toast.message && (
+              <p className="text-sm text-muted-foreground mt-1">{toast.message}</p>
+            )}
         </div>
         <button
           onClick={() => {
             setIsVisible(false);
             setTimeout(() => onRemove(toast.id), 300);
           }}
-          className="text-gray-400 hover:text-gray-600 transition-colors"
+                      className="text-muted-foreground hover:text-foreground transition-colors"
         >
           <X className="h-4 w-4" />
         </button>
@@ -97,7 +97,7 @@ interface ToastContainerProps {
 
 export function ToastContainer({ toasts, onRemove }: ToastContainerProps) {
   return (
-    <div className="fixed top-4 right-4 z-50 space-y-2">
+    <div className="fixed bottom-4 left-4 z-[9999] flex flex-col gap-2">
       {toasts.map((toast) => (
         <ToastComponent
           key={toast.id}

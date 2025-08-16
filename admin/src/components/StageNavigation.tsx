@@ -29,6 +29,17 @@ export function StageNavigation({
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set(['system', 'stages']));
 
+  const getStageTypeIcon = (type: string) => {
+    switch (type) {
+      case 'basic': return '📝';
+      case 'document': return '📄';
+      case 'graph': return '🔗';
+      case 'table': return '📊';
+      case 'custom': return '⚙️';
+      default: return '📄';
+    }
+  };
+
   // Build hierarchical structure
   const stageTree = useMemo(() => {
     const tree: StageNode[] = [
@@ -141,15 +152,7 @@ export function StageNavigation({
     }
   };
 
-  const getStageTypeIcon = (type: string) => {
-    switch (type) {
-      case 'basic': return '📝';
-      case 'document': return '📄';
-      case 'graph': return '🔗';
-      case 'table': return '📊';
-      default: return '📄';
-    }
-  };
+
 
   const renderNode = (node: StageNode, depth: number = 0) => {
     const isExpanded = expandedNodes.has(node.id);

@@ -1,17 +1,33 @@
 import { useState, useEffect } from 'react';
-import { Layers, Users, BarChart3, Home, LogOut, PanelLeft } from 'lucide-react';
+import { Layers, Users, BarChart3, Home, PanelLeft } from 'lucide-react';
 import { apiClient, Stage } from '@progress/shared';
 import { UsersList } from './components/UsersList';
 import { AdminLogin } from './components/AdminLogin';
 import { FullScreenStageViewer } from './components/FullScreenStageViewer';
 import { StageMetadataDialog } from './components/StageMetadataDialog';
 import { AdminStage } from './components/AdminStage';
+
 import { StageTransition, StageContentWrapper, ToolbarWrapper } from './components/StageTransition';
 import { StageNavigation } from './components/StageNavigation';
 import { ContextMenu, useContextMenu, getStageContextMenuItems } from './components/ContextMenu';
 import { CreateStageDialog } from './components/CreateStageDialog';
+import { AdminUserMenu } from './components/AdminUserMenu';
 import { ToastContainer, useToasts } from './components/Toast';
 import { AnimatePresence, motion } from 'framer-motion';
+import { initializeTheme } from '@progress/shared';
+
+// Debug: Check if the import is working
+console.log('initializeTheme function:', initializeTheme);
+console.log('typeof initializeTheme:', typeof initializeTheme);
+
+// Test calling the function directly
+console.log('Testing direct call to initializeTheme...');
+try {
+  initializeTheme();
+  console.log('Direct call to initializeTheme completed');
+} catch (error) {
+  console.error('Error in direct call to initializeTheme:', error);
+}
 
 interface AdminUser {
   id: number;
@@ -40,6 +56,7 @@ function App() {
   // Navigation state
   const [isNavigationOpen, setIsNavigationOpen] = useState(true);
   const [transitionDirection, setTransitionDirection] = useState<'forward' | 'backward' | 'up' | 'down'>('forward');
+
   
   // Context menu
   const { contextMenu, showContextMenu, hideContextMenu } = useContextMenu();
@@ -47,6 +64,16 @@ function App() {
   const { toasts, removeToast, showSuccess, showError } = useToasts();
 
   useEffect(() => {
+    console.log('App.tsx useEffect running - initializing theme system');
+    try {
+      // Initialize theme system
+      console.log('About to call initializeTheme...');
+      initializeTheme();
+      console.log('Theme initialization complete');
+    } catch (error) {
+      console.error('Error initializing theme:', error);
+    }
+    
     // Check if we have a stored token
     const token = localStorage.getItem('admin_token');
     if (token) {
@@ -164,6 +191,13 @@ function App() {
       showError('Failed to load stages', 'Please try again later');
     }
   };
+
+  // Load stages when component mounts
+  useEffect(() => {
+    if (isAuthenticated) {
+      loadStages();
+    }
+  }, [isAuthenticated]);
 
   const handleStageSave = async (stage: Stage) => {
     setIsSaving(true);
@@ -303,7 +337,6 @@ function App() {
   };
 
   const handleNavigateToUsers = () => {
-    setTransitionDirection('forward');
     setViewMode('users');
   };
 
@@ -391,11 +424,7 @@ function App() {
   // Render admin stage as default view
   if (viewMode === 'admin') {
     return (
-      <StageTransition
-        stage={null}
-        direction={transitionDirection}
-        isVisible={true}
-      >
+      <>
         <AdminStage
           onNavigateToStages={handleNavigateToStages}
           onNavigateToUsers={handleNavigateToUsers}
@@ -403,25 +432,25 @@ function App() {
           onCreateStage={handleCreateStage}
         />
         
-              {/* Stage Metadata Dialog */}
-      <StageMetadataDialog
-        stage={currentStage}
-        isOpen={isMetadataDialogOpen}
-        onClose={() => setIsMetadataDialogOpen(false)}
-        onSave={handleStageSave}
-        onPublish={handleStagePublish}
-        onUnpublish={handleStageUnpublish}
-      />
+        {/* Stage Metadata Dialog */}
+        <StageMetadataDialog
+          stage={currentStage}
+          isOpen={isMetadataDialogOpen}
+          onClose={() => setIsMetadataDialogOpen(false)}
+          onSave={handleStageSave}
+          onPublish={handleStagePublish}
+          onUnpublish={handleStageUnpublish}
+        />
 
-      {/* Create Stage Dialog */}
-      <CreateStageDialog
-        isOpen={isCreateDialogOpen}
-        onClose={() => setIsCreateDialogOpen(false)}
-        onCreate={handleStageCreate}
-      />
+        {/* Create Stage Dialog */}
+        <CreateStageDialog
+          isOpen={isCreateDialogOpen}
+          onClose={() => setIsCreateDialogOpen(false)}
+          onCreate={handleStageCreate}
+        />
         
         <ToastContainer toasts={toasts} onRemove={removeToast} />
-      </StageTransition>
+      </>
     );
   }
 
@@ -526,19 +555,10 @@ function App() {
             </div>
 
             {/* User Profile */}
-            <div className="flex items-center space-x-2">
-              <div className="hidden sm:flex items-center space-x-2 text-sm text-muted-foreground">
-                <Users className="h-4 w-4" />
-                <span>{adminUser?.name || 'Admin'}</span>
-              </div>
-              <button
-                onClick={handleLogout}
-                className="flex items-center space-x-2 px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted rounded-md"
-              >
-                <LogOut className="h-4 w-4" />
-                <span className="hidden sm:inline">Logout</span>
-              </button>
-            </div>
+            <AdminUserMenu 
+              user={adminUser} 
+              onLogout={handleLogout} 
+            />
           </div>
         </ToolbarWrapper>
 

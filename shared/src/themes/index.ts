@@ -48,92 +48,92 @@ export interface ThemeColors {
 export const themes: Record<Theme, ThemeColors> = {
   light: {
     // Base colors
-    background: '0 0% 100%',
-    foreground: '222.2 84% 4.9%',
+    background: 'rgb(255, 255, 255)',
+    foreground: 'rgb(10, 10, 10)',
     
     // Card colors
-    card: '0 0% 100%',
-    cardForeground: '222.2 84% 4.9%',
+    card: 'rgb(255, 255, 255)',
+    cardForeground: 'rgb(10, 10, 10)',
     
     // Popover colors
-    popover: '0 0% 100%',
-    popoverForeground: '222.2 84% 4.9%',
+    popover: 'rgb(255, 255, 255)',
+    popoverForeground: 'rgb(10, 10, 10)',
     
     // Primary colors
-    primary: '221.2 83.2% 53.3%',
-    primaryForeground: '210 40% 98%',
+    primary: 'rgb(59, 130, 246)',
+    primaryForeground: 'rgb(248, 250, 252)',
     
     // Secondary colors
-    secondary: '210 40% 96%',
-    secondaryForeground: '222.2 84% 4.9%',
+    secondary: 'rgb(241, 245, 249)',
+    secondaryForeground: 'rgb(10, 10, 10)',
     
     // Muted colors
-    muted: '210 40% 96%',
-    mutedForeground: '215.4 16.3% 46.9%',
+    muted: 'rgb(241, 245, 249)',
+    mutedForeground: 'rgb(100, 116, 139)',
     
     // Accent colors
-    accent: '210 40% 96%',
-    accentForeground: '222.2 84% 4.9%',
+    accent: 'rgb(241, 245, 249)',
+    accentForeground: 'rgb(10, 10, 10)',
     
     // Destructive colors
-    destructive: '0 84.2% 60.2%',
-    destructiveForeground: '210 40% 98%',
+    destructive: 'rgb(239, 68, 68)',
+    destructiveForeground: 'rgb(248, 250, 252)',
     
     // Border and input colors
-    border: '214.3 31.8% 91.4%',
-    input: '214.3 31.8% 91.4%',
-    ring: '221.2 83.2% 53.3%',
+    border: 'rgb(226, 232, 240)',
+    input: 'rgb(226, 232, 240)',
+    ring: 'rgb(59, 130, 246)',
     
     // Stage-specific colors
-    stageBackground: '0 0% 99%',
-    stageForeground: '222.2 84% 4.9%',
-    stageBorder: '214.3 31.8% 95%',
-    stageAccent: '221.2 83.2% 53.3%',
+    stageBackground: 'rgb(250, 250, 250)',
+    stageForeground: 'rgb(10, 10, 10)',
+    stageBorder: 'rgb(241, 245, 249)',
+    stageAccent: 'rgb(59, 130, 246)',
   },
   
   dark: {
     // Base colors
-    background: '222.2 84% 4.9%',
-    foreground: '210 40% 98%',
+    background: 'rgb(10, 10, 10)',
+    foreground: 'rgb(250, 250, 250)',
     
     // Card colors
-    card: '222.2 84% 4.9%',
-    cardForeground: '210 40% 98%',
+    card: 'rgb(10, 10, 10)',
+    cardForeground: 'rgb(250, 250, 250)',
     
     // Popover colors
-    popover: '222.2 84% 4.9%',
-    popoverForeground: '210 40% 98%',
+    popover: 'rgb(10, 10, 10)',
+    popoverForeground: 'rgb(250, 250, 250)',
     
     // Primary colors
-    primary: '217.2 91.2% 59.8%',
-    primaryForeground: '222.2 84% 4.9%',
+    primary: 'rgb(34, 197, 94)',
+    primaryForeground: 'rgb(254, 247, 240)',
     
     // Secondary colors
-    secondary: '217.2 32.6% 17.5%',
-    secondaryForeground: '210 40% 98%',
+    secondary: 'rgb(39, 39, 42)',
+    secondaryForeground: 'rgb(250, 250, 250)',
     
     // Muted colors
-    muted: '217.2 32.6% 17.5%',
-    mutedForeground: '215 20.2% 65.1%',
+    muted: 'rgb(39, 39, 42)',
+    mutedForeground: 'rgb(161, 161, 170)',
     
     // Accent colors
-    accent: '217.2 32.6% 17.5%',
-    accentForeground: '210 40% 98%',
+    accent: 'rgb(39, 39, 42)',
+    accentForeground: 'rgb(250, 250, 250)',
     
     // Destructive colors
-    destructive: '0 62.8% 30.6%',
-    destructiveForeground: '210 40% 98%',
+    destructive: 'rgb(127, 29, 29)',
+    destructiveForeground: 'rgb(250, 250, 250)',
     
     // Border and input colors
-    border: '217.2 32.6% 17.5%',
-    input: '217.2 32.6% 17.5%',
-    ring: '224.3 76.3% 94.1%',
+    border: 'rgb(39, 39, 42)',
+    input: 'rgb(39, 39, 42)',
+    ring: 'rgb(34, 197, 94)',
     
     // Stage-specific colors
-    stageBackground: '222.2 84% 2%',
-    stageForeground: '210 40% 98%',
-    stageBorder: '217.2 32.6% 22%',
-    stageAccent: '217.2 91.2% 59.8%',
+    stageBackground: 'rgb(10, 10, 10)',
+    stageForeground: 'rgb(250, 250, 250)',
+    stageBorder: 'rgb(39, 39, 42)',
+    stageAccent: 'rgb(34, 197, 94)',
   },
 };
 
@@ -144,13 +144,25 @@ export function applyThemeColors(theme: Theme): void {
   const colors = themes[theme];
   const root = document.documentElement;
   
+  // Apply colors using Tailwind v4 naming convention
   Object.entries(colors).forEach(([key, value]) => {
-    const cssVar = `--${key.replace(/([A-Z])/g, '-$1').toLowerCase()}`;
+    const cssVar = `--color-${key.replace(/([A-Z])/g, '-$1').toLowerCase()}`;
+    // Use the values directly (now hex values)
     root.style.setProperty(cssVar, value);
+    
+    // Debug logging
+    console.log(`Setting ${cssVar} = ${value}`);
   });
   
   // Toggle dark class for Tailwind
   root.classList.toggle('dark', theme === 'dark');
+  
+  // Debug: Check what variables are actually set
+  console.log('Current CSS variables on root:', {
+    '--color-background': getComputedStyle(root).getPropertyValue('--color-background'),
+    '--color-foreground': getComputedStyle(root).getPropertyValue('--color-foreground'),
+    '--color-muted-foreground': getComputedStyle(root).getPropertyValue('--color-muted-foreground'),
+  });
 }
 
 /**
@@ -185,16 +197,37 @@ export function saveTheme(theme: Theme): void {
  * Initialize theme on app startup
  */
 export function initializeTheme(): void {
-  const theme = getCurrentTheme();
-  applyThemeColors(theme);
-  saveTheme(theme);
-  
-  // Listen for system theme changes
-  if (typeof window !== 'undefined') {
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    mediaQuery.addEventListener('change', () => {
-      const currentTheme = getCurrentTheme();
-      applyThemeColors(currentTheme);
-    });
+  try {
+    console.log('initializeTheme function called');
+    
+    console.log('About to call getCurrentTheme...');
+    const theme = getCurrentTheme();
+    console.log('getCurrentTheme returned:', theme);
+    
+    console.log('About to call applyThemeColors...');
+    applyThemeColors(theme);
+    console.log('applyThemeColors completed');
+    
+    console.log('About to call saveTheme...');
+    saveTheme(theme);
+    console.log('saveTheme completed');
+    
+    // Listen for system theme changes
+    if (typeof window !== 'undefined') {
+      console.log('Setting up media query listener...');
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      mediaQuery.addEventListener('change', () => {
+        const currentTheme = getCurrentTheme();
+        applyThemeColors(currentTheme);
+      });
+      console.log('Media query listener set up');
+    }
+    
+    console.log('initializeTheme function completed');
+  } catch (error) {
+    console.error('Error in initializeTheme:', error);
+    if (error instanceof Error) {
+      console.error('Error stack:', error.stack);
+    }
   }
 } 
