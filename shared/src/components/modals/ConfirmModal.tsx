@@ -1,11 +1,11 @@
 
-import { Button } from '../ui/button';
+import { Button } from '../ui-primitives/button';
 import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from '../ui/dialog';
+} from '../ui-primitives/dialog';
 
 interface ConfirmModalProps {
   title: string;

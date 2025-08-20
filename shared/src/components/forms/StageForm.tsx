@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useStages } from '../hooks/useApi';
-import { Stage, StageType } from '../types/stage';
+import { useStages } from '../../hooks/useApi';
+import { Stage, StageType } from '../../types/stage';
 import { X, Save, Loader2 } from 'lucide-react';
 
 interface StageFormProps {

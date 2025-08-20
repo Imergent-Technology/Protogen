@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { useStageManager } from '../../hooks/useStageManager';
-import { Stage } from '../../types/stage';
+import { useStageManager } from '../../../hooks/useStageManager';
+import { Stage } from '../../../types/stage';
 
 interface StageRouterProps {
   children: React.ReactNode;

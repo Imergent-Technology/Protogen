@@ -1,13 +1,13 @@
 
 import { Menu } from 'lucide-react';
-import { Button } from '../ui/button';
+import { Button } from '../../ui-primitives/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '../ui/dropdown-menu';
+} from '../../ui-primitives/dropdown-menu';
 
 interface ToolbarProps {
   className?: string;

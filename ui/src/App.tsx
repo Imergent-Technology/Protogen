@@ -8,7 +8,7 @@ const ModalProvider = ({ children }: { children: React.ReactNode }) => <>{childr
 const ModalRenderer = () => null;
 const Toaster = () => null;
 const useToast = () => ({ toast: (options: any) => console.log('Toast:', options) });
-import { Button } from './components/ui/button';
+import { Button } from '@progress/shared';
 import { Layers, Network, MessageSquare, Play } from 'lucide-react';
 
 interface User {

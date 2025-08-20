@@ -1,7 +1,7 @@
 import React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
-import { Badge } from './ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui-primitives/card';
+import { Badge } from '../ui-primitives/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui-primitives/avatar';
 import { User, Shield, Star, Calendar, ExternalLink } from 'lucide-react';
 
 interface User {

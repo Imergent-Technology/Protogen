@@ -3,7 +3,7 @@ import { useModal } from './ModalProvider';
 import {
   Dialog,
   DialogContent,
-} from '../ui/dialog';
+} from '../ui-primitives/dialog';
 
 const sizeClasses = {
   sm: 'max-w-sm',

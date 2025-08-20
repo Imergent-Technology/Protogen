@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Badge } from './ui/badge';
-import { Button } from './ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '../ui-primitives/card';
+import { Badge } from '../ui-primitives/badge';
+import { Button } from '../ui-primitives/button';
 import { 
   Calendar, 
   ExternalLink, 

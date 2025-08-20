@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useStages } from '../hooks/useApi';
-import { StageForm } from './StageForm';
+import { useStages } from '../../hooks/useApi';
+import { StageForm } from '../forms/StageForm';
 import { 
   Plus, 
   Edit, 
