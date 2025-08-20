@@ -5,10 +5,34 @@
   "scripts": {
     "build:css": "npx @tailwindcss/cli -i ./config/tailwind.css -o ./shared/src/styles/output.css --watch",
     "build:css:prod": "npx @tailwindcss/cli -i ./config/tailwind.css -o ./shared/src/styles/output.css --minify",
-    "dev": "npm run build:css"
+    "dev": "npm run build:css",
+    "dev:all": "concurrently \"npm run dev\" \"npm run dev:admin\" \"npm run dev:ui\"",
+    "dev:admin": "cd admin && npm run dev",
+    "dev:ui": "cd ui && npm run dev",
+    "build:all": "npm run build:css:prod && npm run build:admin && npm run build:ui",
+    "build:admin": "cd admin && npm run build",
+    "build:ui": "cd ui && npm run build",
+    "clean:all": "npm run clean:admin && npm run clean:ui && npm run clean:shared",
+    "clean:admin": "cd admin && rm -rf dist",
+    "clean:ui": "cd ui && rm -rf dist",
+    "clean:shared": "rm -rf shared/src/styles/output.css",
+    "lint:all": "npm run lint:admin && npm run lint:ui && npm run lint:shared",
+    "lint:admin": "cd admin && npm run lint",
+    "lint:ui": "cd ui && npm run lint",
+    "lint:shared": "eslint shared/src --ext .ts,.tsx",
+    "format:all": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "install:all": "npm install && cd admin && npm install && cd ../ui && npm install"
   },
   "devDependencies": {
     "@tailwindcss/cli": "^4.1.11",
-    "@tailwindcss/typography": "^0.5.16"
+    "@tailwindcss/typography": "^0.5.16",
+    "concurrently": "^8.2.2",
+    "eslint": "^9.30.1",
+    "@typescript-eslint/eslint-plugin": "^8.35.1",
+    "@typescript-eslint/parser": "^8.35.1",
+    "eslint-plugin-react": "^7.37.2",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "prettier": "^3.3.3"
   }
 }
