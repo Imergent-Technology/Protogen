@@ -147,22 +147,11 @@ export function applyThemeColors(theme: Theme): void {
   // Apply colors using Tailwind v4 naming convention
   Object.entries(colors).forEach(([key, value]) => {
     const cssVar = `--color-${key.replace(/([A-Z])/g, '-$1').toLowerCase()}`;
-    // Use the values directly (now hex values)
     root.style.setProperty(cssVar, value);
-    
-    // Debug logging
-    console.log(`Setting ${cssVar} = ${value}`);
   });
   
   // Toggle dark class for Tailwind
   root.classList.toggle('dark', theme === 'dark');
-  
-  // Debug: Check what variables are actually set
-  console.log('Current CSS variables on root:', {
-    '--color-background': getComputedStyle(root).getPropertyValue('--color-background'),
-    '--color-foreground': getComputedStyle(root).getPropertyValue('--color-foreground'),
-    '--color-muted-foreground': getComputedStyle(root).getPropertyValue('--color-muted-foreground'),
-  });
 }
 
 /**
@@ -198,32 +187,18 @@ export function saveTheme(theme: Theme): void {
  */
 export function initializeTheme(): void {
   try {
-    console.log('initializeTheme function called');
-    
-    console.log('About to call getCurrentTheme...');
     const theme = getCurrentTheme();
-    console.log('getCurrentTheme returned:', theme);
-    
-    console.log('About to call applyThemeColors...');
     applyThemeColors(theme);
-    console.log('applyThemeColors completed');
-    
-    console.log('About to call saveTheme...');
     saveTheme(theme);
-    console.log('saveTheme completed');
     
     // Listen for system theme changes
     if (typeof window !== 'undefined') {
-      console.log('Setting up media query listener...');
       const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
       mediaQuery.addEventListener('change', () => {
         const currentTheme = getCurrentTheme();
         applyThemeColors(currentTheme);
       });
-      console.log('Media query listener set up');
     }
-    
-    console.log('initializeTheme function completed');
   } catch (error) {
     console.error('Error in initializeTheme:', error);
     if (error instanceof Error) {

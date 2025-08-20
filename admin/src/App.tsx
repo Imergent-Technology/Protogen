@@ -16,19 +16,6 @@ import { ToastContainer, useToasts } from './components/Toast';
 import { AnimatePresence, motion } from 'framer-motion';
 import { initializeTheme } from '@progress/shared';
 
-// Debug: Check if the import is working
-console.log('initializeTheme function:', initializeTheme);
-console.log('typeof initializeTheme:', typeof initializeTheme);
-
-// Test calling the function directly
-console.log('Testing direct call to initializeTheme...');
-try {
-  initializeTheme();
-  console.log('Direct call to initializeTheme completed');
-} catch (error) {
-  console.error('Error in direct call to initializeTheme:', error);
-}
-
 interface AdminUser {
   id: number;
   name: string;
@@ -64,15 +51,8 @@ function App() {
   const { toasts, removeToast, showSuccess, showError } = useToasts();
 
   useEffect(() => {
-    console.log('App.tsx useEffect running - initializing theme system');
-    try {
-      // Initialize theme system
-      console.log('About to call initializeTheme...');
-      initializeTheme();
-      console.log('Theme initialization complete');
-    } catch (error) {
-      console.error('Error initializing theme:', error);
-    }
+    // Initialize theme system
+    initializeTheme();
     
     // Check if we have a stored token
     const token = localStorage.getItem('admin_token');
@@ -119,11 +99,11 @@ function App() {
   };
 
   const clearAuth = () => {
-    localStorage.removeItem('admin_token');
-    setAuthToken(null);
-    setIsAuthenticated(false);
-    setAdminUser(null);
-    apiClient.clearAuthToken();
+      localStorage.removeItem('admin_token');
+      setAuthToken(null);
+      setIsAuthenticated(false);
+      setAdminUser(null);
+      apiClient.clearAuthToken();
   };
 
   const handleLogin = async (email: string, password: string) => {
@@ -499,47 +479,47 @@ function App() {
                 <div>
                   <h1 className="text-lg font-semibold">Progress Admin</h1>
                   <p className="text-sm text-muted-foreground">Stage Management</p>
-                </div>
-              </div>
             </div>
+          </div>
+        </div>
 
             {/* Navigation Menu */}
             <div className="hidden lg:flex items-center space-x-2">
-              <button
+                <button
                 onClick={handleBackToAdmin}
                                  className={`flex items-center space-x-2 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
                    viewMode === 'stages-list'
-                     ? 'text-primary bg-primary/10'
-                     : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-                 }`}
-              >
-                <Home className="h-4 w-4" />
-                <span>Dashboard</span>
-              </button>
+                      ? 'text-primary bg-primary/10'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                  }`}
+                >
+                  <Home className="h-4 w-4" />
+                  <span>Dashboard</span>
+                </button>
               
-              <button
+                <button
                 onClick={handleNavigateToStages}
                 className={`flex items-center space-x-2 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
                   viewMode === 'stages-list'
-                    ? 'text-primary bg-primary/10'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-                }`}
-              >
-                <Layers className="h-4 w-4" />
-                <span>Stages</span>
-              </button>
+                      ? 'text-primary bg-primary/10'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                  }`}
+                >
+                  <Layers className="h-4 w-4" />
+                  <span>Stages</span>
+                </button>
               
-              <button
+                <button
                 onClick={handleNavigateToUsers}
                 className={`flex items-center space-x-2 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
                   viewMode === 'users'
-                    ? 'text-primary bg-primary/10'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-                }`}
-              >
-                <Users className="h-4 w-4" />
-                <span>Users</span>
-              </button>
+                      ? 'text-primary bg-primary/10'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                  }`}
+                >
+                  <Users className="h-4 w-4" />
+                  <span>Users</span>
+                </button>
               
               <button
                 onClick={handleNavigateToAnalytics}
@@ -671,7 +651,7 @@ function App() {
                 </div>
               </div>
             )}
-          </main>
+        </main>
         </StageContentWrapper>
       </div>
 
