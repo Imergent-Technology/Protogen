@@ -417,6 +417,14 @@ function App() {
           onNavigateToUsers={handleNavigateToUsers}
           onNavigateToAnalytics={handleNavigateToAnalytics}
           onCreateStage={handleCreateStage}
+          stages={stages}
+          currentStage={currentStage}
+          onStageSelect={handleStageSelect}
+          onNavigationSection={handleNavigationSection}
+          adminUser={adminUser}
+          onLogout={handleLogout}
+          isNavigationOpen={isNavigationOpen}
+          onToggleNavigation={() => setIsNavigationOpen(!isNavigationOpen)}
         />
         
         <ToastContainer toasts={toasts} onRemove={removeToast} />
