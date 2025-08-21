@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Stage } from '@progress/shared';
-import { X, Save, Eye, EyeOff } from 'lucide-react';
+import { Save, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@progress/shared';
+import { Modal } from './Modal';
 
 interface StageMetadataDialogProps {
   stage: Stage | null;
@@ -89,21 +90,16 @@ export function StageMetadataDialog({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-background border border-border rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h2 className="text-xl font-semibold">Stage Settings</h2>
-            <p className="text-sm text-muted-foreground">
-              Configure stage properties and metadata
-            </p>
-          </div>
-          
-          <Button variant="outline" size="sm" onClick={onClose}>
-            <X className="h-4 w-4" />
-          </Button>
-        </div>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Stage Settings"
+      size="lg"
+    >
+      <div className="p-6">
+        <p className="text-sm text-muted-foreground mb-6">
+          Configure stage properties and metadata
+        </p>
 
         {/* Form */}
         <div className="space-y-6">
@@ -224,6 +220,6 @@ export function StageMetadataDialog({
           </Button>
         </div>
       </div>
-    </div>
+    </Modal>
   );
 }

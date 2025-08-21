@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Stage, StageType } from '@progress/shared';
-import { X, Save } from 'lucide-react';
+import { Save } from 'lucide-react';
 import { Button } from '@progress/shared';
+import { Modal } from './Modal';
 
 interface CreateStageDialogProps {
   isOpen: boolean;
@@ -84,21 +85,16 @@ export function CreateStageDialog({ isOpen, onClose, onCreate }: CreateStageDial
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-background border border-border rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-xl">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h2 className="text-xl font-semibold">Create New Stage</h2>
-            <p className="text-sm text-muted-foreground">
-              Choose a stage type and configure its basic properties
-            </p>
-          </div>
-          
-          <Button variant="outline" size="sm" onClick={onClose}>
-            <X className="h-4 w-4" />
-          </Button>
-        </div>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Create New Stage"
+      size="lg"
+    >
+      <div className="p-6">
+        <p className="text-sm text-muted-foreground mb-6">
+          Choose a stage type and configure its basic properties
+        </p>
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -189,6 +185,6 @@ export function CreateStageDialog({ isOpen, onClose, onCreate }: CreateStageDial
           </div>
         </form>
       </div>
-    </div>
+    </Modal>
   );
 }

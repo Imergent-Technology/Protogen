@@ -11,6 +11,7 @@ import { StageTransition, StageContentWrapper, ToolbarWrapper } from './componen
 import { StageNavigation } from './components/StageNavigation';
 import { ContextMenu, useContextMenu, getStageContextMenuItems } from './components/ContextMenu';
 import { CreateStageDialog } from './components/CreateStageDialog';
+import { StageTypeManager } from './components/StageTypeManager';
 import { AdminUserMenu } from './components/AdminUserMenu';
 import { ToastContainer, useToasts } from './components/Toast';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -36,8 +37,9 @@ function App() {
   // Stage management
   const [currentStage, setCurrentStage] = useState<Stage | null>(null);
   const [stages, setStages] = useState<Stage[]>([]);
-    const [isMetadataDialogOpen, setIsMetadataDialogOpen] = useState(false);
+  const [isMetadataDialogOpen, setIsMetadataDialogOpen] = useState(false);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isStageTypeManagerOpen, setIsStageTypeManagerOpen] = useState(false);
   const [_isSaving, setIsSaving] = useState(false);
   
   // Navigation state
@@ -253,6 +255,10 @@ function App() {
     setIsMetadataDialogOpen(true);
   };
 
+  const handleStageTypeManager = () => {
+    setIsStageTypeManagerOpen(true);
+  };
+
   const handleStageDelete = async (stage: Stage) => {
     if (confirm(`Are you sure you want to delete "${stage.name}"?`)) {
       try {
@@ -362,7 +368,8 @@ function App() {
       () => handleStagePublish(stage),
       () => handleStageUnpublish(stage),
       () => handleStageCopy(stage),
-      () => handleStageShare(stage)
+      () => handleStageShare(stage),
+      () => handleStageTypeManager()
     );
     showContextMenu(event, items);
   };
@@ -412,23 +419,6 @@ function App() {
           onCreateStage={handleCreateStage}
         />
         
-        {/* Stage Metadata Dialog */}
-        <StageMetadataDialog
-          stage={currentStage}
-          isOpen={isMetadataDialogOpen}
-          onClose={() => setIsMetadataDialogOpen(false)}
-          onSave={handleStageSave}
-          onPublish={handleStagePublish}
-          onUnpublish={handleStageUnpublish}
-        />
-
-        {/* Create Stage Dialog */}
-        <CreateStageDialog
-          isOpen={isCreateDialogOpen}
-          onClose={() => setIsCreateDialogOpen(false)}
-          onCreate={handleStageCreate}
-        />
-        
         <ToastContainer toasts={toasts} onRemove={removeToast} />
       </>
     );
@@ -436,8 +426,9 @@ function App() {
 
   // Render other views with enhanced navigation
   return (
-    <div className="min-h-screen bg-background flex">
-      <ToastContainer toasts={toasts} onRemove={removeToast} />
+    <>
+      <div className="min-h-screen bg-background flex">
+        <ToastContainer toasts={toasts} onRemove={removeToast} />
       
       {/* Navigation Sidebar */}
       <AnimatePresence>
@@ -662,17 +653,32 @@ function App() {
         onClose={hideContextMenu}
         position={contextMenu.position}
       />
-
-      {/* Stage Metadata Dialog */}
-      <StageMetadataDialog
-        stage={currentStage}
-        isOpen={isMetadataDialogOpen}
-        onClose={() => setIsMetadataDialogOpen(false)}
-        onSave={handleStageSave}
-        onPublish={handleStagePublish}
-        onUnpublish={handleStageUnpublish}
-      />
     </div>
+
+    {/* Global Modals - Rendered at top level to avoid stacking context issues */}
+    <StageMetadataDialog
+      stage={currentStage}
+      isOpen={isMetadataDialogOpen}
+      onClose={() => setIsMetadataDialogOpen(false)}
+      onSave={handleStageSave}
+      onPublish={handleStagePublish}
+      onUnpublish={handleStageUnpublish}
+    />
+
+    <CreateStageDialog
+      isOpen={isCreateDialogOpen}
+      onClose={() => setIsCreateDialogOpen(false)}
+      onCreate={handleStageCreate}
+    />
+
+    {currentStage && isStageTypeManagerOpen && (
+      <StageTypeManager
+        stage={currentStage}
+        onUpdate={handleStageSave}
+        onClose={() => setIsStageTypeManagerOpen(false)}
+      />
+    )}
+  </>
   );
 }
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Edit, Copy, Trash2, Eye, EyeOff, Settings, ExternalLink, Share } from 'lucide-react';
+import { Edit, Copy, Trash2, Eye, EyeOff, Settings, ExternalLink, Share, Layers } from 'lucide-react';
 
 interface ContextMenuItem {
   id: string;
@@ -129,7 +129,8 @@ export const getStageContextMenuItems = (
   onPublish: () => void,
   onUnpublish: () => void,
   onCopy: () => void,
-  onShare: () => void
+  onShare: () => void,
+  onTypeManager?: () => void
 ): ContextMenuItem[] => [
   {
     id: 'edit',
@@ -168,6 +169,13 @@ export const getStageContextMenuItems = (
     label: 'Stage Settings',
     icon: <Settings className="w-4 h-4" />,
     action: onEdit
+  },
+  {
+    id: 'type-manager',
+    label: 'Type Manager',
+    icon: <Layers className="w-4 h-4" />,
+    action: onTypeManager,
+    disabled: !onTypeManager
   },
   {
     id: 'divider3',
