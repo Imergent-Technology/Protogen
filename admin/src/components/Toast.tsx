@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { X, CheckCircle, AlertCircle, Info } from 'lucide-react';
 
 export type ToastType = 'success' | 'error' | 'info' | 'warning';
@@ -96,8 +97,13 @@ interface ToastContainerProps {
 }
 
 export function ToastContainer({ toasts, onRemove }: ToastContainerProps) {
-  return (
-    <div className="fixed bottom-4 left-4 z-[9999] flex flex-col gap-2">
+  if (toasts.length === 0) return null;
+
+  return createPortal(
+    <div 
+      className="fixed bottom-4 left-4 flex flex-col gap-2"
+      style={{ zIndex: 1000002 }}
+    >
       {toasts.map((toast) => (
         <ToastComponent
           key={toast.id}
@@ -105,7 +111,8 @@ export function ToastContainer({ toasts, onRemove }: ToastContainerProps) {
           onRemove={onRemove}
         />
       ))}
-    </div>
+    </div>,
+    document.body
   );
 }
 

@@ -48,15 +48,59 @@ export function CreateStageDialog({ isOpen, onClose, onCreate }: CreateStageDial
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Create stage-specific configuration based on type
+    let stageConfig: any = {
+      title: formData.name,
+      icon: formData.icon
+    };
+
+    // Add type-specific configuration
+    switch (formData.type) {
+      case 'document':
+        stageConfig = {
+          ...stageConfig,
+          content: '', // Required for document stages
+          layout: 'single',
+          theme: 'default',
+          autoSave: true,
+          versioning: true,
+          printEnabled: false
+        };
+        break;
+      case 'basic':
+        stageConfig = {
+          ...stageConfig,
+          content: ''
+        };
+        break;
+      case 'graph':
+        stageConfig = {
+          ...stageConfig,
+          nodes: [],
+          edges: []
+        };
+        break;
+      case 'table':
+        stageConfig = {
+          ...stageConfig,
+          columns: [],
+          data: []
+        };
+        break;
+      case 'custom':
+        stageConfig = {
+          ...stageConfig,
+          component: '',
+          props: {}
+        };
+        break;
+    }
+
     const newStage: Partial<Stage> = {
       name: formData.name,
       description: formData.description,
       type: formData.type,
-      config: {
-        title: formData.name,
-        content: '',
-        icon: formData.icon
-      },
+      config: stageConfig,
       is_active: false,
       sort_order: 0
     };

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Layers, Users, BarChart3, Home, PanelLeft } from 'lucide-react';
 import { apiClient, Stage } from '@progress/shared';
 import { UsersList } from './components/UsersList';
@@ -27,6 +28,8 @@ interface AdminUser {
 type ViewMode = 'admin' | 'stage' | 'stages-list' | 'users' | 'analytics';
 
 function App() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [viewMode, setViewMode] = useState<ViewMode>('admin');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [adminUser, setAdminUser] = useState<AdminUser | null>(null);
@@ -45,6 +48,7 @@ function App() {
   // Navigation state
   const [isNavigationOpen, setIsNavigationOpen] = useState(true);
   const [transitionDirection, setTransitionDirection] = useState<'forward' | 'backward' | 'up' | 'down'>('forward');
+  const [isProgrammaticNavigation, setIsProgrammaticNavigation] = useState(false);
 
   
   // Context menu
@@ -63,6 +67,57 @@ function App() {
       checkAuthStatus(token);
     }
   }, []);
+
+  // Sync URL with state
+  useEffect(() => {
+    if (!isAuthenticated || isProgrammaticNavigation) return;
+
+    const path = location.pathname;
+    const stageIdMatch = path.match(/\/stage\/(\d+)/);
+    
+    if (stageIdMatch) {
+      const stageId = parseInt(stageIdMatch[1]);
+      const stage = stages.find(s => s.id === stageId);
+      if (stage && stage.id !== currentStage?.id) {
+        setCurrentStage(stage);
+        setViewMode('stage');
+      }
+    } else if (path === '/users') {
+      setViewMode('users');
+    } else if (path === '/analytics') {
+      setViewMode('analytics');
+    } else if (path === '/stages') {
+      setViewMode('stages-list');
+    } else if (path === '/') {
+      setViewMode('admin');
+      setCurrentStage(null);
+    }
+  }, [location.pathname, stages, currentStage?.id, isAuthenticated, isProgrammaticNavigation]);
+
+  // Update URL when state changes
+  const updateURL = (mode: ViewMode, stage?: Stage) => {
+    setIsProgrammaticNavigation(true);
+    switch (mode) {
+      case 'stage':
+        if (stage?.id) {
+          navigate(`/stage/${stage.id}`);
+        }
+        break;
+      case 'users':
+        navigate('/users');
+        break;
+      case 'analytics':
+        navigate('/analytics');
+        break;
+      case 'stages-list':
+        navigate('/stages');
+        break;
+      default:
+        navigate('/');
+    }
+    // Reset the flag after a short delay
+    setTimeout(() => setIsProgrammaticNavigation(false), 100);
+  };
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -248,6 +303,7 @@ function App() {
     setTransitionDirection('forward');
     setCurrentStage(stage);
     setViewMode('stage');
+    updateURL('stage', stage);
     setIsNavigationOpen(false); // Close navigation on mobile when selecting a stage
   };
 
@@ -296,14 +352,18 @@ function App() {
 
   const handleStageCreate = async (stageData: Partial<Stage>) => {
     try {
-      const response = await apiClient.createStage({
+      const requestData = {
         name: stageData.name!,
         description: stageData.description,
         type: stageData.type!,
         config: stageData.config!,
         is_active: stageData.is_active || false,
         sort_order: stageData.sort_order || 0
-      });
+      };
+      
+      console.log('Creating stage with data:', requestData);
+      
+      const response = await apiClient.createStage(requestData);
       
       if (response.success) {
         showSuccess('Stage Created', `Successfully created "${stageData.name}"`);
@@ -320,27 +380,32 @@ function App() {
   const handleNavigateToStages = () => {
     setTransitionDirection('forward');
     setViewMode('stages-list');
+    updateURL('stages-list');
   };
 
   const handleNavigateToUsers = () => {
     setViewMode('users');
+    updateURL('users');
   };
 
   const handleNavigateToAnalytics = () => {
     setTransitionDirection('forward');
     setViewMode('analytics');
+    updateURL('analytics');
   };
 
   const handleBackToAdmin = () => {
     setTransitionDirection('backward');
     setViewMode('admin');
     setCurrentStage(null);
+    updateURL('admin');
   };
 
   const handleCloseStage = () => {
     setTransitionDirection('backward');
     setCurrentStage(null);
     setViewMode('admin');
+    updateURL('admin');
   };
 
   const handleNavigationSection = (section: string) => {
@@ -349,12 +414,15 @@ function App() {
       case 'admin':
         setViewMode('admin');
         setCurrentStage(null);
+        updateURL('admin');
         break;
       case 'users':
         setViewMode('users');
+        updateURL('users');
         break;
       case 'analytics':
         setViewMode('analytics');
+        updateURL('analytics');
         break;
     }
   };
@@ -390,21 +458,27 @@ function App() {
   // Render stage viewer when a stage is selected
   if (viewMode === 'stage' && currentStage) {
     return (
-      <StageTransition
-        stage={currentStage}
-        direction={transitionDirection}
-        isVisible={true}
-      >
-        <FullScreenStageViewer
+      <>
+        <StageTransition
           stage={currentStage}
-          isAdmin={true}
-          onClose={handleCloseStage}
-          onEdit={handleStageEdit}
-          onSave={handleStageSave}
-          onPublish={handleStagePublish}
-          onUnpublish={handleStageUnpublish}
-        />
-      </StageTransition>
+          direction={transitionDirection}
+          isVisible={true}
+        >
+          <FullScreenStageViewer
+            stage={currentStage}
+            isAdmin={true}
+            onClose={handleCloseStage}
+            onEdit={handleStageEdit}
+            onSettings={handleStageEdit}
+            onSave={handleStageSave}
+            onPublish={handleStagePublish}
+            onUnpublish={handleStageUnpublish}
+            stages={stages}
+            showError={showError}
+          />
+        </StageTransition>
+        <ToastContainer toasts={toasts} onRemove={removeToast} />
+      </>
     );
   }
 

@@ -8,6 +8,17 @@ export interface StageConfig {
   [key: string]: any; // Allow for stage-specific config
 }
 
+// Document stage specific configuration
+export interface DocumentStageConfig extends StageConfig {
+  content: string;
+  template?: string;
+  theme?: string;
+  layout: 'single' | 'two-column' | 'custom';
+  autoSave: boolean;
+  versioning: boolean;
+  printEnabled: boolean;
+}
+
 export interface Stage {
   id?: number;
   name: string;

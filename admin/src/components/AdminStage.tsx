@@ -1,5 +1,5 @@
 
-import { Settings, Users, BarChart3, Layers, Plus, PanelLeft, Home } from 'lucide-react';
+import { Settings, Users, BarChart3, Layers, PanelLeft, Home } from 'lucide-react';
 import { Button } from '@progress/shared';
 import { AnimatePresence, motion } from 'framer-motion';
 import { StageNavigation } from './StageNavigation';
@@ -25,7 +25,7 @@ export function AdminStage({
   onNavigateToStages,
   onNavigateToUsers,
   onNavigateToAnalytics,
-  onCreateStage,
+
   stages = [],
   currentStage,
   onStageSelect,
@@ -49,8 +49,8 @@ export function AdminStage({
           >
             <StageNavigation
               stages={stages}
-              onStageSelect={onStageSelect}
-              onNavigateToSection={onNavigationSection}
+              onStageSelect={onStageSelect || (() => {})}
+              onNavigateToSection={onNavigationSection || (() => {})}
               currentStage={currentStage}
             />
           </motion.div>
@@ -117,7 +117,7 @@ export function AdminStage({
           {/* User Profile */}
           <AdminUserMenu 
             user={adminUser} 
-            onLogout={onLogout} 
+            onLogout={onLogout || (() => {})} 
           />
         </div>
 

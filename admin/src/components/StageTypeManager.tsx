@@ -1,20 +1,18 @@
-import React, { useState } from 'react';
-import { Stage, StageType } from '@progress/shared';
+import { useState } from 'react';
+import { Stage } from '@progress/shared';
 import { Button } from '@progress/shared';
 import { Modal } from './Modal';
+import { DocumentStageConfig as DocumentStageConfigComponent } from './DocumentStageConfig';
 import { 
   FileText, 
   Network, 
   Table, 
   Code, 
-  Settings, 
   Eye, 
   EyeOff,
   Edit,
   Save,
-  X,
-  Plus,
-  Trash2
+  X
 } from 'lucide-react';
 
 interface StageTypeManagerProps {
@@ -327,6 +325,24 @@ export function StageTypeManager({ stage, onUpdate, onClose }: StageTypeManagerP
                       <p>• Interactive visualization</p>
                       <p>• Cross-stage linking support</p>
                     </div>
+                  </div>
+                )}
+
+                {stage.type === 'document' && (
+                  <div className="p-4 border border-border rounded-lg">
+                    <DocumentStageConfigComponent
+                      stage={stage}
+                      onConfigChange={(config) => {
+                        const updatedStage = {
+                          ...stage,
+                          config: {
+                            ...stage.config,
+                            ...config
+                          }
+                        };
+                        onUpdate(updatedStage);
+                      }}
+                    />
                   </div>
                 )}
 

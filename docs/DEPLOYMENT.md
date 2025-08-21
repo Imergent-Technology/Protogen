@@ -27,9 +27,9 @@ For production deployment, update the environment variables with your live datab
 
 ```bash
 # Production Database
-POSTGRES_DB=intexqdy_protogen
-POSTGRES_USER=intexqdy_svc_protogen
-POSTGRES_PASSWORD=@,#~=i%UjbN(8aktj
+POSTGRES_DB=demo_protogen
+POSTGRES_USER=demo_protogen
+POSTGRES_PASSWORD=PRODUCTIONPASSWORD
 ```
 
 #### Security Notes

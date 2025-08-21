@@ -9,9 +9,12 @@ interface FullScreenStageViewerProps {
   isAdmin?: boolean;
   onClose?: () => void;
   onEdit?: () => void;
+  onSettings?: () => void;
   onSave?: (stage: Stage) => void;
   onPublish?: (stage: Stage) => void;
   onUnpublish?: (stage: Stage) => void;
+  stages?: Stage[];
+  showError?: (title: string, message?: string) => void;
 }
 
 export function FullScreenStageViewer({
@@ -19,9 +22,12 @@ export function FullScreenStageViewer({
   isAdmin = false,
   onClose,
   onEdit,
+  onSettings,
   onSave,
   onPublish,
-  onUnpublish
+  onUnpublish,
+  stages = [],
+  showError
 }: FullScreenStageViewerProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [content, setContent] = useState('');
@@ -74,7 +80,7 @@ export function FullScreenStageViewer({
   };
 
   return (
-    <div className="fixed inset-0 bg-background flex flex-col">
+    <div className="fixed inset-0 bg-background flex flex-col" style={{ zIndex: 1000000 }}>
       {/* Top Toolbar */}
       <div className="flex items-center justify-between p-4 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="flex items-center space-x-4">
@@ -144,7 +150,7 @@ export function FullScreenStageViewer({
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={onEdit}
+                    onClick={onSettings || onEdit}
                   >
                     <Settings className="h-4 w-4 mr-2" />
                     Settings
@@ -201,6 +207,8 @@ export function FullScreenStageViewer({
             isEditing={isEditing}
             onContentChange={(newContent) => setContent(newContent)}
             className="h-full"
+            stages={stages}
+            showError={showError}
           />
         )}
         
