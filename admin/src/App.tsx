@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Layers, Users, BarChart3, Home, PanelLeft } from 'lucide-react';
+import { Layers, Users, BarChart3, Home, PanelLeft, Network } from 'lucide-react';
 import { apiClient, Stage } from '@progress/shared';
 import { UsersList } from './components/UsersList';
 import { AdminLogin } from './components/AdminLogin';
@@ -14,6 +14,7 @@ import { ContextMenu, useContextMenu, getStageContextMenuItems } from './compone
 import { CreateStageDialog } from './components/CreateStageDialog';
 import { StageTypeManager } from './components/StageTypeManager';
 import { AdminUserMenu } from './components/AdminUserMenu';
+import { GraphStudio } from './components/GraphStudio';
 import { ToastContainer, useToasts } from './components/Toast';
 import { AnimatePresence, motion } from 'framer-motion';
 import { initializeTheme } from '@progress/shared';
@@ -25,7 +26,7 @@ interface AdminUser {
   is_admin: boolean;
 }
 
-type ViewMode = 'admin' | 'stage' | 'stages-list' | 'users' | 'analytics';
+type ViewMode = 'admin' | 'stage' | 'stages-list' | 'users' | 'analytics' | 'graph-studio';
 
 function App() {
   const navigate = useNavigate();
@@ -88,6 +89,8 @@ function App() {
       setViewMode('analytics');
     } else if (path === '/stages') {
       setViewMode('stages-list');
+    } else if (path === '/graph-studio') {
+      setViewMode('graph-studio');
     } else if (path === '/') {
       setViewMode('admin');
       setCurrentStage(null);
@@ -111,6 +114,9 @@ function App() {
         break;
       case 'stages-list':
         navigate('/stages');
+        break;
+      case 'graph-studio':
+        navigate('/graph-studio');
         break;
       default:
         navigate('/');
@@ -490,6 +496,7 @@ function App() {
           onNavigateToStages={handleNavigateToStages}
           onNavigateToUsers={handleNavigateToUsers}
           onNavigateToAnalytics={handleNavigateToAnalytics}
+          onNavigateToGraphStudio={() => updateURL('graph-studio')}
           onCreateStage={handleCreateStage}
           stages={stages}
           currentStage={currentStage}
@@ -604,6 +611,18 @@ function App() {
               >
                 <BarChart3 className="h-4 w-4" />
                 <span>Analytics</span>
+              </button>
+              
+              <button
+                onClick={() => updateURL('graph-studio')}
+                className={`flex items-center space-x-2 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                  viewMode === 'graph-studio'
+                    ? 'text-primary bg-primary/10'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                }`}
+              >
+                <Network className="h-4 w-4" />
+                <span>Graph Studio</span>
               </button>
             </div>
 
@@ -722,6 +741,24 @@ function App() {
                     <p className="text-muted-foreground">Analytics features coming soon...</p>
                   </div>
                 </div>
+              </div>
+            )}
+
+            {viewMode === 'graph-studio' && (
+              <div className="h-full">
+                <GraphStudio
+                  stages={stages}
+                  onStageSelect={handleStageSelect}
+                  onStageCreate={handleCreateStage}
+                  onStageEdit={(stage) => {
+                    handleStageSelect(stage);
+                    setViewMode('stage');
+                  }}
+                  onStageDelete={(stage) => {
+                    // TODO: Implement stage deletion
+                    console.log('Delete stage:', stage);
+                  }}
+                />
               </div>
             )}
         </main>

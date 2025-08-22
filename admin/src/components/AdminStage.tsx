@@ -1,5 +1,5 @@
 
-import { Settings, Users, BarChart3, Layers, PanelLeft, Home } from 'lucide-react';
+import { Settings, Users, BarChart3, Layers, PanelLeft, Home, Network } from 'lucide-react';
 import { Button } from '@progress/shared';
 import { AnimatePresence, motion } from 'framer-motion';
 import { StageNavigation } from './StageNavigation';
@@ -10,6 +10,7 @@ interface AdminStageProps {
   onNavigateToStages?: () => void;
   onNavigateToUsers?: () => void;
   onNavigateToAnalytics?: () => void;
+  onNavigateToGraphStudio?: () => void;
   onCreateStage?: () => void;
   stages?: Stage[];
   currentStage?: Stage | null;
@@ -25,6 +26,7 @@ export function AdminStage({
   onNavigateToStages,
   onNavigateToUsers,
   onNavigateToAnalytics,
+  onNavigateToGraphStudio,
 
   stages = [],
   currentStage,
@@ -111,6 +113,14 @@ export function AdminStage({
             >
               <BarChart3 className="h-4 w-4" />
               <span>Analytics</span>
+            </button>
+            
+            <button
+              onClick={onNavigateToGraphStudio}
+              className="flex items-center space-x-2 px-3 py-2 text-sm font-medium rounded-md transition-colors text-muted-foreground hover:text-foreground hover:bg-muted"
+            >
+              <Network className="h-4 w-4" />
+              <span>Graph Studio</span>
             </button>
           </div>
 
@@ -216,19 +226,19 @@ export function AdminStage({
                 <div className="p-6 border border-border rounded-lg hover:border-primary/50 transition-colors">
                   <div className="flex items-center space-x-3 mb-4">
                     <div className="p-2 bg-primary/10 rounded-lg">
-                      <span className="text-2xl">🔗</span>
+                      <Network className="h-6 w-6 text-primary" />
                     </div>
-                    <h3 className="text-lg font-medium">Graph Explorer</h3>
+                    <h3 className="text-lg font-medium">Graph Studio</h3>
                   </div>
                   <p className="text-muted-foreground mb-4">
-                    Explore and manage the underlying graph data model and relationships.
+                    Design, build, and explore the entire graph structure with visual tools.
                   </p>
                   <Button
                     variant="outline"
+                    onClick={onNavigateToGraphStudio}
                     className="w-full"
-                    disabled
                   >
-                    Coming Soon
+                    Open Graph Studio
                   </Button>
                 </div>
 
