@@ -235,58 +235,57 @@ export function GraphStudio({
                   <p>Total nodes: {nodes.length} | Filtered nodes: {filteredNodes.length}</p>
                   <p>Search term: "{searchTerm}" | Filter type: "{filterType}"</p>
                 </div>
-                
-                {/* Placeholder for actual graph visualization */}
-                <div className="grid grid-cols-5 gap-4">
-                  {filteredNodes.map((node) => (
-                <div
-                  key={node.guid}
-                  onClick={() => handleNodeClick(node)}
-                  className={`p-4 rounded-lg border-2 cursor-pointer transition-all hover:shadow-md ${
-                    selectedNode?.guid === node.guid
-                      ? 'border-primary bg-primary/10'
-                      : 'border-border bg-background hover:border-primary/50'
-                  }`}
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs font-medium text-muted-foreground uppercase">
-                      {node.node_type?.display_name || 'Unknown'}
-                    </span>
-                    {viewMode !== 'explore' && (
-                      <div className="flex items-center gap-1">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleEditNode(node);
-                          }}
-                          className="p-1 hover:bg-muted rounded"
-                        >
-                          <Edit3 className="h-3 w-3" />
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDeleteNode(node);
-                          }}
-                          className="p-1 hover:bg-muted rounded text-destructive"
-                        >
-                          <Trash2 className="h-3 w-3" />
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                  <h3 className="font-medium text-sm">{node.label}</h3>
-                </div>
-              ))}
-            </div>
             
-            {filteredNodes.length === 0 && (
+            {filteredNodes.length === 0 ? (
               <div className="flex items-center justify-center h-full text-muted-foreground">
                 <div className="text-center">
                   <Network className="h-12 w-12 mx-auto mb-4 opacity-50" />
                   <p>No nodes found</p>
                   {searchTerm && <p className="text-sm">Try adjusting your search</p>}
                 </div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-5 gap-4">
+                {filteredNodes.map((node) => (
+                  <div
+                    key={node.guid}
+                    onClick={() => handleNodeClick(node)}
+                    className={`p-4 rounded-lg border-2 cursor-pointer transition-all hover:shadow-md ${
+                      selectedNode?.guid === node.guid
+                        ? 'border-primary bg-primary/10'
+                        : 'border-border bg-background hover:border-primary/50'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs font-medium text-muted-foreground uppercase">
+                        {node.node_type?.display_name || 'Unknown'}
+                      </span>
+                      {viewMode !== 'explore' && (
+                        <div className="flex items-center gap-1">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleEditNode(node);
+                            }}
+                            className="p-1 hover:bg-muted rounded"
+                          >
+                            <Edit3 className="h-3 w-3" />
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteNode(node);
+                            }}
+                            className="p-1 hover:bg-muted rounded text-destructive"
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                    <h3 className="font-medium text-sm">{node.label}</h3>
+                  </div>
+                ))}
               </div>
             )}
               </>
