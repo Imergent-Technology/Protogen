@@ -52,7 +52,10 @@ export function GraphStudio({
     filteredNodes: filteredNodes.length,
     searchTerm,
     filterType,
-    nodes: nodes.map(n => ({ id: n.id, label: n.label, type: n.node_type?.name }))
+    loading,
+    error,
+    viewMode,
+    nodes: nodes.map(n => ({ id: n.id, guid: n.guid, label: n.label, type: n.node_type?.name }))
   });
 
   const handleNodeClick = (node: CoreGraphNode) => {
@@ -119,6 +122,8 @@ export function GraphStudio({
     onNodeDelete?.(node);
   };
 
+  console.log('GraphStudio rendering with:', { loading, error, nodes: nodes.length, filteredNodes: filteredNodes.length });
+  
   return (
     <div className="flex flex-col h-full bg-background">
       {/* Header */}
@@ -207,8 +212,8 @@ export function GraphStudio({
       {/* Main Content */}
       <div className="flex-1 flex">
         {/* Graph Canvas */}
-        <div className="flex-1 relative bg-muted/20 overflow-hidden">
-          <div className="absolute inset-0 p-4">
+        <div className="flex-1 relative bg-muted/20 overflow-auto">
+          <div className="p-4 min-h-full">
             {loading && (
               <div className="flex items-center justify-center h-full">
                 <div className="text-center">
@@ -245,48 +250,50 @@ export function GraphStudio({
                 </div>
               </div>
             ) : (
-              <div className="grid grid-cols-5 gap-4">
-                {filteredNodes.map((node) => (
-                  <div
-                    key={node.guid}
-                    onClick={() => handleNodeClick(node)}
-                    className={`p-4 rounded-lg border-2 cursor-pointer transition-all hover:shadow-md ${
-                      selectedNode?.guid === node.guid
-                        ? 'border-primary bg-primary/10'
-                        : 'border-border bg-background hover:border-primary/50'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs font-medium text-muted-foreground uppercase">
-                        {node.node_type?.display_name || 'Unknown'}
-                      </span>
-                      {viewMode !== 'explore' && (
-                        <div className="flex items-center gap-1">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleEditNode(node);
-                            }}
-                            className="p-1 hover:bg-muted rounded"
-                          >
-                            <Edit3 className="h-3 w-3" />
-                          </button>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDeleteNode(node);
-                            }}
-                            className="p-1 hover:bg-muted rounded text-destructive"
-                          >
-                            <Trash2 className="h-3 w-3" />
-                          </button>
-                        </div>
-                      )}
+              <>
+                <div className="grid grid-cols-5 gap-4">
+                  {filteredNodes.map((node) => (
+                    <div
+                      key={node.guid}
+                      onClick={() => handleNodeClick(node)}
+                      className={`p-4 rounded-lg border-2 cursor-pointer transition-all hover:shadow-md ${
+                        selectedNode?.guid === node.guid
+                          ? 'border-primary bg-primary/10'
+                          : 'border-border bg-background hover:border-primary/50'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-xs font-medium text-muted-foreground uppercase">
+                          {node.node_type?.display_name || 'Unknown'}
+                        </span>
+                        {viewMode !== 'explore' && (
+                          <div className="flex items-center gap-1">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleEditNode(node);
+                              }}
+                              className="p-1 hover:bg-muted rounded"
+                            >
+                              <Edit3 className="h-3 w-3" />
+                            </button>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDeleteNode(node);
+                              }}
+                              className="p-1 hover:bg-muted rounded text-destructive"
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                      <h3 className="font-medium text-sm">{node.label}</h3>
                     </div>
-                    <h3 className="font-medium text-sm">{node.label}</h3>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              </>
             )}
               </>
             )}
