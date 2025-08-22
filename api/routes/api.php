@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\StageApiController;
 use App\Http\Controllers\Api\UserApiController;
+use App\Http\Controllers\Api\CoreGraphApiController;
 use App\Http\Controllers\Auth\AdminAuthController;
 
 /*
@@ -49,4 +50,29 @@ Route::prefix('users')->middleware(['auth:sanctum', 'admin'])->group(function ()
     Route::get('/{user}', [UserApiController::class, 'show']);
     Route::put('/{user}', [UserApiController::class, 'update']);
     Route::delete('/{user}', [UserApiController::class, 'destroy']);
+});
+
+// Core Graph System API routes (admin only)
+Route::prefix('graph')->middleware(['auth:sanctum', 'admin'])->group(function () {
+    // Node management
+    Route::get('/nodes', [CoreGraphApiController::class, 'getNodes']);
+    Route::post('/nodes', [CoreGraphApiController::class, 'createNode']);
+    Route::get('/nodes/{guid}', [CoreGraphApiController::class, 'getNode']);
+    Route::put('/nodes/{guid}', [CoreGraphApiController::class, 'updateNode']);
+    Route::delete('/nodes/{guid}', [CoreGraphApiController::class, 'deleteNode']);
+    
+    // Edge management
+    Route::get('/edges', [CoreGraphApiController::class, 'getEdges']);
+    Route::post('/edges', [CoreGraphApiController::class, 'createEdge']);
+    Route::delete('/edges/{guid}', [CoreGraphApiController::class, 'deleteEdge']);
+    
+    // Node type management
+    Route::get('/node-types', [CoreGraphApiController::class, 'getNodeTypes']);
+    Route::post('/node-types', [CoreGraphApiController::class, 'createNodeType']);
+    
+    // Edge type management
+    Route::get('/edge-types', [CoreGraphApiController::class, 'getEdgeTypes']);
+    
+    // Complete graph
+    Route::get('/', [CoreGraphApiController::class, 'getGraph']);
 }); 
