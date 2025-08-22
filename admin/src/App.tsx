@@ -37,6 +37,7 @@ function App() {
   const [authToken, setAuthToken] = useState<string | null>(null);
   const [loginLoading, setLoginLoading] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
+  const [authChecking, setAuthChecking] = useState(true);
   
   // Stage management
   const [currentStage, setCurrentStage] = useState<Stage | null>(null);
@@ -84,12 +85,14 @@ function App() {
     if (token) {
       setAuthToken(token);
       checkAuthStatus(token);
+    } else {
+      setAuthChecking(false);
     }
   }, []);
 
   // Sync URL with state
   useEffect(() => {
-    if (!isAuthenticated || isProgrammaticNavigation) return;
+    if (isProgrammaticNavigation) return;
 
     const path = location.pathname;
     const stageSlugMatch = path.match(/\/stage\/([^\/]+)/);
@@ -113,7 +116,7 @@ function App() {
       setViewMode('admin');
       setCurrentStage(null);
     }
-  }, [location.pathname, stages, currentStage?.id, isAuthenticated, isProgrammaticNavigation]);
+  }, [location.pathname, stages, currentStage?.id, isProgrammaticNavigation]);
 
   // Update URL when state changes
   const updateURL = (mode: ViewMode, stage?: Stage) => {
@@ -176,6 +179,8 @@ function App() {
     } catch (error) {
       console.log('Not authenticated');
       clearAuth();
+    } finally {
+      setAuthChecking(false);
     }
   };
 
@@ -185,6 +190,7 @@ function App() {
       setIsAuthenticated(false);
       setAdminUser(null);
       apiClient.clearAuthToken();
+      setAuthChecking(false);
   };
 
   const handleLogin = async (email: string, password: string) => {
@@ -467,6 +473,18 @@ function App() {
   };
 
 
+
+  // Show loading screen while checking authentication
+  if (authChecking) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   // Show login screen if not authenticated
   if (!isAuthenticated) {
