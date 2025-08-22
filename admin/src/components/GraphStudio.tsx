@@ -215,7 +215,7 @@ export function GraphStudio({
               <>
                 {/* Placeholder for actual graph visualization */}
                 <div className="grid grid-cols-5 gap-4">
-              {filteredNodes.map((node) => (
+                  {filteredNodes.map((node) => (
                 <div
                   key={node.id}
                   onClick={() => handleNodeClick(node)}
