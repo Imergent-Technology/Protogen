@@ -46,6 +46,15 @@ export function GraphStudio({
     return matchesSearch && matchesType;
   });
 
+  // Debug logging
+  console.log('GraphStudio Debug:', {
+    totalNodes: nodes.length,
+    filteredNodes: filteredNodes.length,
+    searchTerm,
+    filterType,
+    nodes: nodes.map(n => ({ id: n.id, label: n.label, type: n.node_type?.name }))
+  });
+
   const handleNodeClick = (node: CoreGraphNode) => {
     setSelectedNode(node);
     onNodeSelect?.(node);
@@ -221,14 +230,20 @@ export function GraphStudio({
 
             {!loading && !error && (
               <>
+                {/* Debug info */}
+                <div className="mb-4 p-3 bg-muted rounded text-sm">
+                  <p>Total nodes: {nodes.length} | Filtered nodes: {filteredNodes.length}</p>
+                  <p>Search term: "{searchTerm}" | Filter type: "{filterType}"</p>
+                </div>
+                
                 {/* Placeholder for actual graph visualization */}
                 <div className="grid grid-cols-5 gap-4">
                   {filteredNodes.map((node) => (
                 <div
-                  key={node.id}
+                  key={node.guid}
                   onClick={() => handleNodeClick(node)}
                   className={`p-4 rounded-lg border-2 cursor-pointer transition-all hover:shadow-md ${
-                    selectedNode?.id === node.id
+                    selectedNode?.guid === node.guid
                       ? 'border-primary bg-primary/10'
                       : 'border-border bg-background hover:border-primary/50'
                   }`}
