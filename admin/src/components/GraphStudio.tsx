@@ -6,7 +6,7 @@ import {
   CoreGraphEdgeType,
   apiClient 
 } from '@progress/shared';
-import { Network, Plus, Search, Settings, Eye, Edit3, Trash2, Loader2 } from 'lucide-react';
+import { Network, Plus, Search, Settings, Eye, Edit3, Trash2, Loader2, Grid3X3, List } from 'lucide-react';
 import { NodeCreationDialog } from './NodeCreationDialog';
 
 interface GraphStudioProps {
@@ -33,6 +33,7 @@ export function GraphStudio({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [displayMode, setDisplayMode] = useState<'grid' | 'list'>('grid');
 
   // Load core graph system data
   useEffect(() => {
@@ -46,17 +47,7 @@ export function GraphStudio({
     return matchesSearch && matchesType;
   });
 
-  // Debug logging
-  console.log('GraphStudio Debug:', {
-    totalNodes: nodes.length,
-    filteredNodes: filteredNodes.length,
-    searchTerm,
-    filterType,
-    loading,
-    error,
-    viewMode,
-    nodes: nodes.map(n => ({ id: n.id, guid: n.guid, label: n.label, type: n.node_type?.name }))
-  });
+
 
   const handleNodeClick = (node: CoreGraphNode) => {
     setSelectedNode(node);
@@ -107,8 +98,7 @@ export function GraphStudio({
       }
 
     } catch (err) {
-      console.error('Error loading graph data:', err);
-      setError('Failed to load graph data');
+      setError('Failed to load graph data. Please try refreshing the page.');
     } finally {
       setLoading(false);
     }
@@ -122,7 +112,7 @@ export function GraphStudio({
     onNodeDelete?.(node);
   };
 
-  console.log('GraphStudio rendering with:', { loading, error, nodes: nodes.length, filteredNodes: filteredNodes.length });
+
   
   return (
     <div className="flex flex-col h-full bg-background">
@@ -198,6 +188,32 @@ export function GraphStudio({
           </select>
         </div>
 
+        {/* View Toggle */}
+        <div className="flex items-center gap-1 border border-border rounded-md bg-background">
+          <button
+            onClick={() => setDisplayMode('grid')}
+            className={`p-2 rounded-l-md transition-colors ${
+              displayMode === 'grid'
+                ? 'bg-primary text-primary-foreground'
+                : 'text-muted-foreground hover:bg-muted'
+            }`}
+            title="Grid View"
+          >
+            <Grid3X3 className="h-4 w-4" />
+          </button>
+          <button
+            onClick={() => setDisplayMode('list')}
+            className={`p-2 rounded-r-md transition-colors ${
+              displayMode === 'list'
+                ? 'bg-primary text-primary-foreground'
+                : 'text-muted-foreground hover:bg-muted'
+            }`}
+            title="List View"
+          >
+            <List className="h-4 w-4" />
+          </button>
+        </div>
+
         {viewMode !== 'explore' && (
           <button
             onClick={handleCreateNode}
@@ -235,11 +251,7 @@ export function GraphStudio({
 
             {!loading && !error && (
               <>
-                {/* Debug info */}
-                <div className="mb-4 p-3 bg-muted rounded text-sm">
-                  <p>Total nodes: {nodes.length} | Filtered nodes: {filteredNodes.length}</p>
-                  <p>Search term: "{searchTerm}" | Filter type: "{filterType}"</p>
-                </div>
+
             
             {filteredNodes.length === 0 ? (
               <div className="flex items-center justify-center h-full text-muted-foreground">
@@ -251,21 +263,67 @@ export function GraphStudio({
               </div>
             ) : (
               <>
-                <div className="grid grid-cols-5 gap-4">
-                  {filteredNodes.map((node) => (
-                    <div
-                      key={node.guid}
-                      onClick={() => handleNodeClick(node)}
-                      className={`p-4 rounded-lg border-2 cursor-pointer transition-all hover:shadow-md ${
-                        selectedNode?.guid === node.guid
-                          ? 'border-primary bg-primary/10'
-                          : 'border-border bg-background hover:border-primary/50'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs font-medium text-muted-foreground uppercase">
-                          {node.node_type?.display_name || 'Unknown'}
-                        </span>
+                {displayMode === 'grid' ? (
+                  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 gap-3 w-full">
+                    {filteredNodes.map((node) => (
+                      <div
+                        key={node.guid}
+                        onClick={() => handleNodeClick(node)}
+                        className={`p-3 rounded-lg border-2 cursor-pointer transition-all hover:shadow-md min-w-0 ${
+                          selectedNode?.guid === node.guid
+                            ? 'border-primary bg-primary/10'
+                            : 'border-border bg-background hover:border-primary/50'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-xs font-medium text-muted-foreground uppercase">
+                            {node.node_type?.display_name || 'Unknown'}
+                          </span>
+                          {viewMode !== 'explore' && (
+                            <div className="flex items-center gap-1">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleEditNode(node);
+                                }}
+                                className="p-0.5 hover:bg-muted rounded"
+                              >
+                                <Edit3 className="h-2.5 w-2.5" />
+                              </button>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDeleteNode(node);
+                                }}
+                                className="p-0.5 hover:bg-muted rounded text-destructive"
+                              >
+                                <Trash2 className="h-2.5 w-2.5" />
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                        <h3 className="font-medium text-sm truncate" title={node.label}>{node.label}</h3>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {filteredNodes.map((node) => (
+                      <div
+                        key={node.guid}
+                        onClick={() => handleNodeClick(node)}
+                        className={`flex items-center justify-between p-3 rounded-lg border-2 cursor-pointer transition-all hover:shadow-md ${
+                          selectedNode?.guid === node.guid
+                            ? 'border-primary bg-primary/10'
+                            : 'border-border bg-background hover:border-primary/50'
+                        }`}
+                      >
+                        <div className="flex items-center gap-3 flex-1">
+                          <span className="text-xs font-medium text-muted-foreground uppercase min-w-[80px]">
+                            {node.node_type?.display_name || 'Unknown'}
+                          </span>
+                          <h3 className="font-medium text-sm truncate" title={node.label}>{node.label}</h3>
+                        </div>
                         {viewMode !== 'explore' && (
                           <div className="flex items-center gap-1">
                             <button
@@ -289,10 +347,9 @@ export function GraphStudio({
                           </div>
                         )}
                       </div>
-                      <h3 className="font-medium text-sm">{node.label}</h3>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </>
             )}
               </>
