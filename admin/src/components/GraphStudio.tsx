@@ -7,6 +7,7 @@ import {
   apiClient 
 } from '@progress/shared';
 import { Network, Plus, Search, Settings, Eye, Edit3, Trash2, Loader2 } from 'lucide-react';
+import { NodeCreationDialog } from './NodeCreationDialog';
 
 interface GraphStudioProps {
   onNodeSelect?: (node: CoreGraphNode) => void;
@@ -31,50 +32,10 @@ export function GraphStudio({
   const [filterType, setFilterType] = useState<string>('all');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
 
   // Load core graph system data
   useEffect(() => {
-    const loadGraphData = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-
-        // Load node types and edge types
-        const [nodeTypesResponse, edgeTypesResponse] = await Promise.all([
-          apiClient.getGraphNodeTypes(),
-          apiClient.getGraphEdgeTypes()
-        ]);
-
-        if (nodeTypesResponse.success) {
-          setNodeTypes(nodeTypesResponse.data);
-        }
-
-        if (edgeTypesResponse.success) {
-          setEdgeTypes(edgeTypesResponse.data);
-        }
-
-        // Load nodes and edges
-        const [nodesResponse, edgesResponse] = await Promise.all([
-          apiClient.getGraphNodes(),
-          apiClient.getGraphEdges()
-        ]);
-
-        if (nodesResponse.success) {
-          setNodes(nodesResponse.data);
-        }
-
-        if (edgesResponse.success) {
-          setEdges(edgesResponse.data);
-        }
-
-      } catch (err) {
-        console.error('Error loading graph data:', err);
-        setError('Failed to load graph data');
-      } finally {
-        setLoading(false);
-      }
-    };
-
     loadGraphData();
   }, []);
 
@@ -91,7 +52,54 @@ export function GraphStudio({
   };
 
   const handleCreateNode = () => {
+    setShowCreateDialog(true);
+  };
+
+  const handleNodeCreated = (newNode: CoreGraphNode) => {
+    // Refresh the entire graph data to ensure consistency
+    loadGraphData();
     onNodeCreate?.();
+  };
+
+  const loadGraphData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Load node types and edge types
+      const [nodeTypesResponse, edgeTypesResponse] = await Promise.all([
+        apiClient.getGraphNodeTypes(),
+        apiClient.getGraphEdgeTypes()
+      ]);
+
+      if (nodeTypesResponse.success) {
+        setNodeTypes(nodeTypesResponse.data);
+      }
+
+      if (edgeTypesResponse.success) {
+        setEdgeTypes(edgeTypesResponse.data);
+      }
+
+      // Load nodes and edges
+      const [nodesResponse, edgesResponse] = await Promise.all([
+        apiClient.getGraphNodes(),
+        apiClient.getGraphEdges()
+      ]);
+
+      if (nodesResponse.success) {
+        setNodes(nodesResponse.data);
+      }
+
+      if (edgesResponse.success) {
+        setEdges(edgesResponse.data);
+      }
+
+    } catch (err) {
+      console.error('Error loading graph data:', err);
+      setError('Failed to load graph data');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleEditNode = (node: CoreGraphNode) => {
@@ -321,6 +329,13 @@ export function GraphStudio({
           </div>
         )}
       </div>
+
+      {/* Node Creation Dialog */}
+      <NodeCreationDialog
+        isOpen={showCreateDialog}
+        onClose={() => setShowCreateDialog(false)}
+        onNodeCreated={handleNodeCreated}
+      />
     </div>
   );
 }
