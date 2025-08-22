@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Layers, Users, BarChart3, Home, PanelLeft, Network } from 'lucide-react';
+import { Layers, Users, BarChart3, Home, PanelLeft, Network, Settings } from 'lucide-react';
 import { apiClient, Stage } from '@progress/shared';
 import { UsersList } from './components/UsersList';
 import { AdminLogin } from './components/AdminLogin';
 import { FullScreenStageViewer } from './components/FullScreenStageViewer';
 import { StageMetadataDialog } from './components/StageMetadataDialog';
-import { AdminStage } from './components/AdminStage';
 
 import { StageTransition, StageContentWrapper, ToolbarWrapper } from './components/StageTransition';
 import { StageNavigation } from './components/StageNavigation';
@@ -15,6 +14,7 @@ import { CreateStageDialog } from './components/CreateStageDialog';
 import { StageTypeManager } from './components/StageTypeManager';
 import { AdminUserMenu } from './components/AdminUserMenu';
 import { GraphStudio } from './components/GraphStudio';
+import { AdminToolbar } from './components/AdminToolbar';
 import { ToastContainer, useToasts } from './components/Toast';
 import { AnimatePresence, motion } from 'framer-motion';
 import { initializeTheme } from '@progress/shared';
@@ -56,6 +56,24 @@ function App() {
   const { contextMenu, showContextMenu, hideContextMenu } = useContextMenu();
   
   const { toasts, removeToast, showSuccess, showError } = useToasts();
+
+  // Helper function to get view subtitle
+  const getViewSubtitle = (view: ViewMode): string => {
+    switch (view) {
+      case 'admin':
+        return 'System administration and management';
+      case 'stages-list':
+        return 'Stage Management';
+      case 'users':
+        return 'User Management';
+      case 'analytics':
+        return 'Analytics Dashboard';
+      case 'graph-studio':
+        return 'Graph Studio';
+      default:
+        return '';
+    }
+  };
 
   useEffect(() => {
     // Initialize theme system
@@ -488,32 +506,7 @@ function App() {
     );
   }
 
-  // Render admin stage as default view
-  if (viewMode === 'admin') {
-    return (
-      <>
-        <AdminStage
-          onNavigateToStages={handleNavigateToStages}
-          onNavigateToUsers={handleNavigateToUsers}
-          onNavigateToAnalytics={handleNavigateToAnalytics}
-          onNavigateToGraphStudio={() => updateURL('graph-studio')}
-          onCreateStage={handleCreateStage}
-          stages={stages}
-          currentStage={currentStage}
-          onStageSelect={handleStageSelect}
-          onNavigationSection={handleNavigationSection}
-          adminUser={adminUser}
-          onLogout={handleLogout}
-          isNavigationOpen={isNavigationOpen}
-          onToggleNavigation={() => setIsNavigationOpen(!isNavigationOpen)}
-        />
-        
-        <ToastContainer toasts={toasts} onRemove={removeToast} />
-      </>
-    );
-  }
-
-  // Render other views with enhanced navigation
+  // Render unified admin interface
   return (
     <>
       <div className="min-h-screen bg-background flex">
@@ -541,108 +534,178 @@ function App() {
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col">
-        {/* Top Toolbar */}
-        <ToolbarWrapper>
-          <div className="flex items-center justify-between p-4 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-            <div className="flex items-center space-x-4">
-              {/* Navigation Toggle */}
-              <button
-                onClick={() => setIsNavigationOpen(!isNavigationOpen)}
-                className="p-2 hover:bg-muted rounded-lg"
-              >
-                <PanelLeft className="h-5 w-5" />
-              </button>
-              
-              {/* Logo/Brand */}
-              <div className="flex items-center space-x-2">
-                <span className="text-2xl">⚙️</span>
-                <div>
-                  <h1 className="text-lg font-semibold">Progress Admin</h1>
-                  <p className="text-sm text-muted-foreground">Stage Management</p>
-            </div>
-          </div>
-        </div>
-
-            {/* Navigation Menu */}
-            <div className="hidden lg:flex items-center space-x-2">
-                <button
-                onClick={handleBackToAdmin}
-                                 className={`flex items-center space-x-2 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-                   viewMode === 'stages-list'
-                      ? 'text-primary bg-primary/10'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-                  }`}
-                >
-                  <Home className="h-4 w-4" />
-                  <span>Dashboard</span>
-                </button>
-              
-                <button
-                onClick={handleNavigateToStages}
-                className={`flex items-center space-x-2 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-                  viewMode === 'stages-list'
-                      ? 'text-primary bg-primary/10'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-                  }`}
-                >
-                  <Layers className="h-4 w-4" />
-                  <span>Stages</span>
-                </button>
-              
-                <button
-                onClick={handleNavigateToUsers}
-                className={`flex items-center space-x-2 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-                  viewMode === 'users'
-                      ? 'text-primary bg-primary/10'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-                  }`}
-                >
-                  <Users className="h-4 w-4" />
-                  <span>Users</span>
-                </button>
-              
-              <button
-                onClick={handleNavigateToAnalytics}
-                className={`flex items-center space-x-2 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-                  viewMode === 'analytics'
-                    ? 'text-primary bg-primary/10'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-                }`}
-              >
-                <BarChart3 className="h-4 w-4" />
-                <span>Analytics</span>
-              </button>
-              
-              <button
-                onClick={() => updateURL('graph-studio')}
-                className={`flex items-center space-x-2 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-                  viewMode === 'graph-studio'
-                    ? 'text-primary bg-primary/10'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-                }`}
-              >
-                <Network className="h-4 w-4" />
-                <span>Graph Studio</span>
-              </button>
-            </div>
-
-            {/* User Profile */}
-            <AdminUserMenu 
-              user={adminUser} 
-              onLogout={handleLogout} 
-            />
-          </div>
-        </ToolbarWrapper>
+        {/* Universal Admin Toolbar */}
+        <AdminToolbar
+          currentView={viewMode}
+          viewSubtitle={getViewSubtitle(viewMode)}
+          onToggleNavigation={() => setIsNavigationOpen(!isNavigationOpen)}
+          onNavigateToDashboard={handleBackToAdmin}
+          onNavigateToStages={handleNavigateToStages}
+          onNavigateToUsers={handleNavigateToUsers}
+          onNavigateToAnalytics={handleNavigateToAnalytics}
+          onNavigateToGraphStudio={() => updateURL('graph-studio')}
+          adminUser={adminUser}
+          onLogout={handleLogout}
+        />
 
         {/* Main Content */}
         <StageContentWrapper>
           <main className="flex-1">
+            {viewMode === 'admin' && (
+              <div className="p-8">
+                <div className="max-w-6xl mx-auto">
+                  {/* Welcome Message */}
+                  <div className="mb-12">
+                    <h1 className="text-5xl font-light text-foreground mb-6">
+                      Welcome to Progress Admin
+                    </h1>
+                    <p className="text-xl text-muted-foreground leading-relaxed">
+                      Manage your stages, users, and system settings from this central dashboard.
+                    </p>
+                  </div>
+
+                  {/* Quick Actions Grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-12">
+                    <div className="p-6 border border-border rounded-lg hover:border-primary/50 transition-colors">
+                      <div className="flex items-center space-x-3 mb-4">
+                        <div className="p-2 bg-primary/10 rounded-lg">
+                          <Layers className="h-6 w-6 text-primary" />
+                        </div>
+                        <h3 className="text-lg font-medium">Stage Management</h3>
+                      </div>
+                      <p className="text-muted-foreground mb-4">
+                        Create, edit, and organize your stages. Manage content and publishing status.
+                      </p>
+                      <button
+                        onClick={handleNavigateToStages}
+                        className="w-full px-4 py-2 border border-border rounded-md hover:bg-muted transition-colors"
+                      >
+                        Manage Stages
+                      </button>
+                    </div>
+
+                    <div className="p-6 border border-border rounded-lg hover:border-primary/50 transition-colors">
+                      <div className="flex items-center space-x-3 mb-4">
+                        <div className="p-2 bg-primary/10 rounded-lg">
+                          <Users className="h-6 w-6 text-primary" />
+                        </div>
+                        <h3 className="text-lg font-medium">User Management</h3>
+                      </div>
+                      <p className="text-muted-foreground mb-4">
+                        View and manage user accounts, permissions, and access controls.
+                      </p>
+                      <button
+                        onClick={handleNavigateToUsers}
+                        className="w-full px-4 py-2 border border-border rounded-md hover:bg-muted transition-colors"
+                      >
+                        Manage Users
+                      </button>
+                    </div>
+
+                    <div className="p-6 border border-border rounded-lg hover:border-primary/50 transition-colors">
+                      <div className="flex items-center space-x-3 mb-4">
+                        <div className="p-2 bg-primary/10 rounded-lg">
+                          <BarChart3 className="h-6 w-6 text-primary" />
+                        </div>
+                        <h3 className="text-lg font-medium">Analytics</h3>
+                      </div>
+                      <p className="text-muted-foreground mb-4">
+                        View usage statistics, stage performance, and user engagement metrics.
+                      </p>
+                      <button
+                        onClick={handleNavigateToAnalytics}
+                        className="w-full px-4 py-2 border border-border rounded-md hover:bg-muted transition-colors"
+                      >
+                        View Analytics
+                      </button>
+                    </div>
+
+                    <div className="p-6 border border-border rounded-lg hover:border-primary/50 transition-colors">
+                      <div className="flex items-center space-x-3 mb-4">
+                        <div className="p-2 bg-primary/10 rounded-lg">
+                          <Network className="h-6 w-6 text-primary" />
+                        </div>
+                        <h3 className="text-lg font-medium">Graph Studio</h3>
+                      </div>
+                      <p className="text-muted-foreground mb-4">
+                        Design, build, and explore the entire graph structure with visual tools.
+                      </p>
+                      <button
+                        onClick={() => updateURL('graph-studio')}
+                        className="w-full px-4 py-2 border border-border rounded-md hover:bg-muted transition-colors"
+                      >
+                        Open Graph Studio
+                      </button>
+                    </div>
+
+                    <div className="p-6 border border-border rounded-lg hover:border-primary/50 transition-colors">
+                      <div className="flex items-center space-x-3 mb-4">
+                        <div className="p-2 bg-primary/10 rounded-lg">
+                          <Settings className="h-6 w-6 text-primary" />
+                        </div>
+                        <h3 className="text-lg font-medium">System Settings</h3>
+                      </div>
+                      <p className="text-muted-foreground mb-4">
+                        Configure system-wide settings, themes, and application preferences.
+                      </p>
+                      <button
+                        className="w-full px-4 py-2 border border-border rounded-md text-muted-foreground cursor-not-allowed"
+                        disabled
+                      >
+                        Coming Soon
+                      </button>
+                    </div>
+
+                    <div className="p-6 border border-border rounded-lg hover:border-primary/50 transition-colors">
+                      <div className="flex items-center space-x-3 mb-4">
+                        <div className="p-2 bg-primary/10 rounded-lg">
+                          <span className="text-2xl">📊</span>
+                        </div>
+                        <h3 className="text-lg font-medium">Data Dashboard</h3>
+                      </div>
+                      <p className="text-muted-foreground mb-4">
+                        Create and manage data visualizations and dashboard components.
+                      </p>
+                      <button
+                        className="w-full px-4 py-2 border border-border rounded-md text-muted-foreground cursor-not-allowed"
+                        disabled
+                      >
+                        Coming Soon
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Quick Stats */}
+                  <div className="mt-12 p-6 border border-border rounded-lg bg-muted/30">
+                    <h3 className="text-lg font-medium mb-4">Quick Stats</h3>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-primary">{stages.filter(s => s.is_active).length}</div>
+                        <div className="text-sm text-muted-foreground">Active Stages</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-primary">0</div>
+                        <div className="text-sm text-muted-foreground">Total Users</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-primary">{stages.filter(s => s.is_active).length}</div>
+                        <div className="text-sm text-muted-foreground">Published</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-primary">{stages.length}</div>
+                        <div className="text-sm text-muted-foreground">Total Stages</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {viewMode === 'stages-list' && (
               <div className="p-8">
                 <div className="max-w-6xl mx-auto">
                   <div className="flex items-center justify-between mb-8">
                     <div>
-                      <h1 className="text-3xl font-bold mb-2">Stage Management</h1>
                       <p className="text-muted-foreground">
                         Create, edit, and organize your stages
                       </p>
@@ -712,7 +775,6 @@ function App() {
               <div className="p-8">
                 <div className="max-w-6xl mx-auto">
                   <div className="mb-8">
-                    <h1 className="text-3xl font-bold mb-2">User Management</h1>
                     <p className="text-muted-foreground">
                       View and manage user accounts
                     </p>
@@ -730,7 +792,6 @@ function App() {
               <div className="p-8">
                 <div className="max-w-6xl mx-auto">
                   <div className="mb-8">
-                    <h1 className="text-3xl font-bold mb-2">Analytics</h1>
                     <p className="text-muted-foreground">
                       View usage statistics and performance metrics
                     </p>

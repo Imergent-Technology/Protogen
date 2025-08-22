@@ -1,12 +1,13 @@
 
-import { Settings, Users, BarChart3, Layers, PanelLeft, Home, Network } from 'lucide-react';
+import { Settings, Users, BarChart3, Layers, Network } from 'lucide-react';
 import { Button } from '@progress/shared';
 import { AnimatePresence, motion } from 'framer-motion';
 import { StageNavigation } from './StageNavigation';
-import { AdminUserMenu } from './AdminUserMenu';
+import { AdminToolbar } from './AdminToolbar';
 import { Stage } from '@progress/shared';
 
 interface AdminStageProps {
+  onNavigateToDashboard?: () => void;
   onNavigateToStages?: () => void;
   onNavigateToUsers?: () => void;
   onNavigateToAnalytics?: () => void;
@@ -23,6 +24,7 @@ interface AdminStageProps {
 }
 
 export function AdminStage({
+  onNavigateToDashboard,
   onNavigateToStages,
   onNavigateToUsers,
   onNavigateToAnalytics,
@@ -61,75 +63,19 @@ export function AdminStage({
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col">
-        {/* Top Toolbar */}
-        <div className="flex items-center justify-between p-4 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-          <div className="flex items-center space-x-4">
-            {/* Navigation Toggle */}
-            <button
-              onClick={onToggleNavigation}
-              className="p-2 hover:bg-muted rounded-lg"
-            >
-              <PanelLeft className="h-5 w-5" />
-            </button>
-            
-            {/* Logo/Brand */}
-            <div className="flex items-center space-x-2">
-              <span className="text-2xl">⚙️</span>
-              <div>
-                <h1 className="text-lg font-semibold">Progress Admin</h1>
-                <p className="text-sm text-muted-foreground">System administration and management</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Navigation Menu */}
-          <div className="hidden lg:flex items-center space-x-2">
-            <button
-              className="flex items-center space-x-2 px-3 py-2 text-sm font-medium rounded-md transition-colors text-primary bg-primary/10"
-            >
-              <Home className="h-4 w-4" />
-              <span>Dashboard</span>
-            </button>
-            
-            <button
-              onClick={onNavigateToStages}
-              className="flex items-center space-x-2 px-3 py-2 text-sm font-medium rounded-md transition-colors text-muted-foreground hover:text-foreground hover:bg-muted"
-            >
-              <Layers className="h-4 w-4" />
-              <span>Stages</span>
-            </button>
-            
-            <button
-              onClick={onNavigateToUsers}
-              className="flex items-center space-x-2 px-3 py-2 text-sm font-medium rounded-md transition-colors text-muted-foreground hover:text-foreground hover:bg-muted"
-            >
-              <Users className="h-4 w-4" />
-              <span>Users</span>
-            </button>
-            
-            <button
-              onClick={onNavigateToAnalytics}
-              className="flex items-center space-x-2 px-3 py-2 text-sm font-medium rounded-md transition-colors text-muted-foreground hover:text-foreground hover:bg-muted"
-            >
-              <BarChart3 className="h-4 w-4" />
-              <span>Analytics</span>
-            </button>
-            
-            <button
-              onClick={onNavigateToGraphStudio}
-              className="flex items-center space-x-2 px-3 py-2 text-sm font-medium rounded-md transition-colors text-muted-foreground hover:text-foreground hover:bg-muted"
-            >
-              <Network className="h-4 w-4" />
-              <span>Graph Studio</span>
-            </button>
-          </div>
-
-          {/* User Profile */}
-          <AdminUserMenu 
-            user={adminUser} 
-            onLogout={onLogout || (() => {})} 
-          />
-        </div>
+        {/* Universal Admin Toolbar */}
+        <AdminToolbar
+          currentView="dashboard"
+          viewSubtitle="System administration and management"
+          onToggleNavigation={onToggleNavigation || (() => {})}
+          onNavigateToDashboard={onNavigateToDashboard || (() => {})}
+          onNavigateToStages={onNavigateToStages || (() => {})}
+          onNavigateToUsers={onNavigateToUsers || (() => {})}
+          onNavigateToAnalytics={onNavigateToAnalytics || (() => {})}
+          onNavigateToGraphStudio={onNavigateToGraphStudio || (() => {})}
+          adminUser={adminUser}
+          onLogout={onLogout}
+        />
 
         {/* Dashboard Content */}
         <div className="flex-1 overflow-auto">
