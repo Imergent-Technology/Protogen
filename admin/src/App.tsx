@@ -826,16 +826,17 @@ function App() {
             {viewMode === 'graph-studio' && (
               <div className="h-full">
                 <GraphStudio
-                  stages={stages}
-                  onStageSelect={handleStageSelect}
-                  onStageCreate={handleCreateStage}
-                  onStageEdit={(stage) => {
-                    handleStageSelect(stage);
-                    setViewMode('stage');
+                  onNodeSelect={(node) => {
+                    console.log('Node selected:', node);
                   }}
-                  onStageDelete={(stage) => {
-                    // TODO: Implement stage deletion
-                    console.log('Delete stage:', stage);
+                  onNodeCreate={() => {
+                    console.log('Create node');
+                  }}
+                  onNodeEdit={(node) => {
+                    console.log('Edit node:', node);
+                  }}
+                  onNodeDelete={(node) => {
+                    console.log('Delete node:', node);
                   }}
                 />
               </div>

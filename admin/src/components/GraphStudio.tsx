@@ -1,93 +1,105 @@
 import { useState, useEffect } from 'react';
-import { Stage } from '@progress/shared';
-import { Network, Plus, Search, Settings, Eye, Edit3, Trash2 } from 'lucide-react';
+import { 
+  CoreGraphNode, 
+  CoreGraphEdge, 
+  CoreGraphNodeType, 
+  CoreGraphEdgeType,
+  apiClient 
+} from '@progress/shared';
+import { Network, Plus, Search, Settings, Eye, Edit3, Trash2, Loader2 } from 'lucide-react';
 
 interface GraphStudioProps {
-  stages: Stage[];
-  onStageSelect?: (stage: Stage) => void;
-  onStageCreate?: () => void;
-  onStageEdit?: (stage: Stage) => void;
-  onStageDelete?: (stage: Stage) => void;
-}
-
-interface GraphNode {
-  id: string;
-  label: string;
-  type: string;
-  position: { x: number; y: number };
-  data: any;
-}
-
-interface GraphEdge {
-  id: string;
-  source: string;
-  target: string;
-  label?: string;
-  type: string;
+  onNodeSelect?: (node: CoreGraphNode) => void;
+  onNodeCreate?: () => void;
+  onNodeEdit?: (node: CoreGraphNode) => void;
+  onNodeDelete?: (node: CoreGraphNode) => void;
 }
 
 export function GraphStudio({
-  stages,
-  onStageSelect,
-  onStageCreate,
-  onStageEdit,
-  onStageDelete
+  onNodeSelect,
+  onNodeCreate,
+  onNodeEdit,
+  onNodeDelete
 }: GraphStudioProps) {
-  const [nodes, setNodes] = useState<GraphNode[]>([]);
-  const [edges, setEdges] = useState<GraphEdge[]>([]);
-  const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
+  const [nodes, setNodes] = useState<CoreGraphNode[]>([]);
+  const [edges, setEdges] = useState<CoreGraphEdge[]>([]);
+  const [nodeTypes, setNodeTypes] = useState<CoreGraphNodeType[]>([]);
+  const [edgeTypes, setEdgeTypes] = useState<CoreGraphEdgeType[]>([]);
+  const [selectedNode, setSelectedNode] = useState<CoreGraphNode | null>(null);
   const [viewMode, setViewMode] = useState<'explore' | 'edit' | 'design'>('explore');
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState<string>('all');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Convert stages to graph nodes
+  // Load core graph system data
   useEffect(() => {
-    console.log('GraphStudio: stages data:', stages);
-    const graphNodes: GraphNode[] = stages.map((stage, index) => {
-      const node = {
-        id: stage.id.toString(),
-        label: stage.title || stage.name || `Stage ${stage.id}`,
-        type: stage.type || 'unknown',
-        position: {
-          x: 100 + (index % 5) * 200,
-          y: 100 + Math.floor(index / 5) * 150
-        },
-        data: stage
-      };
-      console.log('Created node:', node);
-      return node;
-    });
+    const loadGraphData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
 
-    const graphEdges: GraphEdge[] = [];
-    // TODO: Extract edges from stage relationships
-    // This will be implemented when we have the graph relationship data
+        // Load node types and edge types
+        const [nodeTypesResponse, edgeTypesResponse] = await Promise.all([
+          apiClient.getGraphNodeTypes(),
+          apiClient.getGraphEdgeTypes()
+        ]);
 
-    setNodes(graphNodes);
-    setEdges(graphEdges);
-  }, [stages]);
+        if (nodeTypesResponse.success) {
+          setNodeTypes(nodeTypesResponse.data);
+        }
+
+        if (edgeTypesResponse.success) {
+          setEdgeTypes(edgeTypesResponse.data);
+        }
+
+        // Load nodes and edges
+        const [nodesResponse, edgesResponse] = await Promise.all([
+          apiClient.getGraphNodes(),
+          apiClient.getGraphEdges()
+        ]);
+
+        if (nodesResponse.success) {
+          setNodes(nodesResponse.data);
+        }
+
+        if (edgesResponse.success) {
+          setEdges(edgesResponse.data);
+        }
+
+      } catch (err) {
+        console.error('Error loading graph data:', err);
+        setError('Failed to load graph data');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadGraphData();
+  }, []);
 
   const filteredNodes = nodes.filter(node => {
     const label = node.label || '';
     const matchesSearch = label.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesType = filterType === 'all' || node.type === filterType;
+    const matchesType = filterType === 'all' || node.node_type?.name === filterType;
     return matchesSearch && matchesType;
   });
 
-  const handleNodeClick = (node: GraphNode) => {
+  const handleNodeClick = (node: CoreGraphNode) => {
     setSelectedNode(node);
-    onStageSelect?.(node.data);
+    onNodeSelect?.(node);
   };
 
   const handleCreateNode = () => {
-    onStageCreate?.();
+    onNodeCreate?.();
   };
 
-  const handleEditNode = (node: GraphNode) => {
-    onStageEdit?.(node.data);
+  const handleEditNode = (node: CoreGraphNode) => {
+    onNodeEdit?.(node);
   };
 
-  const handleDeleteNode = (node: GraphNode) => {
-    onStageDelete?.(node.data);
+  const handleDeleteNode = (node: CoreGraphNode) => {
+    onNodeDelete?.(node);
   };
 
   return (
@@ -156,10 +168,11 @@ export function GraphStudio({
             className="px-3 py-2 border border-border rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-primary"
           >
             <option value="all">All Types</option>
-            <option value="document">Document</option>
-            <option value="graph-explorer">Graph Explorer</option>
-            <option value="feedback">Feedback</option>
-            <option value="synthesis">Synthesis</option>
+            {nodeTypes.map((nodeType) => (
+              <option key={nodeType.id} value={nodeType.name}>
+                {nodeType.display_name}
+              </option>
+            ))}
           </select>
         </div>
 
@@ -179,8 +192,29 @@ export function GraphStudio({
         {/* Graph Canvas */}
         <div className="flex-1 relative bg-muted/20 overflow-hidden">
           <div className="absolute inset-0 p-4">
-            {/* Placeholder for actual graph visualization */}
-            <div className="grid grid-cols-5 gap-4">
+            {loading && (
+              <div className="flex items-center justify-center h-full">
+                <div className="text-center">
+                  <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-primary" />
+                  <p className="text-muted-foreground">Loading graph data...</p>
+                </div>
+              </div>
+            )}
+
+            {error && (
+              <div className="flex items-center justify-center h-full">
+                <div className="text-center">
+                  <Network className="h-12 w-12 mx-auto mb-4 text-destructive opacity-50" />
+                  <p className="text-destructive mb-2">Error loading graph data</p>
+                  <p className="text-sm text-muted-foreground">{error}</p>
+                </div>
+              </div>
+            )}
+
+            {!loading && !error && (
+              <>
+                {/* Placeholder for actual graph visualization */}
+                <div className="grid grid-cols-5 gap-4">
               {filteredNodes.map((node) => (
                 <div
                   key={node.id}
@@ -193,7 +227,7 @@ export function GraphStudio({
                 >
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-xs font-medium text-muted-foreground uppercase">
-                      {node.type}
+                      {node.node_type?.display_name || 'Unknown'}
                     </span>
                     {viewMode !== 'explore' && (
                       <div className="flex items-center gap-1">
@@ -232,6 +266,8 @@ export function GraphStudio({
                 </div>
               </div>
             )}
+              </>
+            )}
           </div>
         </div>
 
@@ -243,16 +279,22 @@ export function GraphStudio({
               <div className="space-y-2 text-sm">
                 <div>
                   <span className="text-muted-foreground">Type:</span>
-                  <span className="ml-2 font-medium">{selectedNode.type}</span>
+                  <span className="ml-2 font-medium">{selectedNode.node_type?.display_name || 'Unknown'}</span>
                 </div>
                 <div>
-                  <span className="text-muted-foreground">Title:</span>
+                  <span className="text-muted-foreground">Label:</span>
                   <span className="ml-2">{selectedNode.label}</span>
                 </div>
                 <div>
-                  <span className="text-muted-foreground">ID:</span>
-                  <span className="ml-2 font-mono text-xs">{selectedNode.id}</span>
+                  <span className="text-muted-foreground">GUID:</span>
+                  <span className="ml-2 font-mono text-xs">{selectedNode.guid}</span>
                 </div>
+                {selectedNode.description && (
+                  <div>
+                    <span className="text-muted-foreground">Description:</span>
+                    <span className="ml-2">{selectedNode.description}</span>
+                  </div>
+                )}
               </div>
             </div>
             
@@ -260,18 +302,18 @@ export function GraphStudio({
               <h4 className="font-medium mb-3">Connections</h4>
               <div className="space-y-2">
                 {edges
-                  .filter(edge => edge.source === selectedNode.id || edge.target === selectedNode.id)
+                  .filter(edge => edge.source_node_guid === selectedNode.guid || edge.target_node_guid === selectedNode.guid)
                   .map(edge => {
-                    const connectedNodeId = edge.source === selectedNode.id ? edge.target : edge.source;
-                    const connectedNode = nodes.find(n => n.id === connectedNodeId);
+                    const connectedNodeGuid = edge.source_node_guid === selectedNode.guid ? edge.target_node_guid : edge.source_node_guid;
+                    const connectedNode = nodes.find(n => n.guid === connectedNodeGuid);
                     return (
-                      <div key={edge.id} className="flex items-center justify-between p-2 bg-muted rounded">
+                      <div key={edge.guid} className="flex items-center justify-between p-2 bg-muted rounded">
                         <span className="text-sm">{connectedNode?.label || 'Unknown'}</span>
-                        <span className="text-xs text-muted-foreground">{edge.type}</span>
+                        <span className="text-xs text-muted-foreground">{edge.edge_type?.display_name || 'Unknown'}</span>
                       </div>
                     );
                   })}
-                {edges.filter(edge => edge.source === selectedNode.id || edge.target === selectedNode.id).length === 0 && (
+                {edges.filter(edge => edge.source_node_guid === selectedNode.guid || edge.target_node_guid === selectedNode.guid).length === 0 && (
                   <p className="text-sm text-muted-foreground">No connections</p>
                 )}
               </div>
