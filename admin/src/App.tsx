@@ -73,11 +73,11 @@ function App() {
     if (!isAuthenticated || isProgrammaticNavigation) return;
 
     const path = location.pathname;
-    const stageIdMatch = path.match(/\/stage\/(\d+)/);
+    const stageSlugMatch = path.match(/\/stage\/([^\/]+)/);
     
-    if (stageIdMatch) {
-      const stageId = parseInt(stageIdMatch[1]);
-      const stage = stages.find(s => s.id === stageId);
+    if (stageSlugMatch) {
+      const stageSlug = stageSlugMatch[1];
+      const stage = stages.find(s => s.slug === stageSlug);
       if (stage && stage.id !== currentStage?.id) {
         setCurrentStage(stage);
         setViewMode('stage');
@@ -98,11 +98,11 @@ function App() {
   const updateURL = (mode: ViewMode, stage?: Stage) => {
     setIsProgrammaticNavigation(true);
     switch (mode) {
-      case 'stage':
-        if (stage?.id) {
-          navigate(`/stage/${stage.id}`);
-        }
-        break;
+                      case 'stage':
+                  if (stage?.slug) {
+                    navigate(`/stage/${stage.slug}`);
+                  }
+                  break;
       case 'users':
         navigate('/users');
         break;

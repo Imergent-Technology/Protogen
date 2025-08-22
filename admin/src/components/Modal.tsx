@@ -50,31 +50,31 @@ export function Modal({
     };
   }, [isOpen, onClose]);
 
-  if (!isOpen) return null;
+  if (!isOpen) {
+    return null;
+  }
 
   const modalContent = (
     <div 
-      className="fixed inset-0 flex items-center justify-center"
+      className="fixed inset-0 flex items-center justify-center z-[999999]"
       style={{ 
-        zIndex: 999999,
         position: 'fixed',
         top: 0,
         left: 0,
         right: 0,
-        bottom: 0
+        bottom: 0,
+        pointerEvents: 'auto'
       }}
     >
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm z-[999999]"
         onClick={closeOnOverlayClick ? onClose : undefined}
-        style={{ zIndex: 999999 }}
       />
       
       {/* Modal Content */}
       <div 
-        className={`relative bg-background border border-border rounded-lg shadow-xl ${sizeClasses[size]} w-full mx-4 max-h-[90vh] overflow-hidden`}
-        style={{ zIndex: 1000000 }}
+        className={`relative bg-background border border-border rounded-lg shadow-xl ${sizeClasses[size]} w-full mx-4 max-h-[90vh] overflow-hidden z-[1000000]`}
       >
         {/* Header */}
         {(title || showCloseButton) && (
@@ -103,6 +103,6 @@ export function Modal({
     </div>
   );
 
-  // Use React Portal to render at document root
-  return createPortal(modalContent, document.body);
+  // Use direct rendering instead of portal
+  return modalContent;
 }

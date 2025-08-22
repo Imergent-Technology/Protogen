@@ -6,43 +6,22 @@ import Link from '@tiptap/extension-link';
 import Image from '@tiptap/extension-image';
 import Placeholder from '@tiptap/extension-placeholder';
 import TextAlign from '@tiptap/extension-text-align';
-import { LinkCreationDialog } from './LinkCreationDialog';
+import { UnifiedLinkDialog } from './UnifiedLinkDialog';
 import { Stage } from '@progress/shared';
 import { Extension } from '@tiptap/core';
 import { Plugin } from 'prosemirror-state';
 
-// Custom StageLink extension for internal stage links
-const StageLink = Extension.create({
-  name: 'stageLink',
+// Simple link click handler extension
+const LinkClickHandler = Extension.create({
+  name: 'linkClickHandler',
   
   addOptions() {
     return {
       showError: null as ((title: string, message?: string) => void) | null,
       navigate: null as ((path: string) => void) | null,
+      isEditMode: false as boolean,
+      stages: null as Stage[] | null,
     }
-  },
-  
-  addGlobalAttributes() {
-    return [
-      {
-        types: ['textStyle'],
-        attributes: {
-          stageLink: {
-            default: null,
-            parseHTML: element => element.getAttribute('data-stage-link'),
-            renderHTML: attributes => {
-              if (!attributes.stageLink) {
-                return {}
-              }
-              return {
-                'data-stage-link': attributes.stageLink,
-                class: 'stage-link text-primary underline cursor-pointer hover:text-primary/80'
-              }
-            },
-          },
-        },
-      },
-    ]
   },
 
   addProseMirrorPlugins() {
@@ -51,63 +30,38 @@ const StageLink = Extension.create({
         props: {
           handleDOMEvents: {
             click: (view, event) => {
-              // More aggressive event handling
               const target = event.target as HTMLElement;
-              
-              // Check if the clicked element is a link or inside a link
               const linkElement = target.closest('a[href]');
               
               if (linkElement) {
-                // Check if Ctrl/Cmd is pressed
                 const isCtrlOrCmd = event.ctrlKey || event.metaKey;
+                const href = linkElement.getAttribute('href');
+                const isStageLink = href && href.startsWith('stage://');
                 
                 if (isCtrlOrCmd) {
-                  // Check if it's a stage link
-                  const isStageLink = linkElement.classList.contains('stage-link');
-                  
-                  if (isStageLink) {
-                    // Use React Router navigation for stage links
-                    const navigateFn = this.options.navigate;
-                    if (navigateFn) {
-                      const stageId = linkElement.getAttribute('data-stage-id');
-                      if (stageId) {
-                        navigateFn(`/stage/${stageId}`);
-                      }
+                  // Navigate to link
+                  if (isStageLink && href) {
+                    const stageId = href.replace('stage://', '');
+                    const stage = this.options.stages?.find((s: Stage) => s.id === parseInt(stageId));
+                    if (stage?.slug && this.options.navigate) {
+                      this.options.navigate(`/stage/${stage.slug}`);
                     }
-                  } else {
-                    // Open external links in new tab
-                    window.open(linkElement.getAttribute('href') || '#', '_blank');
+                  } else if (href && href !== '#') {
+                    window.open(href, '_blank');
                   }
                   return true;
-                } else {
-                  // Always prevent navigation in edit mode
+                } else if (this.options.isEditMode) {
+                  // In edit mode, open edit dialog
                   event.preventDefault();
                   event.stopPropagation();
                   
-                  // Check if it's a stage link
-                  const isStageLink = linkElement.classList.contains('stage-link');
-                  
-                  if (isStageLink) {
-                    // Dispatch custom event for stage link
-                    const customEvent = new CustomEvent('stageLinkClick', {
-                      detail: {
-                        linkElement,
-                        view
-                      }
-                    });
-                    document.dispatchEvent(customEvent);
-                  } else {
-                    // Show toast for external links
-                    const showErrorFn = this.options.showError;
-                    if (showErrorFn) {
-                      showErrorFn('External Link', 'Use Ctrl/Cmd+Click to open external links in a new tab.');
-                    }
-                  }
-                  
+                  const customEvent = new CustomEvent('linkClick', {
+                    detail: { linkElement, view, isStageLink, href }
+                  });
+                  document.dispatchEvent(customEvent);
                   return true;
                 }
               }
-              
               return false;
             },
           },
@@ -187,6 +141,9 @@ export function TipTapEditor({
   const [selectedText, setSelectedText] = useState('');
   const [isEditingLink, setIsEditingLink] = useState(false);
   const [existingLinkData, setExistingLinkData] = useState<any>(null);
+  const [defaultLinkType, setDefaultLinkType] = useState<'external' | 'stage'>('external');
+  
+
   const [editorInstance, setEditorInstance] = useState<any>(null);
   
   // Reset dialog state when it closes
@@ -198,11 +155,11 @@ export function TipTapEditor({
     }
   }, [isLinkDialogOpen]);
 
-  // Listen for stage link clicks
+  // Listen for link clicks
   useEffect(() => {
-    const handleStageLinkClick = (event: CustomEvent) => {
+    const handleLinkClick = (event: CustomEvent) => {
       if (editorInstance) {
-        const { linkElement } = event.detail;
+        const { linkElement, isStageLink, href } = event.detail;
         
         // Select the text of the clicked link
         const linkText = linkElement.textContent || linkElement.innerText || '';
@@ -222,33 +179,49 @@ export function TipTapEditor({
           }
         });
         
-        // Trigger addStageLink to open edit dialog
-        addStageLink();
+        // Open edit dialog for both external and internal links
+        setSelectedText(linkText);
+        setIsEditingLink(true);
+        
+        if (isStageLink) {
+          // Set up stage link edit data
+          const stageId = href.replace('stage://', '');
+          setExistingLinkData({ href, stageId });
+        } else {
+          // Set up external link edit data
+          setExistingLinkData({ href });
+        }
+        
+        setIsLinkDialogOpen(true);
       }
     };
 
-    document.addEventListener('stageLinkClick', handleStageLinkClick as EventListener);
+    document.addEventListener('linkClick', handleLinkClick as EventListener);
     
     return () => {
-      document.removeEventListener('stageLinkClick', handleStageLinkClick as EventListener);
+      document.removeEventListener('linkClick', handleLinkClick as EventListener);
     };
-  }, [editorInstance]);
+  }, [editorInstance, showError]);
   
   const editor = useEditor({
     extensions: [
-      StarterKit, // Re-enable StarterKit with default link extension
+      StarterKit.configure({
+        link: false, // Disable default link extension
+      }),
       Link.configure({
         openOnClick: false,
         HTMLAttributes: {
           class: 'text-primary underline cursor-pointer hover:text-primary/80'
         },
-        validate: href => /^https?:\/\//.test(href),
-        protocols: ['http', 'https'],
+        validate: href => /^https?:\/\//.test(href) || href.startsWith('stage://'),
+        protocols: ['http', 'https', 'stage'],
       }),
-      StageLink.configure({
+      LinkClickHandler.configure({
         showError: showError,
-        navigate: navigate
-      }), // Add our custom stage link extension
+        navigate: navigate,
+        isEditMode: editable,
+        stages: stages
+      }),
       Image.configure({
         HTMLAttributes: {
           class: 'max-w-full h-auto rounded-lg'
@@ -277,10 +250,14 @@ export function TipTapEditor({
   }
 
   const addLink = () => {
-    const url = window.prompt('Enter URL');
-    if (url) {
-      editor.chain().focus().setLink({ href: url }).run();
-    }
+    // Set up dialog state for new external link
+    const { from, to } = editor.state.selection;
+    const currentSelectedText = editor.state.doc.textBetween(from, to);
+    setSelectedText(currentSelectedText);
+    setDefaultLinkType('external');
+    setIsEditingLink(false);
+    setExistingLinkData(null);
+    setIsLinkDialogOpen(true);
   };
 
   const addImage = () => {
@@ -307,20 +284,13 @@ export function TipTapEditor({
     
     if (linkAnalysis.hasMultipleLinks) {
       if (showError) {
-        showError('Cannot Create Stage Link', 'Multiple links are selected. Please select only one link or no links.');
+        showError('Cannot Create Link', 'Multiple links are selected. Please select only one link or no links.');
       }
       return;
     }
     
-    if (linkAnalysis.hasExternalLink) {
-      if (showError) {
-        showError('Cannot Create Stage Link', 'External link is selected. Please select only stage links or no links.');
-      }
-      return;
-    }
-    
-    // If a StageLink is already selected, open the edit dialog for it
-    if (linkAnalysis.hasStageLink && linkAnalysis.existingLinkData) {
+    // If a link is already selected, open the edit dialog for it
+    if ((linkAnalysis.hasStageLink || linkAnalysis.hasExternalLink) && linkAnalysis.existingLinkData) {
       setSelectedText(currentSelectedText);
       setIsEditingLink(true);
       setExistingLinkData(linkAnalysis.existingLinkData);
@@ -328,42 +298,56 @@ export function TipTapEditor({
       return;
     }
     
-    // Set up dialog state for new link
+    // Set up dialog state for new stage link
     setSelectedText(currentSelectedText);
+    setDefaultLinkType('stage');
     setIsEditingLink(false);
     setExistingLinkData(null);
     
-    // If no text is selected, insert placeholder text
+    // If no text is selected, we'll insert the label text later in handleLinkCreate
     if (isCollapsed) {
-      editor.chain().focus().insertContent('New Stage Link').run();
-      // Update selection to include the inserted text
-      const newFrom = from;
-      const newTo = from + 'New Stage Link'.length;
-      editor.chain().focus().setTextSelection({ from: newFrom, to: newTo }).run();
-      setSelectedText('New Stage Link');
+      setSelectedText('');
     }
     
     setIsLinkDialogOpen(true);
   };
 
-  const handleStageLinkCreate = (linkData: { targetStageId: number; label: string; url: string; isEdit: boolean }) => {
-    const { from, to } = editor.state.selection;
-    
+  const handleLinkCreate = (linkData: { 
+    type: 'external' | 'stage';
+    href: string;
+    label: string;
+    targetStageId?: number;
+    isEdit: boolean;
+  }) => {
     if (linkData.isEdit) {
       // Update existing link
       editor.chain().focus().extendMarkRange('link').setLink({ 
-        href: '#', // Use placeholder href to prevent browser navigation
-        'data-stage-id': linkData.targetStageId.toString(),
-        class: 'stage-link'
+        href: linkData.href,
+        class: linkData.type === 'stage' ? 'stage-link' : undefined
       }).run();
     } else {
       // Create new link
+      const { from, to } = editor.state.selection;
+      
+      // Ensure we have a selection
+      if (from === to) {
+        // Insert the actual label text that the user entered
+        const textToInsert = linkData.label || 'New Link';
+        editor.chain().focus().insertContent(textToInsert).run();
+        // Update selection to include the inserted text
+        const newFrom = from;
+        const newTo = from + textToInsert.length;
+        editor.chain().focus().setTextSelection({ from: newFrom, to: newTo }).run();
+      }
+      
+      // Apply the link
       editor.chain().focus().setLink({ 
-        href: '#', // Use placeholder href to prevent browser navigation
-        'data-stage-id': linkData.targetStageId.toString(),
-        class: 'stage-link'
+        href: linkData.href,
+        class: linkData.type === 'stage' ? 'stage-link' : undefined
       }).run();
     }
+    
+    setIsLinkDialogOpen(false);
   };
 
   // Helper function to analyze links in the current selection
@@ -585,16 +569,17 @@ export function TipTapEditor({
         />
       </div>
 
-      {/* Link Creation Dialog */}
-      <LinkCreationDialog
+      {/* Unified Link Dialog */}
+      <UnifiedLinkDialog
         isOpen={isLinkDialogOpen}
         onClose={() => setIsLinkDialogOpen(false)}
-        onLinkCreate={handleStageLinkCreate}
+        onLinkCreate={handleLinkCreate}
         stages={stages}
         currentStageId={currentStageId}
         selectedText={selectedText}
         isEditing={isEditingLink}
         existingLinkData={existingLinkData}
+        defaultLinkType={defaultLinkType}
       />
     </div>
   );
