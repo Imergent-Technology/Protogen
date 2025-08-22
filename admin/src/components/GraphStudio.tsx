@@ -6,8 +6,9 @@ import {
   CoreGraphEdgeType,
   apiClient 
 } from '@progress/shared';
-import { Network, Plus, Search, Settings, Eye, Edit3, Trash2, Loader2, Grid3X3, List } from 'lucide-react';
+import { Network, Plus, Search, Settings, Eye, Edit3, Trash2, Loader2, Grid3X3, List, Link } from 'lucide-react';
 import { NodeCreationDialog } from './NodeCreationDialog';
+import { EdgeCreationDialog } from './EdgeCreationDialog';
 
 interface GraphStudioProps {
   onNodeSelect?: (node: CoreGraphNode) => void;
@@ -33,6 +34,7 @@ export function GraphStudio({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [showCreateEdgeDialog, setShowCreateEdgeDialog] = useState(false);
   const [displayMode, setDisplayMode] = useState<'grid' | 'list'>('grid');
 
   // Load core graph system data
@@ -62,6 +64,11 @@ export function GraphStudio({
     // Refresh the entire graph data to ensure consistency
     loadGraphData();
     onNodeCreate?.();
+  };
+
+  const handleEdgeCreated = (newEdge: any) => {
+    // Refresh the entire graph data to ensure consistency
+    loadGraphData();
   };
 
   const loadGraphData = async () => {
@@ -215,13 +222,22 @@ export function GraphStudio({
         </div>
 
         {viewMode !== 'explore' && (
-          <button
-            onClick={handleCreateNode}
-            className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
-          >
-            <Plus className="h-4 w-4" />
-            Add Node
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleCreateNode}
+              className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+            >
+              <Plus className="h-4 w-4" />
+              Add Node
+            </button>
+            <button
+              onClick={() => setShowCreateEdgeDialog(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/90 transition-colors"
+            >
+              <Link className="h-4 w-4" />
+              Add Edge
+            </button>
+          </div>
         )}
       </div>
 
@@ -413,6 +429,14 @@ export function GraphStudio({
         isOpen={showCreateDialog}
         onClose={() => setShowCreateDialog(false)}
         onNodeCreated={handleNodeCreated}
+      />
+
+      {/* Edge Creation Dialog */}
+      <EdgeCreationDialog
+        isOpen={showCreateEdgeDialog}
+        onClose={() => setShowCreateEdgeDialog(false)}
+        onEdgeCreated={handleEdgeCreated}
+        availableNodes={nodes}
       />
     </div>
   );
