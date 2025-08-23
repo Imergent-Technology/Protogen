@@ -10,6 +10,7 @@ import { Network, Plus, Search, Settings, Eye, Edit3, Trash2, Loader2, Grid3X3, 
 import { NodeCreationDialog } from './NodeCreationDialog';
 import { EdgeCreationDialog } from './EdgeCreationDialog';
 import { NodeEditDialog } from './NodeEditDialog';
+import { GraphCanvas } from './GraphCanvas';
 
 interface GraphStudioProps {
   onNodeSelect?: (node: CoreGraphNode) => void;
@@ -39,7 +40,7 @@ export function GraphStudio({
   const [showCreateEdgeDialog, setShowCreateEdgeDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [editingNode, setEditingNode] = useState<CoreGraphNode | null>(null);
-  const [displayMode, setDisplayMode] = useState<'grid' | 'list'>('grid');
+  const [displayMode, setDisplayMode] = useState<'grid' | 'list' | 'graph'>('grid');
 
   // Load core graph system data
   useEffect(() => {
@@ -268,7 +269,7 @@ export function GraphStudio({
         <div className="flex items-center gap-1 border border-border rounded-md bg-background">
           <button
             onClick={() => setDisplayMode('grid')}
-            className={`p-2 rounded-l-md transition-colors ${
+            className={`p-2 transition-colors ${
               displayMode === 'grid'
                 ? 'bg-primary text-primary-foreground'
                 : 'text-muted-foreground hover:bg-muted'
@@ -279,7 +280,7 @@ export function GraphStudio({
           </button>
           <button
             onClick={() => setDisplayMode('list')}
-            className={`p-2 rounded-r-md transition-colors ${
+            className={`p-2 transition-colors ${
               displayMode === 'list'
                 ? 'bg-primary text-primary-foreground'
                 : 'text-muted-foreground hover:bg-muted'
@@ -287,6 +288,17 @@ export function GraphStudio({
             title="List View"
           >
             <List className="h-4 w-4" />
+          </button>
+          <button
+            onClick={() => setDisplayMode('graph')}
+            className={`p-2 rounded-r-md transition-colors ${
+              displayMode === 'graph'
+                ? 'bg-primary text-primary-foreground'
+                : 'text-muted-foreground hover:bg-muted'
+            }`}
+            title="Graph View"
+          >
+            <Network className="h-4 w-4" />
           </button>
         </div>
 
@@ -348,7 +360,17 @@ export function GraphStudio({
               </div>
             ) : (
               <>
-                {displayMode === 'grid' ? (
+                {displayMode === 'graph' ? (
+                  <div className="w-full h-full">
+                    <GraphCanvas
+                      nodes={filteredNodes}
+                      edges={edges}
+                      onNodeClick={handleNodeClick}
+                      selectedNodeGuid={selectedNode?.guid || null}
+                      className="w-full h-full"
+                    />
+                  </div>
+                ) : displayMode === 'grid' ? (
                   <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 gap-3 w-full">
                     {filteredNodes.map((node) => (
                       <div
