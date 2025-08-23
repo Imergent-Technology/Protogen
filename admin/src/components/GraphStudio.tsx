@@ -31,6 +31,7 @@ export function GraphStudio({
   const [viewMode, setViewMode] = useState<'explore' | 'edit' | 'design'>('explore');
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState<string>('all');
+  const [filterConnections, setFilterConnections] = useState<string>('all');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
@@ -46,7 +47,20 @@ export function GraphStudio({
     const label = node.label || '';
     const matchesSearch = label.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesType = filterType === 'all' || node.node_type?.name === filterType;
-    return matchesSearch && matchesType;
+    
+    // Connection filtering
+    const connectionCount = edges.filter(edge => 
+      edge.source_node_guid === node.guid || edge.target_node_guid === node.guid
+    ).length;
+    
+    let matchesConnections = true;
+    if (filterConnections === 'connected') {
+      matchesConnections = connectionCount > 0;
+    } else if (filterConnections === 'isolated') {
+      matchesConnections = connectionCount === 0;
+    }
+    
+    return matchesSearch && matchesType && matchesConnections;
   });
 
 
@@ -112,11 +126,44 @@ export function GraphStudio({
   };
 
   const handleEditNode = (node: CoreGraphNode) => {
+    // TODO: Implement node editing dialog
+    alert(`Edit functionality for "${node.label}" coming soon!`);
     onNodeEdit?.(node);
   };
 
-  const handleDeleteNode = (node: CoreGraphNode) => {
+  const handleDeleteNode = async (node: CoreGraphNode) => {
+    if (confirm(`Are you sure you want to delete "${node.label}"? This will also delete all connected edges.`)) {
+      try {
+        const response = await apiClient.deleteGraphNode(node.guid);
+        if (response.success) {
+          loadGraphData(); // Refresh data
+          // Clear selection if this was the selected node
+          if (selectedNode?.guid === node.guid) {
+            setSelectedNode(null);
+          }
+        } else {
+          alert('Failed to delete node: ' + (response.message || 'Unknown error'));
+        }
+      } catch (err) {
+        alert('Failed to delete node. Please try again.');
+      }
+    }
     onNodeDelete?.(node);
+  };
+
+  const handleDeleteEdge = async (edge: any) => {
+    if (confirm('Are you sure you want to delete this edge?')) {
+      try {
+        const response = await apiClient.deleteGraphEdge(edge.guid);
+        if (response.success) {
+          loadGraphData(); // Refresh data
+        } else {
+          alert('Failed to delete edge: ' + (response.message || 'Unknown error'));
+        }
+      } catch (err) {
+        alert('Failed to delete edge. Please try again.');
+      }
+    }
   };
 
 
@@ -192,6 +239,16 @@ export function GraphStudio({
                 {nodeType.display_name}
               </option>
             ))}
+          </select>
+          
+          <select
+            value={filterConnections}
+            onChange={(e) => setFilterConnections(e.target.value)}
+            className="px-3 py-2 border border-border rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+          >
+            <option value="all">All Nodes</option>
+            <option value="connected">Connected Only</option>
+            <option value="isolated">Isolated Only</option>
           </select>
         </div>
 
@@ -291,34 +348,48 @@ export function GraphStudio({
                             : 'border-border bg-background hover:border-primary/50'
                         }`}
                       >
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-xs font-medium text-muted-foreground uppercase">
-                            {node.node_type?.display_name || 'Unknown'}
-                          </span>
-                          {viewMode !== 'explore' && (
-                            <div className="flex items-center gap-1">
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleEditNode(node);
-                                }}
-                                className="p-0.5 hover:bg-muted rounded"
-                              >
-                                <Edit3 className="h-2.5 w-2.5" />
-                              </button>
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleDeleteNode(node);
-                                }}
-                                className="p-0.5 hover:bg-muted rounded text-destructive"
-                              >
-                                <Trash2 className="h-2.5 w-2.5" />
-                              </button>
-                            </div>
-                          )}
+                                                                    <div className="flex items-center gap-2 mb-2">
+                        <span className="text-xs font-medium text-muted-foreground uppercase">
+                          {node.node_type?.display_name || 'Unknown'}
+                        </span>
+                        {/* Connection indicator */}
+                        {(() => {
+                          const connectionCount = edges.filter(edge => 
+                            edge.source_node_guid === node.guid || edge.target_node_guid === node.guid
+                          ).length;
+                          return connectionCount > 0 ? (
+                            <span 
+                              className="text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded-full"
+                              title={`${connectionCount} ${connectionCount === 1 ? 'connection' : 'connections'}`}
+                            >
+                              {connectionCount}
+                            </span>
+                          ) : null;
+                        })()}
+                      </div>
+                      <h3 className="font-medium text-sm truncate mb-2" title={node.label}>{node.label}</h3>
+                      {viewMode !== 'explore' && (
+                        <div className="flex items-center justify-end gap-1 mt-auto">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleEditNode(node);
+                            }}
+                            className="p-0.5 hover:bg-muted rounded"
+                          >
+                            <Edit3 className="h-2.5 w-2.5" />
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteNode(node);
+                            }}
+                            className="p-0.5 hover:bg-muted rounded text-destructive"
+                          >
+                            <Trash2 className="h-2.5 w-2.5" />
+                          </button>
                         </div>
-                        <h3 className="font-medium text-sm truncate" title={node.label}>{node.label}</h3>
+                      )}
                       </div>
                     ))}
                   </div>
@@ -339,6 +410,20 @@ export function GraphStudio({
                             {node.node_type?.display_name || 'Unknown'}
                           </span>
                           <h3 className="font-medium text-sm truncate" title={node.label}>{node.label}</h3>
+                          {/* Connection indicator */}
+                          {(() => {
+                            const connectionCount = edges.filter(edge => 
+                              edge.source_node_guid === node.guid || edge.target_node_guid === node.guid
+                            ).length;
+                            return connectionCount > 0 ? (
+                              <span 
+                                className="text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded-full"
+                                title={`${connectionCount} ${connectionCount === 1 ? 'connection' : 'connections'}`}
+                              >
+                                {connectionCount}
+                              </span>
+                            ) : null;
+                          })()}
                         </div>
                         {viewMode !== 'explore' && (
                           <div className="flex items-center gap-1">
@@ -408,10 +493,27 @@ export function GraphStudio({
                   .map(edge => {
                     const connectedNodeGuid = edge.source_node_guid === selectedNode.guid ? edge.target_node_guid : edge.source_node_guid;
                     const connectedNode = nodes.find(n => n.guid === connectedNodeGuid);
+                    const isOutgoing = edge.source_node_guid === selectedNode.guid;
                     return (
                       <div key={edge.guid} className="flex items-center justify-between p-2 bg-muted rounded">
-                        <span className="text-sm">{connectedNode?.label || 'Unknown'}</span>
-                        <span className="text-xs text-muted-foreground">{edge.edge_type?.display_name || 'Unknown'}</span>
+                        <div className="flex items-center gap-2 flex-1">
+                          <span className="text-xs text-muted-foreground">
+                            {isOutgoing ? '→' : '←'}
+                          </span>
+                          <span className="text-sm font-medium">{connectedNode?.label || 'Unknown'}</span>
+                          <span className="text-xs text-muted-foreground bg-background px-1.5 py-0.5 rounded">
+                            {edge.edge_type?.display_name || 'Unknown'}
+                          </span>
+                        </div>
+                        {viewMode !== 'explore' && (
+                          <button
+                            onClick={() => handleDeleteEdge(edge)}
+                            className="p-1 hover:bg-destructive/10 rounded text-destructive"
+                            title="Delete edge"
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </button>
+                        )}
                       </div>
                     );
                   })}
