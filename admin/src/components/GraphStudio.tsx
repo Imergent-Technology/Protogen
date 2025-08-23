@@ -9,6 +9,7 @@ import {
 import { Network, Plus, Search, Settings, Eye, Edit3, Trash2, Loader2, Grid3X3, List, Link } from 'lucide-react';
 import { NodeCreationDialog } from './NodeCreationDialog';
 import { EdgeCreationDialog } from './EdgeCreationDialog';
+import { NodeEditDialog } from './NodeEditDialog';
 
 interface GraphStudioProps {
   onNodeSelect?: (node: CoreGraphNode) => void;
@@ -36,6 +37,8 @@ export function GraphStudio({
   const [error, setError] = useState<string | null>(null);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showCreateEdgeDialog, setShowCreateEdgeDialog] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [editingNode, setEditingNode] = useState<CoreGraphNode | null>(null);
   const [displayMode, setDisplayMode] = useState<'grid' | 'list'>('grid');
 
   // Load core graph system data
@@ -85,6 +88,15 @@ export function GraphStudio({
     loadGraphData();
   };
 
+  const handleNodeUpdated = (updatedNode: CoreGraphNode) => {
+    // Refresh the entire graph data to ensure consistency
+    loadGraphData();
+    // Update selected node if it was the one being edited
+    if (selectedNode?.guid === updatedNode.guid) {
+      setSelectedNode(updatedNode);
+    }
+  };
+
   const loadGraphData = async () => {
     try {
       setLoading(true);
@@ -126,8 +138,8 @@ export function GraphStudio({
   };
 
   const handleEditNode = (node: CoreGraphNode) => {
-    // TODO: Implement node editing dialog
-    alert(`Edit functionality for "${node.label}" coming soon!`);
+    setEditingNode(node);
+    setShowEditDialog(true);
     onNodeEdit?.(node);
   };
 
@@ -539,6 +551,17 @@ export function GraphStudio({
         onClose={() => setShowCreateEdgeDialog(false)}
         onEdgeCreated={handleEdgeCreated}
         availableNodes={nodes}
+      />
+
+      {/* Node Edit Dialog */}
+      <NodeEditDialog
+        isOpen={showEditDialog}
+        onClose={() => {
+          setShowEditDialog(false);
+          setEditingNode(null);
+        }}
+        onNodeUpdated={handleNodeUpdated}
+        node={editingNode}
       />
     </div>
   );
