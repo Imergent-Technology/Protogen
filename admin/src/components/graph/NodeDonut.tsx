@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { CoreGraphNode } from '@progress/shared';
 import { Lock, Unlock, X, Edit3, Trash2 } from 'lucide-react';
 
@@ -22,8 +22,7 @@ export function NodeDonut({
   onDelete
 }: NodeDonutProps) {
   const donutSize = 120;
-  const buttonSize = 32;
-  const buttonSpacing = 40;
+
 
   return (
     <div

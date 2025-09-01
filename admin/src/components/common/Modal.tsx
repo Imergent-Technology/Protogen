@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { createPortal } from 'react-dom';
+
 import { X } from 'lucide-react';
 import { Button } from '@progress/shared';
 

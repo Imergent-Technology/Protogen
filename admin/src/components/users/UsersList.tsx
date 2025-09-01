@@ -34,7 +34,7 @@ export const UsersList: React.FC<UsersListProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterAdmin, setFilterAdmin] = useState<'all' | 'admin' | 'user'>('all');
-  const [reputationRange, setReputationRange] = useState<{ min: number; max: number }>({ min: 0, max: 1 });
+  const [reputationRange, setReputationRange] = useState<{ min: number; max: number }>({ min: 0, max: 1000 });
 
   useEffect(() => {
     fetchUsers();

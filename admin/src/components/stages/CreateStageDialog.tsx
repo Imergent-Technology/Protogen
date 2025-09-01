@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Stage, StageType } from '@progress/shared';
 import { Save } from 'lucide-react';
 import { Button } from '@progress/shared';
-import { Modal } from './Modal';
+import { Modal } from '../common/Modal';
 
 interface CreateStageDialogProps {
   isOpen: boolean;

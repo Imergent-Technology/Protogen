@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Stage } from '@progress/shared';
 import { Button } from '@progress/shared';
-import { Modal } from './Modal';
-import { Search, Link as LinkIcon, ExternalLink } from 'lucide-react';
+import { Modal } from '../common/Modal';
+import { Search, Link as LinkIcon } from 'lucide-react';
 
 interface LinkCreationDialogProps {
   isOpen: boolean;
@@ -23,7 +23,7 @@ export function LinkCreationDialog({
   currentStageId,
   selectedText = '',
   isEditing = false,
-  existingLinkData
+
 }: LinkCreationDialogProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStage, setSelectedStage] = useState<Stage | null>(null);

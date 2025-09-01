@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Stage } from '@progress/shared';
 import { Button } from '@progress/shared';
-import { Modal } from './Modal';
+import { Modal } from '../common/Modal';
 import { DocumentStageConfig as DocumentStageConfigComponent } from './DocumentStageConfig';
 import { 
   FileText, 

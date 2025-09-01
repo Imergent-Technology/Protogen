@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Stage, DocumentStageConfig } from '@progress/shared';
-import { TipTapEditor } from './TipTapEditor';
+import { TipTapEditor } from '../content/TipTapEditor';
 
 interface DocumentStageViewerProps {
   stage: Stage;

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Stage } from '@progress/shared';
 import { Button } from '@progress/shared';
-import { Modal } from './Modal';
+import { Modal } from '../common/Modal';
 import { Search, Link as LinkIcon, ExternalLink } from 'lucide-react';
 
 interface UnifiedLinkDialogProps {

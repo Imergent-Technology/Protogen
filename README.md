@@ -11,7 +11,7 @@ Protogen is the foundational prototype for a larger vision:
 
 ## Architecture
 
-This is a monorepo containing:
+This is a single repository containing:
 
 - **`api/`** - Laravel backend with Inertia.js + React frontend
   - Stage manager system for multi-context navigation
@@ -24,6 +24,14 @@ This is a monorepo containing:
   - Multi-model stage manager
   - Graph traversal and interactions
   - Can consume APIs from the main application
+
+- **`admin/`** - React admin interface
+  - Administrative tools and user management
+  - Stage configuration and content management
+
+- **`shared/`** - Shared components and utilities
+  - Common UI components and hooks
+  - Shared configuration and types
 
 ## Key Features
 
@@ -52,17 +60,20 @@ This is a monorepo containing:
 - PostgreSQL 12+
 - Composer
 - npm/yarn
+- Docker (for development environment)
 
 ### Development Setup
+
+**Important**: All Docker and Tailwind commands must be run from the base `progress` folder, not from individual project directories.
 
 #### CSS Build Process
 Before starting development, you need to build the shared CSS:
 
 ```bash
-# Build shared CSS (required for styling)
+# Build shared CSS (required for styling) - run from base directory
 npm run build:css:prod
 
-# Or watch for changes during development
+# Or watch for changes during development - run from base directory
 npm run build:css
 ```
 
@@ -77,7 +88,7 @@ chmod +x scripts/setup-dev.sh
 ./scripts/setup-dev.sh
 
 # Or manually run the commands:
-# 1. Start PostgreSQL container
+# 1. Start PostgreSQL container (from base directory)
 docker-compose up -d postgres
 
 # 2. Create .env file with development settings
@@ -98,7 +109,7 @@ npm install
    cd Protogen
    ```
 
-2. **Start PostgreSQL container**
+2. **Start PostgreSQL container (from base directory)**
    ```bash
    docker-compose up -d postgres
    ```
@@ -124,7 +135,7 @@ npm install
 ### Running the Application
 
 ```bash
-# Start all services
+# Start all services (from base directory)
 docker-compose up
 
 # Access the application
@@ -143,15 +154,18 @@ The system uses a graph-like structure stored in PostgreSQL:
 - **Feedback**: User feedback with privacy levels
 - **Stage Links**: Abstract links between contexts
 
-## Secrets Management
+## Security Notes
 
-For secure handling of credentials and sensitive configuration data, see our [Secrets Management Guide](docs/SECRETS_MANAGEMENT.md).
-
-### Quick Security Notes:
+### Environment Configuration
 - Never commit `.env` files to version control
 - Use different credentials for development and production
 - Consider using a password manager for credential storage
 - Rotate passwords regularly
+
+### Development vs Production
+- Development uses Docker containers with default credentials
+- Production requires secure, unique credentials
+- Always use environment variables in production
 
 ## Contributing
 
@@ -168,4 +182,10 @@ MIT License - see [LICENSE](LICENSE) file for details.
 - [ ] User registration and authentication
 - [ ] Feedback system with privacy controls
 - [ ] API endpoints for graph management
-- [ ] Community features and group organization 
+- [ ] Community features and group organization
+
+## Future Goals
+
+- **Monorepo Structure**: Consider migrating to a monorepo structure for better code organization and shared tooling
+- **Microservices**: Potential decomposition into microservices for better scalability
+- **Plugin System**: Extensible plugin architecture for custom stage types 

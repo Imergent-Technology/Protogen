@@ -6,6 +6,8 @@ services:
       dockerfile: Dockerfile
     container_name: api
     working_dir: /var/www
+    env_file:
+      - ./api/.env
     volumes:
       - ./api:/var/www
     depends_on:
@@ -35,7 +37,7 @@ services:
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-protogen_dev}
       POSTGRES_USER: ${POSTGRES_USER:-protogen}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-protogen_dev_password}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-your_secure_dev_password_here}
     ports:
       - "5432:5432"
     volumes:
@@ -75,8 +77,27 @@ services:
     networks:
       - app-network
 
+  # pgAdmin - PostgreSQL GUI
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@protogen.dev
+      PGADMIN_DEFAULT_PASSWORD: ProtogenDevPassword123
+      PGADMIN_SERVER_JSON_FILE: /pgadmin4/servers.json
+    ports:
+      - "5050:80"
+    volumes:
+      - ./docker/pgadmin/servers.json:/pgadmin4/servers.json
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      - postgres
+    networks:
+      - app-network
+
 volumes:
   postgresdata:
+  pgadmin_data:
 
 networks:
   app-network:

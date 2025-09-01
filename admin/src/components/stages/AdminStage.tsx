@@ -2,8 +2,8 @@
 import { Settings, Users, BarChart3, Layers, Network } from 'lucide-react';
 import { Button } from '@progress/shared';
 import { AnimatePresence, motion } from 'framer-motion';
-import { StageNavigation } from './StageNavigation';
-import { AdminToolbar } from './AdminToolbar';
+import { StageNavigation } from '../layout/StageNavigation';
+import { AdminToolbar } from '../layout/AdminToolbar';
 import { Stage } from '@progress/shared';
 
 interface AdminStageProps {

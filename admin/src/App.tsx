@@ -1,21 +1,25 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Layers, Users, BarChart3, Home, PanelLeft, Network, Settings } from 'lucide-react';
+import { Layers, Users, BarChart3, Network, Settings } from 'lucide-react';
 import { apiClient, Stage } from '@progress/shared';
-import { UsersList } from './components/UsersList';
-import { AdminLogin } from './components/AdminLogin';
-import { FullScreenStageViewer } from './components/FullScreenStageViewer';
-import { StageMetadataDialog } from './components/StageMetadataDialog';
-
-import { StageTransition, StageContentWrapper, ToolbarWrapper } from './components/StageTransition';
-import { StageNavigation } from './components/StageNavigation';
-import { ContextMenu, useContextMenu, getStageContextMenuItems } from './components/ContextMenu';
-import { CreateStageDialog } from './components/CreateStageDialog';
-import { StageTypeManager } from './components/StageTypeManager';
-import { AdminUserMenu } from './components/AdminUserMenu';
-import { GraphStudio } from './components/GraphStudio';
-import { AdminToolbar } from './components/AdminToolbar';
-import { ToastContainer, useToasts } from './components/Toast';
+import {
+  UsersList,
+  AdminLogin,
+  FullScreenStageViewer,
+  StageMetadataDialog,
+  StageTransition,
+  StageContentWrapper,
+  StageNavigation,
+  ContextMenu,
+  useContextMenu,
+  getStageContextMenuItems,
+  CreateStageDialog,
+  StageTypeManager,
+  GraphStudio,
+  AdminToolbar,
+  ToastContainer,
+  useToasts
+} from './components';
 import { AnimatePresence, motion } from 'framer-motion';
 import { initializeTheme } from '@progress/shared';
 

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Stage } from '@progress/shared';
 import { Save, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@progress/shared';
-import { Modal } from './Modal';
+import { Modal } from '../common/Modal';
 
 interface StageMetadataDialogProps {
   stage: Stage | null;

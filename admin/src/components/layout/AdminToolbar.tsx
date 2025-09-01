@@ -39,7 +39,7 @@ export function AdminToolbar({
         
         {/* Logo/Brand */}
         <div className="flex items-center space-x-2">
-          <span className="text-2xl">⚙️</span>
+          <span className="text-2xl"><img src="/protogen-logo.png" className="h-10 w-10" /></span>
           <div>
             <h1 className="text-lg font-semibold">Progress Admin</h1>
             <p className="text-sm text-muted-foreground">{viewSubtitle || currentView}</p>

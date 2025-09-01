@@ -1,0 +1,14 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "Protogen Dev",
+      "Group": "Servers",
+      "Host": "postgres",
+      "Port": 5432,
+      "MaintenanceDB": "protogen_dev",
+      "Username": "protogen",
+      "Password": "ProtogenDevPassword123",
+      "SSLMode": "prefer"
+    }
+  }
+}

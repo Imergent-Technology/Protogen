@@ -2,7 +2,7 @@
 
 ## Project Structure
 
-This is a monorepo with the following modules:
+This is a single repository with the following modules:
 
 - **`admin/`** - React admin interface (Vite + TypeScript)
 - **`ui/`** - React user interface (Vite + TypeScript) 
@@ -23,41 +23,43 @@ Each module extends these base configurations and adds module-specific overrides
 
 ## Development Scripts
 
+**Important**: All Docker and Tailwind commands must be run from the base `progress` folder, not from individual project directories.
+
 ### Root Level Scripts
 
 ```bash
-# CSS Development
+# CSS Development (run from base directory)
 npm run build:css          # Watch mode for CSS changes
 npm run build:css:prod     # Production CSS build
 
-# Development
+# Development (run from base directory)
 npm run dev                # Start CSS watching
 npm run dev:all           # Start all development servers
 npm run dev:admin         # Start admin development server
 npm run dev:ui            # Start UI development server
 
-# Building
+# Building (run from base directory)
 npm run build:all         # Build all modules
 npm run build:admin       # Build admin module
 npm run build:ui          # Build UI module
 
-# Cleaning
+# Cleaning (run from base directory)
 npm run clean:all         # Clean all build artifacts
 npm run clean:admin       # Clean admin build
 npm run clean:ui          # Clean UI build
 npm run clean:shared      # Clean shared CSS output
 
-# Code Quality
+# Code Quality (run from base directory)
 npm run lint:all          # Lint all modules
 npm run lint:admin        # Lint admin module
 npm run lint:ui           # Lint UI module
 npm run lint:shared       # Lint shared library
 
-# Formatting
+# Formatting (run from base directory)
 npm run format:all        # Format all code
 npm run format:check      # Check formatting without changes
 
-# Dependencies
+# Dependencies (run from base directory)
 npm run install:all       # Install dependencies for all modules
 ```
 
@@ -111,12 +113,12 @@ import { AdminStage } from '@/components/core/AdminStage';
 
 ### Starting Development
 
-1. **Start CSS watching** (required for styling):
+1. **Start CSS watching** (required for styling) - run from base directory:
    ```bash
    npm run dev
    ```
 
-2. **Start development servers**:
+2. **Start development servers** - run from base directory:
    ```bash
    # Start all servers
    npm run dev:all
@@ -133,8 +135,8 @@ import { AdminStage } from '@/components/core/AdminStage';
 
 ### Code Quality
 
-- **Linting**: Run `npm run lint:all` to check all modules
-- **Formatting**: Run `npm run format:all` to format all code
+- **Linting**: Run `npm run lint:all` to check all modules (from base directory)
+- **Formatting**: Run `npm run format:all` to format all code (from base directory)
 - **Type checking**: TypeScript errors will show in your IDE and build process
 
 ### Adding New Components
@@ -168,13 +170,15 @@ import { AdminStage } from '@/components/core/AdminStage';
 
 ### Common Issues
 
-**CSS not updating**: Make sure CSS watching is running (`npm run dev`)
+**CSS not updating**: Make sure CSS watching is running (`npm run dev` from base directory)
 
 **Import errors**: Check that components are properly exported from index files
 
-**Build failures**: Run `npm run clean:all` and rebuild
+**Build failures**: Run `npm run clean:all` and rebuild (from base directory)
 
 **TypeScript errors**: Ensure all modules extend the base TypeScript config
+
+**Docker issues**: Ensure all Docker commands are run from the base directory
 
 ### Getting Help
 

@@ -9,7 +9,7 @@ import { X, Save, Loader2 } from 'lucide-react';
 interface NodeCreationDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  onNodeCreated: (node: any) => void;
+  onNodeCreated?: (node: any) => void;
 }
 
 export function NodeCreationDialog({
@@ -70,7 +70,7 @@ export function NodeCreationDialog({
 
       const response = await apiClient.createGraphNode(formData);
       if (response.success) {
-        onNodeCreated(response.data);
+        onNodeCreated?.(response.data);
         handleClose();
       } else {
         setError(response.message || 'Failed to create node');

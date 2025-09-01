@@ -9,7 +9,7 @@ import { X, ArrowRight } from 'lucide-react';
 interface EdgeCreationDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  onEdgeCreated: (edge: any) => void;
+  onEdgeCreated?: (edge: any) => void;
   availableNodes: CoreGraphNode[];
 }
 
@@ -82,7 +82,7 @@ export function EdgeCreationDialog({
       });
 
       if (response.success) {
-        onEdgeCreated(response.data);
+        onEdgeCreated?.(response.data);
         onClose();
       } else {
         setError(response.message || 'Failed to create edge');

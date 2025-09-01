@@ -12,7 +12,7 @@
    ```bash
    POSTGRES_DB=protogen_dev
    POSTGRES_USER=protogen
-   POSTGRES_PASSWORD=protogen_dev_password
+   POSTGRES_PASSWORD=your_secure_dev_password_here
    ```
 
 3. Start the development environment:
@@ -27,9 +27,9 @@ For production deployment, update the environment variables with your live datab
 
 ```bash
 # Production Database
-POSTGRES_DB=demo_protogen
-POSTGRES_USER=demo_protogen
-POSTGRES_PASSWORD=PRODUCTIONPASSWORD
+POSTGRES_DB=your_production_db_name
+POSTGRES_USER=your_production_username
+POSTGRES_PASSWORD=your_secure_production_password
 ```
 
 #### Security Notes
@@ -37,6 +37,7 @@ POSTGRES_PASSWORD=PRODUCTIONPASSWORD
 - **Use environment variables in production**
 - **Store credentials securely (password manager recommended)**
 - **Rotate passwords regularly**
+- **Use strong, unique passwords for each environment**
 
 #### Deployment Steps
 1. Set up environment variables on your production server
@@ -56,8 +57,8 @@ POSTGRES_PASSWORD=PRODUCTIONPASSWORD
 
 | Variable | Development | Production | Description |
 |----------|-------------|------------|-------------|
-| POSTGRES_DB | protogen_dev | intexqdy_protogen | Database name |
-| POSTGRES_USER | protogen | intexqdy_svc_protogen | Database username |
-| POSTGRES_PASSWORD | protogen_dev_password | [secure] | Database password |
+| POSTGRES_DB | protogen_dev | your_production_db_name | Database name |
+| POSTGRES_USER | protogen | your_production_username | Database username |
+| POSTGRES_PASSWORD | your_secure_dev_password | your_secure_production_password | Database password |
 | APP_ENV | local | production | Application environment |
 | APP_DEBUG | true | false | Debug mode | 

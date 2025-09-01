@@ -3,7 +3,6 @@ import {
   CoreGraphNode, 
   CoreGraphEdge, 
   CoreGraphNodeType, 
-  CoreGraphEdgeType,
   apiClient 
 } from '@progress/shared';
 import { Network, Plus, Search, Settings, Eye, Edit3, Trash2, Loader2, Grid3X3, List, Link } from 'lucide-react';
@@ -28,7 +27,7 @@ export function GraphStudio({
   const [nodes, setNodes] = useState<CoreGraphNode[]>([]);
   const [edges, setEdges] = useState<CoreGraphEdge[]>([]);
   const [nodeTypes, setNodeTypes] = useState<CoreGraphNodeType[]>([]);
-  const [edgeTypes, setEdgeTypes] = useState<CoreGraphEdgeType[]>([]);
+
   const [selectedNode, setSelectedNode] = useState<CoreGraphNode | null>(null);
   const [viewMode, setViewMode] = useState<'explore' | 'edit' | 'design'>('explore');
   const [searchTerm, setSearchTerm] = useState('');
@@ -78,13 +77,17 @@ export function GraphStudio({
     setShowCreateDialog(true);
   };
 
-  const handleNodeCreated = (newNode: CoreGraphNode) => {
+
+
+
+
+  const handleNodeCreated = (_newNode: CoreGraphNode) => {
     // Refresh the entire graph data to ensure consistency
     loadGraphData();
     onNodeCreate?.();
   };
 
-  const handleEdgeCreated = (newEdge: any) => {
+  const handleEdgeCreated = (_newEdge: any) => {
     // Refresh the entire graph data to ensure consistency
     loadGraphData();
   };
@@ -114,7 +117,7 @@ export function GraphStudio({
       }
 
       if (edgeTypesResponse.success) {
-        setEdgeTypes(edgeTypesResponse.data);
+
       }
 
       // Load nodes and edges
@@ -368,6 +371,8 @@ export function GraphStudio({
                       onNodeClick={handleNodeClick}
                       selectedNodeGuid={selectedNode?.guid || null}
                       className="w-full h-full"
+                      onNodeEdit={viewMode !== 'explore' ? handleEditNode : undefined}
+                      onNodeDelete={viewMode !== 'explore' ? handleDeleteNode : undefined}
                     />
                   </div>
                 ) : displayMode === 'grid' ? (

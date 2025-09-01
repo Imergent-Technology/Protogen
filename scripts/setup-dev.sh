@@ -27,7 +27,7 @@ DB_HOST=postgres
 DB_PORT=5432
 DB_DATABASE=protogen_dev
 DB_USERNAME=protogen
-DB_PASSWORD=protogen_dev_password
+DB_PASSWORD=your_secure_dev_password_here
 
 BROADCAST_DRIVER=log
 CACHE_DRIVER=file
@@ -74,6 +74,7 @@ VITE_PUSHER_APP_CLUSTER="\${PUSHER_APP_CLUSTER}"
 EOF
 
 echo "✅ Development environment file created!"
+echo "⚠️  IMPORTANT: Update the DB_PASSWORD in api/.env with a secure password before continuing!"
 
 # Start Docker services
 echo "🐳 Starting Docker services..."
@@ -103,8 +104,9 @@ npm install
 echo "✅ Development environment setup complete!"
 echo ""
 echo "🎉 Next steps:"
-echo "1. Start the development server: docker-compose up"
-echo "2. Access the application at: http://localhost:8080"
-echo "3. Access the UI at: http://localhost:3000"
+echo "1. Update the DB_PASSWORD in api/.env with a secure password"
+echo "2. Start the development server: docker-compose up (from base directory)"
+echo "3. Access the application at: http://localhost:8080"
+echo "4. Access the UI at: http://localhost:3000"
 echo ""
-echo "📝 For production deployment, update api/.env with your cPanel database credentials" 
+echo "📝 For production deployment, update api/.env with your production database credentials" 
