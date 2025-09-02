@@ -66,6 +66,86 @@ This is a single repository containing:
 
 **Important**: All Docker and Tailwind commands must be run from the base `progress` folder, not from individual project directories.
 
+#### Prerequisites
+- **Docker Desktop** (with WSL2 backend on Windows)
+- **Node.js 18+** and **npm**
+- **Git**
+
+#### Option 1: Complete Automated Setup (Recommended)
+
+##### Linux/macOS/WSL2
+```bash
+# Clone the repository
+git clone https://github.com/Imergent-Technology/Protogen.git
+cd Protogen
+
+# Make setup script executable and run it
+chmod +x scripts/setup-complete.sh
+./scripts/setup-complete.sh
+```
+
+##### Windows (PowerShell as Administrator)
+```powershell
+# Clone the repository
+git clone https://github.com/Imergent-Technology/Protogen.git
+cd Protogen
+
+# Run the PowerShell setup script
+.\scripts\setup-windows.ps1
+```
+
+#### Option 2: Manual Setup
+
+##### 1. Clone and Setup DNS
+```bash
+git clone https://github.com/Imergent-Technology/Protogen.git
+cd Protogen
+
+# Add progress.local to hosts file
+# Linux/macOS/WSL2:
+echo "127.0.0.1 progress.local" | sudo tee -a /etc/hosts
+
+# Windows (PowerShell as Administrator):
+Add-Content "$env:SystemRoot\System32\drivers\etc\hosts" "`n127.0.0.1 progress.local"
+```
+
+##### 2. Environment Configuration
+```bash
+# Copy environment template
+cp env.template api/.env
+
+# Generate Laravel app key
+docker-compose run --rm api php artisan key:generate
+```
+
+##### 3. Start Services
+```bash
+# Build and start all containers
+docker-compose up -d
+
+# Wait for containers to be ready, then run migrations
+docker-compose exec api php artisan migrate --force
+docker-compose exec api php artisan db:seed --force
+
+# Create admin user
+docker-compose exec api php artisan tinker --execute="
+\$user = new App\Models\User();
+\$user->name = 'Admin User';
+\$user->email = 'admin@example.com';
+\$user->password = Hash::make('password');
+\$user->email_verified_at = now();
+\$user->is_admin = true;
+\$user->save();
+"
+```
+
+##### 4. Build Frontend Assets
+```bash
+# Install dependencies and build CSS
+npm install
+npm run build:css:prod
+```
+
 #### CSS Build Process
 Before starting development, you need to build the shared CSS:
 
@@ -76,61 +156,6 @@ npm run build:css:prod
 # Or watch for changes during development - run from base directory
 npm run build:css
 ```
-
-#### Option 1: Quick Setup (Recommended)
-```bash
-# Clone the repository
-git clone https://github.com/Imergent-Technology/Protogen.git
-cd Protogen
-
-# Run the setup script (Linux/macOS)
-chmod +x scripts/setup-dev.sh
-./scripts/setup-dev.sh
-
-# Or manually run the commands:
-# 1. Start PostgreSQL container (from base directory)
-docker-compose up -d postgres
-
-# 2. Create .env file with development settings
-# (Copy the content from scripts/setup-dev.sh)
-
-# 3. Install dependencies and run migrations
-cd api
-composer install
-php artisan key:generate
-php artisan migrate
-npm install
-```
-
-#### Option 2: Manual Setup
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/Imergent-Technology/Protogen.git
-   cd Protogen
-   ```
-
-2. **Start PostgreSQL container (from base directory)**
-   ```bash
-   docker-compose up -d postgres
-   ```
-
-3. **Backend Setup (api/)**
-   ```bash
-   cd api
-   composer install
-   # Create .env file with development database settings
-   php artisan key:generate
-   php artisan migrate
-   npm install
-   npm run dev
-   ```
-
-4. **Frontend Setup (ui/)**
-   ```bash
-   cd ui
-   npm install
-   npm run dev
-   ```
 
 ### Running the Application
 

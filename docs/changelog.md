@@ -8,11 +8,32 @@
 - **Form Validation**: Created CoreGraphEdgeRequest for edge creation/update validation
 - **API Endpoints**: Added registry management API with CRUD operations
 - **Testing**: Comprehensive unit tests for edge weights and registry validation
+- **Complete Development Environment Setup Automation**:
+  - `scripts/setup-complete.sh` for Linux/macOS/WSL2 environments
+  - `scripts/setup-windows.ps1` for Windows PowerShell environments
+  - Automated DNS configuration with `progress.local` domain
+  - Automated database setup with admin user creation
+  - Comprehensive setup verification and testing
+- **Enhanced Documentation and Troubleshooting**:
+  - Updated README with automated setup instructions
+  - Comprehensive troubleshooting guide (`docs/TROUBLESHOOTING.md`)
+  - Platform-specific setup instructions (Linux/macOS/Windows)
+  - Common issue solutions and debugging commands
 
 ### Changed
 - **CoreGraphEdge Model**: Added weight field with proper casting and validation
 - **API Validation**: Updated edge creation to use form request validation
 - **Database Schema**: Added weight column to core_graph_edges table
+- **DNS Configuration**: Migrated from `localhost` to `progress.local` domain
+  - Updated all frontend API calls to use `progress.local:8080`
+  - Updated CORS configuration for consistent domain usage
+  - Updated Vite configuration with `allowedHosts` for `progress.local`
+  - Updated Nginx configuration for `progress.local` server name
+  - Updated all documentation and scripts to reference new domain
+- **CORS Handling**: Simplified to use Laravel CORS middleware exclusively
+  - Removed duplicate CORS headers from Nginx configuration
+  - Added `Accept: application/json` headers to frontend requests
+  - Resolved CORS policy and redirect issues
 
 ### Technical Details
 - **Edge Weight Range**: 0.00001 to 999.99999 (5 decimal precision)
