@@ -159,7 +159,7 @@ function App() {
   const checkAuthStatus = async (token?: string) => {
     try {
       const tokenToUse = token || authToken;
-      const response = await fetch('http://localhost:8080/api/auth/admin/check', {
+              const response = await fetch('http://progress.local:8080/api/auth/admin/check', {
         headers: {
           'Authorization': `Bearer ${tokenToUse}`,
           'Content-Type': 'application/json',
@@ -202,7 +202,7 @@ function App() {
     setLoginError(null);
 
     try {
-      const response = await fetch('http://localhost:8080/api/auth/admin/login', {
+      const response = await fetch('http://progress.local:8080/api/auth/admin/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -235,7 +235,7 @@ function App() {
   const handleLogout = async () => {
     try {
       if (authToken) {
-        await fetch('http://localhost:8080/api/auth/admin/logout', {
+        await fetch('http://progress.local:8080/api/auth/admin/logout', {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${authToken}`,

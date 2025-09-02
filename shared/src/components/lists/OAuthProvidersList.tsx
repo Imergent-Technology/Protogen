@@ -41,7 +41,7 @@ interface OAuthProvidersListProps {
 
 export const OAuthProvidersList: React.FC<OAuthProvidersListProps> = ({
   token,
-  apiBaseUrl = 'http://localhost:8080/api',
+          apiBaseUrl = 'http://progress.local:8080/api',
   showUserInfo = true,
   onProviderDelete
 }) => {

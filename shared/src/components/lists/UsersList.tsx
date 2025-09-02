@@ -43,7 +43,7 @@ export const UsersList: React.FC<UsersListProps> = ({
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:8080/api/users', {
+              const response = await fetch('http://progress.local:8080/api/users', {
         credentials: 'include'
       });
       

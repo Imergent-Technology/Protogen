@@ -139,9 +139,9 @@ npm install
 docker-compose up
 
 # Access the application
-# Laravel API: http://localhost:8080
-# React UI: http://localhost:3000
-# PostgreSQL: localhost:5432
+# Laravel API: http://progress.local:8080
+# React UI: http://progress.local:3000
+# PostgreSQL: progress.local:5432
 ```
 
 ## Database Schema

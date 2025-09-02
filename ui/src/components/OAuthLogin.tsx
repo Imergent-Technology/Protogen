@@ -29,7 +29,7 @@ export const OAuthLogin: React.FC<OAuthLoginProps> = ({
     setIsLoading(provider);
     try {
       // Redirect to OAuth provider
-      window.location.href = `http://localhost:8080/api/auth/oauth/${provider}/redirect`;
+              window.location.href = `http://progress.local:8080/api/auth/oauth/${provider}/redirect`;
     } catch (error) {
       console.error(`OAuth login failed for ${provider}:`, error);
       setIsLoading(null);
@@ -40,7 +40,7 @@ export const OAuthLogin: React.FC<OAuthLoginProps> = ({
     if (!token) return;
     
     try {
-      const response = await fetch('http://localhost:8080/api/auth/oauth/logout', {
+              const response = await fetch('http://progress.local:8080/api/auth/oauth/logout', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

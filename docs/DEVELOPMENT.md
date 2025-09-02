@@ -129,9 +129,9 @@ import { AdminStage } from '@/components/core/AdminStage';
    ```
 
 3. **Access applications**:
-   - Admin: http://localhost:5173
-   - UI: http://localhost:3000
-   - API: http://localhost:8080
+   - Admin: http://progress.local:3001
+- UI: http://progress.local:3000
+- API: http://progress.local:8080
 
 ### Code Quality
 

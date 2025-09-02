@@ -162,7 +162,7 @@ export class ApiClient {
   private baseUrl: string;
   private defaultHeaders: Record<string, string>;
 
-  constructor(baseUrl: string = 'http://localhost:8080/api') {
+      constructor(baseUrl: string = 'http://progress.local:8080/api') {
     this.baseUrl = baseUrl;
     this.defaultHeaders = {
       'Content-Type': 'application/json',

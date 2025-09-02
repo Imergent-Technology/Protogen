@@ -49,7 +49,7 @@ export const UsersList: React.FC<UsersListProps> = ({
         throw new Error('No authentication token found');
       }
 
-      const response = await fetch('http://localhost:8080/api/users', {
+              const response = await fetch('http://progress.local:8080/api/users', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
