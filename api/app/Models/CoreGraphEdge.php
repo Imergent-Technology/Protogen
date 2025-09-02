@@ -16,6 +16,7 @@ class CoreGraphEdge extends Model
         'source_node_guid',
         'target_node_guid',
         'edge_type_id',
+        'weight',
         'label',
         'description',
         'properties',
@@ -23,6 +24,7 @@ class CoreGraphEdge extends Model
     ];
 
     protected $casts = [
+        'weight' => 'float',
         'properties' => 'array',
         'is_active' => 'boolean',
     ];
@@ -34,6 +36,10 @@ class CoreGraphEdge extends Model
         static::creating(function ($model) {
             if (empty($model->guid)) {
                 $model->guid = (string) Str::uuid();
+            }
+            
+            if (empty($model->weight)) {
+                $model->weight = 1.00000;
             }
         });
     }

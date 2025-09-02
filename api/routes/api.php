@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\StageApiController;
 use App\Http\Controllers\Api\UserApiController;
 use App\Http\Controllers\Api\CoreGraphApiController;
+use App\Http\Controllers\Api\RegistryApiController;
 use App\Http\Controllers\Auth\AdminAuthController;
 
 /*
@@ -21,7 +22,7 @@ use App\Http\Controllers\Auth\AdminAuthController;
 // OAuth routes moved to web.php for session support
 
 // Admin authentication routes (use Sanctum for API auth)
-Route::prefix('auth/admin')->group(function () {
+Route::group(['prefix' => 'auth/admin'], function () {
     Route::post('login', [AdminAuthController::class, 'login']);
     Route::post('logout', [AdminAuthController::class, 'logout'])->middleware('auth:sanctum');
     Route::get('user', [AdminAuthController::class, 'user'])->middleware('auth:sanctum');
@@ -75,4 +76,18 @@ Route::prefix('graph')->middleware(['auth:sanctum', 'admin'])->group(function ()
     
     // Complete graph
     Route::get('/', [CoreGraphApiController::class, 'getGraph']);
+});
+
+// Registry API routes (admin only)
+Route::prefix('registry')->middleware(['auth:sanctum', 'admin'])->group(function () {
+    Route::get('/', [RegistryApiController::class, 'index']);
+    Route::get('/scope/{scope}', [RegistryApiController::class, 'getScope']);
+    Route::get('/{scope}/{key}', [RegistryApiController::class, 'show']);
+    Route::post('/', [RegistryApiController::class, 'store']);
+    Route::put('/{scope}/{key}', [RegistryApiController::class, 'update']);
+    Route::delete('/{scope}/{key}', [RegistryApiController::class, 'destroy']);
+    Route::post('/validate', [RegistryApiController::class, 'validateMetadata']);
+    Route::get('/{scope}/schema', [RegistryApiController::class, 'getSchema']);
+    Route::get('/{scope}/presentational', [RegistryApiController::class, 'getPresentationalKeys']);
+    Route::get('/{scope}/defaults', [RegistryApiController::class, 'getDefaults']);
 }); 

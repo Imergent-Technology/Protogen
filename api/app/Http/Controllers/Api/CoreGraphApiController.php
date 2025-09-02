@@ -7,6 +7,7 @@ use App\Models\CoreGraphNode;
 use App\Models\CoreGraphEdge;
 use App\Models\CoreGraphNodeType;
 use App\Models\CoreGraphEdgeType;
+use App\Http\Requests\CoreGraphEdgeRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Validator;
@@ -183,34 +184,9 @@ class CoreGraphApiController extends Controller
     /**
      * Create a new edge
      */
-    public function createEdge(Request $request): JsonResponse
+    public function createEdge(CoreGraphEdgeRequest $request): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
-            'source_node_guid' => 'required|exists:core_graph_nodes,guid',
-            'target_node_guid' => 'required|exists:core_graph_nodes,guid',
-            'edge_type_id' => 'required|exists:core_graph_edge_types,id',
-            'label' => 'nullable|string|max:255',
-            'description' => 'nullable|string',
-            'properties' => 'nullable|array',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation failed',
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
-        // Prevent self-loops
-        if ($request->source_node_guid === $request->target_node_guid) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Cannot create edge to self'
-            ], 422);
-        }
-
-        $edge = CoreGraphEdge::create($request->all());
+        $edge = CoreGraphEdge::create($request->validated());
 
         return response()->json([
             'success' => true,

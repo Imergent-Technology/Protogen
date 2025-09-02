@@ -17,6 +17,7 @@ return new class extends Migration
             $table->uuid('source_node_guid'); // Source node GUID
             $table->uuid('target_node_guid'); // Target node GUID
             $table->foreignId('edge_type_id')->constrained('core_graph_edge_types')->onDelete('restrict');
+            $table->decimal('weight', 8, 5)->default(1.00000);
             $table->string('label')->nullable();
             $table->text('description')->nullable();
             $table->jsonb('properties')->nullable(); // Edge-specific properties
