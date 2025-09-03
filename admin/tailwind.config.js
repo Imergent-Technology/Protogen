@@ -23,6 +23,18 @@ export default {
           DEFAULT: "var(--color-destructive)",
           foreground: "var(--color-destructive-foreground)",
         },
+        success: {
+          DEFAULT: "var(--color-success)",
+          foreground: "var(--color-success-foreground)",
+        },
+        warning: {
+          DEFAULT: "var(--color-warning)",
+          foreground: "var(--color-warning-foreground)",
+        },
+        info: {
+          DEFAULT: "var(--color-info)",
+          foreground: "var(--color-info-foreground)",
+        },
         muted: {
           DEFAULT: "var(--color-muted)",
           foreground: "var(--color-muted-foreground)",
@@ -38,6 +50,15 @@ export default {
         card: {
           DEFAULT: "var(--color-card)",
           foreground: "var(--color-card-foreground)",
+        },
+        // Status indicator colors with opacity variants
+        status: {
+          admin: "var(--color-primary)",
+          user: "var(--color-success)",
+          error: "var(--color-destructive)",
+          success: "var(--color-success)",
+          warning: "var(--color-warning)",
+          info: "var(--color-info)",
         },
       },
       borderRadius: {

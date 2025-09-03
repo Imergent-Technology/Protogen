@@ -26,35 +26,35 @@ const stageTypeConfigs = {
     name: 'Basic Stage',
     description: 'Simple content display with text and basic formatting',
     icon: FileText,
-    color: 'text-blue-500',
+    color: 'text-status-info',
     features: ['Text content', 'Basic formatting', 'Simple layout']
   },
   document: {
     name: 'Document Stage',
     description: 'Rich text document with advanced formatting options',
     icon: FileText,
-    color: 'text-green-500',
+    color: 'text-status-success',
     features: ['Rich text editor', 'Advanced formatting', 'Media support']
   },
   graph: {
     name: 'Graph Stage',
     description: 'Interactive graph visualization with nodes and edges',
     icon: Network,
-    color: 'text-purple-500',
+    color: 'text-primary',
     features: ['Interactive graphs', 'Node/edge management', 'Sigma.js integration']
   },
   table: {
     name: 'Table Stage',
     description: 'Data table with rows, columns, and spreadsheet-like functionality',
     icon: Table,
-    color: 'text-orange-500',
+    color: 'text-status-warning',
     features: ['Data tables', 'Row/column management', 'Export functionality']
   },
   custom: {
     name: 'Custom Stage',
     description: 'Extensible custom content with plugin support',
     icon: Code,
-    color: 'text-gray-500',
+    color: 'text-muted-foreground',
     features: ['Custom components', 'Plugin system', 'Flexible content']
   }
 };
@@ -260,7 +260,7 @@ export function StageTypeManager({ stage, onUpdate, onClose }: StageTypeManagerP
                     </Button>
                   ) : (
                     <div className="flex items-center space-x-2">
-                      {config.isActive ? <Eye className="h-4 w-4 text-green-500" /> : <EyeOff className="h-4 w-4 text-gray-500" />}
+                      {config.isActive ? <Eye className="h-4 w-4 text-status-success" /> : <EyeOff className="h-4 w-4 text-muted-foreground" />}
                       <span className="text-sm">{config.isActive ? 'Active' : 'Inactive'}</span>
                     </div>
                   )}

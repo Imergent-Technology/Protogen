@@ -36,30 +36,30 @@ export function ToastComponent({ toast, onRemove }: ToastProps) {
   const getIcon = () => {
     switch (toast.type) {
       case 'success':
-        return <CheckCircle className="h-5 w-5 text-green-500" />;
+        return <CheckCircle className="h-5 w-5 text-status-success" />;
       case 'error':
-        return <AlertCircle className="h-5 w-5 text-red-500" />;
+        return <AlertCircle className="h-5 w-5 text-status-error" />;
       case 'warning':
-        return <AlertCircle className="h-5 w-5 text-yellow-500" />;
+        return <AlertCircle className="h-5 w-5 text-status-warning" />;
       case 'info':
-        return <Info className="h-5 w-5 text-blue-500" />;
+        return <Info className="h-5 w-5 text-status-info" />;
       default:
-        return <Info className="h-5 w-5 text-blue-500" />;
+        return <Info className="h-5 w-5 text-status-info" />;
     }
   };
 
   const getBackgroundColor = () => {
     switch (toast.type) {
       case 'success':
-        return 'bg-green-50 border-green-200';
+        return 'bg-status-success/10 border-status-success/20';
       case 'error':
-        return 'bg-red-50 border-red-200';
+        return 'bg-status-error/10 border-status-error/20';
       case 'warning':
-        return 'bg-yellow-50 border-yellow-200';
+        return 'bg-status-warning/10 border-status-warning/20';
       case 'info':
-        return 'bg-blue-50 border-blue-200';
+        return 'bg-status-info/10 border-status-info/20';
       default:
-        return 'bg-blue-50 border-blue-200';
+        return 'bg-status-info/10 border-status-info/20';
     }
   };
 

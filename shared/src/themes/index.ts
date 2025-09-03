@@ -33,6 +33,18 @@ export interface ThemeColors {
   destructive: string;
   destructiveForeground: string;
   
+  // Success colors
+  success: string;
+  successForeground: string;
+  
+  // Warning colors
+  warning: string;
+  warningForeground: string;
+  
+  // Info colors
+  info: string;
+  infoForeground: string;
+  
   // Border and input colors
   border: string;
   input: string;
@@ -79,6 +91,18 @@ export const themes: Record<Theme, ThemeColors> = {
     destructive: 'rgb(239, 68, 68)',
     destructiveForeground: 'rgb(248, 250, 252)',
     
+    // Success colors
+    success: 'rgb(34, 197, 94)',
+    successForeground: 'rgb(248, 250, 252)',
+    
+    // Warning colors
+    warning: 'rgb(245, 158, 11)',
+    warningForeground: 'rgb(248, 250, 252)',
+    
+    // Info colors
+    info: 'rgb(59, 130, 246)',
+    infoForeground: 'rgb(248, 250, 252)',
+    
     // Border and input colors
     border: 'rgb(226, 232, 240)',
     input: 'rgb(226, 232, 240)',
@@ -123,6 +147,18 @@ export const themes: Record<Theme, ThemeColors> = {
     // Destructive colors
     destructive: 'rgb(127, 29, 29)',
     destructiveForeground: 'rgb(250, 250, 250)',
+    
+    // Success colors
+    success: 'rgb(34, 197, 94)',
+    successForeground: 'rgb(250, 250, 250)',
+    
+    // Warning colors
+    warning: 'rgb(245, 158, 11)',
+    warningForeground: 'rgb(250, 250, 250)',
+    
+    // Info colors
+    info: 'rgb(59, 130, 246)',
+    infoForeground: 'rgb(250, 250, 250)',
     
     // Border and input colors
     border: 'rgb(39, 39, 42)',

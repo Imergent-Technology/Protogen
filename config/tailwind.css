@@ -17,6 +17,12 @@
   --color-accent-foreground: rgb(10, 10, 10);
   --color-destructive: rgb(239, 68, 68);
   --color-destructive-foreground: rgb(248, 250, 252);
+  --color-success: rgb(34, 197, 94);
+  --color-success-foreground: rgb(248, 250, 252);
+  --color-warning: rgb(245, 158, 11);
+  --color-warning-foreground: rgb(248, 250, 252);
+  --color-info: rgb(59, 130, 246);
+  --color-info-foreground: rgb(248, 250, 252);
   --color-border: rgb(226, 232, 240);
   --color-input: rgb(226, 232, 240);
   --color-ring: rgb(59, 130, 246);
@@ -41,6 +47,12 @@
   --color-accent-foreground: rgb(250, 250, 250);
   --color-destructive: rgb(127, 29, 29);
   --color-destructive-foreground: rgb(250, 250, 250);
+  --color-success: rgb(34, 197, 94);
+  --color-success-foreground: rgb(250, 250, 250);
+  --color-warning: rgb(245, 158, 11);
+  --color-warning-foreground: rgb(250, 250, 250);
+  --color-info: rgb(59, 130, 246);
+  --color-info-foreground: rgb(250, 250, 250);
   --color-border: rgb(39, 39, 42);
   --color-input: rgb(39, 39, 42);
   --color-ring: rgb(34, 197, 94);

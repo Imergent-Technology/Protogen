@@ -59,7 +59,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin, loading = false
           </div>
 
           {error && (
-            <div className="text-red-500 text-sm bg-red-50 border border-red-200 rounded-md p-3">
+            <div className="text-status-error text-sm bg-status-error/10 border border-status-error/20 rounded-md p-3">
               {error}
             </div>
           )}

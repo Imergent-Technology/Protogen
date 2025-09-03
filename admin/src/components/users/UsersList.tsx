@@ -109,7 +109,7 @@ export const UsersList: React.FC<UsersListProps> = ({
   if (error) {
     return (
       <div className={`text-center py-12 ${className}`}>
-        <div className="text-red-500 mb-4">
+        <div className="text-status-error mb-4">
           <User className="h-12 w-12 mx-auto mb-2" />
           <p className="text-lg font-semibold">Error Loading Users</p>
           <p className="text-sm text-muted-foreground">{error}</p>
@@ -271,8 +271,8 @@ export const UsersList: React.FC<UsersListProps> = ({
                   <td className="px-6 py-4">
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                       user.is_admin 
-                        ? 'bg-purple-100 text-purple-800' 
-                        : 'bg-green-100 text-green-800'
+                        ? 'bg-status-admin/20 text-status-admin border border-status-admin/30' 
+                        : 'bg-status-user/20 text-status-user border border-status-user/30'
                     }`}>
                       {user.is_admin ? 'Admin' : 'User'}
                     </span>

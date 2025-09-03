@@ -182,7 +182,7 @@ export function UnifiedLinkDialog({
               className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-background text-foreground"
             />
             {externalUrl && !isValidExternalUrl && (
-              <p className="text-sm text-red-500">
+              <p className="text-sm text-status-error">
                 Please enter a valid URL starting with http://, https://, mailto:, or tel:
               </p>
             )}
