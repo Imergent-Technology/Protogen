@@ -35,7 +35,7 @@ export function FullScreenStageViewer({
 
   useEffect(() => {
     if (stage) {
-      setContent(stage.config.content || '');
+              setContent(stage.config?.content || '');
     }
   }, [stage]);
 
@@ -58,7 +58,7 @@ export function FullScreenStageViewer({
       const updatedStage = {
         ...stage,
         config: {
-          ...stage.config,
+          ...(stage.config || {}),
           content
         }
       };
@@ -85,9 +85,9 @@ export function FullScreenStageViewer({
       <div className="flex items-center justify-between p-4 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="flex items-center space-x-4">
           <div className="flex items-center space-x-2">
-            {stage.config.icon && (
-              <span className="text-2xl">{stage.config.icon}</span>
-            )}
+                    {stage.config?.icon && (
+          <span className="text-2xl">{stage.config.icon}</span>
+        )}
             <div>
               <h1 className="text-lg font-semibold">{stage.name}</h1>
               {stage.description && (

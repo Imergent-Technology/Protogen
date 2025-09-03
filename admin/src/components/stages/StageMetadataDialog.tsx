@@ -42,7 +42,7 @@ export function StageMetadataDialog({
         name: stage.name,
         slug: stage.slug,
         description: stage.description || '',
-        icon: stage.config.icon || '',
+        icon: stage.config?.icon || '',
         is_active: stage.is_active
       });
     }
@@ -59,7 +59,7 @@ export function StageMetadataDialog({
         slug: formData.slug,
         description: formData.description,
         config: {
-          ...stage.config,
+          ...(stage.config || {}),
           icon: formData.icon
         },
         is_active: formData.is_active

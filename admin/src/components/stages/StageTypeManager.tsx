@@ -62,13 +62,13 @@ const stageTypeConfigs = {
 export function StageTypeManager({ stage, onUpdate, onClose }: StageTypeManagerProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [config, setConfig] = useState({
-    title: stage.config.title || stage.name || '',
+    title: stage.config?.title || stage.name || '',
     description: stage.description || '',
-    icon: stage.config.icon || '',
+    icon: stage.config?.icon || '',
     isActive: stage.is_active,
     sortOrder: stage.sort_order,
-    showFallback: stage.config.showFallback || false,
-    customConfig: stage.config.customConfig || {}
+    showFallback: stage.config?.showFallback || false,
+    customConfig: stage.config?.customConfig || {}
   });
 
   const handleSave = async () => {
@@ -79,7 +79,7 @@ export function StageTypeManager({ stage, onUpdate, onClose }: StageTypeManagerP
       is_active: config.isActive,
       sort_order: config.sortOrder,
       config: {
-        ...stage.config,
+        ...(stage.config || {}),
         title: config.title,
         icon: config.icon,
         showFallback: config.showFallback,
@@ -93,13 +93,13 @@ export function StageTypeManager({ stage, onUpdate, onClose }: StageTypeManagerP
 
   const handleCancel = () => {
     setConfig({
-      title: stage.config.title || stage.name || '',
+      title: stage.config?.title || stage.name || '',
       description: stage.description || '',
-      icon: stage.config.icon || '',
+      icon: stage.config?.icon || '',
       isActive: stage.is_active,
       sortOrder: stage.sort_order,
-      showFallback: stage.config.showFallback || false,
-      customConfig: stage.config.customConfig || {}
+      showFallback: stage.config?.showFallback || false,
+      customConfig: stage.config?.customConfig || {}
     });
     setIsEditing(false);
   };

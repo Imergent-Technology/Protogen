@@ -6,6 +6,8 @@ use App\Http\Controllers\Api\StageApiController;
 use App\Http\Controllers\Api\UserApiController;
 use App\Http\Controllers\Api\CoreGraphApiController;
 use App\Http\Controllers\Api\RegistryApiController;
+use App\Http\Controllers\Api\SceneApiController;
+use App\Http\Controllers\Api\SnapshotApiController;
 use App\Http\Controllers\Auth\AdminAuthController;
 
 /*
@@ -90,4 +92,26 @@ Route::prefix('registry')->middleware(['auth:sanctum', 'admin'])->group(function
     Route::get('/{scope}/schema', [RegistryApiController::class, 'getSchema']);
     Route::get('/{scope}/presentational', [RegistryApiController::class, 'getPresentationalKeys']);
     Route::get('/{scope}/defaults', [RegistryApiController::class, 'getDefaults']);
-}); 
+});
+
+// Scene API routes (admin only)
+Route::prefix('scenes')->middleware(['auth:sanctum', 'admin'])->group(function () {
+    Route::get('/', [SceneApiController::class, 'index']);
+    Route::get('/stats', [SceneApiController::class, 'stats']);
+    Route::get('/system', [SceneApiController::class, 'system']);
+    Route::get('/stage/{stageId}', [SceneApiController::class, 'forStage']);
+    Route::get('/{guid}', [SceneApiController::class, 'show']);
+});
+
+// Snapshot API routes (admin only)
+Route::prefix('snapshots')->middleware(['auth:sanctum', 'admin'])->group(function () {
+    Route::get('/', [SnapshotApiController::class, 'index']);
+    Route::get('/stats', [SnapshotApiController::class, 'stats']);
+    Route::post('/', [SnapshotApiController::class, 'store']);
+    Route::get('/{guid}', [SnapshotApiController::class, 'show']);
+    Route::post('/{guid}/publish', [SnapshotApiController::class, 'publish']);
+    Route::post('/{guid}/archive', [SnapshotApiController::class, 'archive']);
+    Route::get('/{guid}/manifest', [SnapshotApiController::class, 'manifest']);
+    Route::get('/{guid}/download', [SnapshotApiController::class, 'download']);
+    Route::delete('/{guid}', [SnapshotApiController::class, 'destroy']);
+});

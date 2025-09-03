@@ -131,8 +131,8 @@ docker-compose exec api php artisan db:seed --force
 docker-compose exec api php artisan tinker --execute="
 \$user = new App\Models\User();
 \$user->name = 'Admin User';
-\$user->email = 'admin@example.com';
-\$user->password = Hash::make('password');
+\$user->email = 'admin@progress.local';
+\$user->password = Hash::make('KeepCodeFlowin#333');
 \$user->email_verified_at = now();
 \$user->is_admin = true;
 \$user->save();

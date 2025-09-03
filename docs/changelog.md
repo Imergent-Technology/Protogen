@@ -8,6 +8,12 @@
 - **Form Validation**: Created CoreGraphEdgeRequest for edge creation/update validation
 - **API Endpoints**: Added registry management API with CRUD operations
 - **Testing**: Comprehensive unit tests for edge weights and registry validation
+- **Snapshot System**: Complete snapshot creation, publishing, and storage system
+  - Deterministic serialization with SHA256 content hashing
+  - Brotli/Gzip compression with fallback to uncompressed
+  - Content-addressed storage for deduplication
+  - Public CDN-friendly delivery system
+  - Comprehensive API endpoints for snapshot management
 - **Complete Development Environment Setup Automation**:
   - `scripts/setup-complete.sh` for Linux/macOS/WSL2 environments
   - `scripts/setup-windows.ps1` for Windows PowerShell environments
@@ -53,16 +59,35 @@
 - `api/database/seeders/RegistryCatalogSeeder.php`
 - `api/tests/Unit/CoreGraphEdgeWeightTest.php`
 - `api/tests/Unit/RegistryValidationTest.php`
+- **Scene Layer Files**:
+  - `api/database/migrations/2025_09_02_230058_create_scenes_table.php`
+  - `api/database/migrations/2025_09_02_230103_create_scene_nodes_table.php`
+  - `api/database/migrations/2025_09_02_230109_create_scene_edges_table.php`
+  - `api/app/Models/Scene.php`
+  - `api/app/Models/SceneNode.php`
+  - `api/app/Models/SceneEdge.php`
+  - `api/app/Http/Controllers/Api/SceneApiController.php`
+  - `api/database/seeders/SystemSceneSeeder.php`
+- **Snapshot System Files**:
+  - `api/database/migrations/2025_09_03_000001_create_snapshots_table.php`
+  - `api/app/Models/Snapshot.php`
+  - `api/app/Services/SnapshotBuilderService.php`
+  - `api/app/Http/Controllers/Api/SnapshotApiController.php`
 
 ### Files Modified
 - `api/app/Models/CoreGraphEdge.php` - Added weight field and casting
 - `api/app/Http/Controllers/Api/CoreGraphApiController.php` - Updated edge creation
-- `api/routes/api.php` - Added registry API routes
+- `api/routes/api.php` - Added registry API routes and Scene API routes
 
 ### Database Changes
 - Added `weight` column (decimal(8,5)) to `core_graph_edges` table
 - Created `registry_catalog` table for metadata definitions
 - Added proper indexes for performance
+- **Scene Layer Tables**:
+  - `scenes` table with full scene metadata, configuration, and styling
+  - `scene_nodes` table for presentational node instances with positioning and styling
+  - `scene_edges` table for presentational edge instances with path and styling
+  - Proper foreign key relationships and indexes for performance
 
 ### API Changes
 - **POST /api/graph/edges**: Now requires and validates weight field
@@ -70,6 +95,22 @@
 - **GET /api/registry/scope/{scope}**: Get entries for specific scope
 - **POST /api/registry/validate**: Validate metadata against registry rules
 - **GET /api/registry/{scope}/schema**: Get metadata schema for scope
+- **Scene API Endpoints**:
+  - **GET /api/scenes**: List all scenes with pagination and filtering
+  - **GET /api/scenes/{id}**: Get specific scene with full node/edge data
+  - **GET /api/scenes/system**: Get the System Scene (Core Graph mirror)
+  - **GET /api/scenes/stage/{stageId}**: Get scenes for specific stage
+- **GET /api/scenes/stats**: Get scene statistics and metadata
+- **Snapshot API Endpoints**:
+  - **GET /api/snapshots**: List all snapshots with pagination and filtering
+  - **POST /api/snapshots**: Create new snapshot for a scene
+  - **GET /api/snapshots/{guid}**: Get specific snapshot details
+  - **POST /api/snapshots/{guid}/publish**: Publish a snapshot
+  - **POST /api/snapshots/{guid}/archive**: Archive a snapshot
+  - **GET /api/snapshots/{guid}/manifest**: Get snapshot manifest
+  - **GET /api/snapshots/{guid}/download**: Download snapshot content
+  - **GET /api/snapshots/stats**: Get snapshot statistics
+  - **DELETE /api/snapshots/{guid}**: Delete a snapshot
 
 ### Testing
 - **Edge Weight Tests**: 7 test cases covering creation, validation, and updates
@@ -77,11 +118,12 @@
 - **Database Tests**: Proper setup/teardown with RefreshDatabase trait
 
 ### Next Steps
-- [ ] Run migrations and seeders
-- [ ] Test edge weight functionality in GraphStudio
-- [ ] Implement Scene layer (Phase 2)
-- [ ] Add Snapshot system (Phase 3)
+- [x] Run migrations and seeders
+- [x] Test edge weight functionality in GraphStudio
+- [x] Implement Scene layer (Phase 2) - **COMPLETED**
+- [x] Implement Snapshot system (Phase 3) - **COMPLETED**
 - [ ] Create UI components for registry management
+- [ ] Implement Scene authoring and management UI (Phase 5)
 
 ### Known Issues
 - None currently identified
@@ -94,7 +136,8 @@
 1. Run the new migrations: `php artisan migrate`
 2. Backfill existing edges: `php artisan db:seed --class=BackfillEdgeWeightsSeeder`
 3. Seed registry catalog: `php artisan db:seed --class=RegistryCatalogSeeder`
-4. Update any existing edge creation code to include weight field
+4. **Scene Layer Setup**: `php artisan db:seed --class=SystemSceneSeeder`
+5. Update any existing edge creation code to include weight field
 
 ### Performance Impact
 - **Minimal**: Weight field adds negligible storage overhead

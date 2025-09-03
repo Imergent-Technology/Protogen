@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 interface StageNavigationProps {
   stages: Stage[];
+  loading?: boolean;
   onStageSelect: (stage: Stage) => void;
   onNavigateToSection: (section: string) => void;
   currentStage?: Stage | null;
@@ -22,6 +23,7 @@ interface StageNode {
 
 export function StageNavigation({
   stages,
+  loading = false,
   onStageSelect,
   onNavigateToSection,
   currentStage
@@ -42,6 +44,33 @@ export function StageNavigation({
 
   // Build hierarchical structure
   const stageTree = useMemo(() => {
+    // If loading, return minimal tree
+    if (loading) {
+      return [
+        {
+          id: 'loading',
+          name: 'Loading...',
+          type: 'section' as const,
+          icon: '⏳',
+          children: []
+        }
+      ];
+    }
+    
+    // Ensure stages is a valid array
+    if (!Array.isArray(stages)) {
+      console.warn('StageNavigation: stages is not an array:', stages);
+      return [
+        {
+          id: 'error',
+          name: 'Error loading stages',
+          type: 'section' as const,
+          icon: '❌',
+          children: []
+        }
+      ];
+    }
+    
     const tree: StageNode[] = [
       {
         id: 'system',
@@ -62,14 +91,14 @@ export function StageNavigation({
         name: 'Stages',
         type: 'section',
         icon: '📄',
-                 children: stages
-           .filter(stage => !(stage as any).is_system) // Filter out system stages
+                 children: (stages || [])
+           .filter(stage => stage && stage.id && !(stage as any).is_system) // Filter out system stages and invalid stages
           .map(stage => ({
             id: `stage-${stage.id}`,
-            name: stage.name,
+            name: stage.name || 'Unnamed Stage',
             type: 'stage' as const,
             stage,
-            icon: stage.config.icon || getStageTypeIcon(stage.type)
+            icon: (stage.config?.icon) || getStageTypeIcon(stage.type || 'basic')
           }))
       },
       {
@@ -234,25 +263,35 @@ export function StageNavigation({
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <input
             type="text"
-            placeholder="Search stages..."
+            placeholder={loading ? "Loading stages..." : "Search stages..."}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full pl-10 pr-4 py-2 text-sm border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+            disabled={loading}
           />
         </div>
       </div>
 
       {/* Navigation Tree */}
       <div className="flex-1 overflow-y-auto p-2">
-        <AnimatePresence>
-          {filteredTree.map(node => renderNode(node))}
-        </AnimatePresence>
-        
-        {filteredTree.length === 0 && (
+        {loading ? (
           <div className="text-center py-8 text-muted-foreground">
-            <Search className="h-8 w-8 mx-auto mb-2 opacity-50" />
-            <p className="text-sm">No stages found</p>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
+            <p className="text-sm">Loading stages...</p>
           </div>
+        ) : (
+          <>
+            <AnimatePresence>
+              {filteredTree.map(node => renderNode(node))}
+            </AnimatePresence>
+            
+            {filteredTree.length === 0 && (
+              <div className="text-center py-8 text-muted-foreground">
+                <Search className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                <p className="text-sm">No stages found</p>
+              </div>
+            )}
+          </>
         )}
       </div>
 
@@ -261,13 +300,13 @@ export function StageNavigation({
         <div className="grid grid-cols-2 gap-2 text-xs">
           <div className="text-center">
             <div className="font-semibold text-primary">
-              {stages.filter(s => s.is_active).length}
+              {loading ? '...' : stages.filter(s => s.is_active).length}
             </div>
             <div className="text-muted-foreground">Published</div>
           </div>
           <div className="text-center">
             <div className="font-semibold text-primary">
-              {stages.filter(s => !s.is_active).length}
+              {loading ? '...' : stages.filter(s => !s.is_active).length}
             </div>
             <div className="text-muted-foreground">Drafts</div>
           </div>

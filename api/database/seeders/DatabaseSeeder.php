@@ -15,14 +15,20 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        // Create test user if it doesn't exist
+        User::firstOrCreate(
+            ['email' => 'test@progress.local'],
+            [
+                'name' => 'Test User',
+                'email' => 'test@progress.local',
+            ]
+        );
 
         $this->call([
             CoreGraphSystemSeeder::class,
             StageSeeder::class,
+            RegistryCatalogSeeder::class,
+            SystemSceneSeeder::class,
         ]);
     }
 }

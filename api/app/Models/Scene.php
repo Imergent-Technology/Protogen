@@ -1,0 +1,130 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
+
+class Scene extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'guid',
+        'name',
+        'slug',
+        'description',
+        'scene_type',
+        'config',
+        'meta',
+        'style',
+        'is_active',
+        'is_public',
+        'created_by',
+        'stage_id',
+        'published_at',
+    ];
+
+    protected $casts = [
+        'config' => 'array',
+        'meta' => 'array',
+        'style' => 'array',
+        'is_active' => 'boolean',
+        'is_public' => 'boolean',
+        'published_at' => 'datetime',
+    ];
+
+    protected $attributes = [
+        'scene_type' => 'custom',
+        'is_active' => true,
+        'is_public' => false,
+    ];
+
+    // Relationships
+    public function stage(): BelongsTo
+    {
+        return $this->belongsTo(Stage::class);
+    }
+
+    public function creator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function nodes(): HasMany
+    {
+        return $this->hasMany(SceneNode::class);
+    }
+
+    public function edges(): HasMany
+    {
+        return $this->hasMany(SceneEdge::class);
+    }
+
+    // Scopes
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
+
+    public function scopePublic($query)
+    {
+        return $query->where('is_public', true);
+    }
+
+    public function scopeOfType($query, $type)
+    {
+        return $query->where('scene_type', $type);
+    }
+
+    public function scopeForStage($query, $stageId)
+    {
+        return $query->where('stage_id', $stageId);
+    }
+
+    // Boot method to generate GUID
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($scene) {
+            if (empty($scene->guid)) {
+                $scene->guid = Str::uuid();
+            }
+        });
+    }
+
+    // Helper methods
+    public function isSystem(): bool
+    {
+        return $this->scene_type === 'system';
+    }
+
+    public function isCustom(): bool
+    {
+        return $this->scene_type === 'custom';
+    }
+
+    public function isTemplate(): bool
+    {
+        return $this->scene_type === 'template';
+    }
+
+    public function publish(): void
+    {
+        $this->update(['published_at' => now()]);
+    }
+
+    public function unpublish(): void
+    {
+        $this->update(['published_at' => null]);
+    }
+
+    public function isPublished(): bool
+    {
+        return !is_null($this->published_at);
+    }
+}

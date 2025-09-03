@@ -46,6 +46,7 @@ function App() {
   // Stage management
   const [currentStage, setCurrentStage] = useState<Stage | null>(null);
   const [stages, setStages] = useState<Stage[]>([]);
+  const [stagesLoading, setStagesLoading] = useState(false);
   const [isMetadataDialogOpen, setIsMetadataDialogOpen] = useState(false);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isStageTypeManagerOpen, setIsStageTypeManagerOpen] = useState(false);
@@ -253,6 +254,7 @@ function App() {
   };
 
   const loadStages = async () => {
+    setStagesLoading(true);
     try {
       const response = await apiClient.getStages();
       if (response.success) {
@@ -261,6 +263,8 @@ function App() {
     } catch (error) {
       console.error('Failed to load stages:', error);
       showError('Failed to load stages', 'Please try again later');
+    } finally {
+      setStagesLoading(false);
     }
   };
 
@@ -278,7 +282,7 @@ function App() {
         name: stage.name,
         slug: stage.slug,
         description: stage.description,
-        config: stage.config,
+        config: stage.config || {},
         is_active: stage.is_active
       });
       
@@ -547,6 +551,7 @@ function App() {
           >
             <StageNavigation
               stages={stages}
+              loading={stagesLoading}
               onStageSelect={handleStageSelect}
               onNavigateToSection={handleNavigationSection}
               currentStage={currentStage}
@@ -752,7 +757,7 @@ function App() {
                         onContextMenu={(e) => handleStageContextMenu(e, stage)}
                       >
                         <div className="flex items-center space-x-3 mb-4">
-                          <span className="text-2xl">{stage.config.icon || '📄'}</span>
+                          <span className="text-2xl">{stage.config?.icon || '📄'}</span>
                           <div className="flex-1">
                             <h3 className="font-medium">{stage.name}</h3>
                             <p className="text-sm text-muted-foreground">{stage.type}</p>

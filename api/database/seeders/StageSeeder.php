@@ -55,7 +55,10 @@ class StageSeeder extends Seeder
         ];
 
         foreach ($stages as $stageData) {
-            Stage::create($stageData);
+            Stage::firstOrCreate(
+                ['slug' => $stageData['slug']],
+                $stageData
+            );
         }
     }
 } 

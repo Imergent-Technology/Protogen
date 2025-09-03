@@ -174,11 +174,11 @@ function Setup-Database {
     # Create admin user if it doesn't exist
     Write-Status "Creating admin user..."
     docker-compose exec -T api php artisan tinker --execute="
-    if (!App\Models\User::where('email', 'admin@example.com')->exists()) {
+    if (!App\Models\User::where('email', 'admin@progress.local')->exists()) {
         \$user = new App\Models\User();
         \$user->name = 'Admin User';
-        \$user->email = 'admin@example.com';
-        \$user->password = Hash::make('password');
+        \$user->email = 'admin@progress.local';
+        \$user->password = Hash::make('KeepCodeFlowin#333');
         \$user->email_verified_at = now();
         \$user->is_admin = true;
         \$user->save();
@@ -248,8 +248,8 @@ function Show-AccessInfo {
     Write-Host "   • pgAdmin: http://progress.local:5050"
     Write-Host ""
     Write-Host "🔑 Admin Login Credentials:" -ForegroundColor Cyan
-    Write-Host "   • Email: admin@example.com"
-    Write-Host "   • Password: password"
+    Write-Host "   • Email: admin@progress.local"
+    Write-Host "   • Password: KeepCodeFlowin#333"
     Write-Host ""
     Write-Host "📁 Useful Commands:" -ForegroundColor Cyan
     Write-Host "   • View logs: docker-compose logs -f"
