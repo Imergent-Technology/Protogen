@@ -190,12 +190,13 @@ export class PerformanceManager {
   }
 
   // Preload deck scenes based on deck type and performance config
-  async preloadDeck(deck: Deck): Promise<void> {
+  async preloadDeck(deck: Deck, allScenes: Scene[]): Promise<void> {
     if (!deck.performance.keepWarm) {
       return;
     }
 
-    const scenesToPreload = deck.scenes.slice(0, 5); // Preload first 5 scenes
+    const deckScenes = allScenes.filter(scene => scene.deckIds.includes(deck.id));
+    const scenesToPreload = deckScenes.slice(0, 5); // Preload first 5 scenes
     
     await Promise.all(
       scenesToPreload.map(scene => this.warmScene(scene))

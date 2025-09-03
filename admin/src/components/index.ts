@@ -10,8 +10,8 @@ export * from './graph';
 // Stage management components
 export * from './stages';
 
-// Deck management components
-export * from './decks';
+// Scene management components
+export * from './scenes';
 
 // User management components
 export * from './users';

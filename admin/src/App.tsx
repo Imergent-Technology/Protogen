@@ -19,7 +19,7 @@ import {
   AdminToolbar,
   ToastContainer,
   useToasts,
-  DeckManager
+  SceneManager
 } from './components';
 import { AnimatePresence, motion } from 'framer-motion';
 import { initializeTheme } from '@progress/shared';
@@ -72,7 +72,7 @@ function App() {
       case 'stages-list':
         return 'Stage Management';
       case 'decks':
-        return 'Deck Management';
+        return 'Scene Management';
       case 'users':
         return 'User Management';
       case 'analytics':
@@ -132,11 +132,14 @@ function App() {
   const updateURL = (mode: ViewMode, stage?: Stage) => {
     setIsProgrammaticNavigation(true);
     switch (mode) {
-                      case 'stage':
-                  if (stage?.slug) {
-                    navigate(`/stage/${stage.slug}`);
-                  }
-                  break;
+      case 'stage':
+        if (stage?.slug) {
+          navigate(`/stage/${stage.slug}`);
+        }
+        break;
+      case 'decks':
+        navigate('/decks');
+        break;
       case 'users':
         navigate('/users');
         break;
@@ -439,9 +442,11 @@ function App() {
   };
 
   const handleNavigateToDecks = () => {
+    console.log('Navigating to decks...');
     setTransitionDirection('forward');
     setViewMode('decks');
     updateURL('decks');
+    console.log('View mode set to:', 'decks');
   };
 
   const handleBackToAdmin = () => {
@@ -687,16 +692,16 @@ function App() {
                         <div className="p-2 bg-primary/10 rounded-lg">
                           <Layers className="h-6 w-6 text-primary" />
                         </div>
-                        <h3 className="text-lg font-medium">Deck Management</h3>
+                        <h3 className="text-lg font-medium">Scene Management</h3>
                       </div>
                       <p className="text-muted-foreground mb-4">
-                        Create and manage presentation decks with different scene types and performance optimizations.
+                        Create and manage scenes as primary content units, then organize them into presentation decks.
                       </p>
                       <button
                         onClick={handleNavigateToDecks}
                         className="w-full px-4 py-2 border border-border rounded-md hover:bg-muted transition-colors"
                       >
-                        Manage Decks
+                        Manage Scenes
                       </button>
                     </div>
 
@@ -869,7 +874,8 @@ function App() {
 
             {viewMode === 'decks' && (
               <div className="h-full">
-                <DeckManager />
+                {console.log('Rendering SceneManager, viewMode:', viewMode)}
+                <SceneManager />
               </div>
             )}
 

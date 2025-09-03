@@ -84,7 +84,7 @@ export function AdminToolbar({
           }`}
         >
           <Layers className="h-4 w-4" />
-          <span>Decks</span>
+          <span>Scenes</span>
         </button>
         
         <button

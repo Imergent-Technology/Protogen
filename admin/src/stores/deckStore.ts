@@ -21,14 +21,14 @@ export interface SceneContent {
   layout?: any;
 }
 
-// Scene interface
+// Scene interface - Primary content unit
 export interface Scene {
   id: string;
   guid: string;
   name: string;
   description?: string;
   type: SceneType;
-  deckId?: string; // Optional - can be standalone
+  deckIds: string[]; // Can belong to multiple decks (optional)
   content: SceneContent;
   toolset: ToolsetRequirements;
   is_active: boolean;
@@ -45,7 +45,7 @@ export interface Deck {
   name: string;
   description?: string;
   type: DeckType;
-  scenes: Scene[];
+  sceneIds: string[]; // References to scene IDs
   navigation: DeckNavigation;
   performance: {
     keepWarm: boolean;
@@ -144,13 +144,13 @@ export const useDeckStore = create<DeckState>()(
       
       // Deck management actions
       createDeck: async (deckData) => {
-        // TODO: Implement API call
-        const newDeck: Deck = {
-          ...deckData,
-          id: crypto.randomUUID(),
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        };
+              // TODO: Implement API call
+      const newDeck: Deck = {
+        ...deckData,
+        id: self.crypto.randomUUID ? self.crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).substr(2),
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
         
         set((state) => ({
           decks: [...state.decks, newDeck]
@@ -177,14 +177,14 @@ export const useDeckStore = create<DeckState>()(
       
       // Scene management actions
       createScene: async (sceneData) => {
-        // TODO: Implement API call
-        const newScene: Scene = {
-          ...sceneData,
-          id: crypto.randomUUID(),
-          guid: crypto.randomUUID(),
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        };
+              // TODO: Implement API call
+      const newScene: Scene = {
+        ...sceneData,
+        id: self.crypto.randomUUID ? self.crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).substr(2),
+        guid: self.crypto.randomUUID ? self.crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).substr(2),
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
         
         set((state) => ({
           scenes: [...state.scenes, newScene]
