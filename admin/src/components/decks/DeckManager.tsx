@@ -32,7 +32,7 @@ const DeckTypeIcon: React.FC<{ type: DeckType }> = ({ type }) => {
 };
 
 // Scene and Deck Manager Component
-export const SceneManager: React.FC = () => {
+export const DeckManager: React.FC = () => {
   const {
     decks,
     scenes,
@@ -43,10 +43,8 @@ export const SceneManager: React.FC = () => {
     scenesError,
     setCurrentDeck,
     createDeck,
-    updateDeck,
     deleteDeck,
     createScene,
-    updateScene,
     deleteScene,
     setDecksLoading,
     setScenesLoading,
@@ -57,16 +55,11 @@ export const SceneManager: React.FC = () => {
   const [selectedDeckId, setSelectedDeckId] = useState<string | null>(null);
   const [showCreateScene, setShowCreateScene] = useState(false);
   const [showCreateDeck, setShowCreateDeck] = useState(false);
-  const [showEditScene, setShowEditScene] = useState(false);
-  const [showEditDeck, setShowEditDeck] = useState(false);
-  const [editingScene, setEditingScene] = useState<Scene | null>(null);
-  const [editingDeck, setEditingDeck] = useState<Deck | null>(null);
   const [activeTab, setActiveTab] = useState<'scenes' | 'decks'>('scenes');
 
   // Form states
   const [sceneForm, setSceneForm] = useState({
     name: '',
-    slug: '',
     description: '',
     type: 'graph' as SceneType,
     deckIds: [] as string[],
@@ -74,7 +67,6 @@ export const SceneManager: React.FC = () => {
 
   const [deckForm, setDeckForm] = useState({
     name: '',
-    slug: '',
     description: '',
     type: 'graph' as DeckType,
     keepWarm: true,
@@ -86,34 +78,6 @@ export const SceneManager: React.FC = () => {
     performanceManager.initialize();
     return () => performanceManager.destroy();
   }, []);
-
-  // Auto-generate slug when name changes
-  useEffect(() => {
-    if (sceneForm.name && !sceneForm.slug) {
-      const slug = sceneForm.name
-        .toLowerCase()
-        .trim()
-        .replace(/[^a-z0-9\s-]/g, '')
-        .replace(/\s+/g, '-')
-        .replace(/-+/g, '-')
-        .replace(/^-|-$/g, '');
-      setSceneForm(prev => ({ ...prev, slug }));
-    }
-  }, [sceneForm.name, sceneForm.slug]);
-
-  // Auto-generate slug when deck name changes
-  useEffect(() => {
-    if (deckForm.name && !deckForm.slug) {
-      const slug = deckForm.name
-        .toLowerCase()
-        .trim()
-        .replace(/[^a-z0-9\s-]/g, '')
-        .replace(/\s+/g, '-')
-        .replace(/-+/g, '-')
-        .replace(/^-|-$/g, '');
-      setDeckForm(prev => ({ ...prev, slug }));
-    }
-  }, [deckForm.name, deckForm.slug]);
 
   // Handle scene creation
   const handleCreateScene = async () => {
@@ -144,7 +108,6 @@ export const SceneManager: React.FC = () => {
       // Reset form
       setSceneForm({
         name: '',
-        slug: '',
         description: '',
         type: 'graph',
         deckIds: [],
@@ -156,107 +119,6 @@ export const SceneManager: React.FC = () => {
       setScenesError(error instanceof Error ? error.message : 'Failed to create scene');
     } finally {
       setScenesLoading(false);
-    }
-  };
-
-  // Handle scene editing
-  const handleEditScene = (scene: Scene) => {
-    setEditingScene(scene);
-    setSceneForm({
-      name: scene.name,
-      slug: scene.slug,
-      description: scene.description || '',
-      type: scene.type,
-      deckIds: scene.deckIds,
-    });
-    setShowEditScene(true);
-  };
-
-  // Handle scene update
-  const handleUpdateScene = async () => {
-    if (!editingScene) return;
-    
-    try {
-      setScenesLoading(true);
-      setScenesError(null);
-
-      await updateScene(editingScene.id, {
-        name: sceneForm.name,
-        slug: sceneForm.slug,
-        description: sceneForm.description,
-        type: sceneForm.type,
-        deckIds: sceneForm.deckIds,
-      });
-      
-      // Reset form and close modal
-      setSceneForm({
-        name: '',
-        slug: '',
-        description: '',
-        type: 'graph',
-        deckIds: [],
-      });
-      setEditingScene(null);
-      setShowEditScene(false);
-      
-      console.log('Scene updated successfully');
-    } catch (error) {
-      setScenesError(error instanceof Error ? error.message : 'Failed to update scene');
-    } finally {
-      setScenesLoading(false);
-    }
-  };
-
-  // Handle deck editing
-  const handleEditDeck = (deck: Deck) => {
-    setEditingDeck(deck);
-    setDeckForm({
-      name: deck.name,
-      slug: deck.slug,
-      description: deck.description || '',
-      type: deck.type,
-      keepWarm: deck.performance.keepWarm,
-      preloadStrategy: deck.performance.preloadStrategy,
-    });
-    setShowEditDeck(true);
-  };
-
-  // Handle deck update
-  const handleUpdateDeck = async () => {
-    if (!editingDeck) return;
-    
-    try {
-      setDecksLoading(true);
-      setDecksError(null);
-
-      await updateDeck(editingDeck.id, {
-        name: deckForm.name,
-        slug: deckForm.slug,
-        description: deckForm.description,
-        type: deckForm.type,
-        performance: {
-          keepWarm: deckForm.keepWarm,
-          preloadStrategy: deckForm.preloadStrategy,
-        },
-      });
-      
-      // Reset form and close modal
-      setDeckForm({
-        name: '',
-        slug: '',
-        description: '',
-        type: 'graph',
-        keepWarm: true,
-        preloadStrategy: 'proximity',
-      });
-      setEditingDeck(null);
-      setShowEditDeck(false);
-      
-      console.log('Deck updated successfully');
-    } catch (error) {
-      setDecksError(error instanceof Error ? error.message : 'Failed to update deck');
-    } finally {
-      setDecksLoading(false);
     }
   };
 
@@ -294,7 +156,6 @@ export const SceneManager: React.FC = () => {
       // Reset form
       setDeckForm({
         name: '',
-        slug: '',
         description: '',
         type: 'graph',
         keepWarm: true,
@@ -369,7 +230,7 @@ export const SceneManager: React.FC = () => {
   return (
     <div className="p-6 max-w-7xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-foreground mb-2">Scene Management</h1>
+        <h1 className="text-3xl font-bold text-foreground mb-2">Scene & Deck Management</h1>
         <p className="text-muted-foreground">
           Create and manage scenes as primary content units, then organize them into presentation decks
         </p>
@@ -394,7 +255,7 @@ export const SceneManager: React.FC = () => {
                 : 'border-transparent text-muted-foreground hover:text-foreground'
             }`}
           >
-            🎬 Scenes ({scenes.length})
+            Scenes ({scenes.length})
           </button>
           <button
             onClick={() => setActiveTab('decks')}
@@ -404,7 +265,7 @@ export const SceneManager: React.FC = () => {
                 : 'border-transparent text-muted-foreground hover:text-foreground'
             }`}
           >
-            📚 Decks ({decks.length})
+            Decks ({decks.length})
           </button>
         </div>
       </div>
@@ -456,7 +317,7 @@ export const SceneManager: React.FC = () => {
                       <SceneTypeBadge type={scene.type} />
                       <div className="flex space-x-2">
                         <button
-                          onClick={() => handleEditScene(scene)}
+                          onClick={() => console.log('Edit scene:', scene.id)}
                           className="px-2 py-1 text-xs border border-border rounded hover:bg-muted transition-colors"
                         >
                           Edit
@@ -471,9 +332,6 @@ export const SceneManager: React.FC = () => {
                     </div>
                     
                     <h3 className="font-semibold mb-2">{scene.name}</h3>
-                    <div className="text-xs text-muted-foreground mb-2">
-                      <span className="font-medium">Slug:</span> <code className="bg-muted px-1 py-0.5 rounded">{scene.slug}</code>
-                    </div>
                     {scene.description && (
                       <p className="text-sm text-muted-foreground mb-4">{scene.description}</p>
                     )}
@@ -565,9 +423,6 @@ export const SceneManager: React.FC = () => {
                       <DeckTypeIcon type={deck.type} />
                       <div className="flex-1">
                         <h3 className="font-semibold">{deck.name}</h3>
-                        <div className="text-xs text-muted-foreground mb-1">
-                          <span className="font-medium">Slug:</span> <code className="bg-muted px-1 py-0.5 rounded">{deck.slug}</code>
-                        </div>
                         <p className="text-sm text-muted-foreground">{deck.description}</p>
                       </div>
                     </div>
@@ -594,26 +449,15 @@ export const SceneManager: React.FC = () => {
                         <span className="text-xs text-muted-foreground">
                           {deck.performance.preloadStrategy} preload
                         </span>
-                        <div className="flex space-x-2">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleEditDeck(deck);
-                            }}
-                            className="px-2 py-1 text-xs border border-border rounded hover:bg-muted transition-colors"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDeleteDeck(deck.id);
-                            }}
-                            className="px-2 py-1 text-xs border border-destructive/20 text-destructive rounded hover:bg-destructive/10 transition-colors"
-                          >
-                            Delete
-                          </button>
-                        </div>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteDeck(deck.id);
+                          }}
+                          className="px-2 py-1 text-xs border border-destructive/20 text-destructive rounded hover:bg-destructive/10 transition-colors"
+                        >
+                          Delete
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -712,20 +556,6 @@ export const SceneManager: React.FC = () => {
               </div>
               
               <div>
-                <label className="block text-sm font-medium mb-1">Slug</label>
-                <input
-                  type="text"
-                  value={sceneForm.slug}
-                  onChange={(e) => setSceneForm({ ...sceneForm, slug: e.target.value })}
-                  className="w-full px-3 py-2 border border-border rounded-md bg-background"
-                  placeholder="Auto-generated from name"
-                />
-                <p className="text-xs text-muted-foreground mt-1">
-                  URL-friendly identifier (auto-generated from name)
-                </p>
-              </div>
-              
-              <div>
                 <label className="block text-sm font-medium mb-1">Description</label>
                 <textarea
                   value={sceneForm.description}
@@ -792,115 +622,6 @@ export const SceneManager: React.FC = () => {
         </div>
       )}
 
-      {/* Edit Scene Modal */}
-      {showEditScene && editingScene && (
-        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-card border border-border rounded-lg p-6 w-full max-w-md">
-            <h3 className="text-lg font-semibold mb-4">Edit Scene: {editingScene.name}</h3>
-            
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium mb-1">Name</label>
-                <input
-                  type="text"
-                  value={sceneForm.name}
-                  onChange={(e) => setSceneForm({ ...sceneForm, name: e.target.value })}
-                  className="w-full px-3 py-2 border border-border rounded-md bg-background"
-                  placeholder="Enter scene name"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium mb-1">Slug</label>
-                <input
-                  type="text"
-                  value={sceneForm.slug}
-                  onChange={(e) => setSceneForm({ ...sceneForm, slug: e.target.value })}
-                  className="w-full px-3 py-2 border border-border rounded-md bg-background"
-                  placeholder="URL-friendly identifier"
-                />
-                <p className="text-xs text-muted-foreground mt-1">
-                  URL-friendly identifier (auto-generated from name)
-                </p>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium mb-1">Description</label>
-                <textarea
-                  value={sceneForm.description}
-                  onChange={(e) => setSceneForm({ ...sceneForm, description: e.target.value })}
-                  className="w-full px-3 py-2 border border-border rounded-md bg-background"
-                  placeholder="Enter scene description"
-                  rows={3}
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium mb-1">Type</label>
-                <select
-                  value={sceneForm.type}
-                  onChange={(e) => setSceneForm({ ...sceneForm, type: e.target.value as SceneType })}
-                  className="w-full px-3 py-2 border border-border rounded-md bg-background"
-                >
-                  <option value="graph">Graph</option>
-                  <option value="card">Card</option>
-                  <option value="document">Document</option>
-                  <option value="dashboard">Dashboard</option>
-                </select>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium mb-1">Add to Decks (Optional)</label>
-                <select
-                  multiple
-                  value={sceneForm.deckIds}
-                  onChange={(e) => {
-                    const selectedOptions = Array.from(e.target.selectedOptions, option => option.value);
-                    setSceneForm({ ...sceneForm, deckIds: selectedOptions });
-                  }}
-                  className="w-full px-3 py-2 border border-border rounded-md bg-background"
-                >
-                  {decks.map((deck) => (
-                    <option key={deck.id} value={deck.id}>
-                      {deck.name} ({deck.type})
-                    </option>
-                  ))}
-                </select>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Hold Ctrl/Cmd to select multiple decks
-                </p>
-              </div>
-            </div>
-            
-            <div className="flex space-x-3 mt-6">
-              <button
-                onClick={handleUpdateScene}
-                disabled={!sceneForm.name || scenesLoading}
-                className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:opacity-50 transition-colors"
-              >
-                {scenesLoading ? 'Updating...' : 'Update Scene'}
-              </button>
-              <button
-                onClick={() => {
-                  setShowEditScene(false);
-                  setEditingScene(null);
-                  setSceneForm({
-                    name: '',
-                    slug: '',
-                    description: '',
-                    type: 'graph',
-                    deckIds: [],
-                  });
-                }}
-                className="flex-1 px-4 py-2 border border-border rounded-md hover:bg-muted transition-colors"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Create Deck Modal */}
       {showCreateDeck && (
         <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50">
@@ -917,20 +638,6 @@ export const SceneManager: React.FC = () => {
                   className="w-full px-3 py-2 border border-border rounded-md bg-background"
                   placeholder="Enter deck name"
                 />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium mb-1">Slug</label>
-                <input
-                  type="text"
-                  value={deckForm.slug}
-                  onChange={(e) => setDeckForm({ ...deckForm, slug: e.target.value })}
-                  className="w-full px-3 py-2 border border-border rounded-md bg-background"
-                  placeholder="Auto-generated from name"
-                />
-                <p className="text-xs text-muted-foreground mt-1">
-                  URL-friendly identifier (auto-generated from name)
-                </p>
               </div>
               
               <div>
@@ -993,118 +700,6 @@ export const SceneManager: React.FC = () => {
               </button>
               <button
                 onClick={() => setShowCreateDeck(false)}
-                className="flex-1 px-4 py-2 border border-border rounded-md hover:bg-muted transition-colors"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Edit Deck Modal */}
-      {showEditDeck && editingDeck && (
-        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-card border border-border rounded-lg p-6 w-full max-w-md">
-            <h3 className="text-lg font-semibold mb-4">Edit Deck: {editingDeck.name}</h3>
-            
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium mb-1">Name</label>
-                <input
-                  type="text"
-                  value={deckForm.name}
-                  onChange={(e) => setDeckForm({ ...deckForm, name: e.target.value })}
-                  className="w-full px-3 py-2 border border-border rounded-md bg-background"
-                  placeholder="Enter deck name"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium mb-1">Slug</label>
-                <input
-                  type="text"
-                  value={deckForm.slug}
-                  onChange={(e) => setDeckForm({ ...deckForm, slug: e.target.value })}
-                  className="w-full px-3 py-2 border border-border rounded-md bg-background"
-                  placeholder="URL-friendly identifier"
-                />
-                <p className="text-xs text-muted-foreground mt-1">
-                  URL-friendly identifier (auto-generated from name)
-                </p>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium mb-1">Description</label>
-                <textarea
-                  value={deckForm.description}
-                  onChange={(e) => setDeckForm({ ...deckForm, description: e.target.value })}
-                  className="w-full px-3 py-2 border border-border rounded-md bg-background"
-                  placeholder="Enter deck description"
-                  rows={3}
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium mb-1">Type</label>
-                <select
-                  value={deckForm.type}
-                  onChange={(e) => setDeckForm({ ...deckForm, type: e.target.value as DeckType })}
-                  className="w-full px-3 py-2 border border-border rounded-md bg-background"
-                >
-                  <option value="graph">Graph</option>
-                  <option value="card">Card</option>
-                  <option value="document">Document</option>
-                  <option value="dashboard">Dashboard</option>
-                </select>
-              </div>
-              
-              <div className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  id="editKeepWarm"
-                  checked={deckForm.keepWarm}
-                  onChange={(e) => setDeckForm({ ...deckForm, keepWarm: e.target.checked })}
-                  className="rounded"
-                />
-                <label htmlFor="editKeepWarm" className="text-sm">Keep scenes warm in memory</label>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium mb-1">Preload Strategy</label>
-                <select
-                  value={deckForm.preloadStrategy}
-                  onChange={(e) => setDeckForm({ ...deckForm, preloadStrategy: e.target.value as any })}
-                  className="w-full px-3 py-2 border border-border rounded-md bg-background"
-                >
-                  <option value="immediate">Immediate</option>
-                  <option value="proximity">Proximity</option>
-                  <option value="on-demand">On Demand</option>
-                </select>
-              </div>
-            </div>
-            
-            <div className="flex space-x-3 mt-6">
-              <button
-                onClick={handleUpdateDeck}
-                disabled={!deckForm.name || decksLoading}
-                className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:opacity-50 transition-colors"
-              >
-                {decksLoading ? 'Updating...' : 'Update Deck'}
-              </button>
-              <button
-                onClick={() => {
-                  setShowEditDeck(false);
-                  setEditingDeck(null);
-                  setDeckForm({
-                    name: '',
-                    slug: '',
-                    description: '',
-                    type: 'graph',
-                    keepWarm: true,
-                    preloadStrategy: 'proximity',
-                  });
-                }}
                 className="flex-1 px-4 py-2 border border-border rounded-md hover:bg-muted transition-colors"
               >
                 Cancel

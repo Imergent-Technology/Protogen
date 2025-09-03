@@ -26,6 +26,7 @@ export interface Scene {
   id: string;
   guid: string;
   name: string;
+  slug: string; // URL-friendly identifier
   description?: string;
   type: SceneType;
   deckIds: string[]; // Can belong to multiple decks (optional)
@@ -43,6 +44,7 @@ export interface Scene {
 export interface Deck {
   id: string;
   name: string;
+  slug: string; // URL-friendly identifier
   description?: string;
   type: DeckType;
   sceneIds: string[]; // References to scene IDs
@@ -120,6 +122,31 @@ interface DeckState {
   setScenesError: (error: string | null) => void;
 }
 
+// Helper function to convert name to kebab-case slug
+const toKebabCase = (str: string): string => {
+  return str
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
+    .replace(/\s+/g, '-') // Replace spaces with hyphens
+    .replace(/-+/g, '-') // Replace multiple hyphens with single
+    .replace(/^-|-$/g, ''); // Remove leading/trailing hyphens
+};
+
+// Helper function to generate unique slug
+const generateUniqueSlug = (name: string, existingSlugs: string[], baseSlug?: string): string => {
+  const base = baseSlug || toKebabCase(name);
+  let slug = base;
+  let counter = 1;
+  
+  while (existingSlugs.includes(slug)) {
+    slug = `${base}-${counter}`;
+    counter++;
+  }
+  
+  return slug;
+};
+
 // Create the deck store
 export const useDeckStore = create<DeckState>()(
   devtools(
@@ -144,13 +171,17 @@ export const useDeckStore = create<DeckState>()(
       
       // Deck management actions
       createDeck: async (deckData) => {
-              // TODO: Implement API call
-      const newDeck: Deck = {
-        ...deckData,
-        id: self.crypto.randomUUID ? self.crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).substr(2),
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      };
+        // TODO: Implement API call
+        const existingSlugs = _get().decks.map(deck => deck.slug);
+        const slug = generateUniqueSlug(deckData.name, existingSlugs);
+        
+        const newDeck: Deck = {
+          ...deckData,
+          slug,
+          id: self.crypto.randomUUID ? self.crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).substr(2),
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        };
         
         set((state) => ({
           decks: [...state.decks, newDeck]
@@ -159,13 +190,25 @@ export const useDeckStore = create<DeckState>()(
       
       updateDeck: async (id, updates) => {
         // TODO: Implement API call
-        set((state) => ({
-          decks: state.decks.map(deck =>
-            deck.id === id
-              ? { ...deck, ...updates, updated_at: new Date().toISOString() }
-              : deck
-          )
-        }));
+        set((state) => {
+          const deck = state.decks.find(d => d.id === id);
+          if (!deck) return state;
+          
+          // Handle slug updates when name changes
+          let newSlug = deck.slug;
+          if (updates.name && updates.name !== deck.name) {
+            const existingSlugs = state.decks.filter(d => d.id !== id).map(d => d.slug);
+            newSlug = generateUniqueSlug(updates.name, existingSlugs);
+          }
+          
+          return {
+            decks: state.decks.map(deck =>
+              deck.id === id
+                ? { ...deck, ...updates, slug: newSlug, updated_at: new Date().toISOString() }
+                : deck
+            )
+          };
+        });
       },
       
       deleteDeck: async (id) => {
@@ -177,14 +220,18 @@ export const useDeckStore = create<DeckState>()(
       
       // Scene management actions
       createScene: async (sceneData) => {
-              // TODO: Implement API call
-      const newScene: Scene = {
-        ...sceneData,
-        id: self.crypto.randomUUID ? self.crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).substr(2),
-        guid: self.crypto.randomUUID ? self.crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).substr(2),
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      };
+        // TODO: Implement API call
+        const existingSlugs = _get().scenes.map(scene => scene.slug);
+        const slug = generateUniqueSlug(sceneData.name, existingSlugs);
+        
+        const newScene: Scene = {
+          ...sceneData,
+          slug,
+          id: self.crypto.randomUUID ? self.crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).substr(2),
+          guid: self.crypto.randomUUID ? self.crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).substr(2),
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        };
         
         set((state) => ({
           scenes: [...state.scenes, newScene]
@@ -193,13 +240,25 @@ export const useDeckStore = create<DeckState>()(
       
       updateScene: async (id, updates) => {
         // TODO: Implement API call
-        set((state) => ({
-          scenes: state.scenes.map(scene =>
-            scene.id === id
-              ? { ...scene, ...updates, updated_at: new Date().toISOString() }
-              : scene
-          )
-        }));
+        set((state) => {
+          const scene = state.scenes.find(s => s.id === id);
+          if (!scene) return state;
+          
+          // Handle slug updates when name changes
+          let newSlug = scene.slug;
+          if (updates.name && updates.name !== scene.name) {
+            const existingSlugs = state.scenes.filter(s => s.id !== id).map(s => s.slug);
+            newSlug = generateUniqueSlug(updates.name, existingSlugs);
+          }
+          
+          return {
+            scenes: state.scenes.map(scene =>
+              scene.id === id
+                ? { ...scene, ...updates, slug: newSlug, updated_at: new Date().toISOString() }
+                : scene
+            )
+          };
+        });
       },
       
       deleteScene: async (id) => {
