@@ -11,6 +11,6 @@ export * from './services';
 export * from './types/stage';
 export * from './types/scene';
 export * from './types/snapshot';
-export * from './types/validation';
+// export * from './types/validation';
 export * from './services/ApiClient';
 export * from './hooks/useApi'; 

@@ -18,7 +18,8 @@ import {
   GraphStudio,
   AdminToolbar,
   ToastContainer,
-  useToasts
+  useToasts,
+  DeckManager
 } from './components';
 import { AnimatePresence, motion } from 'framer-motion';
 import { initializeTheme } from '@progress/shared';
@@ -30,7 +31,7 @@ interface AdminUser {
   is_admin: boolean;
 }
 
-type ViewMode = 'admin' | 'stage' | 'stages-list' | 'users' | 'analytics' | 'graph-studio';
+type ViewMode = 'admin' | 'stage' | 'stages-list' | 'users' | 'analytics' | 'graph-studio' | 'decks';
 
 function App() {
   const navigate = useNavigate();
@@ -70,6 +71,8 @@ function App() {
         return 'System administration and management';
       case 'stages-list':
         return 'Stage Management';
+      case 'decks':
+        return 'Deck Management';
       case 'users':
         return 'User Management';
       case 'analytics':
@@ -115,6 +118,8 @@ function App() {
       setViewMode('analytics');
     } else if (path === '/stages') {
       setViewMode('stages-list');
+    } else if (path === '/decks') {
+      setViewMode('decks');
     } else if (path === '/graph-studio') {
       setViewMode('graph-studio');
     } else if (path === '/') {
@@ -433,6 +438,12 @@ function App() {
     updateURL('analytics');
   };
 
+  const handleNavigateToDecks = () => {
+    setTransitionDirection('forward');
+    setViewMode('decks');
+    updateURL('decks');
+  };
+
   const handleBackToAdmin = () => {
     setTransitionDirection('backward');
     setViewMode('admin');
@@ -462,6 +473,10 @@ function App() {
       case 'analytics':
         setViewMode('analytics');
         updateURL('analytics');
+        break;
+      case 'decks':
+        setViewMode('decks');
+        updateURL('decks');
         break;
     }
   };
@@ -569,6 +584,7 @@ function App() {
           onToggleNavigation={() => setIsNavigationOpen(!isNavigationOpen)}
           onNavigateToDashboard={handleBackToAdmin}
           onNavigateToStages={handleNavigateToStages}
+          onNavigateToDecks={handleNavigateToDecks}
           onNavigateToUsers={handleNavigateToUsers}
           onNavigateToAnalytics={handleNavigateToAnalytics}
           onNavigateToGraphStudio={() => updateURL('graph-studio')}
@@ -663,6 +679,24 @@ function App() {
                         className="w-full px-4 py-2 border border-border rounded-md hover:bg-muted transition-colors"
                       >
                         Open Graph Studio
+                      </button>
+                    </div>
+
+                    <div className="p-6 border border-border rounded-lg hover:border-primary/50 transition-colors">
+                      <div className="flex items-center space-x-3 mb-4">
+                        <div className="p-2 bg-primary/10 rounded-lg">
+                          <Layers className="h-6 w-6 text-primary" />
+                        </div>
+                        <h3 className="text-lg font-medium">Deck Management</h3>
+                      </div>
+                      <p className="text-muted-foreground mb-4">
+                        Create and manage presentation decks with different scene types and performance optimizations.
+                      </p>
+                      <button
+                        onClick={handleNavigateToDecks}
+                        className="w-full px-4 py-2 border border-border rounded-md hover:bg-muted transition-colors"
+                      >
+                        Manage Decks
                       </button>
                     </div>
 
@@ -830,6 +864,12 @@ function App() {
                     <p className="text-muted-foreground">Analytics features coming soon...</p>
                   </div>
                 </div>
+              </div>
+            )}
+
+            {viewMode === 'decks' && (
+              <div className="h-full">
+                <DeckManager />
               </div>
             )}
 

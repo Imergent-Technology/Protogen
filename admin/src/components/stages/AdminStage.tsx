@@ -70,6 +70,7 @@ export function AdminStage({
           onToggleNavigation={onToggleNavigation || (() => {})}
           onNavigateToDashboard={onNavigateToDashboard || (() => {})}
           onNavigateToStages={onNavigateToStages || (() => {})}
+          onNavigateToDecks={() => {}}
           onNavigateToUsers={onNavigateToUsers || (() => {})}
           onNavigateToAnalytics={onNavigateToAnalytics || (() => {})}
           onNavigateToGraphStudio={onNavigateToGraphStudio || (() => {})}

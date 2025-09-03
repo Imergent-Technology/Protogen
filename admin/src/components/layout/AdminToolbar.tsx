@@ -7,6 +7,7 @@ interface AdminToolbarProps {
   onToggleNavigation: () => void;
   onNavigateToDashboard: () => void;
   onNavigateToStages: () => void;
+  onNavigateToDecks: () => void;
   onNavigateToUsers: () => void;
   onNavigateToAnalytics: () => void;
   onNavigateToGraphStudio: () => void;
@@ -20,6 +21,7 @@ export function AdminToolbar({
   onToggleNavigation,
   onNavigateToDashboard,
   onNavigateToStages,
+  onNavigateToDecks,
   onNavigateToUsers,
   onNavigateToAnalytics,
   onNavigateToGraphStudio,
@@ -71,6 +73,18 @@ export function AdminToolbar({
         >
           <Layers className="h-4 w-4" />
           <span>Stages</span>
+        </button>
+        
+        <button
+          onClick={onNavigateToDecks}
+          className={`flex items-center space-x-2 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+            currentView === 'decks'
+              ? 'text-primary bg-primary/10'
+              : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+          }`}
+        >
+          <Layers className="h-4 w-4" />
+          <span>Decks</span>
         </button>
         
         <button
