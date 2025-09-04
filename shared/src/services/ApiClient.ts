@@ -41,7 +41,7 @@ export interface FeedbackData {
   metadata?: Record<string, any>;
 }
 
-export interface Feedback {
+export interface ApiFeedback {
   id: number;
   stage_id: number;
   content: string;
@@ -259,19 +259,19 @@ export class ApiClient {
   }
 
   // Feedback API methods
-  async getStageFeedback(stageId: number): Promise<ApiResponse<Feedback[]>> {
-    return this.request<Feedback[]>(`/stages/${stageId}/feedback`);
+  async getStageFeedback(stageId: number): Promise<ApiResponse<ApiFeedback[]>> {
+    return this.request<ApiFeedback[]>(`/stages/${stageId}/feedback`);
   }
 
-  async submitFeedback(data: FeedbackData): Promise<ApiResponse<Feedback>> {
-    return this.request<Feedback>('/feedback', {
+  async submitFeedback(data: FeedbackData): Promise<ApiResponse<ApiFeedback>> {
+    return this.request<ApiFeedback>('/feedback', {
       method: 'POST',
       body: JSON.stringify(data),
     });
   }
 
-  async updateFeedback(id: number, data: Partial<FeedbackData>): Promise<ApiResponse<Feedback>> {
-    return this.request<Feedback>(`/feedback/${id}`, {
+  async updateFeedback(id: number, data: Partial<FeedbackData>): Promise<ApiResponse<ApiFeedback>> {
+    return this.request<ApiFeedback>(`/feedback/${id}`, {
       method: 'PUT',
       body: JSON.stringify(data),
     });
