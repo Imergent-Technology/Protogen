@@ -10,16 +10,9 @@ import { Switch } from '@progress/shared';
 import { 
   Building2, 
   Settings, 
-  Palette, 
-  Globe, 
-  Users, 
-  BarChart3, 
   Plus,
   Edit,
   Trash2,
-  Eye,
-  EyeOff,
-  CheckCircle,
   XCircle,
   AlertTriangle
 } from 'lucide-react';
@@ -40,18 +33,9 @@ interface Tenant {
   updated_at: string;
 }
 
-interface TenantConfiguration {
-  id: number;
-  tenant_id: number;
-  key: string;
-  value: any;
-  scope: string;
-  description: string;
-}
 
 const TenantManager: React.FC = () => {
   const [tenants, setTenants] = useState<Tenant[]>([]);
-  const [configurations, setConfigurations] = useState<TenantConfiguration[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
@@ -68,12 +52,6 @@ const TenantManager: React.FC = () => {
     is_public: false,
   });
 
-  const [configForm, setConfigForm] = useState({
-    key: '',
-    value: '',
-    scope: 'global',
-    description: '',
-  });
 
   useEffect(() => {
     loadTenants();
@@ -218,7 +196,7 @@ const TenantManager: React.FC = () => {
     return <Badge variant="secondary">Private</Badge>;
   };
 
-  const getContentCount = (tenant: Tenant) => {
+  const getContentCount = () => {
     // TODO: Replace with actual content counts
     return {
       scenes: 12,
@@ -268,18 +246,18 @@ const TenantManager: React.FC = () => {
       
       {/* Create Tenant Modal */}
       {showCreateTenant && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-background border border-border rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto shadow-lg">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold">Create New Tenant</h2>
+              <h2 className="text-xl font-semibold text-foreground">Create New Tenant</h2>
               <button
                 onClick={() => setShowCreateTenant(false)}
-                className="text-gray-500 hover:text-gray-700"
+                className="text-muted-foreground hover:text-foreground transition-colors"
               >
                 <XCircle className="h-6 w-6" />
               </button>
             </div>
-            <p className="text-gray-600 mb-6">
+            <p className="text-muted-foreground mb-6">
               Create a new tenant environment with isolated content and configuration.
             </p>
             <div className="space-y-4">
@@ -427,7 +405,7 @@ const TenantManager: React.FC = () => {
 
                 <TabsContent value="content" className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
-                    {Object.entries(getContentCount(tenant)).map(([key, count]) => (
+                    {Object.entries(getContentCount()).map(([key, count]) => (
                       <div key={key} className="text-center p-4 border rounded-lg">
                         <div className="text-2xl font-bold text-primary">{count}</div>
                         <div className="text-sm text-muted-foreground capitalize">
@@ -496,18 +474,18 @@ const TenantManager: React.FC = () => {
 
       {/* Edit Tenant Modal */}
       {showEditTenant && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-background border border-border rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto shadow-lg">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold">Edit Tenant</h2>
+              <h2 className="text-xl font-semibold text-foreground">Edit Tenant</h2>
               <button
                 onClick={() => setShowEditTenant(false)}
-                className="text-gray-500 hover:text-gray-700"
+                className="text-muted-foreground hover:text-foreground transition-colors"
               >
                 <XCircle className="h-6 w-6" />
               </button>
             </div>
-            <p className="text-gray-600 mb-6">
+            <p className="text-muted-foreground mb-6">
               Update tenant settings and configuration.
             </p>
             <div className="space-y-4">
