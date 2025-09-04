@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useDeckStore, Deck, Scene } from '../../stores/deckStore';
 import { DeckType, SceneType } from '../../stores/deckStore';
 import { performanceManager } from '../../services/PerformanceManager';
+import SceneGrid from './SceneGrid';
+import { SceneCardData } from './SceneCard';
 
 // Scene type badges
 const SceneTypeBadge: React.FC<{ type: SceneType }> = ({ type }) => {
@@ -363,9 +365,60 @@ export const SceneManager: React.FC = () => {
   //   return scenes.filter(scene => scene.deckIds.length === 0);
   // };
 
-  // Get all decks that contain a specific scene
-  const getSceneDecks = (sceneId: string) => {
-    return decks.filter(deck => deck.sceneIds.includes(sceneId));
+  // Get all decks that contain a specific scene (for future use)
+  // const getSceneDecks = (sceneId: string) => {
+  //   return decks.filter(deck => deck.sceneIds.includes(sceneId));
+  // };
+
+  // Convert Scene to SceneCardData
+  const convertToSceneCardData = (scene: Scene): SceneCardData => {
+    return {
+      id: scene.id,
+      name: scene.name,
+      type: scene.type === 'dashboard' ? 'custom' : scene.type,
+      description: scene.description,
+      thumbnail: undefined, // Will be generated when needed
+      metadata: {
+        title: scene.name,
+        author: scene.creator_id?.toString(),
+        tags: [],
+        createdAt: scene.created_at,
+        updatedAt: scene.updated_at
+      },
+      stats: {
+        viewCount: 0, // TODO: Add view tracking
+        lastViewed: undefined
+      },
+      isActive: scene.is_active,
+      isPublic: scene.is_public
+    };
+  };
+
+  // Scene card handlers
+  const handleSceneCardEdit = (sceneData: SceneCardData) => {
+    const scene = scenes.find(s => s.id === sceneData.id);
+    if (scene) {
+      handleEditScene(scene);
+    }
+  };
+
+  const handleSceneCardDelete = (sceneData: SceneCardData) => {
+    handleDeleteScene(sceneData.id);
+  };
+
+  const handleSceneCardPreview = (sceneData: SceneCardData) => {
+    // TODO: Implement scene preview
+    console.log('Preview scene:', sceneData);
+  };
+
+  const handleSceneCardToggleActive = (sceneData: SceneCardData) => {
+    // TODO: Implement toggle active
+    console.log('Toggle active:', sceneData);
+  };
+
+  const handleSceneCardTogglePublic = (sceneData: SceneCardData) => {
+    // TODO: Implement toggle public
+    console.log('Toggle public:', sceneData);
   };
 
   return (
@@ -446,71 +499,15 @@ export const SceneManager: React.FC = () => {
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {scenes.map((scene) => {
-                const sceneDecks = getSceneDecks(scene.id);
-                return (
-                  <div
-                    key={scene.id}
-                    className="p-6 border border-border rounded-lg hover:border-primary/50 transition-colors"
-                  >
-                    <div className="flex items-center justify-between mb-4">
-                      <SceneTypeBadge type={scene.type} />
-                      <div className="flex space-x-2">
-                        <button
-                          onClick={() => handleEditScene(scene)}
-                          className="px-2 py-1 text-xs border border-border rounded hover:bg-muted transition-colors"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => handleDeleteScene(scene.id)}
-                          className="px-2 py-1 text-xs border border-destructive/20 text-destructive rounded hover:bg-destructive/10 transition-colors"
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </div>
-                    
-                    <h3 className="font-semibold mb-2">{scene.name}</h3>
-                    <div className="text-xs text-muted-foreground mb-2">
-                      <span className="font-medium">Slug:</span> <code className="bg-muted px-1 py-0.5 rounded">{scene.slug}</code>
-                    </div>
-                    {scene.description && (
-                      <p className="text-sm text-muted-foreground mb-4">{scene.description}</p>
-                    )}
-                    
-                    <div className="space-y-2">
-                      <div className="text-xs text-muted-foreground">
-                        <span className="font-medium">Type:</span> {scene.type}
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        <span className="font-medium">Status:</span> {scene.is_active ? 'Active' : 'Inactive'}
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        <span className="font-medium">In Decks:</span> {sceneDecks.length}
-                      </div>
-                    </div>
-                    
-                    {sceneDecks.length > 0 && (
-                      <div className="mt-4 pt-3 border-t border-border">
-                        <div className="text-xs text-muted-foreground mb-2">Part of:</div>
-                        <div className="flex flex-wrap gap-1">
-                          {sceneDecks.map(deck => (
-                            <span
-                              key={deck.id}
-                              className="px-2 py-1 text-xs bg-muted rounded border"
-                            >
-                              {deck.name}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
+            <SceneGrid
+              scenes={scenes.map(convertToSceneCardData)}
+              onSceneEdit={handleSceneCardEdit}
+              onSceneDelete={handleSceneCardDelete}
+              onScenePreview={handleSceneCardPreview}
+              onSceneToggleActive={handleSceneCardToggleActive}
+              onSceneTogglePublic={handleSceneCardTogglePublic}
+              onCreateScene={() => setShowCreateScene(true)}
+            />
           )}
         </div>
       )}
