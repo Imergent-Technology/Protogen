@@ -6,7 +6,6 @@ import { Textarea } from '@progress/shared';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@progress/shared';
 import { Badge } from '@progress/shared';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@progress/shared';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@progress/shared';
 import { Switch } from '@progress/shared';
 import { 
   Building2, 
@@ -267,16 +266,22 @@ const TenantManager: React.FC = () => {
         </Button>
       </div>
       
-      {/* Create Tenant Dialog */}
+      {/* Create Tenant Modal */}
       {showCreateTenant && (
-        <Dialog open={showCreateTenant} onOpenChange={setShowCreateTenant}>
-          <DialogContent className="max-w-2xl">
-            <DialogHeader>
-              <DialogTitle>Create New Tenant</DialogTitle>
-              <DialogDescription>
-                Create a new tenant environment with isolated content and configuration.
-              </DialogDescription>
-            </DialogHeader>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold">Create New Tenant</h2>
+              <button
+                onClick={() => setShowCreateTenant(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <XCircle className="h-6 w-6" />
+              </button>
+            </div>
+            <p className="text-gray-600 mb-6">
+              Create a new tenant environment with isolated content and configuration.
+            </p>
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -333,14 +338,14 @@ const TenantManager: React.FC = () => {
                 </div>
               </div>
             </div>
-            <DialogFooter>
+            <div className="flex justify-end space-x-2 mt-6">
               <Button variant="outline" onClick={() => setShowCreateTenant(false)}>
                 Cancel
               </Button>
               <Button onClick={handleCreateTenant}>Create Tenant</Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Tenant List */}
@@ -489,80 +494,86 @@ const TenantManager: React.FC = () => {
         ))}
       </div>
 
-      {/* Edit Tenant Dialog */}
+      {/* Edit Tenant Modal */}
       {showEditTenant && (
-        <Dialog open={showEditTenant} onOpenChange={setShowEditTenant}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Edit Tenant</DialogTitle>
-            <DialogDescription>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold">Edit Tenant</h2>
+              <button
+                onClick={() => setShowEditTenant(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <XCircle className="h-6 w-6" />
+              </button>
+            </div>
+            <p className="text-gray-600 mb-6">
               Update tenant settings and configuration.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="edit-name">Name</Label>
-                <Input
-                  id="edit-name"
-                  value={tenantForm.name}
-                  onChange={(e) => setTenantForm({ ...tenantForm, name: e.target.value })}
-                  placeholder="Tenant Name"
-                />
+            </p>
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="edit-name">Name</Label>
+                  <Input
+                    id="edit-name"
+                    value={tenantForm.name}
+                    onChange={(e) => setTenantForm({ ...tenantForm, name: e.target.value })}
+                    placeholder="Tenant Name"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-slug">Slug</Label>
+                  <Input
+                    id="edit-slug"
+                    value={tenantForm.slug}
+                    onChange={(e) => setTenantForm({ ...tenantForm, slug: e.target.value })}
+                    placeholder="tenant-slug"
+                  />
+                </div>
               </div>
               <div>
-                <Label htmlFor="edit-slug">Slug</Label>
+                <Label htmlFor="edit-description">Description</Label>
+                <Textarea
+                  id="edit-description"
+                  value={tenantForm.description}
+                  onChange={(e) => setTenantForm({ ...tenantForm, description: e.target.value })}
+                  placeholder="Describe this tenant's purpose..."
+                />
+              </div>
+              <div>
+                <Label htmlFor="edit-domain">Custom Domain (Optional)</Label>
                 <Input
-                  id="edit-slug"
-                  value={tenantForm.slug}
-                  onChange={(e) => setTenantForm({ ...tenantForm, slug: e.target.value })}
-                  placeholder="tenant-slug"
+                  id="edit-domain"
+                  value={tenantForm.domain}
+                  onChange={(e) => setTenantForm({ ...tenantForm, domain: e.target.value })}
+                  placeholder="tenant.example.com"
                 />
               </div>
-            </div>
-            <div>
-              <Label htmlFor="edit-description">Description</Label>
-              <Textarea
-                id="edit-description"
-                value={tenantForm.description}
-                onChange={(e) => setTenantForm({ ...tenantForm, description: e.target.value })}
-                placeholder="Describe this tenant's purpose..."
-              />
-            </div>
-            <div>
-              <Label htmlFor="edit-domain">Custom Domain (Optional)</Label>
-              <Input
-                id="edit-domain"
-                value={tenantForm.domain}
-                onChange={(e) => setTenantForm({ ...tenantForm, domain: e.target.value })}
-                placeholder="tenant.example.com"
-              />
-            </div>
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <Switch
-                  checked={tenantForm.is_active}
-                  onCheckedChange={(checked) => setTenantForm({ ...tenantForm, is_active: checked })}
-                />
-                <Label htmlFor="edit-is_active">Active</Label>
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    checked={tenantForm.is_active}
+                    onCheckedChange={(checked) => setTenantForm({ ...tenantForm, is_active: checked })}
+                  />
+                  <Label htmlFor="edit-is_active">Active</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    checked={tenantForm.is_public}
+                    onCheckedChange={(checked) => setTenantForm({ ...tenantForm, is_public: checked })}
+                  />
+                  <Label htmlFor="is_public">Public</Label>
+                </div>
               </div>
-              <div className="flex items-center space-x-2">
-                <Switch
-                  checked={tenantForm.is_public}
-                  onCheckedChange={(checked) => setTenantForm({ ...tenantForm, is_public: checked })}
-                />
-                <Label htmlFor="is_public">Public</Label>
-              </div>
+            </div>
+            <div className="flex justify-end space-x-2 mt-6">
+              <Button variant="outline" onClick={() => setShowEditTenant(false)}>
+                Cancel
+              </Button>
+              <Button onClick={handleEditTenant}>Update Tenant</Button>
             </div>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowEditTenant(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleEditTenant}>Update Tenant</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+        </div>
       )}
     </div>
   );
