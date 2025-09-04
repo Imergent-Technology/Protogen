@@ -22,10 +22,10 @@ export function Switch({ checked = false, onCheckedChange, disabled = false, cla
       } border ${className}`}
     >
       <span
-        className={`pointer-events-none block h-4 w-4 rounded-full shadow-lg ring-0 transition-transform ${
+        className={`pointer-events-none block h-4 w-4 rounded-full shadow-lg ring-0 transition-all duration-200 ${
           checked 
-            ? 'translate-x-6 bg-background' 
-            : 'translate-x-1 bg-background'
+            ? 'translate-x-6 bg-primary-foreground' 
+            : 'translate-x-1 bg-muted-foreground'
         }`}
       />
     </button>
