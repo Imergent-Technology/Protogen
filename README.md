@@ -1,231 +1,278 @@
-# Protogen
+# Protogen - Community-Driven Knowledge Platform
 
-A community-driven platform for collaborative feedback and knowledge synthesis through interactive graph visualizations.
+A comprehensive platform for collaborative feedback, knowledge synthesis, and multi-tenant content management with advanced graph visualization and presentation capabilities.
 
-## Vision
+## 🎯 Overview
 
-Protogen is the foundational prototype for a larger vision:
-- **Protogen**: Minimal viable foundation for community feedback on curated graphs
-- **Endogen**: Community-driven growth and engagement platform
-- **The Ethosphere**: Aligning commerce, advertising, and human activities through shared values
+Protogen is a modern, multi-tenant platform that enables organizations to create, manage, and present complex knowledge through interactive graphs, rich documents, and engaging presentations. Built with a clean architecture that separates content creation from presentation, it supports multiple communities with isolated content while maintaining shared knowledge aggregation.
 
-## Architecture
+### Key Features
 
-This is a single repository containing:
+- **🏗️ Multi-Tenant Architecture**: Isolated content environments with shared knowledge aggregation
+- **📊 Interactive Graph Visualization**: Advanced graph authoring and presentation tools
+- **📄 Rich Document System**: TipTap-powered rich text editing with media embedding
+- **🃏 Advanced Card Presentations**: Sophisticated slideshow system with animations and CTAs
+- **⚡ Snapshot System**: Fast, CDN-friendly content delivery with versioning
+- **🎨 Theme System**: Customizable branding and styling per tenant
+- **🔗 Context System**: Precise content anchoring and navigation
+- **📈 Analytics & Feedback**: Comprehensive engagement tracking and community insights
 
-- **`api/`** - Laravel backend with Inertia.js + React frontend
-  - Stage manager system for multi-context navigation
-  - Graph-based feedback system with privacy controls
-  - PostgreSQL database with graph-like structure (JSONB optimized)
-  - Ready for Sigma.js integration and future AGE extension
-
-- **`ui/`** - Standalone React frontend
-  - Unconventional client interface
-  - Multi-model stage manager
-  - Graph traversal and interactions
-  - Can consume APIs from the main application
-
-- **`admin/`** - React admin interface
-  - Administrative tools and user management
-  - Stage configuration and content management
-
-- **`shared/`** - Shared components and utilities
-  - Common UI components and hooks
-  - Shared configuration and types
-
-## Key Features
-
-### Stage Manager
-- Multi-context navigation with different rendering types
-- Abstract links between disparate contexts
-- Layer-based interface for seamless context switching
-- Support for different technology sets per stage
-
-### Graph Visualization
-- Sigma.js integration for interactive graph display
-- Curated graph content with user feedback
-- Contextual linking between graph elements
-
-### Feedback System
-- High-level and contextual feedback levels
-- Privacy controls: private, group, public
-- Nested comment threads
-- Community-driven discussion
-
-## Getting Started
+## 🚀 Quick Start
 
 ### Prerequisites
-- PHP 8.1+
-- Node.js 18+
-- PostgreSQL 12+
-- Composer
-- npm/yarn
-- Docker (for development environment)
+
+- Docker and Docker Compose
+- Node.js 18+ (for local development)
+- Git
 
 ### Development Setup
 
-**Important**: All Docker and Tailwind commands must be run from the base `progress` folder, not from individual project directories.
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd progress
+   ```
 
-#### Prerequisites
-- **Docker Desktop** (with WSL2 backend on Windows)
-- **Node.js 18+** and **npm**
-- **Git**
+2. **Start the development environment**
+   ```bash
+   # Start all services
+   docker-compose up -d
+   
+   # Start CSS watching (required for styling)
+   npm run dev
+   
+   # Start all development servers
+   npm run dev:all
+   ```
 
-#### Option 1: Complete Automated Setup (Recommended)
+3. **Access the applications**
+   - **Admin Panel**: http://progress.local:3001
+   - **User Interface**: http://progress.local:3000
+   - **API**: http://progress.local:8080
+   - **Database Admin**: http://progress.local:5050
 
-##### Linux/macOS/WSL2
+### First-Time Setup
+
+Run the setup script to configure your environment:
 ```bash
-# Clone the repository
-git clone https://github.com/Imergent-Technology/Protogen.git
-cd Protogen
-
-# Make setup script executable and run it
-chmod +x scripts/setup-complete.sh
 ./scripts/setup-complete.sh
 ```
 
-##### Windows (PowerShell as Administrator)
-```powershell
-# Clone the repository
-git clone https://github.com/Imergent-Technology/Protogen.git
-cd Protogen
+For detailed setup instructions, see [DEVELOPMENT.md](docs/DEVELOPMENT.md).
 
-# Run the PowerShell setup script
-.\scripts\setup-windows.ps1
+## 📚 Documentation
+
+### 🏗️ Architecture & Foundation
+
+| Document | Description |
+|----------|-------------|
+| [**Core Foundation**](docs/core-foundation.md) | Complete architectural principles, data models, and system invariants |
+| [**Multi-Tenancy Vision**](docs/MULTI_TENANCY_VISION.md) | Multi-tenant architecture design and implementation strategy |
+| [**Context System**](docs/context-system.md) | Content anchoring and coordinate system documentation |
+| [**Theme System**](docs/THEME_SYSTEM.md) | Customizable styling and branding system |
+
+### 🛠️ Development & Operations
+
+| Document | Description |
+|----------|-------------|
+| [**Development Guide**](docs/DEVELOPMENT.md) | Complete development setup, workflow, and project structure |
+| [**Artisan Commands**](docs/artisan-commands.md) | CLI commands for snapshot management and maintenance |
+| [**Deployment Guide**](docs/DEPLOYMENT.md) | Production deployment and hosting instructions |
+| [**Troubleshooting**](docs/TROUBLESHOOTING.md) | Common issues and solutions |
+
+### 📋 Implementation & Roadmap
+
+| Document | Description |
+|----------|-------------|
+| [**Implementation Roadmap**](docs/implementation-roadmap.md) | Complete phase-by-phase development plan |
+| [**Phase 5 Authoring Vision**](docs/phase-5-authoring-vision.md) | UI integration and authoring tools expansion |
+| [**Graph Studio Enhancement**](docs/GRAPH_STUDIO_ENHANCEMENT.md) | Advanced graph visualization capabilities |
+
+### 📊 System Documentation
+
+| Document | Description |
+|----------|-------------|
+| [**Snapshot System**](docs/snapshot-system.md) | Versioning, storage, and content delivery system |
+| [**Multi-Tenant Implementation**](docs/multi-tenant-implementation-summary.md) | Tenant system implementation details |
+| [**Phase 4 Implementation**](docs/PHASE_4_IMPLEMENTATION_SUMMARY.md) | Shared library and hydration system |
+
+### 📝 Project History
+
+| Document | Description |
+|----------|-------------|
+| [**Changelog**](docs/changelog.md) | Version history and release notes |
+| [**Stage Architecture**](docs/stage-architecture.md) | Legacy system documentation (deprecated) |
+
+## 🏗️ Project Structure
+
+```
+progress/
+├── admin/                 # React admin interface (Vite + TypeScript)
+├── ui/                   # React user interface (Vite + TypeScript)
+├── shared/               # Shared components, hooks, services, and types
+├── api/                  # Laravel backend API (PHP)
+├── config/               # Shared configuration files
+├── docs/                 # Comprehensive documentation
+├── docker/               # Docker configuration files
+├── scripts/              # Setup and utility scripts
+└── docker-compose.yml    # Development environment
 ```
 
-#### Option 2: Manual Setup
+## 🎯 Current Status
 
-##### 1. Clone and Setup DNS
+### ✅ Completed Phases
+
+- **Phase 1**: Core Foundation (Edge weights, Registry system)
+- **Phase 2**: Scene & Deck Layer (Models, API, Context system)
+- **Phase 3**: Snapshot System (Versioning, retention, rollback)
+- **Phase 4**: Shared Library & Hydration (TypeScript types, services)
+- **Phase 7**: Stage System Removal (Clean architecture migration)
+
+### 🔄 Current Phase: UI Integration & Authoring
+
+**Phase 5** focuses on building sophisticated authoring tools:
+
+- ✅ **Card-Based Scene Management**: Preview thumbnails, hover metadata, click-to-edit
+- ✅ **Enhanced Card Scene Authoring**: Advanced slideshow system with backgrounds, text, and CTAs
+- ✅ **Preview Thumbnail System**: Automatic base64 generation for all scene types
+- 🔄 **Document Scene Authoring**: Rich text editing with TipTap integration
+- 🔄 **Node Selection Interface**: Global node selection across scene types
+- 🔄 **Graph Studio Integration**: Admin panel integration
+
+### 📋 Upcoming Phases
+
+- **Phase 8**: Performance & Polish
+- **Phase 9**: Content Sharing System
+- **Phase 10**: Music & Audio System
+- **Phase 11**: Presentation Timeline System
+- **Phase 12**: Advanced Presentation System
+
+## 🛠️ Development Commands
+
+### Root Level Scripts (Run from project root)
+
 ```bash
-git clone https://github.com/Imergent-Technology/Protogen.git
-cd Protogen
+# Development
+npm run dev                # Start CSS watching
+npm run dev:all           # Start all development servers
+npm run dev:admin         # Start admin development server
+npm run dev:ui            # Start UI development server
 
-# Add progress.local to hosts file
-# Linux/macOS/WSL2:
-echo "127.0.0.1 progress.local" | sudo tee -a /etc/hosts
+# Building
+npm run build:all         # Build all modules
+npm run build:admin       # Build admin module
+npm run build:ui          # Build UI module
 
-# Windows (PowerShell as Administrator):
-Add-Content "$env:SystemRoot\System32\drivers\etc\hosts" "`n127.0.0.1 progress.local"
+# Code Quality
+npm run lint:all          # Lint all modules
+npm run format:all        # Format all code
+npm run clean:all         # Clean all build artifacts
+
+# Dependencies
+npm run install:all       # Install dependencies for all modules
 ```
 
-##### 2. Environment Configuration
-```bash
-# Copy environment template
-cp env.template api/.env
-
-# Generate Laravel app key
-docker-compose run --rm api php artisan key:generate
-```
-
-##### 3. Start Services
-```bash
-# Build and start all containers
-docker-compose up -d
-
-# Wait for containers to be ready, then run migrations
-docker-compose exec api php artisan migrate --force
-docker-compose exec api php artisan db:seed --force
-
-# Create admin user
-docker-compose exec api php artisan tinker --execute="
-\$user = new App\Models\User();
-\$user->name = 'Admin User';
-\$user->email = 'admin@progress.local';
-\$user->password = Hash::make('KeepCodeFlowin#333');
-\$user->email_verified_at = now();
-\$user->is_admin = true;
-\$user->save();
-"
-```
-
-##### 4. Build Frontend Assets
-```bash
-# Install dependencies and build CSS
-npm install
-npm run build:css:prod
-```
-
-#### CSS Build Process
-Before starting development, you need to build the shared CSS:
+### Docker Commands
 
 ```bash
-# Build shared CSS (required for styling) - run from base directory
-npm run build:css:prod
+# Container Management
+docker-compose up -d      # Start all services
+docker-compose down       # Stop all services
+docker-compose restart    # Restart all services
+docker-compose logs -f    # View logs
 
-# Or watch for changes during development - run from base directory
-npm run build:css
+# Database Operations
+docker exec -it api php artisan migrate
+docker exec -it api php artisan db:seed
 ```
 
-### Running the Application
+## 🎨 Key Technologies
 
-```bash
-# Start all services (from base directory)
-docker-compose up
+### Frontend
+- **React 18** with TypeScript
+- **Vite** for fast development and building
+- **Tailwind CSS** for styling
+- **Framer Motion** for animations
+- **Sigma.js** for graph visualization
 
-# Access the application
-# Laravel API: http://progress.local:8080
-# React UI: http://progress.local:3000
-# PostgreSQL: progress.local:5432
-```
+### Backend
+- **Laravel 10** with PHP 8.2
+- **PostgreSQL** for data storage
+- **Laravel Sanctum** for API authentication
+- **Laravel Storage** for file management
 
-## Database Schema
+### Infrastructure
+- **Docker** for containerization
+- **Nginx** for web server
+- **pgAdmin** for database management
 
-The system uses a graph-like structure stored in PostgreSQL:
+## 🏢 Multi-Tenant Architecture
 
-- **Stages**: Different contexts and views
-- **Graph Nodes**: Vertices in the graph structure
-- **Graph Edges**: Connections between nodes
-- **Feedback**: User feedback with privacy levels
-- **Stage Links**: Abstract links between contexts
+Protogen supports multiple isolated communities with shared knowledge aggregation:
 
-## Security Notes
+- **Content Isolation**: Each tenant has isolated scenes, decks, and contexts
+- **Shared Knowledge**: Core Graph serves as shared knowledge base
+- **Feedback Aggregation**: All feedback flows to centralized Core Graph
+- **Custom Branding**: Tenant-specific themes and configurations
+- **Scalable Deployment**: Independent scaling per tenant
 
-### Environment Configuration
-- Never commit `.env` files to version control
-- Use different credentials for development and production
-- Consider using a password manager for credential storage
-- Rotate passwords regularly
+## 📊 Scene Types
 
-### Development vs Production
-- Development uses Docker containers with default credentials
-- Production requires secure, unique credentials
-- Always use environment variables in production
+### Graph Scenes
+Interactive graph visualizations with nodes, edges, and advanced layouts.
 
-## Contributing
+### Document Scenes
+Rich text documents with embedded media, internal/external linking, and collaborative editing.
 
-This project is designed for community involvement. We welcome contributions that align with the vision of creating a platform for collaborative knowledge synthesis.
+### Card Scenes
+Advanced slideshow presentations with:
+- Multiple background types (color, image, video, gradient)
+- Text positioning and styling with contrast management
+- Call-to-action systems (button, fullscreen, timed)
+- Animation and transition effects
+- Full-screen presentation capabilities
 
-## License
+## 🔧 Configuration
 
-MIT License - see [LICENSE](LICENSE) file for details.
+### Environment Setup
+- Copy `env.template` to `api/.env` and configure
+- Ensure `progress.local` is in your hosts file
+- Run setup scripts for initial configuration
 
-## Documentation
+### Shared Configuration
+- **TypeScript**: `config/tsconfig.base.json`
+- **ESLint**: `config/eslint.base.js`
+- **Prettier**: `config/prettier.config.js`
+- **Tailwind**: `config/tailwind.css`
 
-### Core Documentation
-- [Implementation Roadmap](docs/implementation-roadmap.md) - Complete development roadmap and progress tracking
-- [Core Foundation](docs/core-foundation.md) - Architectural foundation and design principles
-- [Multi-Tenant Architecture](docs/multi-tenant-architecture-summary.md) - Multi-tenant system design and implementation
+## 🤝 Contributing
 
-### System Documentation
-- [Snapshot System](docs/snapshot-system.md) - Comprehensive snapshot versioning and management system
-- [Artisan Commands](docs/artisan-commands.md) - CLI commands reference and usage guide
-- [Multi-Tenant Implementation](docs/multi-tenant-implementation-summary.md) - Detailed implementation summary
+1. **Read the Documentation**: Start with [DEVELOPMENT.md](docs/DEVELOPMENT.md)
+2. **Set Up Environment**: Follow the quick start guide above
+3. **Check Roadmap**: Review [Implementation Roadmap](docs/implementation-roadmap.md)
+4. **Follow Guidelines**: Use the established patterns and conventions
+5. **Test Changes**: Ensure all tests pass and builds succeed
 
-### API Documentation
-- [Changelog](docs/changelog.md) - Version history and feature updates
+## 📞 Support
 
-## Roadmap
+- **Documentation**: Comprehensive guides in the `docs/` directory
+- **Troubleshooting**: See [TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md)
+- **Development Issues**: Check [DEVELOPMENT.md](docs/DEVELOPMENT.md)
+- **Architecture Questions**: Review [Core Foundation](docs/core-foundation.md)
 
-- [ ] Stage manager interface implementation
-- [ ] Sigma.js graph visualization integration
-- [ ] User registration and authentication
-- [ ] Feedback system with privacy controls
-- [ ] API endpoints for graph management
-- [ ] Community features and group organization
+## 📄 License
 
-## Future Goals
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-- **Monorepo Structure**: Consider migrating to a monorepo structure for better code organization and shared tooling
-- **Microservices**: Potential decomposition into microservices for better scalability
-- **Plugin System**: Extensible plugin architecture for custom stage types 
+## 🎯 Vision
+
+Protogen aims to be the premier platform for community-driven knowledge synthesis, enabling organizations to:
+
+- **Create Engaging Content**: Interactive graphs, rich documents, and compelling presentations
+- **Manage Multiple Communities**: Isolated content with shared knowledge aggregation
+- **Scale Efficiently**: CDN-friendly delivery with advanced caching and optimization
+- **Foster Collaboration**: Comprehensive feedback systems and community engagement tools
+
+---
+
+*For the most up-to-date information, always refer to the documentation in the `docs/` directory.*
