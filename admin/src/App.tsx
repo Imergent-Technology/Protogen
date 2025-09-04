@@ -41,16 +41,16 @@ function App() {
   // Content management
   const [currentScene, setCurrentScene] = useState<any>(null);
   const [scenes, setScenes] = useState<any[]>([]);
-  const [scenesLoading, setScenesLoading] = useState(false);
+  const [_scenesLoading, _setScenesLoading] = useState(false);
   
   // Navigation state
   const [isNavigationOpen, setIsNavigationOpen] = useState(true);
-  const [transitionDirection, setTransitionDirection] = useState<'forward' | 'backward' | 'up' | 'down'>('forward');
+  const [_transitionDirection, _setTransitionDirection] = useState<'forward' | 'backward' | 'up' | 'down'>('forward');
   const [isProgrammaticNavigation, setIsProgrammaticNavigation] = useState(false);
 
   
   // Context menu
-  const { contextMenu, showContextMenu, hideContextMenu } = useContextMenu();
+  const { contextMenu, showContextMenu: _showContextMenu, hideContextMenu } = useContextMenu();
   
   const { toasts, removeToast, showSuccess, showError } = useToasts();
 
@@ -253,7 +253,7 @@ function App() {
   };
 
     const loadScenes = async () => {
-    setScenesLoading(true);
+    _setScenesLoading(true);
     try {
       // TODO: Replace with actual Scene API call
       setScenes([]);
@@ -261,7 +261,7 @@ function App() {
       console.error('Failed to load scenes:', error);
       showError('Failed to load scenes', 'Please try again later');
     } finally {
-      setScenesLoading(false);
+      _setScenesLoading(false);
     }
   };
 
@@ -272,7 +272,7 @@ function App() {
     }
   }, [isAuthenticated]);
 
-    const handleSceneEdit = () => {
+    const _handleSceneEdit = () => {
     if (currentScene) {
       // TODO: Implement scene editing
       console.log('Scene editing not yet implemented');
@@ -280,7 +280,7 @@ function App() {
   };
 
   const handleNavigateToScenes = () => {
-    setTransitionDirection('forward');
+    _setTransitionDirection('forward');
     setViewMode('scenes');
     updateURL('scenes');
   };
@@ -291,35 +291,35 @@ function App() {
   };
 
   const handleNavigateToAnalytics = () => {
-    setTransitionDirection('forward');
+    _setTransitionDirection('forward');
     setViewMode('analytics');
     updateURL('analytics');
   };
 
   const handleNavigateToDecks = () => {
           // Navigating to decks
-    setTransitionDirection('forward');
+    _setTransitionDirection('forward');
     setViewMode('decks');
     updateURL('decks');
           // View mode set to decks
   };
 
   const handleBackToAdmin = () => {
-    setTransitionDirection('backward');
+    _setTransitionDirection('backward');
     setViewMode('admin');
     setCurrentScene(null);
     updateURL('admin');
   };
 
   const handleCloseScene = () => {
-    setTransitionDirection('backward');
+    _setTransitionDirection('backward');
     setCurrentScene(null);
     setViewMode('admin');
     updateURL('admin');
   };
 
   const handleNavigationSection = (section: string) => {
-    setTransitionDirection('forward');
+    _setTransitionDirection('forward');
     switch (section) {
       case 'admin-dashboard':
         setViewMode('admin');
@@ -359,7 +359,7 @@ function App() {
 
   // Context menu handlers
   // TODO: Implement scene context menu
-  const handleSceneContextMenu = (event: React.MouseEvent, scene: any) => {
+  const _handleSceneContextMenu = (_event: React.MouseEvent, _scene: any) => {
     // TODO: Implement scene context menu
     console.log('Scene context menu not yet implemented');
   };
@@ -666,9 +666,9 @@ function App() {
                     </p>
                   </div>
                   <UsersList
-                            onUserSelect={(user) => {/* TODO: Implement user selection */}}
-        onUserEdit={(user) => {/* TODO: Implement user editing */}}
-        onUserDelete={(userId) => {/* TODO: Implement user deletion */}}
+                            onUserSelect={(_user) => {/* TODO: Implement user selection */}}
+        onUserEdit={(_user) => {/* TODO: Implement user editing */}}
+        onUserDelete={(_userId) => {/* TODO: Implement user deletion */}}
                   />
                 </div>
               </div>
@@ -701,10 +701,10 @@ function App() {
             {viewMode === 'graph-studio' && (
               <div className="h-full">
                 <GraphStudio
-                  onNodeSelect={(node) => {/* TODO: Implement node selection */}}
+                  onNodeSelect={(_node) => {/* TODO: Implement node selection */}}
                   onNodeCreate={() => {/* TODO: Implement node creation */}}
-                  onNodeEdit={(node) => {/* TODO: Implement node editing */}}
-                  onNodeDelete={(node) => {/* TODO: Implement node deletion */}}
+                  onNodeEdit={(_node) => {/* TODO: Implement node editing */}}
+                  onNodeDelete={(_node) => {/* TODO: Implement node deletion */}}
                 />
               </div>
             )}

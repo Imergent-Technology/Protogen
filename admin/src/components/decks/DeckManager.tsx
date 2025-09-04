@@ -55,7 +55,7 @@ export const DeckManager: React.FC = () => {
   const [selectedDeckId, setSelectedDeckId] = useState<string | null>(null);
   const [showCreateScene, setShowCreateScene] = useState(false);
   const [showCreateDeck, setShowCreateDeck] = useState(false);
-  const [showCreateContext, setShowCreateContext] = useState(false);
+  const [_showCreateContext, _setShowCreateContext] = useState(false);
   const [activeTab, setActiveTab] = useState<'scenes' | 'decks' | 'contexts'>('scenes');
 
   // Form states
@@ -221,7 +221,7 @@ export const DeckManager: React.FC = () => {
   };
 
   // Get standalone scenes (not in any deck)
-  const getStandaloneScenes = () => {
+  const _getStandaloneScenes = () => {
     return scenes.filter(scene => scene.deckIds.length === 0);
   };
 
@@ -558,7 +558,7 @@ export const DeckManager: React.FC = () => {
               <p className="text-muted-foreground">Anchors and coordinates within scenes, documents, and other content</p>
             </div>
             <button
-              onClick={() => setShowCreateContext(true)}
+              onClick={() => _setShowCreateContext(true)}
               className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
             >
               + New Context
