@@ -59,18 +59,18 @@ export interface SchemaStructure {
 
 export interface NodeSchema {
   version: string;
-  fields: SchemaField[];
+  fields: SnapshotSchemaField[];
   required: string[];
   defaults: Record<string, any>;
-  validation: ValidationRule[];
+  validation: SnapshotSchemaValidationRule[];
 }
 
 export interface EdgeSchema {
   version: string;
-  fields: SchemaField[];
+  fields: SnapshotSchemaField[];
   required: string[];
   defaults: Record<string, any>;
-  validation: ValidationRule[];
+  validation: SnapshotSchemaValidationRule[];
 }
 
 export interface StyleSchema {
@@ -94,16 +94,16 @@ export interface AnimationSchema {
   properties: string[];
 }
 
-export interface SchemaField {
+export interface SnapshotSchemaField {
   name: string;
   type: 'string' | 'number' | 'boolean' | 'array' | 'object' | 'null';
   required: boolean;
   default?: any;
   description?: string;
-  validation?: ValidationRule[];
+  validation?: SnapshotSchemaValidationRule[];
 }
 
-export interface ValidationRule {
+export interface SnapshotSchemaValidationRule {
   type: 'required' | 'min' | 'max' | 'pattern' | 'enum' | 'custom';
   value: any;
   message?: string;
