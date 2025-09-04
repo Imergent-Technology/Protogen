@@ -203,19 +203,21 @@ Effective Style = Type Defaults + Scene Theme + Instance Overrides
 - Graph contexts must reference valid node/edge positions
 - Fallback to nearest valid context on resolution failure
 
-### 6. Tenant Isolation
-- Content (scenes, decks, contexts) must be tenant-isolated
-- Feedback must flow to centralized Core Graph
+### 6. Tenant Content Management
+- Content (scenes, decks, contexts) can be tenant-specific or shared across tenants
+- Feedback must flow to centralized Core Graph for shared knowledge
 - Tenant configurations must not leak between tenants
 - Shared resources (Core Graph) must be accessible to all tenants
+- Content can be licensed and shared between tenants through the Content Sharing System
 
 ## Multi-Tenant Architecture Benefits
 
-### 1. Content Isolation
-- Each tenant can have completely separate content
-- No risk of content leakage between tenants
+### 1. Content Management
+- Each tenant can have tenant-specific content
+- Content can be shared and licensed between tenants
 - Custom branding and theming per tenant
 - Independent content management workflows
+- Content sharing system for collaborative knowledge building
 
 ### 2. Shared Knowledge
 - Feedback from all tenants contributes to shared Core Graph
@@ -402,14 +404,58 @@ Effective Style = Type Defaults + Scene Theme + Instance Overrides
 - Rollback capabilities for deployments
 - **NEW**: Tenant-specific backup and recovery
 
+## Content Sharing System
+
+### Purpose
+- Enable scenes, decks, and contexts to be shared across tenants
+- Provide licensing and attribution mechanisms
+- Support collaborative knowledge building
+- Maintain content ownership and permissions
+
+### Content Sharing Features
+- **Content Licensing**: Creative Commons and custom license support
+- **Attribution System**: Track content creators and contributors
+- **Dependency Management**: Ensure shared content dependencies are available
+- **Version Control**: Track content evolution across tenants
+- **Usage Analytics**: Monitor how shared content is used
+
+### Implementation Approach
+- Shared Content Registry for discoverable content
+- Content import/export workflows
+- Dependency resolution and validation
+- Tenant-specific content customization
+- Feedback aggregation from shared content usage
+
+## Presentation System
+
+### Purpose
+- Timeline-based animation system for scenes and contexts
+- Sequential presentation with custom animations
+- Dependency checking for linked components
+- Tenant-specific presentation customization
+
+### Presentation Features
+- **Timeline Engine**: Coordinate scene transitions and animations
+- **Animation System**: Custom animations and transitions
+- **Dependency Management**: Ensure all linked content is published
+- **Publishing Workflow**: Automated publishing with dependency validation
+- **Tenant Customization**: Tenant-specific presentation themes and branding
+
+### Implementation Approach
+- Presentation model with timeline configuration
+- Animation framework with customizable transitions
+- Dependency graph validation
+- Automated publishing with rollback capabilities
+- Tenant-specific presentation templates
+
 ## Migration Strategy
 
-### 1. Stage to Scene Migration
-- Create Scene records for existing Stages
-- Migrate Stage content to Scene configuration
-- Update routing to use Scene slugs
-- Maintain backward compatibility during transition
-- **NEW**: Assign existing content to default tenant
+### 1. Content Migration to Default Tenant
+- Assign existing content to default "Progress" tenant
+- Migrate any legacy content to new Scene/Deck/Context system
+- Update routing to use new architecture
+- No backward compatibility needed - clean break from Stage system
+- **NEW**: Establish default tenant as primary content owner
 
 ### 2. Context System Implementation
 - Create Context model and database schema
@@ -425,12 +471,12 @@ Effective Style = Type Defaults + Scene Theme + Instance Overrides
 - Implement feedback aggregation system
 - **NEW**: Gradual tenant rollout and migration
 
-### 4. Legacy Support
-- Maintain Stage API endpoints during transition
-- Provide migration tools for existing Stage content
-- Document migration procedures
-- Plan Stage system deprecation
-- **NEW**: Maintain tenant isolation during migration
+### 4. Legacy Content Support
+- No Stage system endpoints to maintain
+- Provide tools for importing legacy content if needed
+- Document new architecture and workflows
+- Focus on new Scene/Deck/Context system
+- **NEW**: Maintain tenant isolation during content import
 
 ## Future Considerations
 
