@@ -93,27 +93,27 @@ This roadmap outlines the phased implementation of the Protogen system, transiti
 - [x] Implement snapshot integrity validation
 - [x] Add detailed statistics and monitoring
 
-## Phase 4: Shared Library & Hydration 📋 PLANNED
-**Status**: Planning phase, not yet started
+## Phase 4: Shared Library & Hydration ✅ COMPLETED
+**Status**: Complete with comprehensive services and type system
 
-### 4.1 TypeScript Types 🔄
+### 4.1 TypeScript Types ✅
 - [x] Create Scene, SceneNode, SceneEdge types
 - [x] Create Deck and Context types
-- [ ] Add tenant and feedback types
-- [ ] Update shared library exports
-
-### 4.2 Snapshot Hydration 🔄
-- [x] Implement snapshot validation
-- [ ] Create migration system for schema versions
-- [ ] Build progressive hydration (nodes → edges → contexts)
-- [ ] Add style resolution utilities
-- [ ] Create comprehensive tests
-
-### 4.3 Library Integration 🔄
+- [x] Add tenant and feedback types
 - [x] Update shared library exports
-- [ ] Add build configuration for new modules
-- [ ] Create documentation for new APIs
-- [ ] Add integration tests
+
+### 4.2 Snapshot Hydration ✅
+- [x] Implement snapshot validation
+- [x] Create migration system for schema versions
+- [x] Build progressive hydration (nodes → edges → contexts)
+- [x] Add style resolution utilities
+- [x] Create comprehensive tests
+
+### 4.3 Library Integration ✅
+- [x] Update shared library exports
+- [x] Add build configuration for new modules
+- [x] Create documentation for new APIs
+- [x] Add integration tests
 
 ## Phase 5: UI Integration & Authoring 🔄 IN PROGRESS
 **Status**: Basic components exist, advanced features pending
@@ -127,6 +127,13 @@ This roadmap outlines the phased implementation of the Protogen system, transiti
 - [ ] Add bulk actions (linked/phantom)
 - [ ] Integrate with Scene API
 - [ ] Add comprehensive UI tests
+
+### 5.1.1 Scene Type-Specific Authoring Tools 🔄
+- [ ] **Graph Scene Authoring**: Node/edge import and management tools
+- [ ] **Card Scene Authoring**: 🚨 **DESIGN MILESTONE** - Requires detailed user feedback for powerful presentation capabilities
+- [ ] **Document Scene Authoring**: Text and media content tools
+- [ ] **Custom Scene Types**: Extensible architecture for new scene types
+- [ ] **Type-optimized workflows**: Specialized tools for each scene type
 
 ### 5.2 Deck Management UI ✅
 - [x] Create DeckManager component
