@@ -268,7 +268,8 @@ const TenantManager: React.FC = () => {
       </div>
       
       {/* Create Tenant Dialog */}
-      <Dialog open={showCreateTenant} onOpenChange={setShowCreateTenant}>
+      {showCreateTenant && (
+        <Dialog open={showCreateTenant} onOpenChange={setShowCreateTenant}>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
               <DialogTitle>Create New Tenant</DialogTitle>
@@ -340,6 +341,7 @@ const TenantManager: React.FC = () => {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+      )}
 
       {/* Tenant List */}
       <div className="grid gap-6">
@@ -488,7 +490,8 @@ const TenantManager: React.FC = () => {
       </div>
 
       {/* Edit Tenant Dialog */}
-      <Dialog open={showEditTenant} onOpenChange={setShowEditTenant}>
+      {showEditTenant && (
+        <Dialog open={showEditTenant} onOpenChange={setShowEditTenant}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>Edit Tenant</DialogTitle>
@@ -560,6 +563,7 @@ const TenantManager: React.FC = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      )}
     </div>
   );
 };
