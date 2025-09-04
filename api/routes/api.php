@@ -109,12 +109,16 @@ Route::prefix('scenes')->middleware(['auth:sanctum', 'admin'])->group(function (
 Route::prefix('snapshots')->middleware(['auth:sanctum', 'admin'])->group(function () {
     Route::get('/', [SnapshotApiController::class, 'index']);
     Route::get('/stats', [SnapshotApiController::class, 'stats']);
+    Route::get('/detailed-stats', [SnapshotApiController::class, 'detailedStats']);
     Route::post('/', [SnapshotApiController::class, 'store']);
+    Route::post('/cleanup', [SnapshotApiController::class, 'cleanup']);
+    Route::post('/rollback', [SnapshotApiController::class, 'rollback']);
     Route::get('/{guid}', [SnapshotApiController::class, 'show']);
     Route::post('/{guid}/publish', [SnapshotApiController::class, 'publish']);
     Route::post('/{guid}/archive', [SnapshotApiController::class, 'archive']);
     Route::get('/{guid}/manifest', [SnapshotApiController::class, 'manifest']);
     Route::get('/{guid}/download', [SnapshotApiController::class, 'download']);
+    Route::get('/{guid}/validate', [SnapshotApiController::class, 'validate']);
     Route::delete('/{guid}', [SnapshotApiController::class, 'destroy']);
 });
 

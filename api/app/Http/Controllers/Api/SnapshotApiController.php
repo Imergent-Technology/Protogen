@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Snapshot;
 use App\Models\Scene;
 use App\Services\SnapshotBuilderService;
+use App\Services\SnapshotManagementService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Storage;
@@ -13,10 +14,14 @@ use Illuminate\Support\Facades\Storage;
 class SnapshotApiController extends Controller
 {
     protected SnapshotBuilderService $snapshotBuilder;
+    protected SnapshotManagementService $snapshotManagement;
 
-    public function __construct(SnapshotBuilderService $snapshotBuilder)
-    {
+    public function __construct(
+        SnapshotBuilderService $snapshotBuilder,
+        SnapshotManagementService $snapshotManagement
+    ) {
         $this->snapshotBuilder = $snapshotBuilder;
+        $this->snapshotManagement = $snapshotManagement;
     }
 
     /**
@@ -360,6 +365,136 @@ class SnapshotApiController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to delete snapshot: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Apply retention policies
+     */
+    public function cleanup(Request $request): JsonResponse
+    {
+        $policies = [
+            'keep_drafts_days' => $request->input('keep_drafts_days', 7),
+            'keep_published_versions' => $request->input('keep_published_versions', 5),
+            'archive_after_days' => $request->input('archive_after_days', 30),
+            'delete_archived_after_days' => $request->input('delete_archived_after_days', 90),
+        ];
+
+        try {
+            $results = $this->snapshotManagement->applyRetentionPolicies($policies);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Retention policies applied successfully',
+                'data' => $results,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to apply retention policies: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Rollback scene to snapshot
+     */
+    public function rollback(Request $request): JsonResponse
+    {
+        $request->validate([
+            'scene_id' => 'required|exists:scenes,id',
+            'snapshot_id' => 'required|exists:snapshots,id',
+        ]);
+
+        $scene = Scene::find($request->scene_id);
+        $snapshot = Snapshot::find($request->snapshot_id);
+
+        if ($snapshot->scene_id !== $scene->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Snapshot does not belong to the specified scene',
+            ], 400);
+        }
+
+        if (!$snapshot->isPublished()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Only published snapshots can be used for rollback',
+            ], 400);
+        }
+
+        try {
+            $success = $this->snapshotManagement->rollbackToSnapshot($scene, $snapshot);
+
+            if ($success) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Scene rolled back successfully',
+                    'data' => [
+                        'scene_id' => $scene->id,
+                        'snapshot_id' => $snapshot->id,
+                    ],
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to rollback scene',
+                ], 500);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to rollback scene: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Validate snapshot integrity
+     */
+    public function validate(string $guid): JsonResponse
+    {
+        $snapshot = Snapshot::where('guid', $guid)->first();
+
+        if (!$snapshot) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Snapshot not found',
+            ], 404);
+        }
+
+        try {
+            $result = $this->snapshotManagement->validateSnapshotIntegrity($snapshot);
+
+            return response()->json([
+                'success' => true,
+                'data' => $result,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to validate snapshot: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Get detailed snapshot statistics
+     */
+    public function detailedStats(): JsonResponse
+    {
+        try {
+            $stats = $this->snapshotManagement->getSnapshotStats();
+
+            return response()->json([
+                'success' => true,
+                'data' => $stats,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to get statistics: ' . $e->getMessage(),
             ], 500);
         }
     }
