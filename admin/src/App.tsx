@@ -16,6 +16,7 @@ import {
   SceneNavigation,
   SceneTypeManager,
   GraphSceneAuthoring,
+  DocumentSceneAuthoring,
 } from './components';
 import { AnimatePresence, motion } from 'framer-motion';
 import { initializeTheme } from '@progress/shared';
@@ -765,6 +766,13 @@ function App() {
                       onPreview={handlePreviewScene}
                       onCancel={handleCancelSceneCreation}
                     />
+                  ) : selectedSceneType?.id === 'document' ? (
+                    <DocumentSceneAuthoring
+                      availableNodes={_availableNodes}
+                      onSave={handleSaveScene}
+                      onPreview={handlePreviewScene}
+                      onCancel={handleCancelSceneCreation}
+                    />
                   ) : (
                     <SceneTypeManager
                       availableTypes={[]}
@@ -780,6 +788,14 @@ function App() {
                 <div className="max-w-6xl mx-auto">
                   {editingScene?.type === 'graph' ? (
                     <GraphSceneAuthoring
+                      scene={editingScene}
+                      availableNodes={_availableNodes}
+                      onSave={handleSaveScene}
+                      onPreview={handlePreviewScene}
+                      onCancel={handleCancelSceneCreation}
+                    />
+                  ) : editingScene?.type === 'document' ? (
+                    <DocumentSceneAuthoring
                       scene={editingScene}
                       availableNodes={_availableNodes}
                       onSave={handleSaveScene}

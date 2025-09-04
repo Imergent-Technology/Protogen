@@ -246,7 +246,69 @@ This roadmap outlines the phased implementation of the Protogen system, transiti
 - [ ] Add content ownership and transfer workflows
 - [ ] Implement content moderation and approval
 
-## Phase 10: Presentation System 📋 PLANNED
+## Phase 10: Music & Audio System 📋 PLANNED
+**Status**: Planning phase, to be added after core authoring tools
+
+### 10.1 Music Integration for Decks 🔄
+- [ ] **Deck-level music configuration** with audio file upload/selection
+- [ ] **Music playback controls** (play, pause, stop, volume)
+- [ ] **Audio format support** (MP3, WAV, OGG, etc.)
+- [ ] **Volume management** with global and per-deck settings
+- [ ] **Music metadata** (title, artist, duration, loop settings)
+- [ ] **Background music persistence** across scene navigation
+
+### 10.2 Audio Conflict Resolution 🔄
+- [ ] **Video sound override system** for music vs video audio
+- [ ] **Volume ducking** when video with sound is playing
+- [ ] **Audio priority management** (music, video, system sounds)
+- [ ] **User preference settings** for audio behavior
+- [ ] **Automatic audio detection** for media content
+- [ ] **Manual audio control** overrides
+
+### 10.3 Music Library Management 🔄
+- [ ] **Music library interface** for organizing audio assets
+- [ ] **Music categorization** (ambient, energetic, thematic, etc.)
+- [ ] **Music search and filtering** by mood, genre, duration
+- [ ] **Music licensing tracking** and attribution
+- [ ] **Music preview system** before assignment to decks
+- [ ] **Music usage analytics** and reporting
+
+## Phase 11: Presentation Timeline System 📋 PLANNED
+**Status**: Planning phase, to be added after music system
+
+### 11.1 Sequential Deck Playback 🔄
+- [ ] **Timeline-based presentation engine** for sequential deck playback
+- [ ] **Deck sequencing interface** with drag-and-drop ordering
+- [ ] **Transition management** between decks (fade, slide, etc.)
+- [ ] **Timing controls** for automatic advancement
+- [ ] **Loop and repeat settings** for presentation cycles
+- [ ] **Presentation state management** (play, pause, stop, reset)
+
+### 11.2 Card Scene Slideshow Integration 🔄
+- [ ] **Card scene slideshow engine** with automatic progression
+- [ ] **Slide timing configuration** per slide or global
+- [ ] **Slide transition effects** (fade, slide, zoom, flip)
+- [ ] **Interactive slide elements** with click-to-advance
+- [ ] **Slide navigation controls** (previous, next, jump to slide)
+- [ ] **Slide progress indicators** and status display
+
+### 11.3 Presentation Controls & Management 🔄
+- [ ] **Presentation mode interface** with full-screen support
+- [ ] **Remote control system** for presentation management
+- [ ] **Presentation recording** and playback capabilities
+- [ ] **Audience interaction features** (polls, Q&A, etc.)
+- [ ] **Presentation analytics** (viewing time, engagement, etc.)
+- [ ] **Presentation sharing** and collaboration features
+
+### 11.4 Advanced Timeline Features 🔄
+- [ ] **Branching presentations** with conditional navigation
+- [ ] **Dynamic content loading** based on presentation context
+- [ ] **Multi-track presentations** with parallel content streams
+- [ ] **Presentation templates** and reusable sequences
+- [ ] **Presentation versioning** and change management
+- [ ] **Presentation export** to various formats (PDF, video, etc.)
+
+## Phase 12: Presentation System 📋 PLANNED
 **Status**: Planning phase, not yet started
 
 ### 10.1 Timeline Engine 📋
