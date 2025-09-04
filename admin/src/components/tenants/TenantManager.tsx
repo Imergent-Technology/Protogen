@@ -340,7 +340,6 @@ const TenantManager: React.FC = () => {
             </DialogFooter>
           </DialogContent>
         </Dialog>
-      </div>
 
       {/* Tenant List */}
       <div className="grid gap-6">
