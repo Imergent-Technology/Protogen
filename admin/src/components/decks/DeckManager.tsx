@@ -220,10 +220,10 @@ export const DeckManager: React.FC = () => {
     return scenes.filter(scene => scene.deckIds.includes(deckId));
   };
 
-  // Get standalone scenes (not in any deck)
-  const _getStandaloneScenes = () => {
-    return scenes.filter(scene => scene.deckIds.length === 0);
-  };
+  // Get standalone scenes (not in any deck) - for future use
+  // const _getStandaloneScenes = () => {
+  //   return scenes.filter(scene => scene.deckIds.length === 0);
+  // };
 
   // Get all decks that contain a specific scene
   const getSceneDecks = (sceneId: string) => {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useDeckStore, Deck } from '../../stores/deckStore';
+import { useDeckStore, Deck, Scene } from '../../stores/deckStore';
 import { DeckType, SceneType } from '../../stores/deckStore';
 import { performanceManager } from '../../services/PerformanceManager';
 
@@ -78,7 +78,7 @@ export const SceneManager: React.FC = () => {
     description: '',
     type: 'graph' as DeckType,
     keepWarm: true,
-    preloadStrategy: 'proximity' as const,
+    preloadStrategy: 'proximity' as 'immediate' | 'proximity' | 'on-demand',
   });
 
   // Initialize performance manager
@@ -358,10 +358,10 @@ export const SceneManager: React.FC = () => {
     return scenes.filter(scene => scene.deckIds.includes(deckId));
   };
 
-  // Get standalone scenes (not in any deck)
-  const getStandaloneScenes = () => {
-    return scenes.filter(scene => scene.deckIds.length === 0);
-  };
+  // Get standalone scenes (not in any deck) - for future use
+  // const _getStandaloneScenes = () => {
+  //   return scenes.filter(scene => scene.deckIds.length === 0);
+  // };
 
   // Get all decks that contain a specific scene
   const getSceneDecks = (sceneId: string) => {

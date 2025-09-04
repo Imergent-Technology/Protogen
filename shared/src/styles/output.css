@@ -92,6 +92,7 @@
     --font-weight-semibold: 600;
     --font-weight-bold: 700;
     --tracking-tight: -0.025em;
+    --tracking-wide: 0.025em;
     --tracking-wider: 0.05em;
     --tracking-widest: 0.1em;
     --leading-tight: 1.25;
@@ -438,6 +439,9 @@
   .z-\[1000000\] {
     z-index: 1000000;
   }
+  .col-span-full {
+    grid-column: 1 / -1;
+  }
   .col-start-2 {
     grid-column-start: 2;
   }
@@ -488,6 +492,9 @@
   }
   .-mt-\[4\.9rem\] {
     margin-top: calc(4.9rem * -1);
+  }
+  .mt-0 {
+    margin-top: calc(var(--spacing) * 0);
   }
   .mt-1 {
     margin-top: calc(var(--spacing) * 1);
@@ -767,6 +774,9 @@
   .max-h-\[90vh\] {
     max-height: 90vh;
   }
+  .max-h-\[calc\(90vh-120px\)\] {
+    max-height: calc(90vh - 120px);
+  }
   .max-h-\[var\(--radix-dropdown-menu-content-available-height\)\] {
     max-height: var(--radix-dropdown-menu-content-available-height);
   }
@@ -781,6 +791,9 @@
   }
   .min-h-\[80px\] {
     min-height: 80px;
+  }
+  .min-h-\[400px\] {
+    min-height: 400px;
   }
   .min-h-full {
     min-height: 100%;
@@ -1884,6 +1897,10 @@
     --tw-tracking: var(--tracking-tight);
     letter-spacing: var(--tracking-tight);
   }
+  .tracking-wide {
+    --tw-tracking: var(--tracking-wide);
+    letter-spacing: var(--tracking-wide);
+  }
   .tracking-wider {
     --tw-tracking: var(--tracking-wider);
     letter-spacing: var(--tracking-wider);
@@ -2127,6 +2144,13 @@
   .ring-0 {
     --tw-ring-shadow: var(--tw-ring-inset,) 0 0 0 calc(0px + var(--tw-ring-offset-width)) var(--tw-ring-color, currentcolor);
     box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+  }
+  .ring-2 {
+    --tw-ring-shadow: var(--tw-ring-inset,) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color, currentcolor);
+    box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+  }
+  .ring-primary {
+    --tw-ring-color: var(--color-primary);
   }
   .ring-ring {
     --tw-ring-color: var(--color-ring);

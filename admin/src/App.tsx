@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Layers, Users, BarChart3, Network, Settings, Building2 } from 'lucide-react';
-import { apiClient } from '@progress/shared';
+import { Layers, Users, BarChart3, Network, Settings, Building2, Plus } from 'lucide-react';
+import { apiClient, Button } from '@progress/shared';
 import {
   UsersList,
   AdminLogin,
@@ -13,7 +13,9 @@ import {
   useToasts,
   SceneManager,
   TenantManager,
-  SceneNavigation
+  SceneNavigation,
+  SceneTypeManager,
+  GraphSceneAuthoring,
 } from './components';
 import { AnimatePresence, motion } from 'framer-motion';
 import { initializeTheme } from '@progress/shared';
@@ -25,7 +27,7 @@ interface AdminUser {
   is_admin: boolean;
 }
 
-type ViewMode = 'admin' | 'scenes' | 'decks' | 'contexts' | 'users' | 'analytics' | 'graph-studio' | 'tenants';
+type ViewMode = 'admin' | 'scenes' | 'decks' | 'contexts' | 'users' | 'analytics' | 'graph-studio' | 'tenants' | 'create-scene' | 'edit-scene';
 
 function App() {
   const navigate = useNavigate();
@@ -42,6 +44,11 @@ function App() {
   const [currentScene, setCurrentScene] = useState<any>(null);
   const [scenes, setScenes] = useState<any[]>([]);
   const [_scenesLoading, _setScenesLoading] = useState(false);
+  
+  // Scene authoring state
+  const [selectedSceneType, setSelectedSceneType] = useState<any>(null);
+  const [editingScene, setEditingScene] = useState<any>(null);
+  const [_availableNodes, _setAvailableNodes] = useState<any[]>([]);
   
   // Navigation state
   const [isNavigationOpen, setIsNavigationOpen] = useState(true);
@@ -272,12 +279,12 @@ function App() {
     }
   }, [isAuthenticated]);
 
-    const _handleSceneEdit = () => {
-    if (currentScene) {
-      // TODO: Implement scene editing
-      console.log('Scene editing not yet implemented');
-    }
-  };
+    // const _handleSceneEdit = () => {
+    // if (currentScene) {
+    //   // TODO: Implement scene editing
+    //   console.log('Scene editing not yet implemented');
+    // }
+    // };
 
   const handleNavigateToScenes = () => {
     _setTransitionDirection('forward');
@@ -359,9 +366,41 @@ function App() {
 
   // Context menu handlers
   // TODO: Implement scene context menu
-  const _handleSceneContextMenu = (_event: React.MouseEvent, _scene: any) => {
-    // TODO: Implement scene context menu
-    console.log('Scene context menu not yet implemented');
+  // const _handleSceneContextMenu = (_event: React.MouseEvent, _scene: any) => {
+  //   // TODO: Implement scene context menu
+  //   console.log('Scene context menu not yet implemented');
+  // };
+
+  // Scene authoring handlers
+  const handleCreateScene = (sceneType: any) => {
+    setSelectedSceneType(sceneType);
+    setViewMode('create-scene');
+  };
+
+  // const _handleEditScene = (scene: any) => {
+  //   setEditingScene(scene);
+  //   setViewMode('edit-scene');
+  // };
+
+  const handleSaveScene = (sceneData: any) => {
+    // TODO: Implement scene saving
+    console.log('Saving scene:', sceneData);
+    showSuccess('Scene saved successfully!');
+    setViewMode('scenes');
+    setSelectedSceneType(null);
+    setEditingScene(null);
+  };
+
+  const handlePreviewScene = (sceneData: any) => {
+    // TODO: Implement scene preview
+    console.log('Previewing scene:', sceneData);
+    showSuccess('Scene preview opened!');
+  };
+
+  const handleCancelSceneCreation = () => {
+    setViewMode('scenes');
+    setSelectedSceneType(null);
+    setEditingScene(null);
   };
 
 
@@ -639,10 +678,17 @@ function App() {
             {viewMode === 'scenes' && (
               <div className="p-8">
                 <div className="max-w-6xl mx-auto">
-                  <div className="mb-8">
-                    <p className="text-muted-foreground">
-                      View and manage your scenes
-                    </p>
+                  <div className="mb-8 flex items-center justify-between">
+                    <div>
+                      <h1 className="text-2xl font-bold mb-2">Scene Management</h1>
+                      <p className="text-muted-foreground">
+                        View and manage your scenes
+                      </p>
+                    </div>
+                    <Button onClick={() => setViewMode('create-scene')}>
+                      <Plus className="h-4 w-4 mr-2" />
+                      Create Scene
+                    </Button>
                   </div>
                   <SceneManager />
                 </div>
@@ -706,6 +752,48 @@ function App() {
                   onNodeEdit={(_node) => {/* TODO: Implement node editing */}}
                   onNodeDelete={(_node) => {/* TODO: Implement node deletion */}}
                 />
+              </div>
+            )}
+
+            {viewMode === 'create-scene' && (
+              <div className="p-8">
+                <div className="max-w-6xl mx-auto">
+                  {selectedSceneType?.id === 'graph' ? (
+                    <GraphSceneAuthoring
+                      availableNodes={_availableNodes}
+                      onSave={handleSaveScene}
+                      onPreview={handlePreviewScene}
+                      onCancel={handleCancelSceneCreation}
+                    />
+                  ) : (
+                    <SceneTypeManager
+                      availableTypes={[]}
+                      onCreateScene={handleCreateScene}
+                    />
+                  )}
+                </div>
+              </div>
+            )}
+
+            {viewMode === 'edit-scene' && (
+              <div className="p-8">
+                <div className="max-w-6xl mx-auto">
+                  {editingScene?.type === 'graph' ? (
+                    <GraphSceneAuthoring
+                      scene={editingScene}
+                      availableNodes={_availableNodes}
+                      onSave={handleSaveScene}
+                      onPreview={handlePreviewScene}
+                      onCancel={handleCancelSceneCreation}
+                    />
+                  ) : (
+                    <div className="text-center py-12">
+                      <p className="text-muted-foreground">
+                        Scene editing for type "{editingScene?.type}" is not yet implemented.
+                      </p>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
         </main>

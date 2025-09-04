@@ -19,6 +19,9 @@ export * from './users';
 // Tenant management components
 export * from './tenants';
 
+// Authoring components
+export * from './authoring';
+
 // Content and editing components
 export * from './content';
 
