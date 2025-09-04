@@ -261,13 +261,14 @@ const TenantManager: React.FC = () => {
             Manage multi-tenant environments with isolated content and shared feedback
           </p>
         </div>
-        <Dialog open={showCreateTenant} onOpenChange={setShowCreateTenant}>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="h-4 w-4 mr-2" />
-              New Tenant
-            </Button>
-          </DialogTrigger>
+        <Button onClick={() => setShowCreateTenant(true)}>
+          <Plus className="h-4 w-4 mr-2" />
+          New Tenant
+        </Button>
+      </div>
+      
+      {/* Create Tenant Dialog */}
+      <Dialog open={showCreateTenant} onOpenChange={setShowCreateTenant}>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
               <DialogTitle>Create New Tenant</DialogTitle>
@@ -316,17 +317,17 @@ const TenantManager: React.FC = () => {
               </div>
               <div className="flex items-center space-x-4">
                 <div className="flex items-center space-x-2">
-                                      <Switch
-                      checked={tenantForm.is_active}
-                      onCheckedChange={(checked) => setTenantForm({ ...tenantForm, is_active: checked })}
-                    />
+                  <Switch
+                    checked={tenantForm.is_active}
+                    onCheckedChange={(checked) => setTenantForm({ ...tenantForm, is_active: checked })}
+                  />
                   <Label htmlFor="is_active">Active</Label>
                 </div>
                 <div className="flex items-center space-x-2">
-                                      <Switch
-                      checked={tenantForm.is_public}
-                      onCheckedChange={(checked) => setTenantForm({ ...tenantForm, is_public: checked })}
-                    />
+                  <Switch
+                    checked={tenantForm.is_public}
+                    onCheckedChange={(checked) => setTenantForm({ ...tenantForm, is_public: checked })}
+                  />
                   <Label htmlFor="is_public">Public</Label>
                 </div>
               </div>
@@ -537,18 +538,18 @@ const TenantManager: React.FC = () => {
             </div>
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2">
-                                  <Switch
-                    checked={tenantForm.is_active}
-                    onCheckedChange={(checked) => setTenantForm({ ...tenantForm, is_active: checked })}
-                  />
+                <Switch
+                  checked={tenantForm.is_active}
+                  onCheckedChange={(checked) => setTenantForm({ ...tenantForm, is_active: checked })}
+                />
                 <Label htmlFor="edit-is_active">Active</Label>
               </div>
               <div className="flex items-center space-x-2">
-                                  <Switch
-                    checked={tenantForm.is_public}
-                    onCheckedChange={(checked) => setTenantForm({ ...tenantForm, is_public: checked })}
-                  />
-                <Label htmlFor="edit-is_public">Public</Label>
+                <Switch
+                  checked={tenantForm.is_public}
+                  onCheckedChange={(checked) => setTenantForm({ ...tenantForm, is_public: checked })}
+                />
+                <Label htmlFor="is_public">Public</Label>
               </div>
             </div>
           </div>
