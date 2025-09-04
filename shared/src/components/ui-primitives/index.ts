@@ -8,3 +8,7 @@ export * from './dropdown-menu';
 export * from './dialog';
 export * from './input';
 export * from './separator';
+export * from './label';
+export * from './textarea';
+export * from './tabs';
+export * from './switch';

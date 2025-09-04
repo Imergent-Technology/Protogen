@@ -1,25 +1,19 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Layers, Users, BarChart3, Network, Settings } from 'lucide-react';
-import { apiClient, Stage } from '@progress/shared';
+import { Layers, Users, BarChart3, Network, Settings, Building2 } from 'lucide-react';
+import { apiClient } from '@progress/shared';
 import {
   UsersList,
   AdminLogin,
-  FullScreenStageViewer,
-  StageMetadataDialog,
-  StageTransition,
-  StageContentWrapper,
-  StageNavigation,
   ContextMenu,
   useContextMenu,
-  getStageContextMenuItems,
-  CreateStageDialog,
-  StageTypeManager,
   GraphStudio,
   AdminToolbar,
   ToastContainer,
   useToasts,
-  SceneManager
+  SceneManager,
+  TenantManager,
+  SceneNavigation
 } from './components';
 import { AnimatePresence, motion } from 'framer-motion';
 import { initializeTheme } from '@progress/shared';
@@ -31,7 +25,7 @@ interface AdminUser {
   is_admin: boolean;
 }
 
-type ViewMode = 'admin' | 'stage' | 'stages-list' | 'users' | 'analytics' | 'graph-studio' | 'decks';
+type ViewMode = 'admin' | 'scenes' | 'decks' | 'contexts' | 'users' | 'analytics' | 'graph-studio' | 'tenants';
 
 function App() {
   const navigate = useNavigate();
@@ -44,14 +38,10 @@ function App() {
   const [loginError, setLoginError] = useState<string | null>(null);
   const [authChecking, setAuthChecking] = useState(true);
   
-  // Stage management
-  const [currentStage, setCurrentStage] = useState<Stage | null>(null);
-  const [stages, setStages] = useState<Stage[]>([]);
-  const [stagesLoading, setStagesLoading] = useState(false);
-  const [isMetadataDialogOpen, setIsMetadataDialogOpen] = useState(false);
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [isStageTypeManagerOpen, setIsStageTypeManagerOpen] = useState(false);
-  const [_isSaving, setIsSaving] = useState(false);
+  // Content management
+  const [currentScene, setCurrentScene] = useState<any>(null);
+  const [scenes, setScenes] = useState<any[]>([]);
+  const [scenesLoading, setScenesLoading] = useState(false);
   
   // Navigation state
   const [isNavigationOpen, setIsNavigationOpen] = useState(true);
@@ -68,11 +58,15 @@ function App() {
   const getViewSubtitle = (view: ViewMode): string => {
     switch (view) {
       case 'admin':
-        return 'System administration and management';
-      case 'stages-list':
-        return 'Stage Management';
-      case 'decks':
+        return 'Protogen Admin - System administration and management';
+      case 'scenes':
         return 'Scene Management';
+      case 'decks':
+        return 'Deck Management';
+      case 'contexts':
+        return 'Context Management';
+      case 'tenants':
+        return 'Tenant Management';
       case 'users':
         return 'User Management';
       case 'analytics':
@@ -103,51 +97,48 @@ function App() {
     if (isProgrammaticNavigation) return;
 
     const path = location.pathname;
-    const stageSlugMatch = path.match(/\/stage\/([^\/]+)/);
     
-    if (stageSlugMatch) {
-      const stageSlug = stageSlugMatch[1];
-      const stage = stages.find(s => s.slug === stageSlug);
-      if (stage && stage.id !== currentStage?.id) {
-        setCurrentStage(stage);
-        setViewMode('stage');
-      }
-    } else if (path === '/users') {
+    if (path === '/users') {
       setViewMode('users');
     } else if (path === '/analytics') {
       setViewMode('analytics');
-    } else if (path === '/stages') {
-      setViewMode('stages-list');
     } else if (path === '/decks') {
       setViewMode('decks');
+    } else if (path === '/scenes') {
+      setViewMode('scenes');
+    } else if (path === '/contexts') {
+      setViewMode('contexts');
+    } else if (path === '/tenants') {
+      setViewMode('tenants');
     } else if (path === '/graph-studio') {
       setViewMode('graph-studio');
     } else if (path === '/') {
       setViewMode('admin');
-      setCurrentStage(null);
+      setCurrentScene(null);
     }
-  }, [location.pathname, stages, currentStage?.id, isProgrammaticNavigation]);
+  }, [location.pathname, isProgrammaticNavigation]);
 
   // Update URL when state changes
-  const updateURL = (mode: ViewMode, stage?: Stage) => {
+  const updateURL = (mode: ViewMode) => {
     setIsProgrammaticNavigation(true);
     switch (mode) {
-      case 'stage':
-        if (stage?.slug) {
-          navigate(`/stage/${stage.slug}`);
-        }
+      case 'scenes':
+        navigate('/scenes');
         break;
       case 'decks':
         navigate('/decks');
+        break;
+      case 'contexts':
+        navigate('/contexts');
+        break;
+      case 'tenants':
+        navigate('/tenants');
         break;
       case 'users':
         navigate('/users');
         break;
       case 'analytics':
         navigate('/analytics');
-        break;
-      case 'stages-list':
-        navigate('/stages');
         break;
       case 'graph-studio':
         navigate('/graph-studio');
@@ -161,7 +152,7 @@ function App() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      loadStages();
+      loadScenes();
     }
   }, [isAuthenticated]);
 
@@ -190,7 +181,7 @@ function App() {
         clearAuth();
       }
     } catch (error) {
-      console.log('Not authenticated');
+      // Not authenticated
       clearAuth();
     } finally {
       setAuthChecking(false);
@@ -261,173 +252,37 @@ function App() {
     showSuccess('Logged Out', 'You have been successfully logged out');
   };
 
-  const loadStages = async () => {
-    setStagesLoading(true);
+    const loadScenes = async () => {
+    setScenesLoading(true);
     try {
-      const response = await apiClient.getStages();
-      if (response.success) {
-        setStages(response.data || []);
-      }
+      // TODO: Replace with actual Scene API call
+      setScenes([]);
     } catch (error) {
-      console.error('Failed to load stages:', error);
-      showError('Failed to load stages', 'Please try again later');
+      console.error('Failed to load scenes:', error);
+      showError('Failed to load scenes', 'Please try again later');
     } finally {
-      setStagesLoading(false);
+      setScenesLoading(false);
     }
   };
 
-  // Load stages when component mounts
+  // Load scenes when component mounts
   useEffect(() => {
     if (isAuthenticated) {
-      loadStages();
+      loadScenes();
     }
   }, [isAuthenticated]);
 
-  const handleStageSave = async (stage: Stage) => {
-    setIsSaving(true);
-    try {
-      const response = await apiClient.updateStage(stage.id!, {
-        name: stage.name,
-        slug: stage.slug,
-        description: stage.description,
-        config: stage.config || {},
-        is_active: stage.is_active
-      });
-      
-      if (response.success) {
-        showSuccess('Stage Saved', `Successfully saved "${stage.name}"`);
-        await loadStages(); // Refresh the stages list
-      } else {
-        showError('Save Failed', 'Failed to save stage changes');
-      }
-    } catch (error) {
-      console.error('Failed to save stage:', error);
-      showError('Save Failed', 'Failed to save stage changes');
-    } finally {
-      setIsSaving(false);
+    const handleSceneEdit = () => {
+    if (currentScene) {
+      // TODO: Implement scene editing
+      console.log('Scene editing not yet implemented');
     }
   };
 
-  const handleStagePublish = async (stage: Stage) => {
-    try {
-      const response = await apiClient.updateStage(stage.id!, {
-        is_active: true
-      });
-      
-      if (response.success) {
-        showSuccess('Stage Published', `"${stage.name}" is now published`);
-        await loadStages();
-        setCurrentStage({ ...stage, is_active: true });
-      } else {
-        showError('Publish Failed', 'Failed to publish stage');
-      }
-    } catch (error) {
-      console.error('Failed to publish stage:', error);
-      showError('Publish Failed', 'Failed to publish stage');
-    }
-  };
-
-  const handleStageUnpublish = async (stage: Stage) => {
-    try {
-      const response = await apiClient.updateStage(stage.id!, {
-        is_active: false
-      });
-      
-      if (response.success) {
-        showSuccess('Stage Unpublished', `"${stage.name}" is now unpublished`);
-        await loadStages();
-        setCurrentStage({ ...stage, is_active: false });
-      } else {
-        showError('Unpublish Failed', 'Failed to unpublish stage');
-      }
-    } catch (error) {
-      console.error('Failed to unpublish stage:', error);
-      showError('Unpublish Failed', 'Failed to unpublish stage');
-    }
-  };
-
-  const handleStageSelect = (stage: Stage) => {
+  const handleNavigateToScenes = () => {
     setTransitionDirection('forward');
-    setCurrentStage(stage);
-    setViewMode('stage');
-    updateURL('stage', stage);
-    setIsNavigationOpen(false); // Close navigation on mobile when selecting a stage
-  };
-
-  const handleStageEdit = () => {
-    setIsMetadataDialogOpen(true);
-  };
-
-  const handleStageTypeManager = () => {
-    setIsStageTypeManagerOpen(true);
-  };
-
-  const handleStageDelete = async (stage: Stage) => {
-    if (confirm(`Are you sure you want to delete "${stage.name}"?`)) {
-      try {
-        const response = await apiClient.deleteStage(stage.id!);
-        if (response.success) {
-          showSuccess('Stage Deleted', `"${stage.name}" has been deleted`);
-          await loadStages();
-          if (currentStage?.id === stage.id) {
-            setCurrentStage(null);
-            setViewMode('admin');
-          }
-        } else {
-          showError('Delete Failed', 'Failed to delete stage');
-        }
-      } catch (error) {
-        console.error('Failed to delete stage:', error);
-        showError('Delete Failed', 'Failed to delete stage');
-      }
-    }
-  };
-
-  const handleStageCopy = (_stage: Stage) => {
-    // TODO: Implement stage copying
-    showSuccess('Coming Soon', 'Stage copying will be implemented in the next phase');
-  };
-
-  const handleStageShare = (_stage: Stage) => {
-    // TODO: Implement stage sharing
-    showSuccess('Coming Soon', 'Stage sharing will be implemented in the next phase');
-  };
-
-  const handleCreateStage = () => {
-    setIsCreateDialogOpen(true);
-  };
-
-  const handleStageCreate = async (stageData: Partial<Stage>) => {
-    try {
-      const requestData = {
-        name: stageData.name!,
-        description: stageData.description,
-        type: stageData.type!,
-        config: stageData.config!,
-        is_active: stageData.is_active || false,
-        sort_order: stageData.sort_order || 0
-      };
-      
-      console.log('Creating stage with data:', requestData);
-      
-      const response = await apiClient.createStage(requestData);
-      
-      if (response.success) {
-        showSuccess('Stage Created', `Successfully created "${stageData.name}"`);
-        await loadStages(); // Refresh the stages list
-      } else {
-        showError('Create Failed', 'Failed to create stage');
-      }
-    } catch (error) {
-      console.error('Failed to create stage:', error);
-      showError('Create Failed', 'Failed to create stage');
-    }
-  };
-
-  const handleNavigateToStages = () => {
-    setTransitionDirection('forward');
-    setViewMode('stages-list');
-    updateURL('stages-list');
+    setViewMode('scenes');
+    updateURL('scenes');
   };
 
   const handleNavigateToUsers = () => {
@@ -442,23 +297,23 @@ function App() {
   };
 
   const handleNavigateToDecks = () => {
-    console.log('Navigating to decks...');
+          // Navigating to decks
     setTransitionDirection('forward');
     setViewMode('decks');
     updateURL('decks');
-    console.log('View mode set to:', 'decks');
+          // View mode set to decks
   };
 
   const handleBackToAdmin = () => {
     setTransitionDirection('backward');
     setViewMode('admin');
-    setCurrentStage(null);
+    setCurrentScene(null);
     updateURL('admin');
   };
 
-  const handleCloseStage = () => {
+  const handleCloseScene = () => {
     setTransitionDirection('backward');
-    setCurrentStage(null);
+    setCurrentScene(null);
     setViewMode('admin');
     updateURL('admin');
   };
@@ -466,10 +321,26 @@ function App() {
   const handleNavigationSection = (section: string) => {
     setTransitionDirection('forward');
     switch (section) {
-      case 'admin':
+      case 'admin-dashboard':
         setViewMode('admin');
-        setCurrentStage(null);
+        setCurrentScene(null);
         updateURL('admin');
+        break;
+      case 'scenes':
+        setViewMode('scenes');
+        updateURL('scenes');
+        break;
+      case 'decks':
+        setViewMode('decks');
+        updateURL('decks');
+        break;
+      case 'contexts':
+        setViewMode('contexts');
+        updateURL('contexts');
+        break;
+      case 'tenants':
+        setViewMode('tenants');
+        updateURL('tenants');
         break;
       case 'users':
         setViewMode('users');
@@ -479,26 +350,18 @@ function App() {
         setViewMode('analytics');
         updateURL('analytics');
         break;
-      case 'decks':
-        setViewMode('decks');
-        updateURL('decks');
+      case 'graph-studio':
+        setViewMode('graph-studio');
+        updateURL('graph-studio');
         break;
     }
   };
 
   // Context menu handlers
-  const handleStageContextMenu = (event: React.MouseEvent, stage: Stage) => {
-    const items = getStageContextMenuItems(
-      stage,
-      () => handleStageEdit(),
-      () => handleStageDelete(stage),
-      () => handleStagePublish(stage),
-      () => handleStageUnpublish(stage),
-      () => handleStageCopy(stage),
-      () => handleStageShare(stage),
-      () => handleStageTypeManager()
-    );
-    showContextMenu(event, items);
+  // TODO: Implement scene context menu
+  const handleSceneContextMenu = (event: React.MouseEvent, scene: any) => {
+    // TODO: Implement scene context menu
+    console.log('Scene context menu not yet implemented');
   };
 
 
@@ -526,30 +389,21 @@ function App() {
     );
   }
 
-  // Render stage viewer when a stage is selected
-  if (viewMode === 'stage' && currentStage) {
+  // TODO: Implement scene viewer when a scene is selected
+  if (viewMode === 'scenes' && currentScene) {
     return (
-      <>
-        <StageTransition
-          stage={currentStage}
-          direction={transitionDirection}
-          isVisible={true}
-        >
-          <FullScreenStageViewer
-            stage={currentStage}
-            isAdmin={true}
-            onClose={handleCloseStage}
-            onEdit={handleStageEdit}
-            onSettings={handleStageEdit}
-            onSave={handleStageSave}
-            onPublish={handleStagePublish}
-            onUnpublish={handleStageUnpublish}
-            stages={stages}
-            showError={showError}
-          />
-        </StageTransition>
-        <ToastContainer toasts={toasts} onRemove={removeToast} />
-      </>
+      <div className="min-h-screen bg-background">
+        <div className="text-center py-12">
+          <h1 className="text-2xl font-bold mb-4">Scene Viewer</h1>
+          <p className="text-muted-foreground mb-4">Scene viewing not yet implemented</p>
+          <button
+            onClick={handleCloseScene}
+            className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+          >
+            Back to Admin
+          </button>
+        </div>
+      </div>
     );
   }
 
@@ -569,12 +423,9 @@ function App() {
             transition={{ duration: 0.3, ease: [0.4, 0.0, 0.2, 1] }}
             className="h-screen overflow-hidden"
           >
-            <StageNavigation
-              stages={stages}
-              loading={stagesLoading}
-              onStageSelect={handleStageSelect}
+            <SceneNavigation
               onNavigateToSection={handleNavigationSection}
-              currentStage={currentStage}
+              currentView={viewMode}
             />
           </motion.div>
         )}
@@ -588,7 +439,7 @@ function App() {
           viewSubtitle={getViewSubtitle(viewMode)}
           onToggleNavigation={() => setIsNavigationOpen(!isNavigationOpen)}
           onNavigateToDashboard={handleBackToAdmin}
-          onNavigateToStages={handleNavigateToStages}
+          onNavigateToScenes={handleNavigateToScenes}
           onNavigateToDecks={handleNavigateToDecks}
           onNavigateToUsers={handleNavigateToUsers}
           onNavigateToAnalytics={handleNavigateToAnalytics}
@@ -598,8 +449,7 @@ function App() {
         />
 
         {/* Main Content */}
-        <StageContentWrapper>
-          <main className="flex-1">
+        <main className="flex-1">
             {viewMode === 'admin' && (
               <div className="p-8">
                 <div className="max-w-6xl mx-auto">
@@ -609,7 +459,7 @@ function App() {
                       Welcome to Progress Admin
                     </h1>
                     <p className="text-xl text-muted-foreground leading-relaxed">
-                      Manage your stages, users, and system settings from this central dashboard.
+                      Manage your scenes, decks, and system settings from this central dashboard.
                     </p>
                   </div>
 
@@ -620,16 +470,16 @@ function App() {
                         <div className="p-2 bg-primary/10 rounded-lg">
                           <Layers className="h-6 w-6 text-primary" />
                         </div>
-                        <h3 className="text-lg font-medium">Stage Management</h3>
+                        <h3 className="text-lg font-medium">Scene Management</h3>
                       </div>
                       <p className="text-muted-foreground mb-4">
-                        Create, edit, and organize your stages. Manage content and publishing status.
+                        Create, edit, and organize your scenes. Manage content and presentation.
                       </p>
                       <button
-                        onClick={handleNavigateToStages}
+                        onClick={handleNavigateToScenes}
                         className="w-full px-4 py-2 border border-border rounded-md hover:bg-muted transition-colors"
                       >
-                        Manage Stages
+                        Manage Scenes
                       </button>
                     </div>
 
@@ -659,7 +509,7 @@ function App() {
                         <h3 className="text-lg font-medium">Analytics</h3>
                       </div>
                       <p className="text-muted-foreground mb-4">
-                        View usage statistics, stage performance, and user engagement metrics.
+                        View usage statistics, scene performance, and user engagement metrics.
                       </p>
                       <button
                         onClick={handleNavigateToAnalytics}
@@ -708,6 +558,24 @@ function App() {
                     <div className="p-6 border border-border rounded-lg hover:border-primary/50 transition-colors">
                       <div className="flex items-center space-x-3 mb-4">
                         <div className="p-2 bg-primary/10 rounded-lg">
+                          <Building2 className="h-6 w-6 text-primary" />
+                        </div>
+                        <h3 className="text-lg font-medium">Tenant Management</h3>
+                      </div>
+                      <p className="text-muted-foreground mb-4">
+                        Manage multi-tenant environments with isolated content and shared feedback aggregation.
+                      </p>
+                      <button
+                        onClick={() => setViewMode('tenants')}
+                        className="w-full px-4 py-2 border border-border rounded-md hover:bg-muted transition-colors"
+                      >
+                        Manage Tenants
+                      </button>
+                    </div>
+
+                    <div className="p-6 border border-border rounded-lg hover:border-primary/50 transition-colors">
+                      <div className="flex items-center space-x-3 mb-4">
+                        <div className="p-2 bg-primary/10 rounded-lg">
                           <Settings className="h-6 w-6 text-primary" />
                         </div>
                         <h3 className="text-lg font-medium">System Settings</h3>
@@ -747,20 +615,20 @@ function App() {
                     <h3 className="text-lg font-medium mb-4">Quick Stats</h3>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       <div className="text-center">
-                        <div className="text-2xl font-bold text-primary">{stages.filter(s => s.is_active).length}</div>
-                        <div className="text-sm text-muted-foreground">Active Stages</div>
+                        <div className="text-2xl font-bold text-primary">{scenes.filter(s => s.is_active).length}</div>
+                        <div className="text-sm text-muted-foreground">Active Scenes</div>
                       </div>
                       <div className="text-center">
                         <div className="text-2xl font-bold text-primary">0</div>
                         <div className="text-sm text-muted-foreground">Total Users</div>
                       </div>
                       <div className="text-center">
-                        <div className="text-2xl font-bold text-primary">{stages.filter(s => s.is_active).length}</div>
+                        <div className="text-2xl font-bold text-primary">{scenes.filter(s => s.is_active).length}</div>
                         <div className="text-sm text-muted-foreground">Published</div>
                       </div>
                       <div className="text-center">
-                        <div className="text-2xl font-bold text-primary">{stages.length}</div>
-                        <div className="text-sm text-muted-foreground">Total Stages</div>
+                        <div className="text-2xl font-bold text-primary">{scenes.length}</div>
+                        <div className="text-sm text-muted-foreground">Total Scenes</div>
                       </div>
                     </div>
                   </div>
@@ -768,72 +636,23 @@ function App() {
               </div>
             )}
 
-            {viewMode === 'stages-list' && (
+            {viewMode === 'scenes' && (
               <div className="p-8">
                 <div className="max-w-6xl mx-auto">
-                  <div className="flex items-center justify-between mb-8">
-                    <div>
-                      <p className="text-muted-foreground">
-                        Create, edit, and organize your stages
-                      </p>
-                    </div>
-                    <button
-                      onClick={handleCreateStage}
-                      className="flex items-center space-x-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90"
-                    >
-                      <Layers className="h-4 w-4" />
-                      <span>New Stage</span>
-                    </button>
+                  <div className="mb-8">
+                    <p className="text-muted-foreground">
+                      View and manage your scenes
+                    </p>
                   </div>
-                  
-                  {/* Stages Grid */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {stages.map((stage) => (
-                      <div
-                        key={stage.id}
-                        className="p-6 border border-border rounded-lg hover:border-primary/50 transition-colors cursor-pointer group"
-                        onClick={() => handleStageSelect(stage)}
-                        onContextMenu={(e) => handleStageContextMenu(e, stage)}
-                      >
-                        <div className="flex items-center space-x-3 mb-4">
-                          <span className="text-2xl">{stage.config?.icon || '📄'}</span>
-                          <div className="flex-1">
-                            <h3 className="font-medium">{stage.name}</h3>
-                            <p className="text-sm text-muted-foreground">{stage.type}</p>
-                          </div>
-                          <div className={`w-2 h-2 rounded-full ${
-                            stage.is_active ? 'bg-green-500' : 'bg-yellow-500'
-                          }`} />
-                        </div>
-                        {stage.description && (
-                          <p className="text-sm text-muted-foreground mb-4">
-                            {stage.description}
-                          </p>
-                        )}
-                        <div className="flex items-center justify-between text-xs text-muted-foreground">
-                          <span>{stage.is_active ? 'Published' : 'Draft'}</span>
-                          <span>{stage.slug}</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  
-                  {stages.length === 0 && (
-                    <div className="text-center py-12">
-                      <Layers className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                      <h3 className="text-lg font-semibold mb-2">No Stages Yet</h3>
-                      <p className="text-muted-foreground mb-4">
-                        Create your first stage to get started
-                      </p>
-                      <button
-                        onClick={handleCreateStage}
-                        className="flex items-center space-x-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 mx-auto"
-                      >
-                        <Layers className="h-4 w-4" />
-                        <span>Create First Stage</span>
-                      </button>
-                    </div>
-                  )}
+                  <SceneManager />
+                </div>
+              </div>
+            )}
+
+            {viewMode === 'tenants' && (
+              <div className="p-8">
+                <div className="max-w-6xl mx-auto">
+                  <TenantManager />
                 </div>
               </div>
             )}
@@ -847,9 +666,9 @@ function App() {
                     </p>
                   </div>
                   <UsersList
-                    onUserSelect={(user) => console.log('User selected:', user)}
-                    onUserEdit={(user) => console.log('Edit user:', user)}
-                    onUserDelete={(userId) => console.log('Delete user:', userId)}
+                            onUserSelect={(user) => {/* TODO: Implement user selection */}}
+        onUserEdit={(user) => {/* TODO: Implement user editing */}}
+        onUserDelete={(userId) => {/* TODO: Implement user deletion */}}
                   />
                 </div>
               </div>
@@ -874,7 +693,7 @@ function App() {
 
             {viewMode === 'decks' && (
               <div className="h-full">
-                {console.log('Rendering SceneManager, viewMode:', viewMode)}
+                {/* Rendering SceneManager */}
                 <SceneManager />
               </div>
             )}
@@ -882,23 +701,14 @@ function App() {
             {viewMode === 'graph-studio' && (
               <div className="h-full">
                 <GraphStudio
-                  onNodeSelect={(node) => {
-                    console.log('Node selected:', node);
-                  }}
-                  onNodeCreate={() => {
-                    console.log('Create node');
-                  }}
-                  onNodeEdit={(node) => {
-                    console.log('Edit node:', node);
-                  }}
-                  onNodeDelete={(node) => {
-                    console.log('Delete node:', node);
-                  }}
+                  onNodeSelect={(node) => {/* TODO: Implement node selection */}}
+                  onNodeCreate={() => {/* TODO: Implement node creation */}}
+                  onNodeEdit={(node) => {/* TODO: Implement node editing */}}
+                  onNodeDelete={(node) => {/* TODO: Implement node deletion */}}
                 />
               </div>
             )}
         </main>
-        </StageContentWrapper>
       </div>
 
       {/* Context Menu */}
@@ -909,30 +719,6 @@ function App() {
         position={contextMenu.position}
       />
     </div>
-
-    {/* Global Modals - Rendered at top level to avoid stacking context issues */}
-    <StageMetadataDialog
-      stage={currentStage}
-      isOpen={isMetadataDialogOpen}
-      onClose={() => setIsMetadataDialogOpen(false)}
-      onSave={handleStageSave}
-      onPublish={handleStagePublish}
-      onUnpublish={handleStageUnpublish}
-    />
-
-    <CreateStageDialog
-      isOpen={isCreateDialogOpen}
-      onClose={() => setIsCreateDialogOpen(false)}
-      onCreate={handleStageCreate}
-    />
-
-    {currentStage && isStageTypeManagerOpen && (
-      <StageTypeManager
-        stage={currentStage}
-        onUpdate={handleStageSave}
-        onClose={() => setIsStageTypeManagerOpen(false)}
-      />
-    )}
   </>
   );
 }

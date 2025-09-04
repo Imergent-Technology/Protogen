@@ -20,8 +20,8 @@ export function StageContainer({
   children
 }: StageContainerProps) {
   // Use callback props to avoid unused variable warnings
-  console.log('Stage update handler:', onStageUpdate ? 'provided' : 'not provided');
-  console.log('Stage delete handler:', onStageDelete ? 'provided' : 'not provided');
+  // Stage update handler: provided/not provided
+  // Stage delete handler: provided/not provided
   
   const renderStage = () => {
     switch (stage.type) {

@@ -16,7 +16,7 @@ interface ToolbarProps {
 
 export function Toolbar({ className = '', onNavigate }: ToolbarProps) {
   const handleNavigation = (path: string) => {
-    console.log('Navigating to:', path);
+    // Navigating to path
     onNavigate?.(path);
   };
 

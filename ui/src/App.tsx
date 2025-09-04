@@ -7,7 +7,7 @@ const ToolbarDemo = () => <div>Toolbar Demo - Coming Soon</div>;
 const ModalProvider = ({ children }: { children: React.ReactNode }) => <>{children}</>;
 const ModalRenderer = () => null;
 const Toaster = () => null;
-const useToast = () => ({ toast: (options: any) => console.log('Toast:', options) });
+const useToast = () => ({ toast: (options: any) => {/* TODO: Implement toast */} });
 import { Button } from '@progress/shared';
 import { Layers, Network, MessageSquare, Play } from 'lucide-react';
 

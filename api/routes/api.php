@@ -8,6 +8,8 @@ use App\Http\Controllers\Api\CoreGraphApiController;
 use App\Http\Controllers\Api\RegistryApiController;
 use App\Http\Controllers\Api\SceneApiController;
 use App\Http\Controllers\Api\SnapshotApiController;
+use App\Http\Controllers\Api\ContextApiController;
+use App\Http\Controllers\Api\DeckApiController;
 use App\Http\Controllers\Auth\AdminAuthController;
 
 /*
@@ -35,7 +37,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-// Stage API routes
+// Stage API routes (legacy - will be deprecated)
 Route::prefix('stages')->group(function () {
     Route::get('/', [StageApiController::class, 'index']);
     Route::get('/types', [StageApiController::class, 'types']);
@@ -114,4 +116,30 @@ Route::prefix('snapshots')->middleware(['auth:sanctum', 'admin'])->group(functio
     Route::get('/{guid}/manifest', [SnapshotApiController::class, 'manifest']);
     Route::get('/{guid}/download', [SnapshotApiController::class, 'download']);
     Route::delete('/{guid}', [SnapshotApiController::class, 'destroy']);
+});
+
+// Deck API routes (admin only)
+Route::prefix('decks')->middleware(['auth:sanctum', 'admin'])->group(function () {
+    Route::get('/', [DeckApiController::class, 'index']);
+    Route::get('/stats', [DeckApiController::class, 'stats']);
+    Route::post('/', [DeckApiController::class, 'store']);
+    Route::get('/{guid}', [DeckApiController::class, 'show']);
+    Route::put('/{guid}', [DeckApiController::class, 'update']);
+    Route::delete('/{guid}', [DeckApiController::class, 'destroy']);
+    Route::post('/{guid}/scenes', [DeckApiController::class, 'addScene']);
+    Route::delete('/{guid}/scenes', [DeckApiController::class, 'removeScene']);
+    Route::put('/{guid}/scenes/reorder', [DeckApiController::class, 'reorderScenes']);
+});
+
+// Context API routes (admin only)
+Route::prefix('contexts')->middleware(['auth:sanctum', 'admin'])->group(function () {
+    Route::get('/', [ContextApiController::class, 'index']);
+    Route::get('/stats', [ContextApiController::class, 'stats']);
+    Route::post('/', [ContextApiController::class, 'store']);
+    Route::get('/{guid}', [ContextApiController::class, 'show']);
+    Route::put('/{guid}', [ContextApiController::class, 'update']);
+    Route::delete('/{guid}', [ContextApiController::class, 'destroy']);
+    Route::get('/{guid}/resolve', [ContextApiController::class, 'resolve']);
+    Route::get('/scene/{sceneSlug}', [ContextApiController::class, 'forScene']);
+    Route::get('/deck/{deckSlug}', [ContextApiController::class, 'forDeck']);
 });

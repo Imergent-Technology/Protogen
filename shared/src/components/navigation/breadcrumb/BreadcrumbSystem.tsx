@@ -47,17 +47,17 @@ export const useBreadcrumbs = () => {
   
   const addBreadcrumb = (item: BreadcrumbItem) => {
     // TODO: Add breadcrumb to history
-    console.log('Adding breadcrumb:', item);
+    // Adding breadcrumb
   };
   
   const clearBreadcrumbs = () => {
     // TODO: Clear breadcrumb history
-    console.log('Clearing breadcrumbs');
+    // Clearing breadcrumbs
   };
   
   const navigateToBreadcrumb = (index: number) => {
     // TODO: Navigate to specific breadcrumb
-    console.log('Navigating to breadcrumb:', index);
+    // Navigating to breadcrumb
   };
   
   return {

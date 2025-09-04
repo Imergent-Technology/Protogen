@@ -55,7 +55,8 @@ export const DeckManager: React.FC = () => {
   const [selectedDeckId, setSelectedDeckId] = useState<string | null>(null);
   const [showCreateScene, setShowCreateScene] = useState(false);
   const [showCreateDeck, setShowCreateDeck] = useState(false);
-  const [activeTab, setActiveTab] = useState<'scenes' | 'decks'>('scenes');
+  const [showCreateContext, setShowCreateContext] = useState(false);
+  const [activeTab, setActiveTab] = useState<'scenes' | 'decks' | 'contexts'>('scenes');
 
   // Form states
   const [sceneForm, setSceneForm] = useState({
@@ -87,6 +88,7 @@ export const DeckManager: React.FC = () => {
 
       const newScene = {
         name: sceneForm.name,
+        slug: sceneForm.name.toLowerCase().replace(/\s+/g, '-'),
         description: sceneForm.description,
         type: sceneForm.type,
         deckIds: sceneForm.deckIds,
@@ -114,7 +116,7 @@ export const DeckManager: React.FC = () => {
       });
       setShowCreateScene(false);
       
-      console.log('Scene created successfully');
+      // Scene created successfully
     } catch (error) {
       setScenesError(error instanceof Error ? error.message : 'Failed to create scene');
     } finally {
@@ -130,6 +132,7 @@ export const DeckManager: React.FC = () => {
 
       const newDeck = {
         name: deckForm.name,
+        slug: deckForm.name.toLowerCase().replace(/\s+/g, '-'),
         description: deckForm.description,
         type: deckForm.type,
         sceneIds: [],
@@ -163,7 +166,7 @@ export const DeckManager: React.FC = () => {
       });
       setShowCreateDeck(false);
       
-      console.log('Deck created successfully');
+      // Deck created successfully
     } catch (error) {
       setDecksError(error instanceof Error ? error.message : 'Failed to create deck');
     } finally {
@@ -245,29 +248,37 @@ export const DeckManager: React.FC = () => {
       )}
 
       {/* Tab Navigation */}
-      <div className="mb-6 border-b border-border">
-        <div className="flex space-x-8">
-          <button
-            onClick={() => setActiveTab('scenes')}
-            className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
-              activeTab === 'scenes'
-                ? 'border-primary text-primary'
-                : 'border-transparent text-muted-foreground hover:text-foreground'
-            }`}
-          >
-            Scenes ({scenes.length})
-          </button>
-          <button
-            onClick={() => setActiveTab('decks')}
-            className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
-              activeTab === 'decks'
-                ? 'border-primary text-primary'
-                : 'border-transparent text-muted-foreground hover:text-foreground'
-            }`}
-          >
-            Decks ({decks.length})
-          </button>
-        </div>
+      <div className="flex space-x-1 bg-muted p-1 rounded-lg">
+        <button
+          onClick={() => setActiveTab('scenes')}
+          className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
+            activeTab === 'scenes'
+              ? 'border-primary text-primary'
+              : 'border-transparent text-muted-foreground hover:text-foreground'
+          }`}
+        >
+          Scenes ({scenes.length})
+        </button>
+        <button
+          onClick={() => setActiveTab('decks')}
+          className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
+            activeTab === 'decks'
+              ? 'border-primary text-primary'
+              : 'border-transparent text-muted-foreground hover:text-foreground'
+          }`}
+        >
+          Decks ({decks.length})
+        </button>
+        <button
+          onClick={() => setActiveTab('contexts')}
+          className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
+            activeTab === 'contexts'
+              ? 'border-primary text-primary'
+              : 'border-transparent text-muted-foreground hover:text-foreground'
+          }`}
+        >
+          Contexts
+        </button>
       </div>
 
       {/* Scenes Tab */}
@@ -317,7 +328,7 @@ export const DeckManager: React.FC = () => {
                       <SceneTypeBadge type={scene.type} />
                       <div className="flex space-x-2">
                         <button
-                          onClick={() => console.log('Edit scene:', scene.id)}
+                          onClick={() => {/* TODO: Implement scene editing */}}
                           className="px-2 py-1 text-xs border border-border rounded hover:bg-muted transition-colors"
                         >
                           Edit
@@ -534,6 +545,40 @@ export const DeckManager: React.FC = () => {
               </div>
             </div>
           )}
+        </div>
+      )}
+
+      {/* Contexts Tab */}
+      {activeTab === 'contexts' && (
+        <div className="space-y-6">
+          {/* Contexts Header */}
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-xl font-semibold">Contexts</h2>
+              <p className="text-muted-foreground">Anchors and coordinates within scenes, documents, and other content</p>
+            </div>
+            <button
+              onClick={() => setShowCreateContext(true)}
+              className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+            >
+              + New Context
+            </button>
+          </div>
+
+          {/* Contexts Content */}
+          <div className="text-center py-12">
+            <div className="text-4xl mb-4">🎯</div>
+            <h3 className="text-lg font-semibold mb-2">Contexts Coming Soon</h3>
+            <p className="text-muted-foreground mb-4">
+              The Context system will allow you to create anchors and coordinates within your content
+            </p>
+            <div className="space-y-2 text-sm text-muted-foreground">
+              <p>• Scene coordinates for graph navigation</p>
+              <p>• Document anchors for text references</p>
+              <p>• Deck positions for presentation flow</p>
+              <p>• Custom coordinate systems</p>
+            </div>
+          </div>
         </div>
       )}
 

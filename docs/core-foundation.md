@@ -1,31 +1,42 @@
 # Protogen Core Foundation Architecture
 
 ## Overview
-This document outlines the core architectural principles and implementation details for the Protogen system, establishing a durable foundation for scalable graph applications with advanced presentation and collaboration features.
+This document outlines the core architectural principles and implementation details for the Protogen system, establishing a durable foundation for scalable graph applications with advanced presentation and collaboration features in a multi-tenant environment.
 
 ## Core Principles
 
 ### 1. Separation of Concerns
 - **Core Graph**: Canonical data and relationships (source of truth)
-- **Stage**: Routing, authentication, and context container
-- **Scene**: Presentational arrangements within stages (including phantom elements)
+- **Scene**: Presentational arrangements with nodes, edges, and styling
+- **Deck**: Collections of related scenes for presentation and navigation
+- **Context**: Anchors and coordinates within scenes, documents, and other content
+- **Tenant**: Isolated content environments with shared feedback aggregation
 - **Snapshot**: Deterministic serialization for instant loading and CDN delivery
 
 ### 2. Invariant Enforcement
 - Core ↔ System Scene mirror must always be maintained
 - Edge weights are required and must be numeric
 - Style cascade: Type defaults → Scene theme → Instance overrides
-- Engagement aggregation rolls up to Core counters
+- Engagement aggregation rolls up to Core counters across all tenants
+- Contexts must resolve to valid Scene+Deck coordinates within tenant scope
+- Tenant isolation must be maintained for content while allowing shared feedback
 
 ### 3. Performance & Scalability
 - Aggressive caching via Snapshots
 - CDN-friendly static delivery
 - Progressive hydration on the client
 - Debounced rebuild triggers (500ms-2s)
+- Tenant-aware caching and performance optimization
+
+### 4. Multi-Tenant Architecture
+- **Content Isolation**: Each tenant has isolated scenes, decks, and presentations
+- **Feedback Aggregation**: All feedback flows back to centralized Core Graph
+- **Shared Knowledge**: Core Graph serves as shared knowledge base across tenants
+- **Tenant Management**: Centralized tenant administration with isolated content
 
 ## Conceptual Model
 
-### Core Graph (Canonical Data)
+### Core Graph (Canonical Data - Shared Across Tenants)
 ```
 CoreGraphNode
 ├── guid (UUID, primary identifier)
@@ -34,6 +45,7 @@ CoreGraphNode
 ├── description (optional)
 ├── meta (typed JSON for semantic data)
 ├── is_active (soft delete support)
+├── tenant_contributions (aggregated from all tenants)
 └── timestamps
 
 CoreGraphEdge
@@ -46,58 +58,116 @@ CoreGraphEdge
 ├── description (optional)
 ├── meta (typed JSON for semantic data)
 ├── is_active (soft delete support)
+├── tenant_contributions (aggregated from all tenants)
 └── timestamps
 ```
 
-### Stage & Scene Architecture
+### Tenant System (Content Isolation)
 ```
-Stage (Environment Container)
+Tenant
+├── id, guid, name, slug, description
+├── domain (custom domain for tenant)
+├── config (tenant-specific configuration)
+├── branding (logo, colors, theme)
+├── is_active, is_public
+├── created_by, created_at
+└── timestamps
+
+TenantConfiguration
+├── tenant_id (belongs to Tenant)
+├── key (configuration key)
+├── value (configuration value)
+├── scope (global, content, presentation, feedback)
+└── timestamps
+```
+
+### Scene & Deck Architecture (Tenant-Isolated)
+```
+Scene (Presentational Layer - Tenant-Isolated)
+├── id, guid, name, slug, description
+├── tenant_id (belongs to Tenant)
+├── scene_type (system, custom, template)
+├── config (scene-specific configuration)
+├── meta (validated metadata)
+├── style (styling and presentation rules)
+├── is_active, is_public
+├── created_by, stage_id (legacy, for migration)
+└── timestamps
+
+SceneNode (Presentational Instance - Tenant-Isolated)
+├── id, guid, scene_id
+├── core_node_guid (optional link to CoreGraphNode)
+├── node_type (core, phantom, presentational)
+├── position (x, y, z coordinates)
+├── dimensions (width, height)
+├── meta (scene-specific data)
+├── style (resolved from cascade)
+├── z_index, is_visible, is_locked
+└── timestamps
+
+SceneEdge (Presentational Connection - Tenant-Isolated)
+├── id, guid, scene_id
+├── core_edge_guid (optional link to CoreGraphEdge)
+├── source_node_id, target_node_id
+├── edge_type (core, phantom, presentational)
+├── path (edge path coordinates)
+├── meta (scene-specific data)
+├── style (resolved from cascade)
+├── is_visible, is_locked
+└── timestamps
+
+Deck (Presentation Collection - Tenant-Isolated)
 ├── id, name, slug, description
-├── type (basic, graph, document, table, custom)
-├── config (stage-specific configuration)
-├── metadata (flexible JSON)
-├── is_active, is_system
+├── tenant_id (belongs to Tenant)
+├── type (graph, card, document, dashboard)
+├── scene_ids (references to scene IDs)
+├── navigation (sequential, hierarchical, network, freeform)
+├── performance (keepWarm, preloadStrategy)
 └── timestamps
 
-Scene (Presentational Layer)
-├── id, slug, title, description
-├── stage_id (belongs to Stage)
-├── theme (style tokens and defaults)
-├── is_system (true for System Scene)
+Context (Content Anchors - Tenant-Isolated)
+├── id, guid, name, description
+├── tenant_id (belongs to Tenant)
+├── context_type (scene, deck, document, coordinate)
+├── target_scene_id (optional, for scene contexts)
+├── target_deck_id (optional, for deck contexts)
+├── coordinates (x, y, z, or document position)
+├── anchor_data (document text, graph position, etc.)
+├── meta (context-specific metadata)
+└── timestamps
+```
+
+### Feedback System (Centralized Across Tenants)
+```
+Feedback (Centralized - Shared Across Tenants)
+├── id, guid, content_type, content_id
+├── tenant_id (source tenant)
+├── user_id (user who provided feedback)
+├── feedback_type (comment, rating, bookmark, etc.)
+├── content (feedback content)
+├── meta (feedback metadata)
+├── is_public, is_moderated
 └── timestamps
 
-SceneNode (Presentational Instance)
-├── id, title, description
-├── scene_id (belongs to Scene)
-├── core_ref (optional link to CoreGraphNode)
-├── phantom (true if no Core link)
-├── position (x, y, z, scale)
-├── style (resolved from cascade)
-├── meta (scene-specific data)
-└── timestamps
-
-SceneEdge (Presentational Connection)
-├── id, label, description
-├── scene_id (belongs to Scene)
-├── core_ref (optional link to CoreGraphEdge)
-├── phantom (true if no Core link)
-├── source_scene_node_id
-├── target_scene_node_id
-├── weight (inherited from Core or scene-specific)
-├── style (resolved from cascade)
-├── meta (scene-specific data)
-└── timestamps
+FeedbackAggregation (Core Graph Integration)
+├── core_node_guid (or core_edge_guid)
+├── feedback_count (total across all tenants)
+├── rating_average (aggregated rating)
+├── engagement_score (calculated engagement)
+├── last_updated (last feedback received)
+└── tenant_breakdown (feedback per tenant)
 ```
 
 ### Registry System
 ```
 RegistryCatalog
-├── scope (core.node, core.edge, scene.node, scene.edge)
+├── scope (core.node, core.edge, scene.node, scene.edge, deck, context, tenant)
 ├── key (semantic identifier)
 ├── type (string, number, boolean, array, object)
 ├── description (human-readable explanation)
 ├── default_value (JSON)
 ├── is_presentational (boolean)
+├── tenant_override (can tenants override this)
 └── validation_rules (JSON schema)
 ```
 
@@ -122,9 +192,48 @@ Effective Style = Type Defaults + Scene Theme + Instance Overrides
 - Fallback chain for missing values
 
 ### 4. Engagement Aggregation
-- Discussions, bookmarks, notes accumulate to Core counters
-- Background jobs handle aggregation
+- Discussions, bookmarks, notes accumulate to Core counters across all tenants
+- Background jobs handle aggregation from tenant-isolated feedback
 - Phantom-only anchors roll up to nearest Core link
+- Tenant feedback contributes to shared knowledge base
+
+### 5. Context Resolution
+- Contexts must resolve to valid Scene+Deck coordinates within tenant scope
+- Document contexts must reference valid text positions
+- Graph contexts must reference valid node/edge positions
+- Fallback to nearest valid context on resolution failure
+
+### 6. Tenant Isolation
+- Content (scenes, decks, contexts) must be tenant-isolated
+- Feedback must flow to centralized Core Graph
+- Tenant configurations must not leak between tenants
+- Shared resources (Core Graph) must be accessible to all tenants
+
+## Multi-Tenant Architecture Benefits
+
+### 1. Content Isolation
+- Each tenant can have completely separate content
+- No risk of content leakage between tenants
+- Custom branding and theming per tenant
+- Independent content management workflows
+
+### 2. Shared Knowledge
+- Feedback from all tenants contributes to shared Core Graph
+- Collective intelligence grows across tenant base
+- Common patterns and insights emerge
+- Reduced duplication of knowledge work
+
+### 3. Scalability
+- Horizontal scaling per tenant
+- Independent performance optimization
+- Tenant-specific caching strategies
+- Load distribution across tenant instances
+
+### 4. Customization
+- Tenant-specific configurations
+- Custom domain support per tenant
+- Independent content publishing workflows
+- Tenant-specific analytics and reporting
 
 ## Snapshot System
 
@@ -133,13 +242,15 @@ Effective Style = Type Defaults + Scene Theme + Instance Overrides
 - Instant loads for public scenes
 - API fallback for private/authoring scenarios
 - Deterministic serialization for caching
+- Tenant-aware snapshot generation and delivery
 
 ### Snapshot Structure
 ```json
 {
   "schema": { "name": "protogen.scene", "version": "1.0.0" },
+  "tenant": { "id": "tenant-slug", "domain": "tenant.example.com" },
   "scene": {
-    "ids": { "stage": "stage-slug", "scene": "scene-slug" },
+    "ids": { "scene": "scene-slug" },
     "timestamps": { "created": "ISO8601", "updated": "ISO8601" },
     "source": { "generator": "admin-publisher", "commit": "hash", "coreRev": "revision" },
     "theme": { "tokens": {} },
@@ -157,11 +268,11 @@ Effective Style = Type Defaults + Scene Theme + Instance Overrides
 ```json
 {
   "schema": { "name": "protogen.scene.manifest", "version": "1.0.0" },
+  "tenant": { "id": "tenant-slug", "domain": "tenant.example.com" },
   "locator": {
-    "stage": "stage-slug",
     "scene": "scene-slug",
     "etag": "sha256-BASE64",
-    "url": "/snapshots/stage/scene/hash.json.br"
+    "url": "/snapshots/tenant/scene/hash.json.br"
   },
   "generatedAt": "ISO8601",
   "expiresAt": "ISO8601"
@@ -175,24 +286,28 @@ Effective Style = Type Defaults + Scene Theme + Instance Overrides
 - Implement proper indexing for JSON queries
 - Use generated columns for hot JSON keys
 - Maintain referential integrity with foreign keys
+- **NEW**: Implement tenant isolation at database level
 
 ### 2. API Design
 - RESTful endpoints with consistent patterns
 - Proper HTTP status codes and error handling
 - Rate limiting on authoring endpoints
 - Input validation and sanitization
+- **NEW**: Tenant-aware routing and middleware
 
 ### 3. Event System
 - Laravel events for domain changes
 - Queued listeners for background processing
 - Structured logging for observability
 - Idempotent operations where possible
+- **NEW**: Tenant-aware event handling and feedback aggregation
 
 ### 4. Caching Strategy
 - Snapshots: Long-term immutable caching
 - Manifests: Short TTL for freshness
 - API responses: Appropriate TTL based on data type
 - Client-side progressive hydration
+- **NEW**: Tenant-aware caching and CDN distribution
 
 ## Performance Considerations
 
@@ -201,18 +316,21 @@ Effective Style = Type Defaults + Scene Theme + Instance Overrides
 - Pagination for large result sets
 - Efficient JSON queries using GIN indexes
 - Connection pooling and query optimization
+- **NEW**: Tenant-aware query optimization and partitioning
 
 ### 2. Storage Optimization
 - Brotli compression for snapshots
 - Gzip fallback for compatibility
 - Content-addressed storage paths
 - Retention policies for old snapshots
+- **NEW**: Tenant-specific storage optimization
 
 ### 3. Delivery Optimization
 - CDN integration for global caching
 - Progressive loading and hydration
 - Efficient client-side rendering
 - Background processing for heavy operations
+- **NEW**: Tenant-aware CDN distribution and caching
 
 ## Security & Access Control
 
@@ -220,18 +338,21 @@ Effective Style = Type Defaults + Scene Theme + Instance Overrides
 - Laravel Sanctum for API authentication
 - Session-based admin authentication
 - Proper token management and expiration
+- **NEW**: Tenant-aware authentication and session management
 
 ### 2. Authorization
 - Role-based access control (RBAC)
 - Resource-level permissions
 - Audit logging for sensitive operations
 - Input validation and sanitization
+- **NEW**: Tenant isolation and cross-tenant access controls
 
 ### 3. Data Protection
 - Secure storage of sensitive metadata
 - Proper encryption for credentials
 - Rate limiting to prevent abuse
 - Input validation to prevent injection
+- **NEW**: Tenant data isolation and privacy controls
 
 ## Testing Strategy
 
@@ -240,18 +361,23 @@ Effective Style = Type Defaults + Scene Theme + Instance Overrides
 - Style cascade resolution
 - Snapshot serialization/deserialization
 - Registry validation
+- Context resolution
+- **NEW**: Tenant isolation and feedback aggregation
 
 ### 2. Integration Testing
 - Core ↔ System Scene mirroring
 - Snapshot publishing and hydration
 - Event system and background jobs
 - API endpoint functionality
+- Context resolution workflows
+- **NEW**: Multi-tenant workflows and isolation
 
 ### 3. End-to-End Testing
 - Complete user workflows
 - Cross-browser compatibility
 - Performance under load
 - Error handling and recovery
+- **NEW**: Tenant-specific workflows and cross-tenant feedback
 
 ## Deployment & Operations
 
@@ -260,18 +386,51 @@ Effective Style = Type Defaults + Scene Theme + Instance Overrides
 - React Admin interface
 - Shared TypeScript library
 - cPanel hosting with optional CDN
+- **NEW**: Multi-tenant deployment and scaling
 
 ### 2. Monitoring & Observability
 - Structured logging for all operations
 - Performance metrics collection
 - Error tracking and alerting
 - Health checks and status endpoints
+- **NEW**: Tenant-specific monitoring and analytics
 
 ### 3. Backup & Recovery
 - Database backup strategies
 - Snapshot storage redundancy
 - Disaster recovery procedures
 - Rollback capabilities for deployments
+- **NEW**: Tenant-specific backup and recovery
+
+## Migration Strategy
+
+### 1. Stage to Scene Migration
+- Create Scene records for existing Stages
+- Migrate Stage content to Scene configuration
+- Update routing to use Scene slugs
+- Maintain backward compatibility during transition
+- **NEW**: Assign existing content to default tenant
+
+### 2. Context System Implementation
+- Create Context model and database schema
+- Implement context resolution engine
+- Add context management UI
+- Integrate with existing Scene/Deck systems
+- **NEW**: Implement tenant-aware context management
+
+### 3. Multi-Tenant Implementation
+- Create default tenant for existing content
+- Implement tenant isolation middleware
+- Add tenant-aware routing and API endpoints
+- Implement feedback aggregation system
+- **NEW**: Gradual tenant rollout and migration
+
+### 4. Legacy Support
+- Maintain Stage API endpoints during transition
+- Provide migration tools for existing Stage content
+- Document migration procedures
+- Plan Stage system deprecation
+- **NEW**: Maintain tenant isolation during migration
 
 ## Future Considerations
 
@@ -280,15 +439,20 @@ Effective Style = Type Defaults + Scene Theme + Instance Overrides
 - Microservice architecture evolution
 - Advanced caching strategies
 - Load balancing and failover
+- **NEW**: Multi-tenant scaling and performance optimization
 
 ### 2. Extensibility
-- Plugin system for custom stages
+- Plugin system for custom scene types
 - API versioning and evolution
 - Third-party integrations
 - Custom visualization components
+- **NEW**: Tenant-specific plugin systems and customizations
 
 ### 3. Advanced Features
 - Real-time collaboration
 - Advanced graph algorithms
 - Machine learning integration
 - Advanced analytics and insights
+- Context-aware navigation
+- **NEW**: Cross-tenant collaboration and knowledge sharing
+- **NEW**: Tenant-specific AI and ML features

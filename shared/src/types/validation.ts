@@ -35,7 +35,16 @@ export type ValidationRuleType =
   | 'range' 
   | 'size' 
   | 'file' 
-  | 'image';
+  | 'image'
+  | 'positive'
+  | 'negative'
+  | 'contains'
+  | 'dependencies'
+  | 'properties'
+  | 'additionalProperties'
+  | 'type'
+  | 'dimensions'
+  | 'extension';
 
 export type ValidationSeverity = 'error' | 'warning' | 'info';
 

@@ -123,6 +123,7 @@ export const SceneManager: React.FC = () => {
 
       const newScene = {
         name: sceneForm.name,
+        slug: sceneForm.slug || sceneForm.name.toLowerCase().replace(/\s+/g, '-'),
         description: sceneForm.description,
         type: sceneForm.type,
         deckIds: sceneForm.deckIds,
@@ -151,7 +152,7 @@ export const SceneManager: React.FC = () => {
       });
       setShowCreateScene(false);
       
-      console.log('Scene created successfully');
+      // Scene created successfully
     } catch (error) {
       setScenesError(error instanceof Error ? error.message : 'Failed to create scene');
     } finally {
@@ -199,7 +200,7 @@ export const SceneManager: React.FC = () => {
       setEditingScene(null);
       setShowEditScene(false);
       
-      console.log('Scene updated successfully');
+      // Scene updated successfully
     } catch (error) {
       setScenesError(error instanceof Error ? error.message : 'Failed to update scene');
     } finally {
@@ -252,7 +253,7 @@ export const SceneManager: React.FC = () => {
       setEditingDeck(null);
       setShowEditDeck(false);
       
-      console.log('Deck updated successfully');
+      // Deck updated successfully
     } catch (error) {
       setDecksError(error instanceof Error ? error.message : 'Failed to update deck');
     } finally {
@@ -268,6 +269,7 @@ export const SceneManager: React.FC = () => {
 
       const newDeck = {
         name: deckForm.name,
+        slug: deckForm.slug || deckForm.name.toLowerCase().replace(/\s+/g, '-'),
         description: deckForm.description,
         type: deckForm.type,
         sceneIds: [],
@@ -302,7 +304,7 @@ export const SceneManager: React.FC = () => {
       });
       setShowCreateDeck(false);
       
-      console.log('Deck created successfully');
+      // Deck created successfully
     } catch (error) {
       setDecksError(error instanceof Error ? error.message : 'Failed to create deck');
     } finally {

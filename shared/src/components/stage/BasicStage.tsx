@@ -14,7 +14,7 @@ export function BasicStage({
   children 
 }: BasicStageProps) {
   // Use isFallback to avoid unused variable warning
-  console.log('Stage fallback mode:', isFallback);
+  // Stage fallback mode
   const { config } = stage;
   const { title, content, icon } = config;
 

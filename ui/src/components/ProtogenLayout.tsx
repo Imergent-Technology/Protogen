@@ -26,7 +26,7 @@ export const ProtogenLayout: React.FC<ProtogenLayoutProps> = ({ children, user, 
     const formData = new FormData(e.target as HTMLFormElement);
     const email = formData.get('email') as string;
     // TODO: Implement newsletter signup
-    console.log('Newsletter signup:', email);
+    // Newsletter signup
     setIsNewsletterOpen(false);
   };
 
@@ -35,7 +35,7 @@ export const ProtogenLayout: React.FC<ProtogenLayoutProps> = ({ children, user, 
     const formData = new FormData(e.target as HTMLFormElement);
     const feedback = formData.get('feedback') as string;
     // TODO: Implement feedback submission
-    console.log('Feedback submitted:', feedback);
+    // Feedback submitted
     setIsFeedbackOpen(false);
   };
 

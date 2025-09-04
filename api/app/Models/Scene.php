@@ -24,7 +24,8 @@ class Scene extends Model
         'is_active',
         'is_public',
         'created_by',
-        'stage_id',
+        'tenant_id',
+        'stage_id', // Legacy field for migration
         'published_at',
     ];
 
@@ -44,6 +45,11 @@ class Scene extends Model
     ];
 
     // Relationships
+    public function tenant(): BelongsTo
+    {
+        return $this->belongsTo(Tenant::class);
+    }
+
     public function stage(): BelongsTo
     {
         return $this->belongsTo(Stage::class);
@@ -83,6 +89,11 @@ class Scene extends Model
     public function scopeForStage($query, $stageId)
     {
         return $query->where('stage_id', $stageId);
+    }
+
+    public function scopeForTenant($query, $tenantId)
+    {
+        return $query->where('tenant_id', $tenantId);
     }
 
     // Boot method to generate GUID

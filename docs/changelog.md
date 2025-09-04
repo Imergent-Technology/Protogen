@@ -1,166 +1,78 @@
-# Protogen Changelog
+# Changelog
 
-## [Unreleased] - 2025-01-02
+All notable changes to the Protogen system will be documented in this file.
+
+## [Unreleased]
 
 ### Added
-- **Edge Weight System**: Added numeric weight field to CoreGraphEdge model with 5-decimal precision
-- **Registry System**: Implemented comprehensive metadata registry with validation rules
-- **Form Validation**: Created CoreGraphEdgeRequest for edge creation/update validation
-- **API Endpoints**: Added registry management API with CRUD operations
-- **Testing**: Comprehensive unit tests for edge weights and registry validation
-- **Snapshot System**: Complete snapshot creation, publishing, and storage system
-  - Deterministic serialization with SHA256 content hashing
-  - Brotli/Gzip compression with fallback to uncompressed
-  - Content-addressed storage for deduplication
-  - Public CDN-friendly delivery system
-  - Comprehensive API endpoints for snapshot management
-- **Complete Development Environment Setup Automation**:
-  - `scripts/setup-complete.sh` for Linux/macOS/WSL2 environments
-  - `scripts/setup-windows.ps1` for Windows PowerShell environments
-  - Automated DNS configuration with `progress.local` domain
-  - Automated database setup with admin user creation
-  - Comprehensive setup verification and testing
-- **Enhanced Documentation and Troubleshooting**:
-  - Updated README with automated setup instructions
-  - Comprehensive troubleshooting guide (`docs/TROUBLESHOOTING.md`)
-  - Platform-specific setup instructions (Linux/macOS/Windows)
-  - Common issue solutions and debugging commands
+- **Multi-Tenant Architecture**: Complete tenant system with content isolation and shared feedback aggregation
+- **Tenant Management**: Comprehensive tenant administration interface with configuration management
+- **Feedback System**: Centralized feedback collection across all tenants with moderation support
+- **Tenant Isolation**: Database-level tenant scoping for all content models
+- **Configuration Management**: Scoped tenant configurations (global, content, presentation, feedback)
 
 ### Changed
-- **CoreGraphEdge Model**: Added weight field with proper casting and validation
-- **API Validation**: Updated edge creation to use form request validation
-- **Database Schema**: Added weight column to core_graph_edges table
-- **DNS Configuration**: Migrated from `localhost` to `progress.local` domain
-  - Updated all frontend API calls to use `progress.local:8080`
-  - Updated CORS configuration for consistent domain usage
-  - Updated Vite configuration with `allowedHosts` for `progress.local`
-  - Updated Nginx configuration for `progress.local` server name
-  - Updated all documentation and scripts to reference new domain
-- **CORS Handling**: Simplified to use Laravel CORS middleware exclusively
-  - Removed duplicate CORS headers from Nginx configuration
-  - Added `Accept: application/json` headers to frontend requests
-  - Resolved CORS policy and redirect issues
+- **Architecture**: Transitioned from Stage-based to Scene & Deck architecture with multi-tenant support
+- **Content Models**: Updated Scene, Deck, and Context models to include tenant relationships
+- **API Endpoints**: Added tenant-aware filtering and scoping to all content endpoints
+- **Navigation**: Added Tenant Management to admin navigation and dashboard
+- **Documentation**: Updated core foundation and roadmap to reflect multi-tenant architecture
 
-### Technical Details
-- **Edge Weight Range**: 0.00001 to 999.99999 (5 decimal precision)
-- **Default Weight**: 1.00000 for all edges
-- **Registry Scopes**: core.node, core.edge, scene.node, scene.edge
-- **Validation Types**: string, number, boolean, array, object
-- **Custom Rules**: min/max, min_length/max_length, enum values
+### Deprecated
+- **Stage System**: Marked for deprecation in favor of Scene & Deck system
+- **Stage API Endpoints**: Marked as legacy with deprecation warnings
 
-### Files Added
-- `api/database/migrations/2025_01_02_000001_add_weight_to_core_graph_edges.php`
-- `api/database/migrations/2025_01_02_000002_create_registry_catalog_table.php`
-- `api/app/Http/Requests/CoreGraphEdgeRequest.php`
-- `api/app/Models/RegistryCatalog.php`
-- `api/app/Services/RegistryValidationService.php`
-- `api/app/Http/Controllers/Api/RegistryApiController.php`
-- `api/database/seeders/BackfillEdgeWeightsSeeder.php`
-- `api/database/seeders/RegistryCatalogSeeder.php`
-- `api/tests/Unit/CoreGraphEdgeWeightTest.php`
-- `api/tests/Unit/RegistryValidationTest.php`
-- **Scene Layer Files**:
-  - `api/database/migrations/2025_09_02_230058_create_scenes_table.php`
-  - `api/database/migrations/2025_09_02_230103_create_scene_nodes_table.php`
-  - `api/database/migrations/2025_09_02_230109_create_scene_edges_table.php`
-  - `api/app/Models/Scene.php`
-  - `api/app/Models/SceneNode.php`
-  - `api/app/Models/SceneEdge.php`
-  - `api/app/Http/Controllers/Api/SceneApiController.php`
-  - `api/database/seeders/SystemSceneSeeder.php`
-- **Snapshot System Files**:
-  - `api/database/migrations/2025_09_03_000001_create_snapshots_table.php`
-  - `api/app/Models/Snapshot.php`
-  - `api/app/Services/SnapshotBuilderService.php`
-  - `api/app/Http/Controllers/Api/SnapshotApiController.php`
+### Removed
+- **Console Logging**: Cleaned up all console.log statements from frontend components
+- **Debug Code**: Removed temporary debugging and placeholder code
 
-### Files Modified
-- `api/app/Models/CoreGraphEdge.php` - Added weight field and casting
-- `api/app/Http/Controllers/Api/CoreGraphApiController.php` - Updated edge creation
-- `api/routes/api.php` - Added registry API routes and Scene API routes
+### Fixed
+- **Linter Errors**: Fixed missing slug properties in Scene and Deck creation forms
+- **Type Safety**: Improved TypeScript type definitions for all new models
 
-### Database Changes
-- Added `weight` column (decimal(8,5)) to `core_graph_edges` table
-- Created `registry_catalog` table for metadata definitions
-- Added proper indexes for performance
-- **Scene Layer Tables**:
-  - `scenes` table with full scene metadata, configuration, and styling
-  - `scene_nodes` table for presentational node instances with positioning and styling
-  - `scene_edges` table for presentational edge instances with path and styling
-  - Proper foreign key relationships and indexes for performance
+### Security
+- **Tenant Isolation**: Implemented proper tenant isolation at database and API levels
+- **Access Control**: Added tenant-aware authentication and authorization
 
-### API Changes
-- **POST /api/graph/edges**: Now requires and validates weight field
-- **GET /api/registry**: List all registry entries
-- **GET /api/registry/scope/{scope}**: Get entries for specific scope
-- **POST /api/registry/validate**: Validate metadata against registry rules
-- **GET /api/registry/{scope}/schema**: Get metadata schema for scope
-- **Scene API Endpoints**:
-  - **GET /api/scenes**: List all scenes with pagination and filtering
-  - **GET /api/scenes/{id}**: Get specific scene with full node/edge data
-  - **GET /api/scenes/system**: Get the System Scene (Core Graph mirror)
-  - **GET /api/scenes/stage/{stageId}**: Get scenes for specific stage
-- **GET /api/scenes/stats**: Get scene statistics and metadata
-- **Snapshot API Endpoints**:
-  - **GET /api/snapshots**: List all snapshots with pagination and filtering
-  - **POST /api/snapshots**: Create new snapshot for a scene
-  - **GET /api/snapshots/{guid}**: Get specific snapshot details
-  - **POST /api/snapshots/{guid}/publish**: Publish a snapshot
-  - **POST /api/snapshots/{guid}/archive**: Archive a snapshot
-  - **GET /api/snapshots/{guid}/manifest**: Get snapshot manifest
-  - **GET /api/snapshots/{guid}/download**: Download snapshot content
-  - **GET /api/snapshots/stats**: Get snapshot statistics
-  - **DELETE /api/snapshots/{guid}**: Delete a snapshot
+## [2025-01-15] - Multi-Tenant Architecture & Scene System
 
-### Testing
-- **Edge Weight Tests**: 7 test cases covering creation, validation, and updates
-- **Registry Tests**: 12 test cases covering validation, defaults, and metadata handling
-- **Database Tests**: Proper setup/teardown with RefreshDatabase trait
+### Added
+- **Context System**: New coordinate and anchor system for content navigation
+- **Deck System**: Collection-based scene organization with navigation configuration
+- **Scene Models**: Complete Scene, SceneNode, and SceneEdge models with tenant isolation
+- **Tenant System**: Multi-tenant architecture with content isolation and shared feedback
+- **Feedback System**: Centralized feedback collection with moderation and aggregation
+- **Registry System**: Comprehensive metadata validation and management
+- **Snapshot System**: Deterministic serialization for fast loading and CDN delivery
 
-### Next Steps
-- [x] Run migrations and seeders
-- [x] Test edge weight functionality in GraphStudio
-- [x] Implement Scene layer (Phase 2) - **COMPLETED**
-- [x] Implement Snapshot system (Phase 3) - **COMPLETED**
-- [ ] Create UI components for registry management
-- [ ] Implement Scene authoring and management UI (Phase 5)
+### Changed
+- **Architecture**: Fundamental shift from Stages to Scenes & Decks
+- **Content Organization**: Scene-based content management with deck collections
+- **Navigation**: Context-aware navigation with coordinate systems
+- **API Structure**: New RESTful endpoints for all content types
+- **Database Schema**: Updated schema to support new architecture
 
-### Known Issues
-- None currently identified
+### Deprecated
+- **Stage System**: Legacy stage system marked for deprecation
+- **Stage API Endpoints**: Existing stage endpoints marked as legacy
 
-### Breaking Changes
-- **Edge Creation**: All new edges must now include a weight field
-- **API Validation**: Stricter validation for edge creation
+### Removed
+- **Stage Dependencies**: Removed stage dependencies from new content models
+- **Legacy Code**: Cleaned up unused stage-related code
 
-### Migration Notes
-1. Run the new migrations: `php artisan migrate`
-2. Backfill existing edges: `php artisan db:seed --class=BackfillEdgeWeightsSeeder`
-3. Seed registry catalog: `php artisan db:seed --class=RegistryCatalogSeeder`
-4. **Scene Layer Setup**: `php artisan db:seed --class=SystemSceneSeeder`
-5. Update any existing edge creation code to include weight field
+### Fixed
+- **Type Safety**: Improved TypeScript type definitions
+- **Validation**: Enhanced input validation and error handling
+- **Performance**: Optimized database queries and relationships
 
-### Performance Impact
-- **Minimal**: Weight field adds negligible storage overhead
-- **Registry**: Fast lookups with proper indexing
-- **Validation**: Efficient metadata validation with caching potential
-
-### Security Considerations
-- **Input Validation**: All metadata validated against registry rules
-- **Type Safety**: Strict type checking for metadata values
-- **Admin Only**: Registry management restricted to admin users
-
----
+### Security
+- **Input Validation**: Enhanced security with comprehensive input validation
+- **Access Control**: Improved authentication and authorization
 
 ## [Previous Versions]
 
-### [v0.1.0] - 2025-08-22
-- Initial Core Graph system implementation
-- Basic node and edge management
-- Graph Studio UI foundation
-- Stage system architecture
-
-### [v0.0.1] - 2024-01-01
-- Project initialization
-- Basic Laravel setup
-- Initial database schema
-- Basic authentication system
+### [2024-12-01] - Initial Release
+- Basic stage management system
+- User authentication and authorization
+- Graph visualization capabilities
+- Basic content management

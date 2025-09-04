@@ -1,4 +1,4 @@
 export { AdminToolbar } from './AdminToolbar';
 export { AdminUserMenu } from './AdminUserMenu';
-export { StageNavigation } from './StageNavigation';
-export { StageTransition, StageContentWrapper, ToolbarWrapper } from './StageTransition';
+export { SceneNavigation } from './SceneNavigation';
+export { StageContentWrapper, ToolbarWrapper } from './StageTransition';
