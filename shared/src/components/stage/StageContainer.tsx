@@ -15,8 +15,8 @@ export function StageContainer({
   stage,
   isFallback = false,
   isAdmin = false,
-  onStageUpdate,
-  onStageDelete,
+  onStageUpdate: _onStageUpdate,
+  onStageDelete: _onStageDelete,
   children
 }: StageContainerProps) {
   // Use callback props to avoid unused variable warnings
