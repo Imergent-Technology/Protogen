@@ -247,16 +247,37 @@ This roadmap outlines the phased implementation of the Protogen system, transiti
 - [ ] Implement cross-tenant presentation sharing
 - [ ] Add presentation analytics and insights
 
-## Phase 11: Multi-Tenancy & Community Management 📋 PLANNED
+## Phase 11: Task & Volunteer Management 📋 PLANNED
 **Status**: Planning phase, not yet started
 
-### 9.1 Advanced Tenant Features 📋
+### 11.1 Basic Task System 📋
+- [ ] Implement simple task creation for nodes, contexts, scenes, and decks
+- [ ] Add basic task description and status tracking
+- [ ] Create task association with content entities
+- [ ] Implement simple task listing and filtering
+
+### 11.2 Volunteer Interest System 📋
+- [ ] Add "interested in helping" flag for tasks
+- [ ] Implement basic volunteer contact information collection
+- [ ] Create simple notification system for task creators
+- [ ] Add basic volunteer management interface
+
+### 11.3 Integration with Content System 📋
+- [ ] Link tasks to specific content coordinates
+- [ ] Integrate with feedback system for task-related feedback
+- [ ] Add task context to content delivery
+- [ ] Implement basic task analytics and reporting
+
+## Phase 12: Multi-Tenancy & Community Management 📋 PLANNED
+**Status**: Planning phase, not yet started
+
+### 12.1 Advanced Tenant Features 📋
 - [ ] Implement custom domain support
 - [ ] Add tenant-specific branding
 - [ ] Create tenant analytics and reporting
 - [ ] Add tenant collaboration features
 
-### 9.2 Community Features 📋
+### 12.2 Community Features 📋
 - [ ] Implement user-generated content
 - [ ] Add community moderation tools
 - [ ] Create content discovery system
