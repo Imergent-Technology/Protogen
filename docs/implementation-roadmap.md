@@ -259,7 +259,6 @@ This roadmap outlines the phased implementation of the Protogen system, transiti
 ### 11.2 Volunteer Interest System 📋
 - [ ] Add "interested in helping" flag for tasks
 - [ ] Implement basic volunteer contact information collection
-- [ ] Create simple notification system for task creators
 - [ ] Add basic volunteer management interface
 
 ### 11.3 Integration with Content System 📋
