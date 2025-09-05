@@ -101,7 +101,6 @@ For detailed setup instructions, see [DEVELOPMENT.md](docs/DEVELOPMENT.md).
 | Document | Description |
 |----------|-------------|
 | [**Changelog**](docs/changelog.md) | Version history and release notes |
-| [**Stage Architecture**](docs/stage-architecture.md) | Legacy system documentation (deprecated) |
 
 ## 🏗️ Project Structure
 

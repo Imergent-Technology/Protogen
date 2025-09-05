@@ -1,2 +1,2 @@
 export * from './UserProfile';
-export * from './StageForm';
+// StageForm removed - Stage system has been completely removed

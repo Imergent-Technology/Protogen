@@ -74,23 +74,7 @@ class SceneApiController extends Controller
         ]);
     }
 
-    /**
-     * Get scenes for a specific stage
-     */
-    public function forStage(int $stageId): JsonResponse
-    {
-        $scenes = Scene::with(['stage', 'creator', 'nodes', 'edges'])
-            ->forStage($stageId)
-            ->active()
-            ->orderBy('created_at', 'desc')
-            ->get();
-
-        return response()->json([
-            'success' => true,
-            'data' => $scenes,
-            'message' => 'Stage scenes retrieved successfully'
-        ]);
-    }
+    // forStage method removed - Stage system has been completely removed
 
     /**
      * Get scene statistics

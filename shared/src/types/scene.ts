@@ -14,7 +14,6 @@ export interface Scene {
   is_active: boolean;
   is_public: boolean;
   created_by: number;
-  stage_id?: number;
   published_at?: string;
   created_at: string;
   updated_at: string;
@@ -341,7 +340,6 @@ export interface CreateSceneRequest {
   style?: Partial<SceneStyle>;
   is_active?: boolean;
   is_public?: boolean;
-  stage_id?: number;
 }
 
 export interface UpdateSceneRequest extends Partial<CreateSceneRequest> {

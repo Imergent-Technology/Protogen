@@ -9,7 +9,7 @@ use App\Models\SceneNode;
 use App\Models\SceneEdge;
 use App\Models\CoreGraphNode;
 use App\Models\CoreGraphEdge;
-use App\Models\Stage;
+// Stage model removed - Stage system has been completely removed
 use Illuminate\Support\Str;
 
 class SystemSceneSeeder extends Seeder
@@ -21,15 +21,7 @@ class SystemSceneSeeder extends Seeder
     {
         $this->command->info('Creating System Scene...');
 
-        // Create or get the default stage
-        $stage = Stage::firstOrCreate(
-            ['slug' => 'default'],
-            [
-                'name' => 'Default Stage',
-                'description' => 'Default stage for system scenes',
-                'is_active' => true,
-            ]
-        );
+        // Stage system removed - no longer needed
 
         // Create the System Scene
         $systemScene = Scene::firstOrCreate(
@@ -58,7 +50,6 @@ class SystemSceneSeeder extends Seeder
                 ],
                 'is_active' => true,
                 'is_public' => true,
-                'stage_id' => $stage->id,
                 'published_at' => now(),
             ]
         );

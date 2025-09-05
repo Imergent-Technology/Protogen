@@ -1,1 +1,2 @@
-export * from './StageRouter';
+// StageRouter removed - Stage system has been completely removed
+export {};

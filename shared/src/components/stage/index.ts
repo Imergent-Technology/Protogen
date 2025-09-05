@@ -1,4 +1,2 @@
-export * from './BasicStage';
-export * from './StageContainer';
-export * from './StagePreview';
-export * from './EnhancedStageForm';
+// All Stage components have been removed in favor of Scene & Deck system
+export {};

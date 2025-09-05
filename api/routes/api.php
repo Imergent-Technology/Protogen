@@ -2,7 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\StageApiController;
+// StageApiController removed - Stage system has been completely removed
 use App\Http\Controllers\Api\UserApiController;
 use App\Http\Controllers\Api\CoreGraphApiController;
 use App\Http\Controllers\Api\RegistryApiController;
@@ -37,16 +37,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-// Stage API routes (legacy - will be deprecated)
-Route::prefix('stages')->group(function () {
-    Route::get('/', [StageApiController::class, 'index']);
-    Route::get('/types', [StageApiController::class, 'types']);
-    Route::post('/', [StageApiController::class, 'store']);
-    Route::get('/{stage}', [StageApiController::class, 'show']);
-    Route::put('/{stage}', [StageApiController::class, 'update']);
-    Route::delete('/{stage}', [StageApiController::class, 'destroy']);
-    Route::get('/{stage}/relationships', [StageApiController::class, 'relationships']);
-});
+// Stage API routes removed - Stage system has been completely removed
 
 // Admin-only user management routes (use Sanctum for API auth)
 Route::prefix('users')->middleware(['auth:sanctum', 'admin'])->group(function () {
@@ -101,7 +92,7 @@ Route::prefix('scenes')->middleware(['auth:sanctum', 'admin'])->group(function (
     Route::get('/', [SceneApiController::class, 'index']);
     Route::get('/stats', [SceneApiController::class, 'stats']);
     Route::get('/system', [SceneApiController::class, 'system']);
-    Route::get('/stage/{stageId}', [SceneApiController::class, 'forStage']);
+    // Stage-related route removed - Stage system has been completely removed
     Route::get('/{guid}', [SceneApiController::class, 'show']);
 });
 

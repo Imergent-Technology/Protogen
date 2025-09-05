@@ -24,13 +24,11 @@ return new class extends Migration
             $table->boolean('is_active')->default(true);
             $table->boolean('is_public')->default(false);
             $table->foreignId('created_by')->nullable()->constrained('users')->onDelete('set null');
-            $table->foreignId('stage_id')->nullable()->constrained('stages')->onDelete('cascade');
             $table->timestamp('published_at')->nullable();
             $table->timestamps();
             
             // Indexes for performance
             $table->index(['scene_type', 'is_active']);
-            $table->index(['stage_id', 'is_active']);
             $table->index(['created_by', 'is_active']);
         });
     }

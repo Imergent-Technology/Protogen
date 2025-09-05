@@ -238,7 +238,6 @@ export class SnapshotHydrationService {
         is_active: true,
         is_public: false,
         created_by: 0, // Will be set by database
-        stage_id: undefined,
         published_at: undefined,
         created_at: sceneData.timestamps?.created || new Date().toISOString(),
         updated_at: sceneData.timestamps?.updated || new Date().toISOString(),

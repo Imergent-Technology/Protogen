@@ -25,7 +25,6 @@ class Scene extends Model
         'is_public',
         'created_by',
         'tenant_id',
-        'stage_id', // Legacy field for migration
         'published_at',
     ];
 
@@ -50,10 +49,6 @@ class Scene extends Model
         return $this->belongsTo(Tenant::class);
     }
 
-    public function stage(): BelongsTo
-    {
-        return $this->belongsTo(Stage::class);
-    }
 
     public function creator(): BelongsTo
     {
@@ -86,10 +81,6 @@ class Scene extends Model
         return $query->where('scene_type', $type);
     }
 
-    public function scopeForStage($query, $stageId)
-    {
-        return $query->where('stage_id', $stageId);
-    }
 
     public function scopeForTenant($query, $tenantId)
     {

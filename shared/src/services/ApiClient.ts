@@ -1,4 +1,4 @@
-import { Stage, StageType } from '../types/stage';
+// Stage types removed - Stage system has been completely removed
 
 export interface ApiResponse<T = any> {
   success: boolean;
@@ -13,67 +13,7 @@ export interface ApiResponse<T = any> {
   };
 }
 
-export interface CreateStageRequest {
-  name: string;
-  slug?: string;
-  description?: string;
-  type: StageType;
-  config?: Record<string, any>;
-  metadata?: Record<string, any>;
-  is_active?: boolean;
-  sort_order?: number;
-  relationships?: {
-    load_after?: number[];
-    child_of?: number[];
-    related_to?: number[];
-  };
-}
-
-export interface UpdateStageRequest extends Partial<CreateStageRequest> {
-  id: number;
-}
-
-export interface FeedbackData {
-  stage_id: number;
-  content: string;
-  rating?: number;
-  category?: string;
-  metadata?: Record<string, any>;
-}
-
-export interface ApiFeedback {
-  id: number;
-  stage_id: number;
-  content: string;
-  rating?: number;
-  category?: string;
-  metadata?: Record<string, any>;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface StageRelationship {
-  id: number;
-  source_stage_id: number;
-  target_stage_id: number;
-  type: 'load_after' | 'child_of' | 'related_to';
-  label: string;
-  is_active: boolean;
-  source_stage?: Stage;
-  target_stage?: Stage;
-}
-
-export interface StageStats {
-  total_stages: number;
-  active_stages: number;
-  total_feedback: number;
-  recent_activity: Array<{
-    type: 'stage_created' | 'stage_updated' | 'feedback_received';
-    stage_id: number;
-    stage_name: string;
-    timestamp: string;
-  }>;
-}
+// Stage-related interfaces removed - Stage system has been completely removed
 
 // Core Graph System Types
 export interface CoreGraphNode {
@@ -204,89 +144,7 @@ export class ApiClient {
     }
   }
 
-  // Stage API methods
-  async getStages(params?: {
-    type?: StageType;
-    active?: boolean;
-    search?: string;
-    per_page?: number;
-    page?: number;
-  }): Promise<ApiResponse<Stage[]>> {
-    const searchParams = new URLSearchParams();
-    
-    if (params?.type) searchParams.append('type', params.type);
-    if (params?.active !== undefined) searchParams.append('active', params.active.toString());
-    if (params?.search) searchParams.append('search', params.search);
-    if (params?.per_page) searchParams.append('per_page', params.per_page.toString());
-    if (params?.page) searchParams.append('page', params.page.toString());
-
-    const queryString = searchParams.toString();
-    const endpoint = `/stages${queryString ? `?${queryString}` : ''}`;
-    
-    return this.request<Stage[]>(endpoint);
-  }
-
-  async getStage(id: number): Promise<ApiResponse<Stage>> {
-    return this.request<Stage>(`/stages/${id}`);
-  }
-
-  async createStage(data: CreateStageRequest): Promise<ApiResponse<Stage>> {
-    return this.request<Stage>('/stages', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    });
-  }
-
-  async updateStage(id: number, data: Partial<CreateStageRequest>): Promise<ApiResponse<Stage>> {
-    return this.request<Stage>(`/stages/${id}`, {
-      method: 'PUT',
-      body: JSON.stringify(data),
-    });
-  }
-
-  async deleteStage(id: number): Promise<ApiResponse<void>> {
-    return this.request<void>(`/stages/${id}`, {
-      method: 'DELETE',
-    });
-  }
-
-  async getStageRelationships(id: number): Promise<ApiResponse<StageRelationship[]>> {
-    return this.request<StageRelationship[]>(`/stages/${id}/relationships`);
-  }
-
-  async getStageTypes(): Promise<ApiResponse<Record<StageType, { name: string; description: string; icon: string }>>> {
-    return this.request('/stages/types');
-  }
-
-  // Feedback API methods
-  async getStageFeedback(stageId: number): Promise<ApiResponse<ApiFeedback[]>> {
-    return this.request<ApiFeedback[]>(`/stages/${stageId}/feedback`);
-  }
-
-  async submitFeedback(data: FeedbackData): Promise<ApiResponse<ApiFeedback>> {
-    return this.request<ApiFeedback>('/feedback', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    });
-  }
-
-  async updateFeedback(id: number, data: Partial<FeedbackData>): Promise<ApiResponse<ApiFeedback>> {
-    return this.request<ApiFeedback>(`/feedback/${id}`, {
-      method: 'PUT',
-      body: JSON.stringify(data),
-    });
-  }
-
-  async deleteFeedback(id: number): Promise<ApiResponse<void>> {
-    return this.request<void>(`/feedback/${id}`, {
-      method: 'DELETE',
-    });
-  }
-
-  // Analytics/Stats methods
-  async getStageStats(): Promise<ApiResponse<StageStats>> {
-    return this.request<StageStats>('/stages/stats');
-  }
+  // Stage API methods removed - Stage system has been completely removed
 
   // Core Graph System API methods
   async getGraphNodes(params?: {
