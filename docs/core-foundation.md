@@ -3,6 +3,17 @@
 ## Overview
 This document outlines the core architectural principles and implementation details for the Protogen system, establishing a durable foundation for scalable graph applications with advanced presentation and collaboration features in a multi-tenant environment.
 
+## Historical Context
+
+Protogen represents a significant architectural evolution from its initial Stage-based system to the current Scene & Deck architecture. This transformation was driven by the need for:
+
+- **Greater Flexibility**: The Stage system was too rigid for diverse content types
+- **Better Performance**: Scene-based architecture enables more efficient content delivery
+- **Multi-Tenant Support**: Clean separation of concerns enables isolated content environments
+- **Modern Development**: React-based UI with TypeScript and comprehensive tooling
+
+The project has evolved through 7 completed phases, with the Stage system completely removed in Phase 7 to create a clean, modern architecture. All legacy Stage references have been eliminated, and the system now operates entirely on the Scene & Deck foundation described in this document.
+
 ## Core Principles
 
 ### 1. Separation of Concerns
@@ -386,6 +397,7 @@ Effective Style = Type Defaults + Scene Theme + Instance Overrides
 ### 1. Environment Setup
 - Laravel backend with PostgreSQL
 - React Admin interface
+- React User Portal (tenant-facing client)
 - Shared TypeScript library
 - cPanel hosting with optional CDN
 - **NEW**: Multi-tenant deployment and scaling
@@ -426,27 +438,124 @@ Effective Style = Type Defaults + Scene Theme + Instance Overrides
 - Tenant-specific content customization
 - Feedback aggregation from shared content usage
 
-## Presentation System
+## Flow System
 
 ### Purpose
-- Timeline-based animation system for scenes and contexts
-- Sequential presentation with custom animations
-- Dependency checking for linked components
-- Tenant-specific presentation customization
+The Flow System provides a sophisticated, flexible content navigation and exploration system that allows authors to create guided experiences while maintaining user autonomy. Flows can engage scenes, decks, nodes/coordinates, and contexts to provide full author control over user journeys while enabling exploration and branching paths.
 
-### Presentation Features
-- **Timeline Engine**: Coordinate scene transitions and animations
-- **Animation System**: Custom animations and transitions
-- **Dependency Management**: Ensure all linked content is published
-- **Publishing Workflow**: Automated publishing with dependency validation
-- **Tenant Customization**: Tenant-specific presentation themes and branding
+### Core Flow Concepts
+
+#### **Flow Steps & Navigation**
+- **Flow Steps**: Individual waypoints that can target scenes, decks, specific nodes/coordinates, or contexts
+- **Guided Navigation**: Author-controlled progression through defined steps
+- **Free Exploration**: User ability to explore content while maintaining flow context
+- **Resume Capability**: Return to flow progression from any exploration point
+- **Rewind/Return**: Navigate back to previous steps or return to current step view
+
+#### **Flow Control Modes**
+- **Guided Mode**: Strict step-by-step progression with limited exploration
+- **Free-Explore Mode**: Full exploration capability while maintaining flow context
+- **Hybrid Mode**: Exploration allowed during pauses, guided during active flow
+- **Branch Mode**: Multiple path options with return-to-flow capability
+
+#### **Flow Features**
+- **Flow Engine**: Coordinate transitions between scenes, decks, nodes, and contexts
+- **Flow Controls**: Play, pause, manual advance, speed control, and navigation
+- **Exploration Management**: Track user position and enable return to flow
+- **Branching System**: Multiple path options with conditional navigation
+- **Context Preservation**: Maintain flow state during exploration
+- **Flow Exit**: Always available escape to regain full session control
+
+### Advanced Flow Capabilities
+
+#### **Branching & Conditional Navigation**
+- **Flow Branches**: Multiple path options from any step
+- **Conditional Logic**: Dynamic path selection based on user choices or context
+- **Return Paths**: Seamless return to main flow after branch exploration
+- **Branch Merging**: Rejoin main flow from different branch endpoints
+
+#### **Exploration Management**
+- **Position Tracking**: Monitor user location within content during exploration
+- **Flow Context**: Maintain awareness of current flow step and progress
+- **Auto-Focus**: Return user attention to next step when flow advances
+- **Exploration Boundaries**: Define limits of exploration while in flow mode
+
+#### **Author Control & Configuration**
+- **Flow Authoring**: Create step sequences with targets and transitions
+- **Mode Selection**: Choose guided, free-explore, or hybrid modes per flow
+- **Branch Definition**: Create conditional paths and return points
+- **Exploration Settings**: Configure exploration boundaries and behavior
+
+### Implementation Architecture
+
+#### **Flow Model Structure**
+```typescript
+interface Flow {
+  id: number;
+  name: string;
+  description: string;
+  mode: 'guided' | 'free-explore' | 'hybrid';
+  steps: FlowStep[];
+  branches: FlowBranch[];
+  settings: FlowSettings;
+}
+
+interface FlowStep {
+  id: number;
+  order: number;
+  target_type: 'scene' | 'deck' | 'node' | 'context';
+  target_id: string;
+  coordinates?: { x: number; y: number; z?: number };
+  transition: TransitionConfig;
+  allow_exploration: boolean;
+  exploration_boundaries?: ExplorationConfig;
+}
+
+interface FlowBranch {
+  id: number;
+  from_step_id: number;
+  condition: BranchCondition;
+  steps: FlowStep[];
+  return_to_step?: number;
+}
+```
+
+#### **Flow State Management**
+- **Current Step Tracking**: Monitor active flow step and user position
+- **Exploration State**: Track user exploration and return points
+- **Flow History**: Maintain navigation history for rewind capability
+- **Session Integration**: Seamless integration with existing session management
+
+#### **Flow Control System**
+- **Playback Controls**: Play, pause, advance, rewind, speed control
+- **Navigation Controls**: Next, previous, jump to step, return to flow
+- **Exploration Controls**: Enter/exit exploration mode, return to step
+- **Flow Exit**: Always available escape to full session control
+
+### Future Applications
+
+#### **Admin UI Integration**
+- **Setup Wizards**: Guided configuration and setup processes
+- **Onboarding Flows**: Step-by-step user introduction and training
+- **Feature Tours**: Guided exploration of new features and capabilities
+
+#### **Marketing & Engagement**
+- **Marketing Funnels**: Structured user journey through content
+- **Educational Paths**: Guided learning experiences with exploration
+- **Interactive Demos**: Controlled demonstration with user interaction
+
+#### **Content Management**
+- **Content Creation Flows**: Guided content authoring processes
+- **Review Workflows**: Structured content review and approval processes
+- **Publishing Pipelines**: Step-by-step content publishing workflows
 
 ### Implementation Approach
-- Presentation model with timeline configuration
-- Animation framework with customizable transitions
-- Dependency graph validation
-- Automated publishing with rollback capabilities
-- Tenant-specific presentation templates
+- **Modular Design**: Flexible flow engine with pluggable step types
+- **State Management**: Comprehensive flow state tracking and restoration
+- **API Integration**: Seamless integration with existing scene/deck/context systems
+- **UI Components**: Reusable flow control and navigation components
+- **Performance**: Efficient flow state management and transition handling
+- **Extensibility**: Open architecture for future flow types and capabilities
 
 ## Migration Strategy
 

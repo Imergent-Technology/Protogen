@@ -5,7 +5,7 @@
 This is a single repository with the following modules:
 
 - **`admin/`** - React admin interface (Vite + TypeScript)
-- **`ui/`** - React user interface (Vite + TypeScript) 
+- **`portal/`** - React user-facing tenant portal (Vite + TypeScript) 
 - **`shared/`** - Shared components, hooks, services, and types
 - **`api/`** - Laravel backend API (PHP)
 - **`config/`** - Shared configuration files
@@ -36,23 +36,23 @@ npm run build:css:prod     # Production CSS build
 npm run dev                # Start CSS watching
 npm run dev:all           # Start all development servers
 npm run dev:admin         # Start admin development server
-npm run dev:ui            # Start UI development server
+npm run dev:portal        # Start portal development server
 
 # Building (run from base directory)
 npm run build:all         # Build all modules
 npm run build:admin       # Build admin module
-npm run build:ui          # Build UI module
+npm run build:portal      # Build portal module
 
 # Cleaning (run from base directory)
 npm run clean:all         # Clean all build artifacts
 npm run clean:admin       # Clean admin build
-npm run clean:ui          # Clean UI build
+npm run clean:portal      # Clean portal build
 npm run clean:shared      # Clean shared CSS output
 
 # Code Quality (run from base directory)
 npm run lint:all          # Lint all modules
 npm run lint:admin        # Lint admin module
-npm run lint:ui           # Lint UI module
+npm run lint:portal       # Lint portal module
 npm run lint:shared       # Lint shared library
 
 # Formatting (run from base directory)
@@ -73,10 +73,10 @@ npm run dev    # Start admin development server
 npm run build  # Build admin for production
 npm run lint   # Lint admin code
 
-cd ui
-npm run dev    # Start UI development server
-npm run build  # Build UI for production
-npm run lint   # Lint UI code
+cd portal
+npm run dev    # Start portal development server
+npm run build  # Build portal for production
+npm run lint   # Lint portal code
 ```
 
 ## Component Organization
@@ -125,13 +125,13 @@ import { AdminStage } from '@/components/core/AdminStage';
    
    # Or start individually
    npm run dev:admin
-   npm run dev:ui
+   npm run dev:portal
    ```
 
 3. **Access applications**:
-   - Admin: http://progress.local:3001
-- UI: http://progress.local:3000
-- API: http://progress.local:8080
+   - Admin: http://protogen.local:3001
+   - Portal: http://protogen.local:3000
+- API: http://protogen.local:8080
 
 ### Code Quality
 

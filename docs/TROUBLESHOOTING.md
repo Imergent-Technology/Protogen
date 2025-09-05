@@ -13,18 +13,18 @@ This guide covers common issues and their solutions when setting up and running 
 **Solutions:**
 1. **Ensure DNS is properly configured:**
    ```bash
-   # Check if progress.local is in hosts file
-   grep "progress.local" /etc/hosts
+   # Check if protogen.local is in hosts file
+   grep "protogen.local" /etc/hosts
    
    # Add if missing (Linux/macOS/WSL2)
-   echo "127.0.0.1 progress.local" | sudo tee -a /etc/hosts
+   echo "127.0.0.1 protogen.local" | sudo tee -a /etc/hosts
    
    # Windows (PowerShell as Administrator)
-   Add-Content "$env:SystemRoot\System32\drivers\etc\hosts" "`n127.0.0.1 progress.local"
+   Add-Content "$env:SystemRoot\System32\drivers\etc\hosts" "`n127.0.0.1 protogen.local"
    ```
 
 2. **Verify Vite configuration:**
-   - Check that `allowedHosts` includes `progress.local` in both `admin/vite.config.ts` and `ui/vite.config.ts`
+   - Check that `allowedHosts` includes `protogen.local` in both `admin/vite.config.ts` and `ui/vite.config.ts`
    - Restart containers after making changes: `docker-compose restart admin ui`
 
 3. **Check Laravel CORS configuration:**
@@ -162,19 +162,19 @@ This guide covers common issues and their solutions when setting up and running 
 1. **Verify hosts file entry:**
    ```bash
    # Linux/macOS/WSL2
-   cat /etc/hosts | grep progress.local
+   cat /etc/hosts | grep protogen.local
    
    # Windows
-   Get-Content "$env:SystemRoot\System32\drivers\etc\hosts" | Select-String "progress.local"
+   Get-Content "$env:SystemRoot\System32\drivers\etc\hosts" | Select-String "protogen.local"
    ```
 
 2. **Test DNS resolution:**
    ```bash
    # Linux/macOS/WSL2
-   ping progress.local
+   ping protogen.local
    
    # Windows
-   ping progress.local
+   ping protogen.local
    ```
 
 3. **Clear DNS cache:**
@@ -240,10 +240,10 @@ docker exec -it api php artisan migrate:status
 ### Network Diagnostics
 ```bash
 # Test API endpoint
-curl -v http://progress.local:8080/api/graph/nodes
+curl -v http://protogen.local:8080/api/graph/nodes
 
 # Test frontend
-curl -v http://progress.local:3001
+curl -v http://protogen.local:3001
 
 # Check port availability
 netstat -tulpn | grep :8080

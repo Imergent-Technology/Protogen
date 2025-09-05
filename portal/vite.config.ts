@@ -15,6 +15,6 @@ export default defineConfig({
     host: '0.0.0.0',  // Allow access from outside the container
     port: 3000,       // Match exposed port in Docker
     strictPort: true, // Fail if 3000 is not available
-    allowedHosts: ['progress.local', 'localhost', '127.0.0.1']
+    allowedHosts: ['protogen.local', 'localhost', '127.0.0.1']
   }
 })

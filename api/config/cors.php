@@ -20,11 +20,11 @@ return [
     'allowed_methods' => ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
 
     'allowed_origins' => [
-        'http://progress.local:3000',  // UI frontend
-        'http://progress.local:3001',  // Admin frontend
+        'http://protogen.local:3000',  // UI frontend
+        'http://protogen.local:3001',  // Admin frontend
         'http://127.0.0.1:3000',
         'http://127.0.0.1:3001',
-        'http://progress.local:8080',  // API itself
+        'http://protogen.local:8080',  // API itself
         'http://127.0.0.1:8080',
     ],
 

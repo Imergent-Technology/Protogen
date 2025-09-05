@@ -70,18 +70,18 @@ check_prerequisites() {
 setup_dns() {
     print_status "Setting up DNS configuration..."
     
-    # Check if progress.local is already in hosts file
-    if grep -q "progress.local" /etc/hosts; then
-        print_warning "progress.local already exists in /etc/hosts"
+    # Check if protogen.local is already in hosts file
+    if grep -q "protogen.local" /etc/hosts; then
+        print_warning "protogen.local already exists in /etc/hosts"
     else
-        print_status "Adding progress.local to /etc/hosts..."
-        echo "127.0.0.1 progress.local" | sudo tee -a /etc/hosts
-        print_success "Added progress.local to /etc/hosts"
+        print_status "Adding protogen.local to /etc/hosts..."
+        echo "127.0.0.1 protogen.local" | sudo tee -a /etc/hosts
+        print_success "Added protogen.local to /etc/hosts"
     fi
     
     # Check if we can resolve the domain
-    if ping -c 1 progress.local &> /dev/null; then
-        print_success "DNS resolution working for progress.local"
+    if ping -c 1 protogen.local &> /dev/null; then
+        print_success "DNS resolution working for protogen.local"
     else
         print_warning "DNS resolution may not be working yet (this is normal)"
     fi
@@ -146,10 +146,10 @@ setup_database() {
     # Create admin user if it doesn't exist
     print_status "Creating admin user..."
     docker-compose exec -T api php artisan tinker --execute="
-    if (!App\Models\User::where('email', 'admin@progress.local')->exists()) {
+    if (!App\Models\User::where('email', 'admin@protogen.local')->exists()) {
         \$user = new App\Models\User();
         \$user->name = 'Admin User';
-        \$user->email = 'admin@progress.local';
+        \$user->email = 'admin@protogen.local';
         \$user->password = Hash::make('KeepCodeFlowin#333');
         \$user->email_verified_at = now();
         \$user->is_admin = true;
@@ -190,7 +190,7 @@ verify_setup() {
     
     # Test API endpoint
     print_status "Testing API endpoint..."
-    if curl -s http://progress.local:8080/api/graph/nodes | grep -q "Unauthenticated"; then
+    if curl -s http://protogen.local:8080/api/graph/nodes | grep -q "Unauthenticated"; then
         print_success "API is responding correctly"
     else
         print_warning "API may not be responding correctly"
@@ -206,14 +206,14 @@ show_access_info() {
     echo "======================"
     echo ""
     echo "🌐 Access your applications:"
-    echo "   • Admin Panel: http://progress.local:3001"
-    echo "   • UI Frontend: http://progress.local:3000"
-    echo "   • API: http://progress.local:8080"
-    echo "   • PostgreSQL: progress.local:5432"
-    echo "   • pgAdmin: http://progress.local:5050"
+    echo "   • Admin Panel: http://protogen.local:3001"
+    echo "   • User Portal: http://protogen.local:3000"
+    echo "   • API: http://protogen.local:8080"
+    echo "   • PostgreSQL: protogen.local:5432"
+    echo "   • pgAdmin: http://protogen.local:5050"
     echo ""
     echo "🔑 Admin Login Credentials:"
-    echo "   • Email: admin@progress.local"
+    echo "   • Email: admin@protogen.local"
     echo "   • Password: KeepCodeFlowin#333"
     echo ""
     echo "📁 Useful Commands:"

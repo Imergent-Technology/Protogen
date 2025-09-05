@@ -30,7 +30,7 @@ Protogen is a modern, multi-tenant platform that enables organizations to create
 1. **Clone the repository**
    ```bash
    git clone <repository-url>
-   cd progress
+   cd protogen
    ```
 
 2. **Start the development environment**
@@ -46,10 +46,10 @@ Protogen is a modern, multi-tenant platform that enables organizations to create
    ```
 
 3. **Access the applications**
-   - **Admin Panel**: http://progress.local:3001
-   - **User Interface**: http://progress.local:3000
-   - **API**: http://progress.local:8080
-   - **Database Admin**: http://progress.local:5050
+   - **Admin Panel**: http://protogen.local:3001
+   - **User Portal**: http://protogen.local:3000
+   - **API**: http://protogen.local:8080
+   - **Database Admin**: http://protogen.local:5050
 
 ### First-Time Setup
 
@@ -87,14 +87,14 @@ For detailed setup instructions, see [DEVELOPMENT.md](docs/DEVELOPMENT.md).
 | [**Implementation Roadmap**](docs/implementation-roadmap.md) | Complete phase-by-phase development plan |
 | [**Phase 5 Authoring Vision**](docs/phase-5-authoring-vision.md) | UI integration and authoring tools expansion |
 | [**Graph Studio Enhancement**](docs/GRAPH_STUDIO_ENHANCEMENT.md) | Advanced graph visualization capabilities |
+| [**Flow System Vision**](docs/FLOW_SYSTEM_VISION.md) | Sophisticated content navigation and exploration system |
 
 ### 📊 System Documentation
 
 | Document | Description |
 |----------|-------------|
 | [**Snapshot System**](docs/snapshot-system.md) | Versioning, storage, and content delivery system |
-| [**Multi-Tenant Implementation**](docs/multi-tenant-implementation-summary.md) | Tenant system implementation details |
-| [**Phase 4 Implementation**](docs/PHASE_4_IMPLEMENTATION_SUMMARY.md) | Shared library and hydration system |
+| [**Multi-Tenancy Vision**](docs/MULTI_TENANCY_VISION.md) | Multi-tenant architecture design and implementation status |
 
 ### 📝 Project History
 
@@ -106,9 +106,9 @@ For detailed setup instructions, see [DEVELOPMENT.md](docs/DEVELOPMENT.md).
 ## 🏗️ Project Structure
 
 ```
-progress/
+protogen/
 ├── admin/                 # React admin interface (Vite + TypeScript)
-├── ui/                   # React user interface (Vite + TypeScript)
+├── portal/               # React user-facing tenant portal (Vite + TypeScript)
 ├── shared/               # Shared components, hooks, services, and types
 ├── api/                  # Laravel backend API (PHP)
 ├── config/               # Shared configuration files
@@ -144,8 +144,8 @@ progress/
 - **Phase 8**: Performance & Polish
 - **Phase 9**: Content Sharing System
 - **Phase 10**: Music & Audio System
-- **Phase 11**: Presentation Timeline System
-- **Phase 12**: Advanced Presentation System
+- **Phase 11**: Flow System
+- **Phase 12**: Advanced Flow Features
 
 ## 🛠️ Development Commands
 
@@ -156,12 +156,12 @@ progress/
 npm run dev                # Start CSS watching
 npm run dev:all           # Start all development servers
 npm run dev:admin         # Start admin development server
-npm run dev:ui            # Start UI development server
+npm run dev:portal        # Start portal development server
 
 # Building
 npm run build:all         # Build all modules
 npm run build:admin       # Build admin module
-npm run build:ui          # Build UI module
+npm run build:portal      # Build portal module
 
 # Code Quality
 npm run lint:all          # Lint all modules
@@ -236,7 +236,7 @@ Advanced slideshow presentations with:
 
 ### Environment Setup
 - Copy `env.template` to `api/.env` and configure
-- Ensure `progress.local` is in your hosts file
+- Ensure `protogen.local` is in your hosts file
 - Run setup scripts for initial configuration
 
 ### Shared Configuration

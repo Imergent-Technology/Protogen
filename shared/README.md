@@ -1,10 +1,10 @@
-# Progress Shared Components
+# Protogen Shared Components
 
 This package contains shared components, types, and utilities used by both the frontend and backend applications.
 
 ## Architecture
 
-The shared project serves as the foundation for the Progress application, providing:
+The shared project serves as the foundation for the Protogen application, providing:
 
 - **Base Components**: Reusable UI components that can be extended by both frontend and backend
 - **Stage System**: Core stage components that backend admin interfaces extend with editing capabilities
@@ -15,7 +15,7 @@ The shared project serves as the foundation for the Progress application, provid
 
 ### Frontend (UI)
 ```typescript
-import { ThemeToggle, StageContainer } from '@progress/shared';
+import { ThemeToggle, StageContainer } from '@protogen/shared';
 
 // Use base components
 <ThemeToggle size="sm" />
@@ -24,7 +24,7 @@ import { ThemeToggle, StageContainer } from '@progress/shared';
 
 ### Backend (API)
 ```typescript
-import { ThemeToggle, StageContainer, BasicStage } from '@progress/shared';
+import { ThemeToggle, StageContainer, BasicStage } from '@protogen/shared';
 
 // Extend base components with admin functionality
 <StageContainer stage={stage} isAdmin={true}>
@@ -44,7 +44,7 @@ npm run dev
 
 ## Styling & Theming
 
-**Important**: Tailwind CSS is configured and built from the top-level `progress` directory, not from within the shared library itself.
+**Important**: Tailwind CSS is configured and built from the top-level `protogen` directory, not from within the shared library itself.
 
 ### CSS Build Process
 - **Input**: `shared/src/styles/input.css` (contains CSS variables and Tailwind imports)

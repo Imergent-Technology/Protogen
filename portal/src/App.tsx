@@ -57,7 +57,7 @@ function App() {
     try {
       // Call logout API if we have a token
       if (token) {
-        await fetch('http://progress.local:8080/api/auth/oauth/logout', {
+        await fetch('http://protogen.local:8080/api/auth/oauth/logout', {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,

@@ -52,7 +52,7 @@ return [
     |
     */
 
-            'url' => env('APP_URL', 'http://progress.local'),
+            'url' => env('APP_URL', 'http://protogen.local'),
 
     /*
     |--------------------------------------------------------------------------

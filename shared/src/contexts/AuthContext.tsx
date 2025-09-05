@@ -48,7 +48,7 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ 
   children, 
-          apiBaseUrl = 'http://progress.local:8080/api' 
+          apiBaseUrl = 'http://protogen.local:8080/api' 
 }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);

@@ -17,10 +17,10 @@ class DatabaseSeeder extends Seeder
 
         // Create test user if it doesn't exist
         User::firstOrCreate(
-            ['email' => 'test@progress.local'],
+            ['email' => 'test@protogen.local'],
             [
                 'name' => 'Test User',
-                'email' => 'test@progress.local',
+                'email' => 'test@protogen.local',
             ]
         );
 

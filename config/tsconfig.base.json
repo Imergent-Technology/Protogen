@@ -17,14 +17,14 @@
     "jsx": "react-jsx",
     "baseUrl": ".",
     "paths": {
-      "@progress/shared": ["./shared/src"],
-      "@progress/shared/*": ["./shared/src/*"]
+      "@protogen/shared": ["./shared/src"],
+      "@protogen/shared/*": ["./shared/src/*"]
     }
   },
   "include": [
     "shared/src/**/*",
     "admin/src/**/*",
-    "ui/src/**/*"
+    "portal/src/**/*"
   ],
   "exclude": [
     "node_modules",

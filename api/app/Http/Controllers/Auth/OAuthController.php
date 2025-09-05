@@ -71,7 +71,7 @@ class OAuthController extends Controller
                 'is_admin' => $user->is_admin,
             ]));
             
-            $redirectUrl = "http://progress.local:3000/?token={$token}&user={$userData}&provider={$provider}";
+            $redirectUrl = "http://protogen.local:3000/?token={$token}&user={$userData}&provider={$provider}";
             
             return redirect($redirectUrl);
             
@@ -81,7 +81,7 @@ class OAuthController extends Controller
             //     'error' => $e->getMessage()
             // ]);
             $error = urlencode('OAuth state validation failed. Please try again.');
-            return redirect("http://progress.local:3000/?error={$error}");
+            return redirect("http://protogen.local:3000/?error={$error}");
             
         } catch (\Exception $e) {
             // \Log::error("OAuth authentication error", [
@@ -92,7 +92,7 @@ class OAuthController extends Controller
             
             // Redirect to frontend with specific error
             $error = urlencode('OAuth authentication failed: ' . $e->getMessage());
-            return redirect("http://progress.local:3000/?error={$error}");
+            return redirect("http://protogen.local:3000/?error={$error}");
         }
     }
 

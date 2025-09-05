@@ -99,20 +99,20 @@ function Setup-Dns {
     
     $hostsPath = "$env:SystemRoot\System32\drivers\etc\hosts"
     
-    # Check if progress.local is already in hosts file
+    # Check if protogen.local is already in hosts file
     $hostsContent = Get-Content $hostsPath
-    if ($hostsContent -match "progress\.local") {
-        Write-Warning "progress.local already exists in hosts file"
+    if ($hostsContent -match "protogen\.local") {
+        Write-Warning "protogen.local already exists in hosts file"
     } else {
-        Write-Status "Adding progress.local to hosts file..."
-        Add-Content $hostsPath "`n127.0.0.1 progress.local"
-        Write-Success "Added progress.local to hosts file"
+        Write-Status "Adding protogen.local to hosts file..."
+        Add-Content $hostsPath "`n127.0.0.1 protogen.local"
+        Write-Success "Added protogen.local to hosts file"
     }
     
     # Test DNS resolution
     try {
-        $result = Resolve-DnsName "progress.local" -ErrorAction Stop
-        Write-Success "DNS resolution working for progress.local"
+        $result = Resolve-DnsName "protogen.local" -ErrorAction Stop
+        Write-Success "DNS resolution working for protogen.local"
     }
     catch {
         Write-Warning "DNS resolution may not be working yet (this is normal)"
@@ -174,10 +174,10 @@ function Setup-Database {
     # Create admin user if it doesn't exist
     Write-Status "Creating admin user..."
     docker-compose exec -T api php artisan tinker --execute="
-    if (!App\Models\User::where('email', 'admin@progress.local')->exists()) {
+    if (!App\Models\User::where('email', 'admin@protogen.local')->exists()) {
         \$user = new App\Models\User();
         \$user->name = 'Admin User';
-        \$user->email = 'admin@progress.local';
+        \$user->email = 'admin@protogen.local';
         \$user->password = Hash::make('KeepCodeFlowin#333');
         \$user->email_verified_at = now();
         \$user->is_admin = true;
@@ -220,7 +220,7 @@ function Verify-Setup {
     # Test API endpoint
     Write-Status "Testing API endpoint..."
     try {
-        $response = Invoke-WebRequest -Uri "http://progress.local:8080/api/graph/nodes" -UseBasicParsing
+        $response = Invoke-WebRequest -Uri "http://protogen.local:8080/api/graph/nodes" -UseBasicParsing
         if ($response.Content -match "Unauthenticated") {
             Write-Success "API is responding correctly"
         } else {
@@ -241,14 +241,14 @@ function Show-AccessInfo {
     Write-Host "======================" -ForegroundColor Green
     Write-Host ""
     Write-Host "🌐 Access your applications:" -ForegroundColor Cyan
-    Write-Host "   • Admin Panel: http://progress.local:3001"
-    Write-Host "   • UI Frontend: http://progress.local:3000"
-    Write-Host "   • API: http://progress.local:8080"
-    Write-Host "   • PostgreSQL: progress.local:5432"
-    Write-Host "   • pgAdmin: http://progress.local:5050"
+    Write-Host "   • Admin Panel: http://protogen.local:3001"
+    Write-Host "   • UI Frontend: http://protogen.local:3000"
+    Write-Host "   • API: http://protogen.local:8080"
+    Write-Host "   • PostgreSQL: protogen.local:5432"
+    Write-Host "   • pgAdmin: http://protogen.local:5050"
     Write-Host ""
     Write-Host "🔑 Admin Login Credentials:" -ForegroundColor Cyan
-    Write-Host "   • Email: admin@progress.local"
+    Write-Host "   • Email: admin@protogen.local"
     Write-Host "   • Password: KeepCodeFlowin#333"
     Write-Host ""
     Write-Host "📁 Useful Commands:" -ForegroundColor Cyan

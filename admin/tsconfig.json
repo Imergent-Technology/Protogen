@@ -8,8 +8,8 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@progress/shared": ["../shared/src"],
-      "@progress/shared/*": ["../shared/src/*"]
+      "@protogen/shared": ["../shared/src"],
+      "@protogen/shared/*": ["../shared/src/*"]
     }
   },
   "include": ["src"],

@@ -4,7 +4,7 @@ services:
     build:
       context: ./api
       dockerfile: Dockerfile
-    container_name: api
+    container_name: protogen-api
     working_dir: /var/www
     env_file:
       - ./api/.env
@@ -18,7 +18,7 @@ services:
   # Nginx for Laravel
   webserver:
     image: nginx:alpine
-    container_name: webserver
+    container_name: protogen-webserver
     ports:
       - "8080:80"
     volumes:
@@ -32,7 +32,7 @@ services:
   # PostgreSQL
   postgres:
     image: postgres:15-alpine
-    container_name: postgres
+    container_name: protogen-postgres
     restart: unless-stopped
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-protogen_dev}
@@ -46,15 +46,16 @@ services:
       - app-network
 
   # React frontend dev server
-  ui:
+  portal:
     build:
-      context: ./ui
+      context: ./portal
       dockerfile: Dockerfile
-    container_name: ui
+    container_name: protogen-portal
     working_dir: /app
     volumes:
-      - ./ui:/app
+      - ./portal:/app
       - ./shared:/shared
+      - ./config:/config
       - /app/node_modules
     ports:
       - "3000:3000"
@@ -66,11 +67,12 @@ services:
     build:
       context: ./admin
       dockerfile: Dockerfile
-    container_name: admin
+    container_name: protogen-admin
     working_dir: /app
     volumes:
       - ./admin:/app
       - ./shared:/shared
+      - ./config:/config
       - /app/node_modules
     ports:
       - "3001:3001"
@@ -80,7 +82,7 @@ services:
   # pgAdmin - PostgreSQL GUI
   pgadmin:
     image: dpage/pgadmin4:latest
-    container_name: pgadmin
+    container_name: protogen-pgadmin
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@protogen.dev
       PGADMIN_DEFAULT_PASSWORD: ProtogenDevPassword123

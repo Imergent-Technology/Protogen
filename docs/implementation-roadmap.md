@@ -3,6 +3,20 @@
 ## Overview
 This roadmap outlines the phased implementation of the Protogen system, transitioning from the legacy Stage-based architecture to a modern Scene & Deck architecture with multi-tenant support and centralized feedback aggregation. The Stage system has been completely removed in favor of a clean, modern architecture.
 
+## Implementation Timeline
+
+**Project Start**: September 2024  
+**Current Status**: Phase 5 (Portal Integration & Authoring) - In Progress  
+**Total Phases**: 14 planned phases  
+**Recent Activity**: 89 commits in the last 6 months
+
+### Key Milestones
+- **Phase 1-2**: Core Foundation & Scene/Deck Layer (Completed Q4 2024)
+- **Phase 3-4**: Snapshot System & Shared Library (Completed Q4 2024)
+- **Phase 6-7**: Multi-Tenant Architecture & Stage System Removal (Completed Q4 2024)
+- **Phase 5**: Portal Integration & Authoring (In Progress - Q1 2025)
+- **Phase 8-14**: Performance, Content Sharing, Music, Flow System, Advanced Features (Planned Q1-Q2 2025)
+
 ## Phase 1: Core Foundation ✅ COMPLETED
 **Status**: All tasks completed and tested
 
@@ -95,27 +109,36 @@ This roadmap outlines the phased implementation of the Protogen system, transiti
 
 ## Phase 4: Shared Library & Hydration ✅ COMPLETED
 **Status**: Complete with comprehensive services and type system
+**Timeline**: Weeks 7-8 (Completed ahead of schedule)
 
 ### 4.1 TypeScript Types ✅
-- [x] Create Scene, SceneNode, SceneEdge types
-- [x] Create Deck and Context types
-- [x] Add tenant and feedback types
-- [x] Update shared library exports
+- [x] Create Scene, SceneNode, SceneEdge types with comprehensive interfaces
+- [x] Create Deck and Context types with validation schemas
+- [x] Add tenant and feedback types with proper relationships
+- [x] Update shared library exports with backward compatibility
+- [x] Create validation system types for all components
 
 ### 4.2 Snapshot Hydration ✅
-- [x] Implement snapshot validation
+- [x] Implement snapshot validation with integrity checking
 - [x] Create migration system for schema versions
 - [x] Build progressive hydration (nodes → edges → contexts)
-- [x] Add style resolution utilities
-- [x] Create comprehensive tests
+- [x] Add style resolution utilities with theme integration
+- [x] Create comprehensive tests for all hydration scenarios
 
 ### 4.3 Library Integration ✅
-- [x] Update shared library exports
+- [x] Update shared library exports with new type system
 - [x] Add build configuration for new modules
-- [x] Create documentation for new APIs
-- [x] Add integration tests
+- [x] Create documentation for new APIs and interfaces
+- [x] Add integration tests for shared library functionality
+- [x] Verify CSS builds with new theme system
 
-## Phase 5: UI Integration & Authoring 🔄 IN PROGRESS
+### 4.4 GraphStudio Enhancement Planning ✅
+- [x] Create comprehensive design for consistent node placement
+- [x] Specify force-directed layout algorithms
+- [x] Design drag-and-drop interaction system
+- [x] Plan performance optimization strategies
+
+## Phase 5: Portal Integration & Authoring 🔄 IN PROGRESS
 **Status**: Basic components exist, advanced features pending
 
 ### 5.1 Scene Management UI ✅
@@ -273,88 +296,96 @@ This roadmap outlines the phased implementation of the Protogen system, transiti
 - [ ] **Music preview system** before assignment to decks
 - [ ] **Music usage analytics** and reporting
 
-## Phase 11: Presentation Timeline System 📋 PLANNED
+## Phase 11: Flow System 📋 PLANNED
 **Status**: Planning phase, to be added after music system
 
-### 11.1 Sequential Deck Playback 🔄
-- [ ] **Timeline-based presentation engine** for sequential deck playback
-- [ ] **Deck sequencing interface** with drag-and-drop ordering
-- [ ] **Transition management** between decks (fade, slide, etc.)
-- [ ] **Timing controls** for automatic advancement
-- [ ] **Loop and repeat settings** for presentation cycles
-- [ ] **Presentation state management** (play, pause, stop, reset)
+### 11.1 Core Flow Engine 🔄
+- [ ] **Flow model** with step sequences and branching support
+- [ ] **Flow step targeting** for scenes, decks, nodes/coordinates, and contexts
+- [ ] **Flow state management** with position tracking and history
+- [ ] **Flow control modes** (guided, free-explore, hybrid)
+- [ ] **Flow navigation** (play, pause, advance, rewind, return to step)
+- [ ] **Flow exit** capability to regain full session control
 
-### 11.2 Card Scene Slideshow Integration 🔄
-- [ ] **Card scene slideshow engine** with automatic progression
-- [ ] **Slide timing configuration** per slide or global
-- [ ] **Slide transition effects** (fade, slide, zoom, flip)
-- [ ] **Interactive slide elements** with click-to-advance
-- [ ] **Slide navigation controls** (previous, next, jump to slide)
-- [ ] **Slide progress indicators** and status display
+### 11.2 Exploration Management 🔄
+- [ ] **Position tracking** during user exploration
+- [ ] **Flow context preservation** during exploration
+- [ ] **Return to flow** from any exploration point
+- [ ] **Exploration boundaries** configuration
+- [ ] **Auto-focus** return to next step when flow advances
+- [ ] **Exploration mode** toggle (on/off per flow)
 
-### 11.3 Presentation Controls & Management 🔄
-- [ ] **Presentation mode interface** with full-screen support
-- [ ] **Remote control system** for presentation management
-- [ ] **Presentation recording** and playback capabilities
+### 11.3 Branching & Conditional Navigation 🔄
+- [ ] **Flow branches** with multiple path options
+- [ ] **Conditional logic** for dynamic path selection
+- [ ] **Return paths** to main flow after branch exploration
+- [ ] **Branch merging** from different endpoints
+- [ ] **User choice integration** for branch selection
+- [ ] **Context-aware branching** based on user behavior
+
+### 11.4 Flow Authoring & Management 🔄
+- [ ] **Flow authoring interface** for creating step sequences
+- [ ] **Step configuration** with target types and transitions
+- [ ] **Mode selection** (guided, free-explore, hybrid)
+- [ ] **Branch definition** with conditional paths
+- [ ] **Flow templates** and reusable sequences
+- [ ] **Flow versioning** and change management
+
+### 11.5 Advanced Flow Features 🔄
+- [ ] **Flow analytics** (completion rates, exploration patterns, etc.)
+- [ ] **Flow sharing** and collaboration features
+- [ ] **Flow export** to various formats (PDF, video, etc.)
+- [ ] **Remote control system** for flow management
 - [ ] **Audience interaction features** (polls, Q&A, etc.)
-- [ ] **Presentation analytics** (viewing time, engagement, etc.)
-- [ ] **Presentation sharing** and collaboration features
+- [ ] **Flow recording** and playback capabilities
 
-### 11.4 Advanced Timeline Features 🔄
-- [ ] **Branching presentations** with conditional navigation
-- [ ] **Dynamic content loading** based on presentation context
-- [ ] **Multi-track presentations** with parallel content streams
-- [ ] **Presentation templates** and reusable sequences
-- [ ] **Presentation versioning** and change management
-- [ ] **Presentation export** to various formats (PDF, video, etc.)
-
-## Phase 12: Presentation System 📋 PLANNED
+## Phase 12: Flow System Integration 📋 PLANNED
 **Status**: Planning phase, not yet started
 
-### 10.1 Timeline Engine 📋
-- [ ] Implement timeline-based scene coordination
-- [ ] Add custom animation and transition system
-- [ ] Create dependency checking for linked content
-- [ ] Implement presentation templates and themes
-- [ ] Add tenant-specific presentation customization
+### 12.1 Admin Portal Flow Integration 📋
+- [ ] **Setup wizards** for guided configuration processes
+- [ ] **Onboarding flows** for user introduction and training
+- [ ] **Feature tours** for guided exploration of new capabilities
+- [ ] **Content creation flows** for guided authoring processes
+- [ ] **Review workflows** for structured content review and approval
 
-### 10.2 Publishing & Delivery 📋
-- [ ] Implement automated publishing workflow
-- [ ] Add dependency validation and rollback
-- [ ] Create presentation performance optimization
-- [ ] Implement cross-tenant presentation sharing
-- [ ] Add presentation analytics and insights
+### 12.2 Flow Publishing & Delivery 📋
+- [ ] **Automated flow publishing** workflow with dependency validation
+- [ ] **Flow performance optimization** for large and complex flows
+- [ ] **Cross-tenant flow sharing** and collaboration
+- [ ] **Flow analytics dashboard** with completion rates and insights
+- [ ] **Flow export capabilities** to various formats and platforms
 
-## Phase 11: Task & Volunteer Management 📋 PLANNED
+## Phase 13: Task & Volunteer Management 📋 PLANNED
 **Status**: Planning phase, not yet started
 
-### 11.1 Basic Task System 📋
+### 13.1 Basic Task System 📋
 - [ ] Implement simple task creation for nodes, contexts, scenes, and decks
 - [ ] Add basic task description and status tracking
 - [ ] Create task association with content entities
 - [ ] Implement simple task listing and filtering
 
-### 11.2 Volunteer Interest System 📋
+### 13.2 Volunteer Interest System 📋
 - [ ] Add "interested in helping" flag for tasks
 - [ ] Implement basic volunteer contact information collection
 - [ ] Add basic volunteer management interface
 
-### 11.3 Integration with Content System 📋
+### 13.3 Integration with Content System 📋
 - [ ] Link tasks to specific content coordinates
 - [ ] Integrate with feedback system for task-related feedback
 - [ ] Add task context to content delivery
 - [ ] Implement basic task analytics and reporting
 
-## Phase 12: Multi-Tenancy & Community Management 📋 PLANNED
+## Phase 14: Multi-Tenancy & Community Management 📋 PLANNED
 **Status**: Planning phase, not yet started
 
-### 12.1 Advanced Tenant Features 📋
+### 14.1 Advanced Tenant Features 📋
 - [ ] Implement custom domain support
 - [ ] Add tenant-specific branding
 - [ ] Create tenant analytics and reporting
 - [ ] Add tenant collaboration features
 
-### 12.2 Community Features 📋
+### 14.2 Community Features 📋
 - [ ] Implement user-generated content
 - [ ] Add community moderation tools
 - [ ] Create content discovery system
@@ -436,7 +467,7 @@ This roadmap outlines the phased implementation of the Protogen system, transiti
 
 ## Timeline Estimate
 - **Phase 3-4**: 2-3 weeks (Snapshot system completion)
-- **Phase 5**: 1-2 weeks (UI completion)
+- **Phase 5**: 1-2 weeks (Portal completion)
 - **Phase 8**: 2-3 weeks (Performance & polish)
 
 **Total Estimated Time**: 5-8 weeks for complete implementation

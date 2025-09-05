@@ -16,7 +16,7 @@ APP_NAME=Protogen
 APP_ENV=local
 APP_KEY=
 APP_DEBUG=true
-APP_URL=http://progress.local:8080
+APP_URL=http://protogen.local:8080
 
 LOG_CHANNEL=stack
 LOG_DEPRECATIONS_CHANNEL=null
@@ -48,7 +48,7 @@ MAIL_PORT=1025
 MAIL_USERNAME=null
 MAIL_PASSWORD=null
 MAIL_ENCRYPTION=null
-MAIL_FROM_ADDRESS="hello@progress.local"
+MAIL_FROM_ADDRESS="hello@protogen.local"
 MAIL_FROM_NAME="\${APP_NAME}"
 
 AWS_ACCESS_KEY_ID=
@@ -106,7 +106,7 @@ echo ""
 echo "🎉 Next steps:"
 echo "1. Update the DB_PASSWORD in api/.env with a secure password"
 echo "2. Start the development server: docker-compose up (from base directory)"
-echo "3. Access the application at: http://progress.local:8080"
-echo "4. Access the UI at: http://progress.local:3000"
+echo "3. Access the application at: http://protogen.local:8080"
+echo "4. Access the UI at: http://protogen.local:3000"
 echo ""
 echo "📝 For production deployment, update api/.env with your production database credentials" 
