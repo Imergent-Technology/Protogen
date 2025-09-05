@@ -1,10 +1,12 @@
 # Protogen - Community-Driven Knowledge Platform
 
-A comprehensive platform for collaborative feedback, knowledge synthesis, and multi-tenant content management with advanced graph visualization and presentation capabilities.
+A foundational prototype for collaborative feedback, knowledge synthesis, and multi-tenant content management with advanced graph visualization and presentation capabilities. Protogen serves as the first milestone in a larger vision toward community-driven governance and collective knowledge synthesis.
 
 ## 🎯 Overview
 
 Protogen is a modern, multi-tenant platform that enables organizations to create, manage, and present complex knowledge through interactive graphs, rich documents, and engaging presentations. Built with a clean architecture that separates content creation from presentation, it supports multiple communities with isolated content while maintaining shared knowledge aggregation.
+
+As the **foundational prototype** in a three-phase evolution (Protogen → Endogen → Ethosphere), Protogen focuses on sharing the vision, building community engagement, and validating concepts that will inform the development of more sophisticated platforms in future phases.
 
 ### Key Features
 
@@ -263,14 +265,68 @@ Advanced slideshow presentations with:
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🎯 Vision
+## 🎯 Vision & Evolution
 
-Protogen aims to be the premier platform for community-driven knowledge synthesis, enabling organizations to:
+Protogen is the foundational prototype in a larger vision for community-driven knowledge synthesis and collective governance. It represents the first milestone in a three-phase evolution toward a more connected and transparent world.
 
-- **Create Engaging Content**: Interactive graphs, rich documents, and compelling presentations
-- **Manage Multiple Communities**: Isolated content with shared knowledge aggregation
-- **Scale Efficiently**: CDN-friendly delivery with advanced caching and optimization
-- **Foster Collaboration**: Comprehensive feedback systems and community engagement tools
+### 🌱 Vision Milestone 1: Protogen (Current)
+
+**Technology**: React + Laravel + PostgreSQL  
+**Objective**: Share the vision and build a rich community engagement ecosystem with discussions, advanced feedback, and user involvement tracking.
+
+**Current Features**:
+- Multi-tenant knowledge platform with graph visualization
+- Advanced content authoring and presentation tools
+- Community feedback and engagement systems
+- Snapshot-based versioning and content delivery
+
+**Future Goals for Protogen**:
+- **User Dashboard**: Track discussions, feedback, and project involvement
+- **Skill Profiles**: Self-assessed interests, skills, and proficiencies
+- **Flexible Taxonomy**: Community-driven activity/interest/skill categorization
+- **Involvement Tracking**: Interface for managing assigned tasks and project participation
+- **Hosting Flexibility**: Potential refactoring to PHP client for broader deployment options
+
+### 🚀 Vision Milestone 2: Endogen
+
+**Technology**: Complete rebuild with C#/.NET backend, Rust components, Event-Store DB, Neo4j graph projections  
+**Objective**: Enable anyone to launch their own community instance with sophisticated governance and feature ecosystems.
+
+**Architectural Evolution**:
+- **Event-Based Architecture**: Event-Store DB with Neo4j graph projections
+- **Plugin System**: Powerful feature sets through modular architecture
+- **Web3 Integration**: Balanced blockchain technologies for decentralized operation
+- **Deployment Flexibility**: Hybrid micro-service/modular monolith design
+- **Installation Wizard**: Easy local or cloud deployment with feature-based pricing
+
+**Goals**:
+- Personal, organizational, and community instance deployment
+- Rich governance models and community management
+- Commercial and community-driven feature ecosystems
+- Advanced multi-tenant security and scalability
+
+### 🌍 Vision Milestone 3: Ethosphere
+
+**Technology**: TBD based on community feedback and research  
+**Objective**: Create a collectively operated bridge between communities to guide and cultivate collective vision through transparent governance mechanisms.
+
+**Core Principles**:
+- **Collective Governance**: New mechanisms that elevate transparency in matters of collective good
+- **Public Oversight**: Intelligent checks and balances that scale with responsibility
+- **Evolving Values**: Self-correcting systems that adapt to humanity's changing challenges
+- **Community Autonomy**: Preserve individuality and community self-governance
+- **Contextual Dialog**: Region and topic-based community matching for relevant discussions
+
+### 🔄 The Evolution Path
+
+Protogen serves as the **proof of concept** and **community building platform** that:
+
+1. **Validates the Vision**: Demonstrates the power of community-driven knowledge synthesis
+2. **Builds Community**: Creates engaged users who understand and contribute to the larger goals
+3. **Informs Development**: Provides real-world feedback for Endogen's architecture decisions
+4. **Establishes Patterns**: Develops governance and engagement models for future phases
+
+The progression from Protogen → Endogen → Ethosphere represents a journey from **prototype** to **platform** to **ecosystem**, each building upon the lessons and community built in the previous phase.
 
 ---
 
