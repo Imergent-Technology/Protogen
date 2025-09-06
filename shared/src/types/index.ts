@@ -1,5 +1,5 @@
 // Core System Types
-export * from './stage';
+// Stage types removed - Stage system has been completely removed
 export * from './scene';
 export * from './snapshot';
 export * from './tenant';

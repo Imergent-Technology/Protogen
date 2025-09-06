@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Stage } from '@progress/shared';
+import { Scene } from '@progress/shared';
 import { Button } from '@progress/shared';
 import { Modal } from '../common/Modal';
 import { Search, Link as LinkIcon, ExternalLink } from 'lucide-react';
@@ -8,42 +8,42 @@ interface UnifiedLinkDialogProps {
   isOpen: boolean;
   onClose: () => void;
   onLinkCreate: (linkData: { 
-    type: 'external' | 'stage';
+    type: 'external' | 'scene';
     href: string;
     label: string;
-    targetStageId?: number;
+    targetSceneId?: number;
     isEdit: boolean;
   }) => void;
-  stages: Stage[];
-  currentStageId?: number;
+  scenes: Scene[];
+  currentSceneId?: number;
   selectedText?: string;
   isEditing?: boolean;
   existingLinkData?: any;
-  defaultLinkType?: 'external' | 'stage';
+  defaultLinkType?: 'external' | 'scene';
 }
 
 export function UnifiedLinkDialog({
   isOpen,
   onClose,
   onLinkCreate,
-  stages,
-  currentStageId,
+  scenes,
+  currentSceneId,
   selectedText = '',
   isEditing = false,
   existingLinkData,
   defaultLinkType = 'external'
 }: UnifiedLinkDialogProps) {
-  const [linkType, setLinkType] = useState<'external' | 'stage'>(defaultLinkType);
+  const [linkType, setLinkType] = useState<'external' | 'scene'>(defaultLinkType);
   const [externalUrl, setExternalUrl] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedStage, setSelectedStage] = useState<Stage | null>(null);
+  const [selectedScene, setSelectedScene] = useState<Scene | null>(null);
   const [linkLabel, setLinkLabel] = useState(selectedText || '');
 
-  // Filter stages based on search query and exclude current stage
-  const filteredStages = stages.filter(stage => 
-    stage.id !== currentStageId &&
-    (stage.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-     stage.description?.toLowerCase().includes(searchQuery.toLowerCase()))
+  // Filter scenes based on search query and exclude current scene
+  const filteredScenes = scenes.filter(scene => 
+    scene.id !== currentSceneId &&
+    (scene.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+     scene.description?.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
   // Initialize form based on existing link data and selected text
@@ -52,12 +52,12 @@ export function UnifiedLinkDialog({
     setLinkLabel(selectedText || '');
     
     if (existingLinkData) {
-      if (existingLinkData.href && existingLinkData.href.startsWith('stage://')) {
-        setLinkType('stage');
-        const stageId = existingLinkData.href.replace('stage://', '');
-        const stage = stages.find(s => s.id === parseInt(stageId));
-        if (stage) {
-          setSelectedStage(stage);
+      if (existingLinkData.href && existingLinkData.href.startsWith('scene://')) {
+        setLinkType('scene');
+        const sceneId = existingLinkData.href.replace('scene://', '');
+        const scene = scenes.find(s => s.id === parseInt(sceneId));
+        if (scene) {
+          setSelectedStage(scene);
         }
       } else {
         setLinkType('external');
@@ -67,7 +67,7 @@ export function UnifiedLinkDialog({
       // Set default link type when opening for new links
       setLinkType(defaultLinkType);
     }
-  }, [existingLinkData, stages, selectedText, defaultLinkType]);
+  }, [existingLinkData, scenes, selectedText, defaultLinkType]);
 
   const handleCreateLink = () => {
     if (linkType === 'external' && externalUrl.trim()) {
@@ -78,10 +78,10 @@ export function UnifiedLinkDialog({
         isEdit: isEditing
       });
       handleClose();
-    } else if (linkType === 'stage' && selectedStage) {
+    } else if (linkType === 'scene' && selectedStage) {
       onLinkCreate({
-        type: 'stage',
-        href: `stage://${selectedStage.id}`,
+        type: 'scene',
+        href: `scene://${selectedStage.id}`,
         label: linkLabel || selectedStage.name,
         targetStageId: selectedStage.id,
         isEdit: isEditing
@@ -145,9 +145,9 @@ export function UnifiedLinkDialog({
             </button>
             <button
               type="button"
-              onClick={() => setLinkType('stage')}
+              onClick={() => setLinkType('scene')}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-colors ${
-                linkType === 'stage'
+                linkType === 'scene'
                   ? 'border-primary bg-primary/10 text-primary font-medium'
                   : 'border-border hover:border-primary/50 text-muted-foreground hover:text-foreground'
               }`}
@@ -190,7 +190,7 @@ export function UnifiedLinkDialog({
         )}
 
         {/* Stage Selection */}
-        {linkType === 'stage' && (
+        {linkType === 'scene' && (
           <div className="space-y-2">
             <label className="text-sm font-medium">Select Target Stage</label>
             
@@ -222,31 +222,31 @@ export function UnifiedLinkDialog({
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder={selectedStage ? "Search for a different stage..." : "Search stages by name or description..."}
+                placeholder={selectedStage ? "Search for a different scene..." : "Search scenes by name or description..."}
                 className="w-full pl-10 pr-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-background text-foreground"
               />
             </div>
             <div className="max-h-64 overflow-y-auto border border-border rounded-lg">
               {filteredStages.length === 0 ? (
                 <div className="p-4 text-center text-muted-foreground">
-                  {searchQuery ? 'No stages found matching your search.' : 'No stages available.'}
+                  {searchQuery ? 'No scenes found matching your search.' : 'No scenes available.'}
                 </div>
               ) : (
-                filteredStages.map((stage) => (
+                filteredStages.map((scene) => (
                   <button
-                    key={stage.id}
-                    onClick={() => setSelectedStage(stage)}
+                    key={scene.id}
+                    onClick={() => setSelectedStage(scene)}
                     className={`w-full p-3 text-left hover:bg-muted transition-colors border-b border-border last:border-b-0 ${
-                      selectedStage?.id === stage.id ? 'bg-primary/10 border-l-4 border-l-primary' : ''
+                      selectedStage?.id === scene.id ? 'bg-primary/10 border-l-4 border-l-primary' : ''
                     }`}
                   >
                     <div className="flex items-center gap-3">
-                      <span className="text-lg">{getStageTypeIcon(stage.type)}</span>
+                      <span className="text-lg">{getStageTypeIcon(scene.type)}</span>
                       <div className="flex-1 min-w-0">
-                        <div className="font-medium truncate">{stage.name}</div>
-                        {stage.description && (
+                        <div className="font-medium truncate">{scene.name}</div>
+                        {scene.description && (
                           <div className="text-sm text-muted-foreground truncate">
-                            {stage.description}
+                            {scene.description}
                           </div>
                         )}
                       </div>

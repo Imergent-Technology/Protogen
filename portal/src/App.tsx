@@ -2,7 +2,7 @@ import { ProtogenLayout } from './components/ProtogenLayout';
 import { OAuthLogin } from './components/OAuthLogin';
 import { useState, useEffect } from 'react';
 // Temporary placeholder components for testing
-const StageManagerDemo = () => <div>Stage Manager Demo - Coming Soon</div>;
+const SceneManagerDemo = () => <div>Scene Manager Demo - Coming Soon</div>;
 const ToolbarDemo = () => <div>Toolbar Demo - Coming Soon</div>;
 const ModalProvider = ({ children }: { children: React.ReactNode }) => <>{children}</>;
 const ModalRenderer = () => null;
@@ -133,7 +133,7 @@ function App() {
               <div className="bg-card border border-border rounded-lg p-6">
                 <div className="flex items-center mb-4">
                   <Layers className="h-8 w-8 text-primary mr-3" />
-                  <h3 className="text-lg font-semibold">Stage Manager</h3>
+                  <h3 className="text-lg font-semibold">Scene Manager</h3>
                 </div>
                 <p className="text-muted-foreground">
                   Navigate between different contexts and views with our layer-based interface system.
@@ -166,7 +166,7 @@ function App() {
               <div className="text-center mb-6">
                 <h2 className="text-2xl font-semibold mb-4">Interactive Demo</h2>
                 <p className="text-muted-foreground mb-6">
-                  Try out the integrated StageManager, modal system, and toolbar components.
+                  Try out the integrated SceneManager, modal system, and toolbar components.
                 </p>
                 
                 <div className="flex justify-center space-x-4 mb-6">
@@ -181,10 +181,10 @@ function App() {
                 </div>
               </div>
 
-              {/* Stage Manager Demo */}
+              {/* Scene Manager Demo */}
               <div className="border-t border-border pt-6">
-                <h3 className="text-lg font-semibold mb-4">Stage Manager Demo</h3>
-                <StageManagerDemo />
+                <h3 className="text-lg font-semibold mb-4">Scene Manager Demo</h3>
+                <SceneManagerDemo />
               </div>
             </div>
 
@@ -204,7 +204,7 @@ function App() {
               <div className="inline-flex items-center px-4 py-2 bg-muted rounded-full">
                 <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
                 <span className="text-sm text-muted-foreground">
-                  OAuth Authentication & Stage Manager Integrated - Ready for Development
+                  OAuth Authentication & Scene Manager Integrated - Ready for Development
                 </span>
               </div>
             </div>

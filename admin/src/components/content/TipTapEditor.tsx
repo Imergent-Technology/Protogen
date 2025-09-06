@@ -7,7 +7,7 @@ import Image from '@tiptap/extension-image';
 import Placeholder from '@tiptap/extension-placeholder';
 import TextAlign from '@tiptap/extension-text-align';
 import { UnifiedLinkDialog } from './UnifiedLinkDialog';
-import { Stage } from '@progress/shared';
+import { Scene } from '@progress/shared';
 import { Extension } from '@tiptap/core';
 import { Plugin } from 'prosemirror-state';
 
@@ -20,7 +20,7 @@ const LinkClickHandler = Extension.create({
       showError: null as ((title: string, message?: string) => void) | null,
       navigate: null as ((path: string) => void) | null,
       isEditMode: false as boolean,
-      stages: null as Stage[] | null,
+      scenes: null as Stage[] | null,
     }
   },
 
@@ -36,15 +36,15 @@ const LinkClickHandler = Extension.create({
               if (linkElement) {
                 const isCtrlOrCmd = event.ctrlKey || event.metaKey;
                 const href = linkElement.getAttribute('href');
-                const isStageLink = href && href.startsWith('stage://');
+                const isStageLink = href && href.startsWith('scene://');
                 
                 if (isCtrlOrCmd) {
                   // Navigate to link
                   if (isStageLink && href) {
-                    const stageId = href.replace('stage://', '');
-                    const stage = this.options.stages?.find((s: Stage) => s.id === parseInt(stageId));
-                    if (stage?.slug && this.options.navigate) {
-                      this.options.navigate(`/stage/${stage.slug}`);
+                    const sceneId = href.replace('scene://', '');
+                    const scene = this.options.scenes?.find((s: Stage) => s.id === parseInt(sceneId));
+                    if (scene?.slug && this.options.navigate) {
+                      this.options.navigate(`/scene/${scene.slug}`);
                     }
                   } else if (href && href !== '#') {
                     window.open(href, '_blank');
@@ -98,7 +98,7 @@ interface TipTapEditorProps {
   placeholder?: string;
   editable?: boolean;
   className?: string;
-  stages?: Stage[];
+  scenes?: Stage[];
   currentStageId?: number;
   showError?: (title: string, message?: string) => void;
 }
@@ -132,7 +132,7 @@ export function TipTapEditor({
   placeholder = 'Start writing...', 
   editable = true,
   className = '',
-  stages = [],
+  scenes = [],
   currentStageId,
   showError
 }: TipTapEditorProps) {
@@ -141,7 +141,7 @@ export function TipTapEditor({
   const [selectedText, setSelectedText] = useState('');
   const [isEditingLink, setIsEditingLink] = useState(false);
   const [existingLinkData, setExistingLinkData] = useState<any>(null);
-  const [defaultLinkType, setDefaultLinkType] = useState<'external' | 'stage'>('external');
+  const [defaultLinkType, setDefaultLinkType] = useState<'external' | 'scene'>('external');
   
 
   const [editorInstance, setEditorInstance] = useState<any>(null);
@@ -184,9 +184,9 @@ export function TipTapEditor({
         setIsEditingLink(true);
         
         if (isStageLink) {
-          // Set up stage link edit data
-          const stageId = href.replace('stage://', '');
-          setExistingLinkData({ href, stageId });
+          // Set up scene link edit data
+          const sceneId = href.replace('scene://', '');
+          setExistingLinkData({ href, sceneId });
         } else {
           // Set up external link edit data
           setExistingLinkData({ href });
@@ -213,14 +213,14 @@ export function TipTapEditor({
         HTMLAttributes: {
           class: 'text-primary underline cursor-pointer hover:text-primary/80'
         },
-        validate: href => /^https?:\/\//.test(href) || href.startsWith('stage://'),
-        protocols: ['http', 'https', 'stage'],
+        validate: href => /^https?:\/\//.test(href) || href.startsWith('scene://'),
+        protocols: ['http', 'https', 'scene'],
       }),
       LinkClickHandler.configure({
         showError: showError,
         navigate: navigate,
         isEditMode: editable,
-        stages: stages
+        scenes: scenes
       }),
       Image.configure({
         HTMLAttributes: {
@@ -298,9 +298,9 @@ export function TipTapEditor({
       return;
     }
     
-    // Set up dialog state for new stage link
+    // Set up dialog state for new scene link
     setSelectedText(currentSelectedText);
-    setDefaultLinkType('stage');
+    setDefaultLinkType('scene');
     setIsEditingLink(false);
     setExistingLinkData(null);
     
@@ -313,7 +313,7 @@ export function TipTapEditor({
   };
 
   const handleLinkCreate = (linkData: { 
-    type: 'external' | 'stage';
+    type: 'external' | 'scene';
     href: string;
     label: string;
     targetStageId?: number;
@@ -323,7 +323,7 @@ export function TipTapEditor({
       // Update existing link
       editor.chain().focus().extendMarkRange('link').setLink({ 
         href: linkData.href,
-        class: linkData.type === 'stage' ? 'stage-link' : undefined
+        class: linkData.type === 'scene' ? 'scene-link' : undefined
       }).run();
     } else {
       // Create new link
@@ -343,7 +343,7 @@ export function TipTapEditor({
       // Apply the link
       editor.chain().focus().setLink({ 
         href: linkData.href,
-        class: linkData.type === 'stage' ? 'stage-link' : undefined
+        class: linkData.type === 'scene' ? 'scene-link' : undefined
       }).run();
     }
     
@@ -379,7 +379,7 @@ export function TipTapEditor({
       result.hasMultipleLinks = true;
     } else if (links.length === 1) {
       const link = links[0];
-      if (link.class && link.class.includes('stage-link')) {
+      if (link.class && link.class.includes('scene-link')) {
         result.hasStageLink = true;
         result.existingLinkData = link;
       } else {
@@ -574,7 +574,7 @@ export function TipTapEditor({
         isOpen={isLinkDialogOpen}
         onClose={() => setIsLinkDialogOpen(false)}
         onLinkCreate={handleLinkCreate}
-        stages={stages}
+        scenes={scenes}
         currentStageId={currentStageId}
         selectedText={selectedText}
         isEditing={isEditingLink}

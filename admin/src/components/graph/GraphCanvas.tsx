@@ -314,7 +314,7 @@ export function GraphCanvas({
         }
       };
 
-      const handleStageClick = () => {
+      const handleCanvasClick = () => {
         setClickedNode(null);
         setDonutPosition(null);
         if (onNodeClick) {
@@ -365,7 +365,7 @@ export function GraphCanvas({
         }
       };
 
-      const handleStageUp = () => {
+      const handleCanvasUp = () => {
         if (dragTimeoutRef.current) {
           clearTimeout(dragTimeoutRef.current);
           dragTimeoutRef.current = null;
@@ -374,10 +374,10 @@ export function GraphCanvas({
 
       // Attach event handlers
       sigma.on('clickNode', handleNodeClick);
-      sigma.on('clickStage', handleStageClick);
+      sigma.on('clickStage', handleCanvasClick);
       sigma.on('downNode', handleNodeDown);
       sigma.on('upNode', handleNodeUp);
-      sigma.on('upStage', handleStageUp);
+      sigma.on('upStage', handleCanvasUp);
 
       // Return cleanup function
       return cleanup;

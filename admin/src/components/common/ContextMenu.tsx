@@ -121,9 +121,9 @@ export function useContextMenu() {
   };
 }
 
-// Predefined context menu items for stages
-export const getStageContextMenuItems = (
-  stage: any,
+// Predefined context menu items for scenes
+export const getSceneContextMenuItems = (
+  scene: any,
   onEdit: () => void,
   onDelete: () => void,
   onPublish: () => void,
@@ -150,9 +150,9 @@ export const getStageContextMenuItems = (
   },
   {
     id: 'publish',
-    label: stage?.is_active ? 'Unpublish' : 'Publish',
-    icon: stage?.is_active ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />,
-    action: stage?.is_active ? onUnpublish : onPublish
+    label: scene?.is_active ? 'Unpublish' : 'Publish',
+    icon: scene?.is_active ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />,
+    action: scene?.is_active ? onUnpublish : onPublish
   },
   {
     id: 'share',

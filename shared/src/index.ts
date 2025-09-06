@@ -3,10 +3,10 @@ export * from './themes';
 export * from './hooks/useTheme';
 export * from './hooks/use-toast';
 export * from './hooks/useConfirm';
-export * from './hooks/useStageManager';
+// useStageManager removed - Stage system has been completely removed
 export * from './components';
 export * from './contexts/AuthContext';
-export * from './services/StageTypeRegistry';
+// StageTypeRegistry removed - Stage system has been completely removed
 export * from './services';
 export * from './types';
 export * from './services/ApiClient';
