@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { apiClient, FeedbackData } from '../services/ApiClient';
+// import { apiClient } from '../services/ApiClient'; // Not used in current implementation
 // Stage types removed - Stage system has been completely removed
 
 export interface UseApiOptions {
@@ -22,7 +22,7 @@ export interface UseFeedbackReturn {
   
   // Actions
   loadFeedback: (sceneIdParam?: number) => Promise<any[]>;
-  submitFeedback: (data: FeedbackData) => Promise<any>;
+  submitFeedback: (data: any) => Promise<any>;
   
   // Utilities
   clearError: () => void;
@@ -37,7 +37,7 @@ export function useFeedback(options: UseFeedbackOptions = {}): UseFeedbackReturn
   // Extract callbacks to avoid dependency issues
   const { sceneId, onSuccess, onError } = options;
 
-  const loadFeedback = useCallback(async (sceneIdParam?: number) => {
+  const loadFeedback = useCallback(async (_sceneIdParam?: number) => {
     try {
       setLoading(true);
       setError(null);
@@ -65,7 +65,7 @@ export function useFeedback(options: UseFeedbackOptions = {}): UseFeedbackReturn
     }
   }, [sceneId, onSuccess, onError]);
 
-  const submitFeedback = useCallback(async (data: FeedbackData) => {
+  const submitFeedback = useCallback(async (data: any) => {
     try {
       setLoading(true);
       setError(null);

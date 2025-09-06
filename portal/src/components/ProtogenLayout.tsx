@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Input, ThemeToggle } from '@progress/shared';
+import { Button, Input, ThemeToggle } from '@protogen/shared';
 import { Mail, MessageSquare, User, LogOut, X } from 'lucide-react';
 
 interface User {
@@ -23,18 +23,18 @@ export const ProtogenLayout: React.FC<ProtogenLayoutProps> = ({ children, user, 
 
   const handleNewsletterSignup = (e: React.FormEvent) => {
     e.preventDefault();
-    const formData = new FormData(e.target as HTMLFormElement);
-    const email = formData.get('email') as string;
     // TODO: Implement newsletter signup
+    // const formData = new FormData(e.target as HTMLFormElement);
+    // const email = formData.get('email') as string;
     // Newsletter signup
     setIsNewsletterOpen(false);
   };
 
   const handleFeedbackSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const formData = new FormData(e.target as HTMLFormElement);
-    const feedback = formData.get('feedback') as string;
     // TODO: Implement feedback submission
+    // const formData = new FormData(e.target as HTMLFormElement);
+    // const feedback = formData.get('feedback') as string;
     // Feedback submitted
     setIsFeedbackOpen(false);
   };

@@ -3,7 +3,7 @@ import React from 'react';
 export interface BreadcrumbItem {
   label: string;
   path: string;
-  stageId?: string;
+  sceneId?: string;
   onClick?: () => void;
 }
 

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@progress/shared';
+import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@protogen/shared';
 import { Chrome, User, LogOut } from 'lucide-react';
 
 interface User {
