@@ -9,4 +9,6 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 // Register snapshot management command
-Artisan::command('snapshots:manage', SnapshotManagementCommand::class);
+Artisan::command('snapshots:manage', function () {
+    $this->call(SnapshotManagementCommand::class);
+})->purpose('Manage snapshots');

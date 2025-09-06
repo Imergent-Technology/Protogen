@@ -13,7 +13,7 @@ export default defineConfig({
   },
   server: {
     host: '0.0.0.0',  // Allow access from outside the container
-    port: 3002,       // Temporarily changed for testing
+    port: 3001,       // Match exposed port in Docker
     strictPort: true, // Fail if 3001 is not available
     allowedHosts: ['protogen.local', 'localhost', '127.0.0.1'],
     hmr: {
