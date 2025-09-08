@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useDeckStore, Deck, Scene } from '../../stores/deckStore';
-import { DeckType, SceneType } from '../../stores/deckStore';
+import { useDeckStore, Scene } from '../../stores/deckStore';
+import { SceneType } from '../../stores/deckStore';
 import { performanceManager } from '../../services/PerformanceManager';
 import SceneGrid from './SceneGrid';
 import { SceneCardData } from './SceneCard';
+import { SelectionModal, SelectableItem } from '../common';
 
 // Scene type badges
 const SceneTypeBadge: React.FC<{ type: SceneType }> = ({ type }) => {
@@ -21,49 +22,28 @@ const SceneTypeBadge: React.FC<{ type: SceneType }> = ({ type }) => {
   );
 };
 
-// Deck type icons
-const DeckTypeIcon: React.FC<{ type: DeckType }> = ({ type }) => {
-  const icons = {
-    graph: '📊',
-    card: '🃏',
-    document: '📄',
-    dashboard: '📈',
-  };
-  
-  return <span className="text-2xl">{icons[type]}</span>;
-};
+// Remove DeckTypeIcon - no longer needed in pure scene manager
 
 // Scene and Deck Manager Component
 export const SceneManager: React.FC = () => {
   const {
     decks,
     scenes,
-    currentDeck,
-    decksLoading,
     scenesLoading,
-    decksError,
     scenesError,
-    setCurrentDeck,
-    createDeck,
-    updateDeck,
-    deleteDeck,
     createScene,
     updateScene,
     deleteScene,
-    setDecksLoading,
     setScenesLoading,
-    setDecksError,
     setScenesError,
   } = useDeckStore();
 
-  const [selectedDeckId, setSelectedDeckId] = useState<string | null>(null);
+  // Remove deck-related state - this is now a pure scene manager
   const [showCreateScene, setShowCreateScene] = useState(false);
-  const [showCreateDeck, setShowCreateDeck] = useState(false);
   const [showEditScene, setShowEditScene] = useState(false);
-  const [showEditDeck, setShowEditDeck] = useState(false);
   const [editingScene, setEditingScene] = useState<Scene | null>(null);
-  const [editingDeck, setEditingDeck] = useState<Deck | null>(null);
-  const [activeTab, setActiveTab] = useState<'scenes' | 'decks'>('scenes');
+  const [showDeckSelection, setShowDeckSelection] = useState(false);
+  // Remove activeTab state - this is now a pure scene manager
 
   // Form states
   const [sceneForm, setSceneForm] = useState({
@@ -74,14 +54,7 @@ export const SceneManager: React.FC = () => {
     deckIds: [] as string[],
   });
 
-  const [deckForm, setDeckForm] = useState({
-    name: '',
-    slug: '',
-    description: '',
-    type: 'graph' as DeckType,
-    keepWarm: true,
-    preloadStrategy: 'proximity' as 'immediate' | 'proximity' | 'on-demand',
-  });
+  // Remove deck form state - this is now a pure scene manager
 
   // Initialize performance manager
   useEffect(() => {
@@ -89,8 +62,8 @@ export const SceneManager: React.FC = () => {
     return () => performanceManager.destroy();
   }, []);
 
-  // Auto-generate slug when name changes
-  useEffect(() => {
+  // Auto-generate slug when name field loses focus (on blur)
+  const handleNameBlur = () => {
     if (sceneForm.name && !sceneForm.slug) {
       const slug = sceneForm.name
         .toLowerCase()
@@ -101,21 +74,9 @@ export const SceneManager: React.FC = () => {
         .replace(/^-|-$/g, '');
       setSceneForm(prev => ({ ...prev, slug }));
     }
-  }, [sceneForm.name, sceneForm.slug]);
+  };
 
-  // Auto-generate slug when deck name changes
-  useEffect(() => {
-    if (deckForm.name && !deckForm.slug) {
-      const slug = deckForm.name
-        .toLowerCase()
-        .trim()
-        .replace(/[^a-z0-9\s-]/g, '')
-        .replace(/\s+/g, '-')
-        .replace(/-+/g, '-')
-        .replace(/^-|-$/g, '');
-      setDeckForm(prev => ({ ...prev, slug }));
-    }
-  }, [deckForm.name, deckForm.slug]);
+  // Remove deck-related handlers - this is now a pure scene manager
 
   // Handle scene creation
   const handleCreateScene = async () => {
@@ -210,137 +171,7 @@ export const SceneManager: React.FC = () => {
     }
   };
 
-  // Handle deck editing
-  const handleEditDeck = (deck: Deck) => {
-    setEditingDeck(deck);
-    setDeckForm({
-      name: deck.name,
-      slug: deck.slug,
-      description: deck.description || '',
-      type: deck.type,
-      keepWarm: deck.performance.keepWarm,
-      preloadStrategy: deck.performance.preloadStrategy,
-    });
-    setShowEditDeck(true);
-  };
-
-  // Handle deck update
-  const handleUpdateDeck = async () => {
-    if (!editingDeck) return;
-    
-    try {
-      setDecksLoading(true);
-      setDecksError(null);
-
-      await updateDeck(editingDeck.id, {
-        name: deckForm.name,
-        slug: deckForm.slug,
-        description: deckForm.description,
-        type: deckForm.type,
-        performance: {
-          keepWarm: deckForm.keepWarm,
-          preloadStrategy: deckForm.preloadStrategy,
-        },
-      });
-      
-      // Reset form and close modal
-      setDeckForm({
-        name: '',
-        slug: '',
-        description: '',
-        type: 'graph',
-        keepWarm: true,
-        preloadStrategy: 'proximity',
-      });
-      setEditingDeck(null);
-      setShowEditDeck(false);
-      
-      // Deck updated successfully
-    } catch (error) {
-      setDecksError(error instanceof Error ? error.message : 'Failed to update deck');
-    } finally {
-      setDecksLoading(false);
-    }
-  };
-
-  // Handle deck creation
-  const handleCreateDeck = async () => {
-    try {
-      setDecksLoading(true);
-      setDecksError(null);
-
-      const newDeck = {
-        name: deckForm.name,
-        slug: deckForm.slug || deckForm.name.toLowerCase().replace(/\s+/g, '-'),
-        description: deckForm.description,
-        type: deckForm.type,
-        sceneIds: [],
-        navigation: {
-          type: 'sequential' as const,
-          transitions: {
-            type: 'slide' as const,
-            duration: 300,
-          },
-          controls: {
-            showProgress: true,
-            allowRandomAccess: false,
-            keyboardNavigation: true,
-          },
-        },
-        performance: {
-          keepWarm: deckForm.keepWarm,
-          preloadStrategy: deckForm.preloadStrategy,
-        },
-      };
-
-      await createDeck(newDeck);
-      
-      // Reset form
-      setDeckForm({
-        name: '',
-        slug: '',
-        description: '',
-        type: 'graph',
-        keepWarm: true,
-        preloadStrategy: 'proximity',
-      });
-      setShowCreateDeck(false);
-      
-      // Deck created successfully
-    } catch (error) {
-      setDecksError(error instanceof Error ? error.message : 'Failed to create deck');
-    } finally {
-      setDecksLoading(false);
-    }
-  };
-
-  // Handle deck selection
-  const handleDeckSelect = (deck: Deck) => {
-    setSelectedDeckId(deck.id);
-    setCurrentDeck(deck);
-    
-    // Preload deck scenes if configured
-    if (deck.performance.keepWarm) {
-      performanceManager.preloadDeck(deck, scenes);
-    }
-  };
-
-  // Handle deck deletion
-  const handleDeleteDeck = async (deckId: string) => {
-    if (!confirm('Are you sure you want to delete this deck? This action cannot be undone.')) {
-      return;
-    }
-
-    try {
-      await deleteDeck(deckId);
-      if (selectedDeckId === deckId) {
-        setSelectedDeckId(null);
-        setCurrentDeck(null);
-      }
-    } catch (error) {
-      console.error('Failed to delete deck:', error);
-    }
-  };
+  // Remove all deck-related handlers - this is now a pure scene manager
 
   // Handle scene deletion
   const handleDeleteScene = async (sceneId: string) => {
@@ -355,20 +186,37 @@ export const SceneManager: React.FC = () => {
     }
   };
 
-  // Get scenes for a specific deck
-  const getDeckScenes = (deckId: string) => {
-    return scenes.filter(scene => scene.deckIds.includes(deckId));
+  // Get all decks that contain a specific scene
+  const getSceneDecks = (sceneId: string) => {
+    return decks.filter(deck => deck.sceneIds.includes(sceneId));
   };
 
-  // Get standalone scenes (not in any deck) - for future use
-  // const _getStandaloneScenes = () => {
-  //   return scenes.filter(scene => scene.deckIds.length === 0);
-  // };
+  // Convert decks to SelectableItem format
+  const convertDecksToSelectableItems = (): SelectableItem[] => {
+    return decks.map(deck => ({
+      id: deck.id,
+      name: deck.name,
+      type: deck.type,
+      description: deck.description,
+      metadata: {
+        title: deck.name,
+        createdAt: deck.created_at,
+        updatedAt: deck.updated_at,
+      },
+      stats: {
+        viewCount: 0, // TODO: Add view tracking
+      },
+      isActive: true, // TODO: Add active status to deck model
+      isPublic: false, // TODO: Add public status to deck model
+    }));
+  };
 
-  // Get all decks that contain a specific scene (for future use)
-  // const getSceneDecks = (sceneId: string) => {
-  //   return decks.filter(deck => deck.sceneIds.includes(sceneId));
-  // };
+  // Handle deck selection
+  const handleDeckSelection = (selectedDecks: SelectableItem[]) => {
+    console.log('Selected decks:', selectedDecks);
+    // TODO: Implement deck selection logic
+    setShowDeckSelection(false);
+  };
 
   // Convert Scene to SceneCardData
   const convertToSceneCardData = (scene: Scene): SceneCardData => {
@@ -431,41 +279,13 @@ export const SceneManager: React.FC = () => {
       </div>
 
       {/* Error Display */}
-      {(decksError || scenesError) && (
+      {scenesError && (
         <div className="mb-6 p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
-          {decksError && <p className="text-destructive">{decksError}</p>}
-          {scenesError && <p className="text-destructive">{scenesError}</p>}
+          <p className="text-destructive">{scenesError}</p>
         </div>
       )}
 
-      {/* Tab Navigation */}
-      <div className="mb-6 border-b border-border">
-        <div className="flex space-x-8">
-          <button
-            onClick={() => setActiveTab('scenes')}
-            className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
-              activeTab === 'scenes'
-                ? 'border-primary text-primary'
-                : 'border-transparent text-muted-foreground hover:text-foreground'
-            }`}
-          >
-            🎬 Scenes ({scenes.length})
-          </button>
-          <button
-            onClick={() => setActiveTab('decks')}
-            className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
-              activeTab === 'decks'
-                ? 'border-primary text-primary'
-                : 'border-transparent text-muted-foreground hover:text-foreground'
-            }`}
-          >
-            📚 Decks ({decks.length})
-          </button>
-        </div>
-      </div>
-
-      {/* Scenes Tab */}
-      {activeTab === 'scenes' && (
+      {/* Scenes Management */}
         <div className="space-y-6">
           {/* Scenes Header */}
           <div className="flex items-center justify-between">
@@ -473,12 +293,20 @@ export const SceneManager: React.FC = () => {
               <h2 className="text-xl font-semibold">Scenes</h2>
               <p className="text-muted-foreground">Primary content units that can be organized into decks</p>
             </div>
-            <button
-              onClick={() => setShowCreateScene(true)}
-              className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
-            >
-              + New Scene
-            </button>
+            <div className="flex space-x-3">
+              <button
+                onClick={() => setShowDeckSelection(true)}
+                className="px-4 py-2 border border-border rounded-md hover:bg-muted transition-colors"
+              >
+                Select Decks
+              </button>
+              <button
+                onClick={() => setShowCreateScene(true)}
+                className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+              >
+                + New Scene
+              </button>
+            </div>
           </div>
 
           {/* Scenes Grid */}
@@ -506,191 +334,9 @@ export const SceneManager: React.FC = () => {
               onScenePreview={handleSceneCardPreview}
               onSceneToggleActive={handleSceneCardToggleActive}
               onSceneTogglePublic={handleSceneCardTogglePublic}
-              onCreateScene={() => setShowCreateScene(true)}
             />
           )}
         </div>
-      )}
-
-      {/* Decks Tab */}
-      {activeTab === 'decks' && (
-        <div className="space-y-6">
-          {/* Decks Header */}
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-xl font-semibold">Decks</h2>
-              <p className="text-muted-foreground">Organize scenes into presentation groups</p>
-            </div>
-            <button
-              onClick={() => setShowCreateDeck(true)}
-              className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
-            >
-              + New Deck
-            </button>
-          </div>
-
-          {/* Decks Grid */}
-          {decksLoading ? (
-            <div className="text-center py-8 text-muted-foreground">Loading decks...</div>
-          ) : decks.length === 0 ? (
-            <div className="text-center py-12">
-              <div className="text-4xl mb-4">📚</div>
-              <h3 className="text-lg font-semibold mb-2">No Decks Yet</h3>
-              <p className="text-muted-foreground mb-4">
-                Create a deck to organize your scenes
-              </p>
-              <button
-                onClick={() => setShowCreateDeck(true)}
-                className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
-              >
-                Create First Deck
-              </button>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {decks.map((deck) => {
-                const deckScenes = getDeckScenes(deck.id);
-                return (
-                  <div
-                    key={deck.id}
-                    className={`p-6 border rounded-lg cursor-pointer transition-colors ${
-                      selectedDeckId === deck.id
-                        ? 'border-primary bg-primary/5'
-                        : 'border-border hover:border-primary/30'
-                    }`}
-                    onClick={() => handleDeckSelect(deck)}
-                  >
-                    <div className="flex items-center space-x-3 mb-4">
-                      <DeckTypeIcon type={deck.type} />
-                      <div className="flex-1">
-                        <h3 className="font-semibold">{deck.name}</h3>
-                        <div className="text-xs text-muted-foreground mb-1">
-                          <span className="font-medium">Slug:</span> <code className="bg-muted px-1 py-0.5 rounded">{deck.slug}</code>
-                        </div>
-                        <p className="text-sm text-muted-foreground">{deck.description}</p>
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-2 text-sm">
-                      <div>
-                        <span className="text-muted-foreground">Type:</span>
-                        <span className="ml-2 font-medium">{deck.type}</span>
-                      </div>
-                      <div>
-                        <span className="text-muted-foreground">Scenes:</span>
-                        <span className="ml-2 font-medium">{deckScenes.length}</span>
-                      </div>
-                      <div>
-                        <span className="text-muted-foreground">Keep Warm:</span>
-                        <span className="ml-2 font-medium">
-                          {deck.performance.keepWarm ? 'Yes' : 'No'}
-                        </span>
-                      </div>
-                    </div>
-                    
-                    <div className="mt-4 pt-3 border-t border-border">
-                      <div className="flex justify-between items-center">
-                        <span className="text-xs text-muted-foreground">
-                          {deck.performance.preloadStrategy} preload
-                        </span>
-                        <div className="flex space-x-2">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleEditDeck(deck);
-                            }}
-                            className="px-2 py-1 text-xs border border-border rounded hover:bg-muted transition-colors"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDeleteDeck(deck.id);
-                            }}
-                            className="px-2 py-1 text-xs border border-destructive/20 text-destructive rounded hover:bg-destructive/10 transition-colors"
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-
-          {/* Selected Deck Details */}
-          {selectedDeckId && currentDeck && (
-            <div className="mt-8 p-6 border border-border rounded-lg bg-card">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center space-x-3">
-                  <DeckTypeIcon type={currentDeck.type} />
-                  <div>
-                    <h3 className="text-lg font-semibold">{currentDeck.name}</h3>
-                    <p className="text-muted-foreground">{currentDeck.description}</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4 text-sm mb-6">
-                <div>
-                  <span className="text-muted-foreground">Type:</span>
-                  <span className="ml-2 font-medium">{currentDeck.type}</span>
-                </div>
-                <div>
-                  <span className="text-muted-foreground">Scenes:</span>
-                  <span className="ml-2 font-medium">{getDeckScenes(selectedDeckId).length}</span>
-                </div>
-                <div>
-                  <span className="text-muted-foreground">Keep Warm:</span>
-                  <span className="ml-2 font-medium">
-                    {currentDeck.performance.keepWarm ? 'Yes' : 'No'}
-                  </span>
-                </div>
-                <div>
-                  <span className="text-muted-foreground">Preload:</span>
-                  <span className="ml-2 font-medium">
-                    {currentDeck.performance.preloadStrategy}
-                  </span>
-                </div>
-              </div>
-
-              {/* Deck Scenes */}
-              <div>
-                <h4 className="font-medium mb-3">Scenes in this Deck</h4>
-                {getDeckScenes(selectedDeckId).length === 0 ? (
-                  <p className="text-muted-foreground text-sm">No scenes in this deck yet</p>
-                ) : (
-                  <div className="space-y-2">
-                    {getDeckScenes(selectedDeckId).map((scene) => (
-                      <div
-                        key={scene.id}
-                        className="p-3 border border-border rounded-lg flex items-center justify-between"
-                      >
-                        <div className="flex items-center space-x-3">
-                          <SceneTypeBadge type={scene.type} />
-                          <div>
-                            <h5 className="font-medium">{scene.name}</h5>
-                            <p className="text-sm text-muted-foreground">{scene.description}</p>
-                          </div>
-                        </div>
-                        <button
-                          onClick={() => handleDeleteScene(scene.id)}
-                          className="px-2 py-1 text-xs border border-destructive/20 text-destructive rounded hover:bg-destructive/10 transition-colors"
-                        >
-                          Remove
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
-      )}
 
       {/* Create Scene Modal */}
       {showCreateScene && (
@@ -705,6 +351,7 @@ export const SceneManager: React.FC = () => {
                   type="text"
                   value={sceneForm.name}
                   onChange={(e) => setSceneForm({ ...sceneForm, name: e.target.value })}
+                  onBlur={handleNameBlur}
                   className="w-full px-3 py-2 border border-border rounded-md bg-background"
                   placeholder="Enter scene name"
                 />
@@ -804,6 +451,7 @@ export const SceneManager: React.FC = () => {
                   type="text"
                   value={sceneForm.name}
                   onChange={(e) => setSceneForm({ ...sceneForm, name: e.target.value })}
+                  onBlur={handleNameBlur}
                   className="w-full px-3 py-2 border border-border rounded-md bg-background"
                   placeholder="Enter scene name"
                 />
@@ -900,218 +548,20 @@ export const SceneManager: React.FC = () => {
         </div>
       )}
 
-      {/* Create Deck Modal */}
-      {showCreateDeck && (
-        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-card border border-border rounded-lg p-6 w-full max-w-md">
-            <h3 className="text-lg font-semibold mb-4">Create New Deck</h3>
-            
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium mb-1">Name</label>
-                <input
-                  type="text"
-                  value={deckForm.name}
-                  onChange={(e) => setDeckForm({ ...deckForm, name: e.target.value })}
-                  className="w-full px-3 py-2 border border-border rounded-md bg-background"
-                  placeholder="Enter deck name"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium mb-1">Slug</label>
-                <input
-                  type="text"
-                  value={deckForm.slug}
-                  onChange={(e) => setDeckForm({ ...deckForm, slug: e.target.value })}
-                  className="w-full px-3 py-2 border border-border rounded-md bg-background"
-                  placeholder="Auto-generated from name"
-                />
-                <p className="text-xs text-muted-foreground mt-1">
-                  URL-friendly identifier (auto-generated from name)
-                </p>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium mb-1">Description</label>
-                <textarea
-                  value={deckForm.description}
-                  onChange={(e) => setDeckForm({ ...deckForm, description: e.target.value })}
-                  className="w-full px-3 py-2 border border-border rounded-md bg-background"
-                  placeholder="Enter deck description"
-                  rows={3}
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium mb-1">Type</label>
-                <select
-                  value={deckForm.type}
-                  onChange={(e) => setDeckForm({ ...deckForm, type: e.target.value as DeckType })}
-                  className="w-full px-3 py-2 border border-border rounded-md bg-background"
-                >
-                  <option value="graph">Graph</option>
-                  <option value="card">Card</option>
-                  <option value="document">Document</option>
-                  <option value="dashboard">Dashboard</option>
-                </select>
-              </div>
-              
-              <div className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  id="keepWarm"
-                  checked={deckForm.keepWarm}
-                  onChange={(e) => setDeckForm({ ...deckForm, keepWarm: e.target.checked })}
-                  className="rounded"
-                />
-                <label htmlFor="keepWarm" className="text-sm">Keep scenes warm in memory</label>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium mb-1">Preload Strategy</label>
-                <select
-                  value={deckForm.preloadStrategy}
-                  onChange={(e) => setDeckForm({ ...deckForm, preloadStrategy: e.target.value as any })}
-                  className="w-full px-3 py-2 border border-border rounded-md bg-background"
-                >
-                  <option value="immediate">Immediate</option>
-                  <option value="proximity">Proximity</option>
-                  <option value="on-demand">On Demand</option>
-                </select>
-              </div>
-            </div>
-            
-            <div className="flex space-x-3 mt-6">
-              <button
-                onClick={handleCreateDeck}
-                disabled={!deckForm.name || decksLoading}
-                className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:opacity-50 transition-colors"
-              >
-                {decksLoading ? 'Creating...' : 'Create Deck'}
-              </button>
-              <button
-                onClick={() => setShowCreateDeck(false)}
-                className="flex-1 px-4 py-2 border border-border rounded-md hover:bg-muted transition-colors"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Deck Selection Modal */}
+      <SelectionModal
+        isOpen={showDeckSelection}
+        onClose={() => setShowDeckSelection(false)}
+        onConfirm={handleDeckSelection}
+        title="Select Decks"
+        items={convertDecksToSelectableItems()}
+        selectedItems={[]}
+        multiSelect={true}
+        searchPlaceholder="Search decks..."
+        emptyMessage="No decks available"
+        confirmText="Select Decks"
+      />
 
-      {/* Edit Deck Modal */}
-      {showEditDeck && editingDeck && (
-        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-card border border-border rounded-lg p-6 w-full max-w-md">
-            <h3 className="text-lg font-semibold mb-4">Edit Deck: {editingDeck.name}</h3>
-            
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium mb-1">Name</label>
-                <input
-                  type="text"
-                  value={deckForm.name}
-                  onChange={(e) => setDeckForm({ ...deckForm, name: e.target.value })}
-                  className="w-full px-3 py-2 border border-border rounded-md bg-background"
-                  placeholder="Enter deck name"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium mb-1">Slug</label>
-                <input
-                  type="text"
-                  value={deckForm.slug}
-                  onChange={(e) => setDeckForm({ ...deckForm, slug: e.target.value })}
-                  className="w-full px-3 py-2 border border-border rounded-md bg-background"
-                  placeholder="URL-friendly identifier"
-                />
-                <p className="text-xs text-muted-foreground mt-1">
-                  URL-friendly identifier (auto-generated from name)
-                </p>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium mb-1">Description</label>
-                <textarea
-                  value={deckForm.description}
-                  onChange={(e) => setDeckForm({ ...deckForm, description: e.target.value })}
-                  className="w-full px-3 py-2 border border-border rounded-md bg-background"
-                  placeholder="Enter deck description"
-                  rows={3}
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium mb-1">Type</label>
-                <select
-                  value={deckForm.type}
-                  onChange={(e) => setDeckForm({ ...deckForm, type: e.target.value as DeckType })}
-                  className="w-full px-3 py-2 border border-border rounded-md bg-background"
-                >
-                  <option value="graph">Graph</option>
-                  <option value="card">Card</option>
-                  <option value="document">Document</option>
-                  <option value="dashboard">Dashboard</option>
-                </select>
-              </div>
-              
-              <div className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  id="editKeepWarm"
-                  checked={deckForm.keepWarm}
-                  onChange={(e) => setDeckForm({ ...deckForm, keepWarm: e.target.checked })}
-                  className="rounded"
-                />
-                <label htmlFor="editKeepWarm" className="text-sm">Keep scenes warm in memory</label>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium mb-1">Preload Strategy</label>
-                <select
-                  value={deckForm.preloadStrategy}
-                  onChange={(e) => setDeckForm({ ...deckForm, preloadStrategy: e.target.value as any })}
-                  className="w-full px-3 py-2 border border-border rounded-md bg-background"
-                >
-                  <option value="immediate">Immediate</option>
-                  <option value="proximity">Proximity</option>
-                  <option value="on-demand">On Demand</option>
-                </select>
-              </div>
-            </div>
-            
-            <div className="flex space-x-3 mt-6">
-              <button
-                onClick={handleUpdateDeck}
-                disabled={!deckForm.name || decksLoading}
-                className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:opacity-50 transition-colors"
-              >
-                {decksLoading ? 'Updating...' : 'Update Deck'}
-              </button>
-              <button
-                onClick={() => {
-                  setShowEditDeck(false);
-                  setEditingDeck(null);
-                  setDeckForm({
-                    name: '',
-                    slug: '',
-                    description: '',
-                    type: 'graph',
-                    keepWarm: true,
-                    preloadStrategy: 'proximity',
-                  });
-                }}
-                className="flex-1 px-4 py-2 border border-border rounded-md hover:bg-muted transition-colors"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

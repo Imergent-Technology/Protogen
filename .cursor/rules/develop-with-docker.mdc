@@ -1,0 +1,10 @@
+---
+description: Build and Test From Base Directory
+globs:
+alwaysApply: true
+---
+- Build test and run the dev environment from the base directory as it is all wired up to run from there.
+- Run the development environment using Docker Compose unless a specific need arises.
+- Check for an existing Tailwind build process and start one at the beginning of a new agent conversation or development session.
+- Favor running vite/tailwind/npm build commands using the scripts defined in the base directory instead of individual sub-projects.
+- Before beginning a significant change during a new session, be sure you understand the project structure by reviewing the development docs at least in summary, if not in depth depending on the need at the time.

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Grid, List, Plus, Search, Filter } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Grid, List, Search, Filter, MoreHorizontal } from 'lucide-react';
 import { Button, Input } from '@progress/shared';
 import SceneCard, { SceneCardData } from './SceneCard';
 
@@ -10,7 +10,6 @@ export interface SceneGridProps {
   onScenePreview: (scene: SceneCardData) => void;
   onSceneToggleActive?: (scene: SceneCardData) => void;
   onSceneTogglePublic?: (scene: SceneCardData) => void;
-  onCreateScene?: () => void;
   className?: string;
 }
 
@@ -21,12 +20,30 @@ const SceneGrid: React.FC<SceneGridProps> = ({
   onScenePreview,
   onSceneToggleActive,
   onSceneTogglePublic,
-  onCreateScene,
   className = ''
 }) => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<string>('all');
+  const [showViewMenu, setShowViewMenu] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setShowViewMenu(false);
+      }
+    };
+
+    if (showViewMenu) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showViewMenu]);
 
   // Get unique scene types for filtering
   const sceneTypes = Array.from(new Set(scenes.map(scene => scene.type)));
@@ -48,34 +65,50 @@ const SceneGrid: React.FC<SceneGridProps> = ({
     <div className={`scene-grid ${className}`}>
       {/* Header with controls */}
       <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center space-x-4">
-          <h2 className="text-xl font-semibold">Scenes ({filteredScenes.length})</h2>
-          <div className="flex items-center space-x-2">
-            <Button
-              variant={viewMode === 'grid' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setViewMode('grid')}
-            >
-              <Grid className="h-4 w-4 mr-2" />
-              Grid
-            </Button>
-            <Button
-              variant={viewMode === 'list' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setViewMode('list')}
-            >
-              <List className="h-4 w-4 mr-2" />
-              List
-            </Button>
-          </div>
-        </div>
+        <h2 className="text-xl font-semibold">Scenes ({filteredScenes.length})</h2>
         
-        <div className="flex items-center space-x-2">
-          {onCreateScene && (
-            <Button onClick={onCreateScene}>
-              <Plus className="h-4 w-4 mr-2" />
-              Create Scene
-            </Button>
+        {/* View options flyout menu */}
+        <div className="relative" ref={menuRef}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowViewMenu(!showViewMenu)}
+          >
+            <MoreHorizontal className="h-4 w-4" />
+          </Button>
+          
+          {showViewMenu && (
+            <div className="absolute right-0 top-full mt-1 w-48 bg-background border border-border rounded-md shadow-lg z-10">
+              <div className="p-2">
+                <div className="text-xs font-medium text-muted-foreground mb-2">View Options</div>
+                <div className="space-y-1">
+                  <button
+                    onClick={() => {
+                      setViewMode('grid');
+                      setShowViewMenu(false);
+                    }}
+                    className={`w-full text-left px-2 py-1 text-sm rounded hover:bg-muted flex items-center ${
+                      viewMode === 'grid' ? 'bg-muted' : ''
+                    }`}
+                  >
+                    <Grid className="h-4 w-4 mr-2" />
+                    Grid View
+                  </button>
+                  <button
+                    onClick={() => {
+                      setViewMode('list');
+                      setShowViewMenu(false);
+                    }}
+                    className={`w-full text-left px-2 py-1 text-sm rounded hover:bg-muted flex items-center ${
+                      viewMode === 'list' ? 'bg-muted' : ''
+                    }`}
+                  >
+                    <List className="h-4 w-4 mr-2" />
+                    List View
+                  </button>
+                </div>
+              </div>
+            </div>
           )}
         </div>
       </div>
@@ -211,18 +244,12 @@ const SceneGrid: React.FC<SceneGridProps> = ({
         <div className="text-center py-12">
           <div className="text-6xl mb-4 opacity-50">📋</div>
           <h3 className="text-lg font-semibold mb-2">No scenes found</h3>
-          <p className="text-muted-foreground mb-4">
+          <p className="text-muted-foreground">
             {searchQuery || filterType !== 'all' 
               ? 'Try adjusting your search or filter criteria'
-              : 'Create your first scene to get started'
+              : 'No scenes available'
             }
           </p>
-          {onCreateScene && (
-            <Button onClick={onCreateScene}>
-              <Plus className="h-4 w-4 mr-2" />
-              Create Scene
-            </Button>
-          )}
         </div>
       )}
     </div>

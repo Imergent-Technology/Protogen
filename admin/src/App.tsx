@@ -12,6 +12,7 @@ import {
   ToastContainer,
   useToasts,
   SceneManager,
+  DeckManager,
   TenantManager,
   SceneNavigation,
   SceneTypeManager,
@@ -28,7 +29,7 @@ interface AdminUser {
   is_admin: boolean;
 }
 
-type ViewMode = 'admin' | 'scenes' | 'decks' | 'contexts' | 'users' | 'analytics' | 'graph-studio' | 'tenants' | 'create-scene' | 'edit-scene';
+type ViewMode = 'admin' | 'scenes' | 'decks' | 'contexts' | 'flows' | 'users' | 'analytics' | 'graph-studio' | 'tenants' | 'create-scene' | 'edit-scene';
 
 function App() {
   const navigate = useNavigate();
@@ -73,6 +74,8 @@ function App() {
         return 'Deck Management';
       case 'contexts':
         return 'Context Management';
+      case 'flows':
+        return 'Flow Management';
       case 'tenants':
         return 'Tenant Management';
       case 'users':
@@ -116,6 +119,8 @@ function App() {
       setViewMode('scenes');
     } else if (path === '/contexts') {
       setViewMode('contexts');
+    } else if (path === '/flows') {
+      setViewMode('flows');
     } else if (path === '/tenants') {
       setViewMode('tenants');
     } else if (path === '/graph-studio') {
@@ -138,6 +143,9 @@ function App() {
         break;
       case 'contexts':
         navigate('/contexts');
+        break;
+      case 'flows':
+        navigate('/flows');
         break;
       case 'tenants':
         navigate('/tenants');
@@ -345,6 +353,10 @@ function App() {
       case 'contexts':
         setViewMode('contexts');
         updateURL('contexts');
+        break;
+      case 'flows':
+        setViewMode('flows');
+        updateURL('flows');
         break;
       case 'tenants':
         setViewMode('tenants');
@@ -740,8 +752,61 @@ function App() {
 
             {viewMode === 'decks' && (
               <div className="h-full">
-                {/* Rendering SceneManager */}
-                <SceneManager />
+                <DeckManager />
+              </div>
+            )}
+
+            {viewMode === 'contexts' && (
+              <div className="p-8">
+                <div className="max-w-6xl mx-auto">
+                  <div className="mb-8">
+                    <h1 className="text-3xl font-bold text-foreground mb-2">Context Management</h1>
+                    <p className="text-muted-foreground">
+                      Manage anchors and coordinates within scenes, documents, and other content
+                    </p>
+                  </div>
+                  
+                  <div className="text-center py-12">
+                    <div className="text-4xl mb-4">🎯</div>
+                    <h3 className="text-lg font-semibold mb-2">Contexts Coming Soon</h3>
+                    <p className="text-muted-foreground mb-4">
+                      The Context system will allow you to create anchors and coordinates within your content
+                    </p>
+                    <div className="space-y-2 text-sm text-muted-foreground max-w-md mx-auto">
+                      <p>• Scene coordinates for graph navigation</p>
+                      <p>• Document anchors for text references</p>
+                      <p>• Deck positions for presentation flow</p>
+                      <p>• Custom coordinate systems</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {viewMode === 'flows' && (
+              <div className="p-8">
+                <div className="max-w-6xl mx-auto">
+                  <div className="mb-8">
+                    <h1 className="text-3xl font-bold text-foreground mb-2">Flow Management</h1>
+                    <p className="text-muted-foreground">
+                      Design and manage user interaction flows and navigation patterns
+                    </p>
+                  </div>
+                  
+                  <div className="text-center py-12">
+                    <div className="text-4xl mb-4">🌊</div>
+                    <h3 className="text-lg font-semibold mb-2">Flows Coming Soon</h3>
+                    <p className="text-muted-foreground mb-4">
+                      The Flow system will allow you to create and manage user interaction patterns
+                    </p>
+                    <div className="space-y-2 text-sm text-muted-foreground max-w-md mx-auto">
+                      <p>• User journey mapping</p>
+                      <p>• Navigation flow design</p>
+                      <p>• Interactive state management</p>
+                      <p>• Flow analytics and optimization</p>
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
 

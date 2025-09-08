@@ -88,6 +88,12 @@ export function SceneNavigation({
             name: 'Contexts',
             type: 'system',
             icon: '🎯'
+          },
+          {
+            id: 'flows',
+            name: 'Flows',
+            type: 'system',
+            icon: '🌊'
           }
         ]
       },

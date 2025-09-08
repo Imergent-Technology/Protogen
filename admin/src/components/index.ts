@@ -13,6 +13,9 @@ export * from './graph';
 // Scene management components
 export * from './scenes';
 
+// Deck management components
+export * from './decks';
+
 // User management components
 export * from './users';
 
