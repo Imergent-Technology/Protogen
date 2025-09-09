@@ -23,9 +23,9 @@ export interface SelectableItem {
   isPublic?: boolean;
 }
 
-export interface SelectionModalProps {
-  isOpen: boolean;
-  onClose: () => void;
+export interface EntitySelectorProps {
+  isOpen?: boolean;
+  onClose?: () => void;
   onConfirm: (selectedItems: SelectableItem[]) => void;
   title: string;
   items: SelectableItem[];
@@ -35,10 +35,11 @@ export interface SelectionModalProps {
   emptyMessage?: string;
   confirmText?: string;
   className?: string;
+  asModal?: boolean; // New prop to control modal vs inline rendering
 }
 
-const SelectionModal: React.FC<SelectionModalProps> = ({
-  isOpen,
+const EntitySelector: React.FC<EntitySelectorProps> = ({
+  isOpen = true,
   onClose,
   onConfirm,
   title,
@@ -48,7 +49,8 @@ const SelectionModal: React.FC<SelectionModalProps> = ({
   searchPlaceholder = "Search items...",
   emptyMessage = "No items found",
   confirmText = "Select",
-  className = ""
+  className = "",
+  asModal = true
 }) => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [searchQuery, setSearchQuery] = useState('');
@@ -60,8 +62,10 @@ const SelectionModal: React.FC<SelectionModalProps> = ({
     setLocalSelectedItems(selectedItems);
   }, [selectedItems]);
 
-  // Close modal when clicking outside
+  // Close modal when clicking outside (only for modal mode)
   useEffect(() => {
+    if (!asModal || !onClose) return;
+    
     const handleClickOutside = (event: MouseEvent) => {
       if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
         onClose();
@@ -75,7 +79,7 @@ const SelectionModal: React.FC<SelectionModalProps> = ({
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, asModal]);
 
   // Filter items based on search
   const filteredItems = items.filter(item => {
@@ -133,13 +137,17 @@ const SelectionModal: React.FC<SelectionModalProps> = ({
   // Handle confirm
   const handleConfirm = () => {
     onConfirm(localSelectedItems);
-    onClose();
+    if (asModal && onClose) {
+      onClose();
+    }
   };
 
   // Handle cancel
   const handleCancel = () => {
     setLocalSelectedItems(selectedItems); // Reset to original selection
-    onClose();
+    if (asModal && onClose) {
+      onClose();
+    }
   };
 
   // Get item type icon
@@ -166,11 +174,19 @@ const SelectionModal: React.FC<SelectionModalProps> = ({
 
   if (!isOpen) return null;
 
+  const containerClasses = asModal 
+    ? "fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50"
+    : "w-full";
+    
+  const contentClasses = asModal
+    ? `bg-card border border-border rounded-lg shadow-lg w-full max-w-4xl max-h-[80vh] flex flex-col ${className}`
+    : `bg-card border border-border rounded-lg shadow-lg w-full flex flex-col ${className}`;
+
   return (
-    <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50">
+    <div className={containerClasses}>
       <div 
         ref={modalRef}
-        className={`bg-card border border-border rounded-lg shadow-lg w-full max-w-4xl max-h-[80vh] flex flex-col ${className}`}
+        className={contentClasses}
       >
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-border">
@@ -182,9 +198,11 @@ const SelectionModal: React.FC<SelectionModalProps> = ({
               </p>
             )}
           </div>
-          <Button variant="ghost" size="sm" onClick={handleCancel}>
-            <X className="h-4 w-4" />
-          </Button>
+          {asModal && onClose && (
+            <Button variant="ghost" size="sm" onClick={handleCancel}>
+              <X className="h-4 w-4" />
+            </Button>
+          )}
         </div>
 
         {/* Controls */}
@@ -372,9 +390,11 @@ const SelectionModal: React.FC<SelectionModalProps> = ({
             )}
           </div>
           <div className="flex space-x-3">
-            <Button variant="outline" onClick={handleCancel}>
-              Cancel
-            </Button>
+            {asModal && onClose && (
+              <Button variant="outline" onClick={handleCancel}>
+                Cancel
+              </Button>
+            )}
             <Button 
               onClick={handleConfirm}
               disabled={localSelectedItems.length === 0}
@@ -388,4 +408,7 @@ const SelectionModal: React.FC<SelectionModalProps> = ({
   );
 };
 
-export default SelectionModal;
+export default EntitySelector;
+
+// Export both names for backward compatibility
+export { EntitySelector as SelectionModal };

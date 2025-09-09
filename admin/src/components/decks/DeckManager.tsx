@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useDeckStore, Deck } from '../../stores/deckStore';
 import { DeckType } from '../../stores/deckStore';
 import { performanceManager } from '../../services/PerformanceManager';
+import { Plus, SlidersHorizontal, Grid, List } from 'lucide-react';
 
 // Simple scene type badge for deck manager
 const SceneTypeBadge: React.FC<{ type: string }> = ({ type }) => {
@@ -31,7 +32,7 @@ const DeckTypeIcon: React.FC<{ type: DeckType }> = ({ type }) => {
   return <span className="text-2xl">{icons[type]}</span>;
 };
 
-// Scene and Deck Manager Component
+// Deck Manager Component
 export const DeckManager: React.FC = () => {
   const {
     decks,
@@ -48,9 +49,9 @@ export const DeckManager: React.FC = () => {
 
   const [selectedDeckId, setSelectedDeckId] = useState<string | null>(null);
   const [showCreateDeck, setShowCreateDeck] = useState(false);
-  // Remove activeTab state - this is now a pure deck manager
-
-  // Remove scene form state - this is now a pure deck manager
+  const [showListOptions, setShowListOptions] = useState(false);
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const listOptionsRef = useRef<HTMLDivElement>(null);
 
   const [deckForm, setDeckForm] = useState({
     name: '',
@@ -67,7 +68,22 @@ export const DeckManager: React.FC = () => {
     return () => performanceManager.destroy();
   }, []);
 
-  // Remove scene-related handlers - this is now a pure deck manager
+  // Close list options menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (listOptionsRef.current && !listOptionsRef.current.contains(event.target as Node)) {
+        setShowListOptions(false);
+      }
+    };
+
+    if (showListOptions) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showListOptions]);
 
   // Auto-generate slug when deck name field loses focus (on blur)
   const handleDeckNameBlur = () => {
@@ -82,8 +98,6 @@ export const DeckManager: React.FC = () => {
       setDeckForm(prev => ({ ...prev, slug }));
     }
   };
-
-  // Remove scene creation handler - this is now a pure deck manager
 
   // Handle deck creation
   const handleCreateDeck = async () => {
@@ -128,7 +142,6 @@ export const DeckManager: React.FC = () => {
       });
       setShowCreateDeck(false);
       
-      // Deck created successfully
     } catch (error) {
       setDecksError(error instanceof Error ? error.message : 'Failed to create deck');
     } finally {
@@ -164,27 +177,65 @@ export const DeckManager: React.FC = () => {
     }
   };
 
-  // Remove scene deletion handler - this is now a pure deck manager
-
   // Get scenes for a specific deck
   const getDeckScenes = (deckId: string) => {
     return scenes.filter(scene => scene.deckIds.includes(deckId));
   };
 
-  // Get standalone scenes (not in any deck) - for future use
-  // const _getStandaloneScenes = () => {
-  //   return scenes.filter(scene => scene.deckIds.length === 0);
-  // };
-
-  // Remove getSceneDecks - no longer needed in pure deck manager
-
   return (
     <div className="p-6 max-w-7xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-foreground mb-2">Deck Management</h1>
-        <p className="text-muted-foreground">
-          Create and manage presentation decks to organize your scenes
-        </p>
+      {/* Header with Action Buttons */}
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-3xl font-bold text-foreground mb-2">Deck Management</h1>
+          <p className="text-muted-foreground">
+            Create and manage presentation decks to organize your scenes
+          </p>
+        </div>
+        
+        {/* Action Buttons */}
+        <div className="flex items-center space-x-2">
+        {/* List Options Button */}
+        <div className="relative" ref={listOptionsRef}>
+          <button
+            onClick={() => setShowListOptions(!showListOptions)}
+            className="p-2 border border-border rounded-md hover:bg-muted transition-colors"
+            title="List Options"
+          >
+            <SlidersHorizontal className="h-4 w-4" />
+          </button>
+          {showListOptions && (
+            <div className="absolute right-0 top-full mt-1 w-48 bg-background border border-border rounded-md shadow-lg z-10">
+              <div className="p-2">
+                <div className="text-xs font-medium text-muted-foreground mb-2">View Options</div>
+                <div className="space-y-1">
+                  <button
+                    onClick={() => { setViewMode('grid'); setShowListOptions(false); }}
+                    className={`w-full text-left px-2 py-1 text-sm rounded hover:bg-muted flex items-center ${viewMode === 'grid' ? 'bg-muted' : ''}`}
+                  >
+                    <Grid className="h-4 w-4 mr-2" /> Grid View
+                  </button>
+                  <button
+                    onClick={() => { setViewMode('list'); setShowListOptions(false); }}
+                    className={`w-full text-left px-2 py-1 text-sm rounded hover:bg-muted flex items-center ${viewMode === 'list' ? 'bg-muted' : ''}`}
+                  >
+                    <List className="h-4 w-4 mr-2" /> List View
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Create Deck Button */}
+        <button
+          onClick={() => setShowCreateDeck(true)}
+          className="p-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+          title="Create Deck"
+        >
+          <Plus className="h-4 w-4" />
+        </button>
+        </div>
       </div>
 
       {/* Error Display */}
@@ -194,166 +245,148 @@ export const DeckManager: React.FC = () => {
         </div>
       )}
 
-      {/* Decks Management */}
-        <div className="space-y-6">
-          {/* Decks Header */}
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-xl font-semibold">Decks</h2>
-              <p className="text-muted-foreground">Organize scenes into presentation groups</p>
-            </div>
-            <button
-              onClick={() => setShowCreateDeck(true)}
-              className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+      {/* Decks Content */}
+      {decksLoading ? (
+        <div className="text-center py-8 text-muted-foreground">Loading decks...</div>
+      ) : decks.length === 0 ? (
+        <div className="text-center py-12">
+          <div className="text-4xl mb-4">📚</div>
+          <h3 className="text-lg font-semibold mb-2">No Decks Yet</h3>
+          <p className="text-muted-foreground mb-4">
+            Create a deck to organize your scenes
+          </p>
+          <button
+            onClick={() => setShowCreateDeck(true)}
+            className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+          >
+            Create First Deck
+          </button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {decks.map((deck) => (
+            <div
+              key={deck.id}
+              className={`p-6 border rounded-lg cursor-pointer transition-colors ${
+                selectedDeckId === deck.id
+                  ? 'border-primary bg-primary/5'
+                  : 'border-border hover:border-primary/30'
+              }`}
+              onClick={() => handleDeckSelect(deck)}
             >
-              + New Deck
-            </button>
-          </div>
-
-          {/* Decks Grid */}
-          {decksLoading ? (
-            <div className="text-center py-8 text-muted-foreground">Loading decks...</div>
-          ) : decks.length === 0 ? (
-            <div className="text-center py-12">
-              <div className="text-4xl mb-4">📚</div>
-              <h3 className="text-lg font-semibold mb-2">No Decks Yet</h3>
-              <p className="text-muted-foreground mb-4">
-                Create a deck to organize your scenes
-              </p>
-              <button
-                onClick={() => setShowCreateDeck(true)}
-                className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
-              >
-                Create First Deck
-              </button>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {decks.map((deck) => {
-                const deckScenes = getDeckScenes(deck.id);
-                return (
-                  <div
-                    key={deck.id}
-                    className={`p-6 border rounded-lg cursor-pointer transition-colors ${
-                      selectedDeckId === deck.id
-                        ? 'border-primary bg-primary/5'
-                        : 'border-border hover:border-primary/30'
-                    }`}
-                    onClick={() => handleDeckSelect(deck)}
-                  >
-                    <div className="flex items-center space-x-3 mb-4">
-                      <DeckTypeIcon type={deck.type} />
-                      <div className="flex-1">
-                        <h3 className="font-semibold">{deck.name}</h3>
-                        <p className="text-sm text-muted-foreground">{deck.description}</p>
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-2 text-sm">
-                      <div>
-                        <span className="text-muted-foreground">Type:</span>
-                        <span className="ml-2 font-medium">{deck.type}</span>
-                      </div>
-                      <div>
-                        <span className="text-muted-foreground">Scenes:</span>
-                        <span className="ml-2 font-medium">{deckScenes.length}</span>
-                      </div>
-                      <div>
-                        <span className="text-muted-foreground">Keep Warm:</span>
-                        <span className="ml-2 font-medium">
-                          {deck.performance.keepWarm ? 'Yes' : 'No'}
-                        </span>
-                      </div>
-                    </div>
-                    
-                    <div className="mt-4 pt-3 border-t border-border">
-                      <div className="flex justify-between items-center">
-                        <span className="text-xs text-muted-foreground">
-                          {deck.performance.preloadStrategy} preload
-                        </span>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDeleteDeck(deck.id);
-                          }}
-                          className="px-2 py-1 text-xs border border-destructive/20 text-destructive rounded hover:bg-destructive/10 transition-colors"
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-
-          {/* Selected Deck Details */}
-          {selectedDeckId && currentDeck && (
-            <div className="mt-8 p-6 border border-border rounded-lg bg-card">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center space-x-3">
-                  <DeckTypeIcon type={currentDeck.type} />
-                  <div>
-                    <h3 className="text-lg font-semibold">{currentDeck.name}</h3>
-                    <p className="text-muted-foreground">{currentDeck.description}</p>
-                  </div>
+              <div className="flex items-center space-x-3 mb-4">
+                <DeckTypeIcon type={deck.type} />
+                <div className="flex-1">
+                  <h3 className="font-semibold">{deck.name}</h3>
+                  <p className="text-sm text-muted-foreground">{deck.description}</p>
                 </div>
               </div>
-
-              <div className="grid grid-cols-2 gap-4 text-sm mb-6">
+              
+              <div className="space-y-2 text-sm">
                 <div>
                   <span className="text-muted-foreground">Type:</span>
-                  <span className="ml-2 font-medium">{currentDeck.type}</span>
+                  <span className="ml-2 font-medium">{deck.type}</span>
                 </div>
                 <div>
                   <span className="text-muted-foreground">Scenes:</span>
-                  <span className="ml-2 font-medium">{getDeckScenes(selectedDeckId).length}</span>
+                  <span className="ml-2 font-medium">{getDeckScenes(deck.id).length}</span>
                 </div>
                 <div>
                   <span className="text-muted-foreground">Keep Warm:</span>
                   <span className="ml-2 font-medium">
-                    {currentDeck.performance.keepWarm ? 'Yes' : 'No'}
-                  </span>
-                </div>
-                <div>
-                  <span className="text-muted-foreground">Preload:</span>
-                  <span className="ml-2 font-medium">
-                    {currentDeck.performance.preloadStrategy}
+                    {deck.performance.keepWarm ? 'Yes' : 'No'}
                   </span>
                 </div>
               </div>
-
-              {/* Deck Scenes */}
-              <div>
-                <h4 className="font-medium mb-3">Scenes in this Deck</h4>
-                {getDeckScenes(selectedDeckId).length === 0 ? (
-                  <p className="text-muted-foreground text-sm">No scenes in this deck yet</p>
-                ) : (
-                  <div className="space-y-2">
-                    {getDeckScenes(selectedDeckId).map((scene) => (
-                      <div
-                        key={scene.id}
-                        className="p-3 border border-border rounded-lg flex items-center justify-between"
-                      >
-                        <div className="flex items-center space-x-3">
-                          <SceneTypeBadge type={scene.type} />
-                          <div>
-                            <h5 className="font-medium">{scene.name}</h5>
-                            <p className="text-sm text-muted-foreground">{scene.description}</p>
-                          </div>
-                        </div>
-                        <span className="text-xs text-muted-foreground">
-                          View in Scene Manager
-                        </span>
-                      </div>
-                    ))}
+              
+              <div className="mt-4 pt-3 border-t border-border">
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-muted-foreground">
+                    {deck.performance.preloadStrategy} preload
+                  </span>
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteDeck(deck.id);
+                      }}
+                      className="px-2 py-1 text-xs border border-destructive/20 text-destructive rounded hover:bg-destructive/10 transition-colors"
+                    >
+                      Delete
+                    </button>
                   </div>
-                )}
+                </div>
               </div>
             </div>
-          )}
+          ))}
         </div>
+      )}
+
+      {/* Selected Deck Details */}
+      {selectedDeckId && currentDeck && (
+        <div className="mt-8 p-6 border border-border rounded-lg bg-card">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center space-x-3">
+              <DeckTypeIcon type={currentDeck.type} />
+              <div>
+                <h3 className="text-lg font-semibold">{currentDeck.name}</h3>
+                <p className="text-muted-foreground">{currentDeck.description}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4 text-sm mb-6">
+            <div>
+              <span className="text-muted-foreground">Type:</span>
+              <span className="ml-2 font-medium">{currentDeck.type}</span>
+            </div>
+            <div>
+              <span className="text-muted-foreground">Scenes:</span>
+              <span className="ml-2 font-medium">{getDeckScenes(selectedDeckId).length}</span>
+            </div>
+            <div>
+              <span className="text-muted-foreground">Keep Warm:</span>
+              <span className="ml-2 font-medium">
+                {currentDeck.performance.keepWarm ? 'Yes' : 'No'}
+              </span>
+            </div>
+            <div>
+              <span className="text-muted-foreground">Preload:</span>
+              <span className="ml-2 font-medium">
+                {currentDeck.performance.preloadStrategy}
+              </span>
+            </div>
+          </div>
+
+          {/* Deck Scenes */}
+          <div>
+            <h4 className="font-medium mb-3">Scenes in this Deck</h4>
+            {getDeckScenes(selectedDeckId).length === 0 ? (
+              <p className="text-muted-foreground text-sm">No scenes in this deck yet</p>
+            ) : (
+              <div className="space-y-2">
+                {getDeckScenes(selectedDeckId).map((scene) => (
+                  <div
+                    key={scene.id}
+                    className="p-3 border border-border rounded-lg flex items-center justify-between"
+                  >
+                    <div className="flex items-center space-x-3">
+                      <SceneTypeBadge type={scene.type} />
+                      <div>
+                        <h5 className="font-medium">{scene.name}</h5>
+                        <p className="text-sm text-muted-foreground">{scene.description}</p>
+                      </div>
+                    </div>
+                    <span className="text-xs text-muted-foreground">
+                      View in Scene Manager
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Create Deck Modal */}
       {showCreateDeck && (
@@ -459,3 +492,5 @@ export const DeckManager: React.FC = () => {
     </div>
   );
 };
+
+export default DeckManager;

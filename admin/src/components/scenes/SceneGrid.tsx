@@ -1,49 +1,35 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Grid, List, Search, Filter, MoreHorizontal } from 'lucide-react';
-import { Button, Input } from '@progress/shared';
+import React, { useState } from 'react';
+import { Search, Filter } from 'lucide-react';
+import { Input } from '@progress/shared';
 import SceneCard, { SceneCardData } from './SceneCard';
 
 export interface SceneGridProps {
   scenes: SceneCardData[];
   onSceneEdit: (scene: SceneCardData) => void;
+  onSceneEditBasicDetails?: (scene: SceneCardData) => void;
+  onSceneEditDesign?: (scene: SceneCardData) => void;
   onSceneDelete: (scene: SceneCardData) => void;
   onScenePreview: (scene: SceneCardData) => void;
   onSceneToggleActive?: (scene: SceneCardData) => void;
   onSceneTogglePublic?: (scene: SceneCardData) => void;
+  viewMode?: 'grid' | 'list';
   className?: string;
 }
 
 const SceneGrid: React.FC<SceneGridProps> = ({
   scenes,
   onSceneEdit,
+  onSceneEditBasicDetails,
+  onSceneEditDesign,
   onSceneDelete,
   onScenePreview,
   onSceneToggleActive,
   onSceneTogglePublic,
+  viewMode = 'grid',
   className = ''
 }) => {
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<string>('all');
-  const [showViewMenu, setShowViewMenu] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
-
-  // Close menu when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setShowViewMenu(false);
-      }
-    };
-
-    if (showViewMenu) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [showViewMenu]);
 
   // Get unique scene types for filtering
   const sceneTypes = Array.from(new Set(scenes.map(scene => scene.type)));
@@ -63,55 +49,6 @@ const SceneGrid: React.FC<SceneGridProps> = ({
 
   return (
     <div className={`scene-grid ${className}`}>
-      {/* Header with controls */}
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-semibold">Scenes ({filteredScenes.length})</h2>
-        
-        {/* View options flyout menu */}
-        <div className="relative" ref={menuRef}>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setShowViewMenu(!showViewMenu)}
-          >
-            <MoreHorizontal className="h-4 w-4" />
-          </Button>
-          
-          {showViewMenu && (
-            <div className="absolute right-0 top-full mt-1 w-48 bg-background border border-border rounded-md shadow-lg z-10">
-              <div className="p-2">
-                <div className="text-xs font-medium text-muted-foreground mb-2">View Options</div>
-                <div className="space-y-1">
-                  <button
-                    onClick={() => {
-                      setViewMode('grid');
-                      setShowViewMenu(false);
-                    }}
-                    className={`w-full text-left px-2 py-1 text-sm rounded hover:bg-muted flex items-center ${
-                      viewMode === 'grid' ? 'bg-muted' : ''
-                    }`}
-                  >
-                    <Grid className="h-4 w-4 mr-2" />
-                    Grid View
-                  </button>
-                  <button
-                    onClick={() => {
-                      setViewMode('list');
-                      setShowViewMenu(false);
-                    }}
-                    className={`w-full text-left px-2 py-1 text-sm rounded hover:bg-muted flex items-center ${
-                      viewMode === 'list' ? 'bg-muted' : ''
-                    }`}
-                  >
-                    <List className="h-4 w-4 mr-2" />
-                    List View
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
 
       {/* Search and filters */}
       <div className="mb-6 space-y-3">
@@ -152,6 +89,8 @@ const SceneGrid: React.FC<SceneGridProps> = ({
               key={scene.id}
               scene={scene}
               onEdit={onSceneEdit}
+              onEditBasicDetails={onSceneEditBasicDetails}
+              onEditDesign={onSceneEditDesign}
               onDelete={onSceneDelete}
               onPreview={onScenePreview}
               onToggleActive={onSceneToggleActive}

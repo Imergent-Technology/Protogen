@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Layers, Users, BarChart3, Network, Settings, Building2, Plus } from 'lucide-react';
-import { apiClient, Button } from '@progress/shared';
+import { Layers, Users, BarChart3, Network, Settings, Building2 } from 'lucide-react';
+import { apiClient } from '@progress/shared';
 import {
   UsersList,
   AdminLogin,
@@ -19,6 +19,8 @@ import {
   GraphSceneAuthoring,
   DocumentSceneAuthoring,
 } from './components';
+import { SceneWorkflow } from './components/workflows';
+import { useDeckStore } from './stores/deckStore';
 import { AnimatePresence, motion } from 'framer-motion';
 import { initializeTheme } from '@progress/shared';
 
@@ -29,7 +31,7 @@ interface AdminUser {
   is_admin: boolean;
 }
 
-type ViewMode = 'admin' | 'scenes' | 'decks' | 'contexts' | 'flows' | 'users' | 'analytics' | 'graph-studio' | 'tenants' | 'create-scene' | 'edit-scene';
+type ViewMode = 'admin' | 'scenes' | 'decks' | 'contexts' | 'flows' | 'users' | 'analytics' | 'graph-studio' | 'tenants' | 'create-scene' | 'edit-scene' | 'scene-workflow' | 'scene-edit' | 'scene-design';
 
 function App() {
   const navigate = useNavigate();
@@ -41,6 +43,9 @@ function App() {
   const [loginLoading, setLoginLoading] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
   const [authChecking, setAuthChecking] = useState(true);
+  
+  // Deck store for scene management
+  const { createScene, updateScene, scenes: storeScenes } = useDeckStore();
   
   // Content management
   const [currentScene, setCurrentScene] = useState<any>(null);
@@ -63,6 +68,88 @@ function App() {
   
   const { toasts, removeToast, showSuccess, showError } = useToasts();
 
+  // Scene workflow handlers
+  const handleSceneWorkflowComplete = async (data: any) => {
+    try {
+      const { basicDetails, design } = data;
+      
+      const newScene = {
+        name: basicDetails.name,
+        slug: basicDetails.slug,
+        description: basicDetails.description,
+        type: basicDetails.type,
+        deckIds: basicDetails.deckIds,
+        content: {
+          data: design.designData || {},
+          metadata: {},
+        },
+        toolset: {
+          libraries: [],
+          preload: false,
+          keepWarm: false,
+        },
+        is_active: true,
+        is_public: false,
+      };
+
+      await createScene(newScene);
+      showSuccess('Scene created successfully!');
+      setViewMode('scenes');
+      updateURL('scenes');
+    } catch (error) {
+      showError('Failed to create scene: ' + (error instanceof Error ? error.message : 'Unknown error'));
+    }
+  };
+
+  const handleSceneEditComplete = async (data: any) => {
+    try {
+      const { basicDetails } = data;
+      
+      if (!currentScene?.id) {
+        showError('No scene selected for editing');
+        return;
+      }
+
+      await updateScene(currentScene.id, {
+        name: basicDetails.name,
+        slug: basicDetails.slug,
+        description: basicDetails.description,
+        type: basicDetails.type,
+        deckIds: basicDetails.deckIds,
+      });
+
+      showSuccess('Scene updated successfully!');
+      setViewMode('scenes');
+      updateURL('scenes');
+    } catch (error) {
+      showError('Failed to update scene: ' + (error instanceof Error ? error.message : 'Unknown error'));
+    }
+  };
+
+  const handleSceneDesignComplete = async (data: any) => {
+    try {
+      const { design } = data;
+      
+      if (!currentScene?.id) {
+        showError('No scene selected for editing');
+        return;
+      }
+
+      await updateScene(currentScene.id, {
+        content: {
+          data: design.designData || {},
+          metadata: {},
+        },
+      });
+
+      showSuccess('Scene design updated successfully!');
+      setViewMode('scenes');
+      updateURL('scenes');
+    } catch (error) {
+      showError('Failed to update scene design: ' + (error instanceof Error ? error.message : 'Unknown error'));
+    }
+  };
+
   // Helper function to get view subtitle
   const getViewSubtitle = (view: ViewMode): string => {
     switch (view) {
@@ -84,6 +171,16 @@ function App() {
         return 'Analytics Dashboard';
       case 'graph-studio':
         return 'Graph Studio';
+      case 'create-scene':
+        return 'Create New Scene';
+      case 'edit-scene':
+        return 'Edit Scene';
+      case 'scene-workflow':
+        return 'Create New Scene';
+      case 'scene-edit':
+        return 'Edit Scene Details';
+      case 'scene-design':
+        return 'Edit Scene Design';
       default:
         return '';
     }
@@ -117,6 +214,18 @@ function App() {
       setViewMode('decks');
     } else if (path === '/scenes') {
       setViewMode('scenes');
+    } else if (path === '/scenes/new') {
+      setViewMode('scene-workflow');
+    } else if (path.startsWith('/scenes/') && path.endsWith('/edit')) {
+      const sceneId = path.split('/')[2];
+      const scene = storeScenes.find(s => s.id === sceneId);
+      setCurrentScene(scene || null);
+      setViewMode('scene-edit');
+    } else if (path.startsWith('/scenes/') && path.endsWith('/design')) {
+      const sceneId = path.split('/')[2];
+      const scene = storeScenes.find(s => s.id === sceneId);
+      setCurrentScene(scene || null);
+      setViewMode('scene-design');
     } else if (path === '/contexts') {
       setViewMode('contexts');
     } else if (path === '/flows') {
@@ -158,6 +267,15 @@ function App() {
         break;
       case 'graph-studio':
         navigate('/graph-studio');
+        break;
+      case 'scene-workflow':
+        navigate('/scenes/new');
+        break;
+      case 'scene-edit':
+        // This will be handled by the component based on current scene
+        break;
+      case 'scene-design':
+        // This will be handled by the component based on current scene
         break;
       default:
         navigate('/');
@@ -689,22 +807,8 @@ function App() {
             )}
 
             {viewMode === 'scenes' && (
-              <div className="p-8">
-                <div className="max-w-6xl mx-auto">
-                  <div className="mb-8 flex items-center justify-between">
-                    <div>
-                      <h1 className="text-2xl font-bold mb-2">Scene Management</h1>
-                      <p className="text-muted-foreground">
-                        View and manage your scenes
-                      </p>
-                    </div>
-                    <Button onClick={() => setViewMode('create-scene')}>
-                      <Plus className="h-4 w-4 mr-2" />
-                      Create Scene
-                    </Button>
-                  </div>
-                  <SceneManager />
-                </div>
+              <div className="h-full">
+                <SceneManager />
               </div>
             )}
 
@@ -875,6 +979,65 @@ function App() {
                     </div>
                   )}
                 </div>
+              </div>
+            )}
+
+            {/* New Scene Workflow */}
+            {viewMode === 'scene-workflow' && (
+              <div className="h-full">
+                <SceneWorkflow
+                  mode="create"
+                  onComplete={handleSceneWorkflowComplete}
+                  onCancel={() => {
+                    setViewMode('scenes');
+                    updateURL('scenes');
+                  }}
+                />
+              </div>
+            )}
+
+            {/* Edit Scene Basic Details */}
+            {viewMode === 'scene-edit' && (
+              <div className="h-full">
+                <SceneWorkflow
+                  mode="edit"
+                  sceneId={currentScene?.id}
+                  initialData={{
+                    basicDetails: {
+                      name: currentScene?.name || '',
+                      slug: currentScene?.slug || '',
+                      description: currentScene?.description || '',
+                      type: currentScene?.type || 'graph',
+                      deckIds: currentScene?.deckIds || []
+                    }
+                  }}
+                  onComplete={handleSceneEditComplete}
+                  onCancel={() => {
+                    setViewMode('scenes');
+                    updateURL('scenes');
+                  }}
+                />
+              </div>
+            )}
+
+            {/* Edit Scene Design */}
+            {viewMode === 'scene-design' && (
+              <div className="h-full">
+                <SceneWorkflow
+                  mode="edit"
+                  sceneId={currentScene?.id}
+                  initialData={{
+                    design: {
+                      type: currentScene?.type || 'graph',
+                      designData: currentScene
+                    }
+                  }}
+                  onComplete={handleSceneDesignComplete}
+                  onCancel={() => {
+                    setViewMode('scenes');
+                    updateURL('scenes');
+                  }}
+                />
               </div>
             )}
         </main>

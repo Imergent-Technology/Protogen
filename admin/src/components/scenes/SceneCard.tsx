@@ -27,6 +27,8 @@ export interface SceneCardData {
 export interface SceneCardProps {
   scene: SceneCardData;
   onEdit: (scene: SceneCardData) => void;
+  onEditBasicDetails?: (scene: SceneCardData) => void;
+  onEditDesign?: (scene: SceneCardData) => void;
   onDelete: (scene: SceneCardData) => void;
   onPreview: (scene: SceneCardData) => void;
   onToggleActive?: (scene: SceneCardData) => void;
@@ -37,6 +39,8 @@ export interface SceneCardProps {
 const SceneCard: React.FC<SceneCardProps> = ({
   scene,
   onEdit,
+  onEditBasicDetails,
+  onEditDesign,
   onDelete,
   onPreview,
   onToggleActive,
@@ -83,6 +87,12 @@ const SceneCard: React.FC<SceneCardProps> = ({
     switch (action) {
       case 'edit':
         onEdit(scene);
+        break;
+      case 'edit-basic':
+        onEditBasicDetails?.(scene);
+        break;
+      case 'edit-design':
+        onEditDesign?.(scene);
         break;
       case 'delete':
         onDelete(scene);
@@ -168,6 +178,24 @@ const SceneCard: React.FC<SceneCardProps> = ({
                 <Edit className="h-4 w-4" />
                 <span>Edit Scene</span>
               </button>
+              {onEditBasicDetails && (
+                <button
+                  onClick={() => handleOptionSelect('edit-basic')}
+                  className="w-full px-3 py-2 text-left text-sm hover:bg-muted flex items-center space-x-2"
+                >
+                  <Settings className="h-4 w-4" />
+                  <span>Edit Basic Details</span>
+                </button>
+              )}
+              {onEditDesign && (
+                <button
+                  onClick={() => handleOptionSelect('edit-design')}
+                  className="w-full px-3 py-2 text-left text-sm hover:bg-muted flex items-center space-x-2"
+                >
+                  <Settings className="h-4 w-4" />
+                  <span>Edit Design</span>
+                </button>
+              )}
               <button
                 onClick={() => handleOptionSelect('preview')}
                 className="w-full px-3 py-2 text-left text-sm hover:bg-muted flex items-center space-x-2"

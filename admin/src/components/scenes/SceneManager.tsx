@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useDeckStore, Scene } from '../../stores/deckStore';
 import { SceneType } from '../../stores/deckStore';
 import { performanceManager } from '../../services/PerformanceManager';
 import SceneGrid from './SceneGrid';
 import { SceneCardData } from './SceneCard';
 import { SelectionModal, SelectableItem } from '../common';
+import { Plus, SlidersHorizontal, Grid, List } from 'lucide-react';
 
 // Scene type badges
 const SceneTypeBadge: React.FC<{ type: SceneType }> = ({ type }) => {
@@ -26,6 +28,7 @@ const SceneTypeBadge: React.FC<{ type: SceneType }> = ({ type }) => {
 
 // Scene and Deck Manager Component
 export const SceneManager: React.FC = () => {
+  const navigate = useNavigate();
   const {
     decks,
     scenes,
@@ -43,6 +46,9 @@ export const SceneManager: React.FC = () => {
   const [showEditScene, setShowEditScene] = useState(false);
   const [editingScene, setEditingScene] = useState<Scene | null>(null);
   const [showDeckSelection, setShowDeckSelection] = useState(false);
+  const [showListOptions, setShowListOptions] = useState(false);
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const listOptionsRef = useRef<HTMLDivElement>(null);
   // Remove activeTab state - this is now a pure scene manager
 
   // Form states
@@ -61,6 +67,23 @@ export const SceneManager: React.FC = () => {
     performanceManager.initialize();
     return () => performanceManager.destroy();
   }, []);
+
+  // Close list options menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (listOptionsRef.current && !listOptionsRef.current.contains(event.target as Node)) {
+        setShowListOptions(false);
+      }
+    };
+
+    if (showListOptions) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showListOptions]);
 
   // Auto-generate slug when name field loses focus (on blur)
   const handleNameBlur = () => {
@@ -269,13 +292,79 @@ export const SceneManager: React.FC = () => {
     console.log('Toggle public:', sceneData);
   };
 
+  // New handlers for edit buttons
+  const handleSceneCardEditBasicDetails = (sceneData: SceneCardData) => {
+    navigate(`/scenes/${sceneData.id}/edit`);
+  };
+
+  const handleSceneCardEditDesign = (sceneData: SceneCardData) => {
+    navigate(`/scenes/${sceneData.id}/design`);
+  };
+
   return (
     <div className="p-6 max-w-7xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-foreground mb-2">Scene Management</h1>
-        <p className="text-muted-foreground">
-          Create and manage scenes as primary content units, then organize them into presentation decks
-        </p>
+      {/* Header with Action Buttons */}
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-3xl font-bold text-foreground mb-2">Scene Management</h1>
+          <p className="text-muted-foreground">
+            Create and manage scenes as primary content units, then organize them into presentation decks
+          </p>
+        </div>
+        
+        {/* Action Buttons */}
+        <div className="flex items-center space-x-2">
+        {/* List Options Button */}
+        <div className="relative" ref={listOptionsRef}>
+          <button
+            onClick={() => setShowListOptions(!showListOptions)}
+            className="p-2 border border-border rounded-md hover:bg-muted transition-colors"
+            title="List Options"
+          >
+            <SlidersHorizontal className="h-4 w-4" />
+          </button>
+          {showListOptions && (
+            <div className="absolute right-0 top-full mt-1 w-48 bg-background border border-border rounded-md shadow-lg z-10">
+              <div className="p-2">
+                <div className="text-xs font-medium text-muted-foreground mb-2">View Options</div>
+                <div className="space-y-1">
+          <button
+                    onClick={() => { setViewMode('grid'); setShowListOptions(false); }}
+                    className={`w-full text-left px-2 py-1 text-sm rounded hover:bg-muted flex items-center ${viewMode === 'grid' ? 'bg-muted' : ''}`}
+                  >
+                    <Grid className="h-4 w-4 mr-2" /> Grid View
+                  </button>
+                  <button
+                    onClick={() => { setViewMode('list'); setShowListOptions(false); }}
+                    className={`w-full text-left px-2 py-1 text-sm rounded hover:bg-muted flex items-center ${viewMode === 'list' ? 'bg-muted' : ''}`}
+                  >
+                    <List className="h-4 w-4 mr-2" /> List View
+          </button>
+        </div>
+                <div className="border-t border-border my-2"></div>
+                <div className="text-xs font-medium text-muted-foreground mb-2">Filters</div>
+                <div className="space-y-1">
+                  <button
+                    onClick={() => { setShowDeckSelection(true); setShowListOptions(false); }}
+                    className="w-full text-left px-2 py-1 text-sm rounded hover:bg-muted"
+                  >
+                    Filter by Deck
+                  </button>
+      </div>
+            </div>
+            </div>
+          )}
+        </div>
+
+        {/* Create Scene Button */}
+            <button
+              onClick={() => navigate('/scenes/new')}
+          className="p-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+          title="Create Scene"
+            >
+          <Plus className="h-4 w-4" />
+            </button>
+        </div>
       </div>
 
       {/* Error Display */}
@@ -285,31 +374,7 @@ export const SceneManager: React.FC = () => {
         </div>
       )}
 
-      {/* Scenes Management */}
-        <div className="space-y-6">
-          {/* Scenes Header */}
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-xl font-semibold">Scenes</h2>
-              <p className="text-muted-foreground">Primary content units that can be organized into decks</p>
-            </div>
-            <div className="flex space-x-3">
-              <button
-                onClick={() => setShowDeckSelection(true)}
-                className="px-4 py-2 border border-border rounded-md hover:bg-muted transition-colors"
-              >
-                Select Decks
-              </button>
-              <button
-                onClick={() => setShowCreateScene(true)}
-                className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
-              >
-                + New Scene
-              </button>
-            </div>
-          </div>
-
-          {/* Scenes Grid */}
+      {/* Scenes Content */}
           {scenesLoading ? (
             <div className="text-center py-8 text-muted-foreground">Loading scenes...</div>
           ) : scenes.length === 0 ? (
@@ -320,7 +385,7 @@ export const SceneManager: React.FC = () => {
                 Create your first scene to get started
               </p>
               <button
-                onClick={() => setShowCreateScene(true)}
+                onClick={() => navigate('/scenes/new')}
                 className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
               >
                 Create First Scene
@@ -330,13 +395,15 @@ export const SceneManager: React.FC = () => {
             <SceneGrid
               scenes={scenes.map(convertToSceneCardData)}
               onSceneEdit={handleSceneCardEdit}
+              onSceneEditBasicDetails={handleSceneCardEditBasicDetails}
+              onSceneEditDesign={handleSceneCardEditDesign}
               onSceneDelete={handleSceneCardDelete}
               onScenePreview={handleSceneCardPreview}
               onSceneToggleActive={handleSceneCardToggleActive}
               onSceneTogglePublic={handleSceneCardTogglePublic}
-            />
-          )}
-        </div>
+          viewMode={viewMode}
+        />
+      )}
 
       {/* Create Scene Modal */}
       {showCreateScene && (
