@@ -342,11 +342,21 @@ const DocumentSceneAuthoring: React.FC<DocumentSceneAuthoringProps> = ({
               handleSave();
             }}
             disabled={false}
-            style={{ pointerEvents: 'auto' }}
+            style={{ pointerEvents: 'auto', backgroundColor: 'red', color: 'white' }}
           >
             <Save className="h-4 w-4 mr-2" />
-            Save Scene
+            Save Scene (RED BUTTON)
           </Button>
+          <button 
+            onClick={() => {
+              console.log('=== HTML SAVE BUTTON CLICKED ===');
+              console.log('HTML button click handler called');
+              handleSave();
+            }}
+            style={{ backgroundColor: 'green', color: 'white', padding: '8px 16px', marginLeft: '8px' }}
+          >
+            HTML Save Button
+          </button>
         </div>
         <div className="text-xs text-muted-foreground mt-2">
           DEBUG: Save button should be clickable. Check console for click logs.
