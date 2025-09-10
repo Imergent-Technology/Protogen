@@ -165,11 +165,11 @@ const WorkflowWizard: React.FC<WorkflowWizardProps> = ({
     const StepComponent = currentStep.component;
     let stepData = workflowData[currentStep.id] || {};
     
-    // Special handling for DesignStep to ensure it gets the correct type
-    if (currentStep.id === 'design' && workflowData.basicDetails?.type) {
+    // Special handling for DesignStep to ensure it gets the correct type and designData
+    if (currentStep.id === 'design') {
       stepData = {
-        ...stepData,
-        type: workflowData.basicDetails.type
+        type: workflowData.basicDetails?.type || 'graph',
+        designData: workflowData.design?.designData || undefined
       };
     }
     
