@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Search, Filter } from 'lucide-react';
 import { Input, Button, Badge } from '@progress/shared';
 import SceneCard, { SceneCardData } from './SceneCard';
-import { ContextMenu, useContextMenu, getSceneContextMenuItems, SceneContextMenuActions, getListSelectionClasses } from '../common/ContextMenu';
+import { ContextMenu, useContextMenu, getSceneContextMenuItems, SceneContextMenuActions } from '../common/ContextMenu';
 
 export interface SceneGridProps {
   scenes: SceneCardData[];
@@ -168,15 +168,6 @@ const SceneListItem: React.FC<SceneListItemProps> = ({
     }
   };
 
-  // Generate scene type color
-  const getSceneTypeColor = (type: string) => {
-    switch (type) {
-      case 'graph': return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'document': return 'bg-green-100 text-green-800 border-green-200';
-      case 'card': return 'bg-purple-100 text-purple-800 border-purple-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
-    }
-  };
 
   // Handle context menu
   const handleContextMenu = (e: React.MouseEvent) => {
@@ -197,7 +188,9 @@ const SceneListItem: React.FC<SceneListItemProps> = ({
 
   return (
     <div className="relative group" onContextMenu={handleContextMenu}>
-      <div className={getListSelectionClasses(isSelected, 'flex items-center justify-between p-3 border border-border rounded-lg hover:bg-muted/30 transition-colors')}>
+      <div className={`flex items-center justify-between p-3 border border-border rounded-lg hover:bg-muted/30 transition-colors ${
+        isSelected ? 'ring-2 ring-primary ring-offset-2 ring-offset-background bg-primary/5' : ''
+      }`}>
         <div className="flex items-center space-x-3 flex-1 min-w-0">
           {/* Thumbnail */}
           <div className="w-12 h-8 rounded border border-border overflow-hidden flex-shrink-0">
@@ -207,12 +200,7 @@ const SceneListItem: React.FC<SceneListItemProps> = ({
                 style={{ backgroundImage: `url(${scene.thumbnail})` }}
               />
             ) : (
-              <div className={`w-full h-full flex items-center justify-center ${
-                scene.type === 'graph' ? 'bg-blue-50 dark:bg-blue-950' :
-                scene.type === 'document' ? 'bg-green-50 dark:bg-green-950' :
-                scene.type === 'card' ? 'bg-purple-50 dark:bg-purple-950' :
-                'bg-gray-50 dark:bg-gray-950'
-              }`}>
+              <div className="w-full h-full flex items-center justify-center bg-muted">
                 <span className="text-sm">
                   {getSceneTypeIcon(scene.type)}
                 </span>
@@ -224,7 +212,7 @@ const SceneListItem: React.FC<SceneListItemProps> = ({
           <div className="flex-1 min-w-0">
             <div className="flex items-center space-x-2">
               <h3 className="font-medium truncate text-sm">{scene.name}</h3>
-              <Badge className={`text-xs ${getSceneTypeColor(scene.type)}`}>
+              <Badge variant="secondary" className="text-xs">
                 {scene.type}
               </Badge>
             </div>
@@ -244,10 +232,10 @@ const SceneListItem: React.FC<SceneListItemProps> = ({
         {/* Status Indicators */}
         <div className="flex items-center space-x-2">
           {!scene.isActive && (
-            <div className="w-2 h-2 bg-red-500 rounded-full" title="Inactive" />
+            <div className="w-2 h-2 bg-destructive rounded-full" title="Inactive" />
           )}
           {scene.isPublic && (
-            <div className="w-2 h-2 bg-green-500 rounded-full" title="Public" />
+            <div className="w-2 h-2 bg-primary rounded-full" title="Public" />
           )}
         </div>
       </div>

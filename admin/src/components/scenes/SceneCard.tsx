@@ -1,6 +1,6 @@
 import React from 'react';
 import { Badge } from '@progress/shared';
-import { ContextMenu, useContextMenu, getSceneContextMenuItems, SceneContextMenuActions, getSelectionClasses } from '../common/ContextMenu';
+import { ContextMenu, useContextMenu, getSceneContextMenuItems, SceneContextMenuActions } from '../common/ContextMenu';
 
 // Types for scene card
 export interface SceneCardData {
@@ -63,15 +63,6 @@ const SceneCard: React.FC<SceneCardProps> = ({
     }
   };
 
-  // Generate scene type color
-  const getSceneTypeColor = (type: string) => {
-    switch (type) {
-      case 'graph': return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'document': return 'bg-green-100 text-green-800 border-green-200';
-      case 'card': return 'bg-purple-100 text-purple-800 border-purple-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
-    }
-  };
 
   // Remove card-wide click functionality
 
@@ -94,11 +85,13 @@ const SceneCard: React.FC<SceneCardProps> = ({
 
   return (
     <div 
-      className={getSelectionClasses(isSelected, `scene-card relative group transition-all duration-200 hover:shadow-lg ${className}`)}
+      className={`scene-card relative group transition-all duration-200 hover:shadow-lg ${className}`}
       onContextMenu={handleContextMenu}
     >
       {/* Main Card */}
-      <div className="relative bg-background border border-border rounded-lg overflow-hidden aspect-video">
+      <div className={`relative border border-border rounded-lg overflow-hidden aspect-video transition-all duration-200 ${
+        isSelected ? 'ring-2 ring-primary ring-offset-2 ring-offset-background' : ''
+      }`}>
         {/* Preview Thumbnail */}
         {scene.thumbnail ? (
           <div 
@@ -106,12 +99,7 @@ const SceneCard: React.FC<SceneCardProps> = ({
             style={{ backgroundImage: `url(${scene.thumbnail})` }}
           />
         ) : (
-              <div className={`w-full h-full flex items-center justify-center ${
-                scene.type === 'graph' ? 'bg-blue-50 dark:bg-blue-950' :
-                scene.type === 'document' ? 'bg-green-50 dark:bg-green-950' :
-                scene.type === 'card' ? 'bg-purple-50 dark:bg-purple-950' :
-                'bg-gray-50 dark:bg-gray-950'
-              }`}>
+          <div className="w-full h-full flex items-center justify-center bg-muted">
             <div className="text-center">
               <div className="text-4xl mb-2">{getSceneTypeIcon(scene.type)}</div>
               <div className="text-sm text-muted-foreground">No Preview</div>
@@ -122,10 +110,10 @@ const SceneCard: React.FC<SceneCardProps> = ({
         {/* Status Indicators */}
         <div className="absolute top-2 right-2 flex space-x-1">
           {!scene.isActive && (
-            <div className="w-2 h-2 bg-red-500 rounded-full" title="Inactive" />
+            <div className="w-2 h-2 bg-destructive rounded-full" title="Inactive" />
           )}
           {scene.isPublic && (
-            <div className="w-2 h-2 bg-green-500 rounded-full" title="Public" />
+            <div className="w-2 h-2 bg-primary rounded-full" title="Public" />
           )}
         </div>
 

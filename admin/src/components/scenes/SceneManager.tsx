@@ -11,17 +11,10 @@ import ConfirmationDialog from '../common/ConfirmationDialog';
 
 // Scene type badges
 const SceneTypeBadge: React.FC<{ type: SceneType }> = ({ type }) => {
-  const colors = {
-    graph: 'bg-blue-100 text-blue-800',
-    card: 'bg-green-100 text-green-800',
-    document: 'bg-purple-100 text-purple-800',
-    dashboard: 'bg-orange-100 text-orange-800',
-  };
-  
   return (
-    <span className={`px-2 py-1 text-xs font-medium rounded-full ${colors[type]}`}>
+    <Badge variant="secondary" className="text-xs">
       {type}
-    </span>
+    </Badge>
   );
 };
 
