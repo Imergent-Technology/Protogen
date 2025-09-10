@@ -2,34 +2,25 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useDeckStore, Deck } from '../../stores/deckStore';
 import { DeckType } from '../../stores/deckStore';
 import { performanceManager } from '../../services/PerformanceManager';
-import { Plus, SlidersHorizontal, Grid, List } from 'lucide-react';
+import { Plus, SlidersHorizontal, Grid, List, Loader2 } from 'lucide-react';
+import DeckGrid from './DeckGrid';
+import { DeckCardData } from './DeckCard';
+import DeckWorkflow, { DeckWorkflowData } from '../workflows/deck/DeckWorkflow';
+import ConfirmationDialog from '../common/ConfirmationDialog';
 
-// Simple scene type badge for deck manager
-const SceneTypeBadge: React.FC<{ type: string }> = ({ type }) => {
-  const colors = {
-    graph: 'bg-blue-100 text-blue-800',
-    card: 'bg-green-100 text-green-800',
-    document: 'bg-purple-100 text-purple-800',
-    dashboard: 'bg-orange-100 text-orange-800',
-  };
+// Function to determine deck type based on scene types
+const determineDeckType = (sceneTypes: string[]): DeckType => {
+  const uniqueTypes = [...new Set(sceneTypes)];
   
-  return (
-    <span className={`px-2 py-1 text-xs font-medium rounded-full ${colors[type as keyof typeof colors] || 'bg-gray-100 text-gray-800'}`}>
-      {type}
-    </span>
-  );
-};
-
-// Deck type icons
-const DeckTypeIcon: React.FC<{ type: DeckType }> = ({ type }) => {
-  const icons = {
-    graph: '📊',
-    card: '🃏',
-    document: '📄',
-    dashboard: '📈',
-  };
+  if (uniqueTypes.length === 0) {
+    return 'graph'; // Default type for empty decks
+  }
   
-  return <span className="text-2xl">{icons[type]}</span>;
+  if (uniqueTypes.length === 1) {
+    return uniqueTypes[0] as DeckType;
+  }
+  
+  return 'hybrid' as DeckType; // Multiple scene types = hybrid
 };
 
 // Deck Manager Component
@@ -47,19 +38,22 @@ export const DeckManager: React.FC = () => {
     setDecksError,
   } = useDeckStore();
 
-  const [selectedDeckId, setSelectedDeckId] = useState<string | null>(null);
   const [showCreateDeck, setShowCreateDeck] = useState(false);
+  const [showEditDeck, setShowEditDeck] = useState(false);
+  const [editingDeck, setEditingDeck] = useState<Deck | null>(null);
   const [showListOptions, setShowListOptions] = useState(false);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const listOptionsRef = useRef<HTMLDivElement>(null);
-
-  const [deckForm, setDeckForm] = useState({
-    name: '',
-    slug: '',
-    description: '',
-    type: 'graph' as DeckType,
-    keepWarm: true,
-    preloadStrategy: 'proximity' as const,
+  
+  // Delete confirmation state
+  const [deleteConfirmation, setDeleteConfirmation] = useState<{
+    isOpen: boolean;
+    deckId: string | null;
+    deckName: string;
+  }>({
+    isOpen: false,
+    deckId: null,
+    deckName: ''
   });
 
   // Initialize performance manager
@@ -85,18 +79,119 @@ export const DeckManager: React.FC = () => {
     };
   }, [showListOptions]);
 
-  // Auto-generate slug when deck name field loses focus (on blur)
-  const handleDeckNameBlur = () => {
-    if (deckForm.name && !deckForm.slug) {
-      const slug = deckForm.name
-        .toLowerCase()
-        .trim()
-        .replace(/[^a-z0-9\s-]/g, '')
-        .replace(/\s+/g, '-')
-        .replace(/-+/g, '-')
-        .replace(/^-|-$/g, '');
-      setDeckForm(prev => ({ ...prev, slug }));
+  // Convert Deck to DeckCardData format
+  const convertToDeckCardData = (deck: Deck): DeckCardData => {
+    const deckScenes = scenes.filter(scene => deck.sceneIds.includes(scene.id));
+    const sceneTypes = deckScenes.map(scene => scene.type);
+    const determinedType = determineDeckType(sceneTypes);
+
+    return {
+      id: deck.id,
+      name: deck.name,
+      type: determinedType,
+      description: deck.description,
+      thumbnail: deckScenes[0]?.thumbnail,
+      metadata: {
+        title: deck.name,
+        author: deck.creator_id?.toString(),
+        tags: deck.tags || [],
+        createdAt: deck.created_at,
+        updatedAt: deck.updated_at,
+      },
+      stats: {
+        sceneCount: deck.sceneIds.length,
+        viewCount: deck.view_count || 0,
+        lastViewed: deck.last_viewed_at,
+      },
+      isActive: deck.is_active,
+      isPublic: deck.is_public,
+      scenes: deckScenes.map(scene => ({
+        id: scene.id,
+        name: scene.name,
+        thumbnail: scene.thumbnail,
+        type: scene.type,
+      })),
+    };
+  };
+
+  // Handle deck creation/editing
+  const handleDeckWorkflowComplete = async (data: DeckWorkflowData) => {
+    try {
+      setDecksLoading(true);
+      
+      if (showEditDeck && editingDeck) {
+        // Update existing deck
+        await updateDeck(editingDeck.id, {
+          name: data.basicDetails.name,
+          slug: data.basicDetails.slug,
+          description: data.basicDetails.description,
+          type: data.basicDetails.type as DeckType,
+          keep_warm: data.basicDetails.keepWarm,
+          preload_strategy: data.basicDetails.preloadStrategy,
+        });
+      } else {
+        // Create new deck
+        await createDeck({
+          name: data.basicDetails.name,
+          slug: data.basicDetails.slug,
+          description: data.basicDetails.description,
+          type: data.basicDetails.type as DeckType,
+          keep_warm: data.basicDetails.keepWarm,
+          preload_strategy: data.basicDetails.preloadStrategy,
+          scene_ids: [],
+          tags: [],
+          is_active: true,
+          is_public: false,
+        });
+      }
+      
+      setShowCreateDeck(false);
+      setShowEditDeck(false);
+      setEditingDeck(null);
+    } catch (error) {
+      console.error('Failed to save deck:', error);
+      setDecksError(error instanceof Error ? error.message : 'Failed to save deck');
+    } finally {
+      setDecksLoading(false);
     }
+  };
+
+  // Handle deck deletion
+  const handleDeckDelete = async (deck: DeckCardData) => {
+    setDeleteConfirmation({
+      isOpen: true,
+      deckId: deck.id,
+      deckName: deck.name
+    });
+  };
+
+  // Confirm deck deletion
+  const confirmDeleteDeck = async () => {
+    if (!deleteConfirmation.deckId) return;
+
+    try {
+      setDecksLoading(true);
+      await deleteDeck(deleteConfirmation.deckId);
+      setDeleteConfirmation({
+        isOpen: false,
+        deckId: null,
+        deckName: ''
+      });
+    } catch (error) {
+      console.error('Failed to delete deck:', error);
+      setDecksError(error instanceof Error ? error.message : 'Failed to delete deck');
+    } finally {
+      setDecksLoading(false);
+    }
+  };
+
+  // Cancel deck deletion
+  const cancelDeleteDeck = () => {
+    setDeleteConfirmation({
+      isOpen: false,
+      deckId: null,
+      deckName: ''
+    });
   };
 
   // Handle deck creation
@@ -247,79 +342,34 @@ export const DeckManager: React.FC = () => {
 
       {/* Decks Content */}
       {decksLoading ? (
-        <div className="text-center py-8 text-muted-foreground">Loading decks...</div>
-      ) : decks.length === 0 ? (
-        <div className="text-center py-12">
-          <div className="text-4xl mb-4">📚</div>
-          <h3 className="text-lg font-semibold mb-2">No Decks Yet</h3>
-          <p className="text-muted-foreground mb-4">
-            Create a deck to organize your scenes
-          </p>
-          <button
-            onClick={() => setShowCreateDeck(true)}
-            className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
-          >
-            Create First Deck
-          </button>
+        <div className="text-center py-8 text-muted-foreground">
+          <Loader2 className="h-6 w-6 animate-spin mx-auto mb-2" />
+          Loading decks...
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {decks.map((deck) => (
-            <div
-              key={deck.id}
-              className={`p-6 border rounded-lg cursor-pointer transition-colors ${
-                selectedDeckId === deck.id
-                  ? 'border-primary bg-primary/5'
-                  : 'border-border hover:border-primary/30'
-              }`}
-              onClick={() => handleDeckSelect(deck)}
-            >
-              <div className="flex items-center space-x-3 mb-4">
-                <DeckTypeIcon type={deck.type} />
-                <div className="flex-1">
-                  <h3 className="font-semibold">{deck.name}</h3>
-                  <p className="text-sm text-muted-foreground">{deck.description}</p>
-                </div>
-              </div>
-              
-              <div className="space-y-2 text-sm">
-                <div>
-                  <span className="text-muted-foreground">Type:</span>
-                  <span className="ml-2 font-medium">{deck.type}</span>
-                </div>
-                <div>
-                  <span className="text-muted-foreground">Scenes:</span>
-                  <span className="ml-2 font-medium">{getDeckScenes(deck.id).length}</span>
-                </div>
-                <div>
-                  <span className="text-muted-foreground">Keep Warm:</span>
-                  <span className="ml-2 font-medium">
-                    {deck.performance.keepWarm ? 'Yes' : 'No'}
-                  </span>
-                </div>
-              </div>
-              
-              <div className="mt-4 pt-3 border-t border-border">
-                <div className="flex justify-between items-center">
-                  <span className="text-xs text-muted-foreground">
-                    {deck.performance.preloadStrategy} preload
-                  </span>
-                  <div className="flex space-x-2">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDeleteDeck(deck.id);
-                      }}
-                      className="px-2 py-1 text-xs border border-destructive/20 text-destructive rounded hover:bg-destructive/10 transition-colors"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+        <DeckGrid
+          decks={decks.map(convertToDeckCardData)}
+          onDeckEdit={(deck) => {
+            const originalDeck = decks.find(d => d.id === deck.id);
+            if (originalDeck) {
+              setEditingDeck(originalDeck);
+              setShowEditDeck(true);
+            }
+          }}
+          onDeckDelete={handleDeckDelete}
+          onDeckPreview={(deck) => {
+            // TODO: Implement deck preview
+            console.log('Preview deck:', deck);
+          }}
+          onDeckToggleActive={(deck) => {
+            // TODO: Implement toggle active
+            console.log('Toggle active:', deck);
+          }}
+          onDeckTogglePublic={(deck) => {
+            // TODO: Implement toggle public
+            console.log('Toggle public:', deck);
+          }}
+        />
       )}
 
       {/* Selected Deck Details */}
@@ -388,107 +438,49 @@ export const DeckManager: React.FC = () => {
         </div>
       )}
 
-      {/* Create Deck Modal */}
+      {/* Create Deck Workflow */}
       {showCreateDeck && (
-        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-card border border-border rounded-lg p-6 w-full max-w-md">
-            <h3 className="text-lg font-semibold mb-4">Create New Deck</h3>
-            
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium mb-1">Name</label>
-                <input
-                  type="text"
-                  value={deckForm.name}
-                  onChange={(e) => setDeckForm({ ...deckForm, name: e.target.value })}
-                  onBlur={handleDeckNameBlur}
-                  className="w-full px-3 py-2 border border-border rounded-md bg-background"
-                  placeholder="Enter deck name"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium mb-1">Slug</label>
-                <input
-                  type="text"
-                  value={deckForm.slug}
-                  onChange={(e) => setDeckForm({ ...deckForm, slug: e.target.value })}
-                  className="w-full px-3 py-2 border border-border rounded-md bg-background"
-                  placeholder="Auto-generated from name"
-                />
-                <p className="text-xs text-muted-foreground mt-1">
-                  URL-friendly identifier (auto-generated from name)
-                </p>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium mb-1">Description</label>
-                <textarea
-                  value={deckForm.description}
-                  onChange={(e) => setDeckForm({ ...deckForm, description: e.target.value })}
-                  className="w-full px-3 py-2 border border-border rounded-md bg-background"
-                  placeholder="Enter deck description"
-                  rows={3}
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium mb-1">Type</label>
-                <select
-                  value={deckForm.type}
-                  onChange={(e) => setDeckForm({ ...deckForm, type: e.target.value as DeckType })}
-                  className="w-full px-3 py-2 border border-border rounded-md bg-background"
-                >
-                  <option value="graph">Graph</option>
-                  <option value="card">Card</option>
-                  <option value="document">Document</option>
-                  <option value="dashboard">Dashboard</option>
-                </select>
-              </div>
-              
-              <div className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  id="keepWarm"
-                  checked={deckForm.keepWarm}
-                  onChange={(e) => setDeckForm({ ...deckForm, keepWarm: e.target.checked })}
-                  className="rounded"
-                />
-                <label htmlFor="keepWarm" className="text-sm">Keep scenes warm in memory</label>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium mb-1">Preload Strategy</label>
-                <select
-                  value={deckForm.preloadStrategy}
-                  onChange={(e) => setDeckForm({ ...deckForm, preloadStrategy: e.target.value as any })}
-                  className="w-full px-3 py-2 border border-border rounded-md bg-background"
-                >
-                  <option value="immediate">Immediate</option>
-                  <option value="proximity">Proximity</option>
-                  <option value="on-demand">On Demand</option>
-                </select>
-              </div>
-            </div>
-            
-            <div className="flex space-x-3 mt-6">
-              <button
-                onClick={handleCreateDeck}
-                disabled={!deckForm.name || decksLoading}
-                className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:opacity-50 transition-colors"
-              >
-                {decksLoading ? 'Creating...' : 'Create Deck'}
-              </button>
-              <button
-                onClick={() => setShowCreateDeck(false)}
-                className="flex-1 px-4 py-2 border border-border rounded-md hover:bg-muted transition-colors"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
+        <DeckWorkflow
+          mode="create"
+          onComplete={handleDeckWorkflowComplete}
+          onCancel={() => setShowCreateDeck(false)}
+        />
       )}
+
+      {/* Edit Deck Workflow */}
+      {showEditDeck && editingDeck && (
+        <DeckWorkflow
+          mode="edit"
+          initialData={{
+            basicDetails: {
+              name: editingDeck.name,
+              slug: editingDeck.slug,
+              description: editingDeck.description || '',
+              type: editingDeck.type,
+              keepWarm: editingDeck.performance?.keepWarm || true,
+              preloadStrategy: editingDeck.performance?.preloadStrategy || 'proximity',
+            }
+          }}
+          onComplete={handleDeckWorkflowComplete}
+          onCancel={() => {
+            setShowEditDeck(false);
+            setEditingDeck(null);
+          }}
+        />
+      )}
+
+      {/* Delete Confirmation Dialog */}
+      <ConfirmationDialog
+        isOpen={deleteConfirmation.isOpen}
+        onClose={cancelDeleteDeck}
+        onConfirm={confirmDeleteDeck}
+        title="Delete Deck"
+        message={`Are you sure you want to delete "${deleteConfirmation.deckName}"? This action cannot be undone.`}
+        confirmText="Delete Deck"
+        cancelText="Cancel"
+        variant="destructive"
+        isLoading={decksLoading}
+      />
     </div>
   );
 };

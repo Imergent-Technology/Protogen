@@ -3,7 +3,7 @@ import { devtools } from 'zustand/middleware';
 import { SceneCardData } from '../components/scenes/SceneCard';
 
 // Deck types based on presentation requirements
-export type DeckType = 'graph' | 'card' | 'document' | 'dashboard';
+export type DeckType = 'graph' | 'card' | 'document' | 'dashboard' | 'hybrid';
 
 // Scene types that can exist within decks or independently
 export type SceneType = 'graph' | 'card' | 'document' | 'dashboard';

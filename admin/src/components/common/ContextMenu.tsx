@@ -155,6 +155,15 @@ export interface SceneContextMenuActions {
   onDelete?: () => void;
 }
 
+// Deck context menu interface
+export interface DeckContextMenuActions {
+  onEdit?: () => void;
+  onPreview?: () => void;
+  onToggleActive?: () => void;
+  onTogglePublic?: () => void;
+  onDelete?: () => void;
+}
+
 // Predefined context menu items for scenes
 export const getSceneContextMenuItems = (
   scene: any,
@@ -220,6 +229,71 @@ export const getSceneContextMenuItems = (
     items.push({
       id: 'delete',
       label: 'Delete Scene',
+      icon: <Trash2 className="w-4 h-4" />,
+      action: actions.onDelete,
+      variant: 'destructive'
+    });
+  }
+
+  return items;
+};
+
+// Predefined context menu items for decks
+export const getDeckContextMenuItems = (
+  deck: any,
+  actions: DeckContextMenuActions
+): ContextMenuItem[] => {
+  const items: ContextMenuItem[] = [];
+
+  // Edit option
+  if (actions.onEdit) {
+    items.push({
+      id: 'edit',
+      label: 'Edit Deck',
+      icon: <Edit className="w-4 h-4" />,
+      action: actions.onEdit
+    });
+  }
+
+  if (actions.onPreview) {
+    items.push({
+      id: 'preview',
+      label: 'Preview',
+      icon: <Eye className="w-4 h-4" />,
+      action: actions.onPreview
+    });
+  }
+
+  // Add divider if we have edit options
+  if (items.length > 0) {
+    items.push({ id: 'divider1', divider: true });
+  }
+
+  // Status toggle options
+  if (actions.onToggleActive) {
+    items.push({
+      id: 'toggle-active',
+      label: deck?.isActive ? 'Deactivate' : 'Activate',
+      icon: deck?.isActive ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />,
+      action: actions.onToggleActive
+    });
+  }
+
+  if (actions.onTogglePublic) {
+    items.push({
+      id: 'toggle-public',
+      label: deck?.isPublic ? 'Make Private' : 'Make Public',
+      icon: deck?.isPublic ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />,
+      action: actions.onTogglePublic
+    });
+  }
+
+  // Add divider before destructive action
+  if (actions.onDelete) {
+    items.push({ id: 'divider2', divider: true });
+    items.push({
+      id: 'delete',
+      label: 'Delete Deck',
       icon: <Trash2 className="w-4 h-4" />,
       action: actions.onDelete,
       variant: 'destructive'
