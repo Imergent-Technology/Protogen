@@ -164,55 +164,6 @@ export const DeckManager: React.FC = () => {
     });
   };
 
-  // Handle deck creation
-  const handleCreateDeck = async () => {
-    try {
-      setDecksLoading(true);
-      setDecksError(null);
-
-      const newDeck = {
-        name: deckForm.name,
-        slug: deckForm.slug || deckForm.name.toLowerCase().replace(/\s+/g, '-'),
-        description: deckForm.description,
-        type: deckForm.type,
-        sceneIds: [],
-        navigation: {
-          type: 'sequential' as const,
-          transitions: {
-            type: 'slide' as const,
-            duration: 300,
-          },
-          controls: {
-            showProgress: true,
-            allowRandomAccess: false,
-            keyboardNavigation: true,
-          },
-        },
-        performance: {
-          keepWarm: deckForm.keepWarm,
-          preloadStrategy: deckForm.preloadStrategy,
-        },
-      };
-
-      await createDeck(newDeck);
-      
-      // Reset form
-      setDeckForm({
-        name: '',
-        slug: '',
-        description: '',
-        type: 'graph',
-        keepWarm: true,
-        preloadStrategy: 'proximity',
-      });
-      setShowCreateDeck(false);
-      
-    } catch (error) {
-      setDecksError(error instanceof Error ? error.message : 'Failed to create deck');
-    } finally {
-      setDecksLoading(false);
-    }
-  };
 
 
   return (
