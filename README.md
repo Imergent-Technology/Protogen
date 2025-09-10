@@ -1,4 +1,4 @@
-# Protogen - Community-Driven Knowledge Platform
+# Protogen - Community-Driven Value Factory
 
 A foundational prototype for collaborative feedback, knowledge synthesis, and multi-tenant content management with advanced graph visualization and presentation capabilities. Protogen serves as the first milestone in a larger vision toward community-driven governance and collective knowledge synthesis.
 
