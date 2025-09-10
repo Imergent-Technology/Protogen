@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { WorkflowWizard } from '../WorkflowWizard';
+import WorkflowWizard from '../WorkflowWizard';
 import DeckDetailsStep from './DeckDetailsStep';
 import { DeckCardData } from '../../decks/DeckCard';
 
