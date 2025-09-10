@@ -177,51 +177,160 @@ export const useDeckStore = create<DeckState>()(
       
       // Deck management actions
       createDeck: async (deckData) => {
-        // TODO: Implement API call
-        const existingSlugs = _get().decks.map(deck => deck.slug);
-        const slug = generateUniqueSlug(deckData.name, existingSlugs);
-        
-        const newDeck: Deck = {
-          ...deckData,
-          slug,
-          id: self.crypto.randomUUID ? self.crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).substr(2),
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        };
-        
-        set((state) => ({
-          decks: [...state.decks, newDeck]
-        }));
+        try {
+          const response = await fetch('/api/decks', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${localStorage.getItem('admin_token')}`,
+            },
+            body: JSON.stringify({
+              name: deckData.name,
+              slug: deckData.slug,
+              description: deckData.description,
+              type: deckData.type,
+              keep_warm: deckData.keep_warm,
+              preload_strategy: deckData.preload_strategy,
+              scene_ids: deckData.scene_ids || [],
+              tags: deckData.tags || [],
+              is_active: deckData.is_active !== false,
+              is_public: deckData.is_public || false,
+            }),
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Failed to create deck');
+          }
+
+          const result = await response.json();
+          const apiDeck = result.data;
+          
+          // Transform API response to match frontend interface
+          const newDeck: Deck = {
+            id: apiDeck.id,
+            name: apiDeck.name,
+            slug: apiDeck.slug,
+            description: apiDeck.description,
+            type: apiDeck.type,
+            sceneIds: apiDeck.scene_ids || [],
+            navigation: apiDeck.navigation || {
+              type: 'sequential',
+              transitions: { type: 'slide', duration: 300 },
+              controls: { showProgress: true, allowRandomAccess: true, keyboardNavigation: true }
+            },
+            performance: {
+              keepWarm: apiDeck.keep_warm || false,
+              preloadStrategy: apiDeck.preload_strategy || 'proximity',
+            },
+            tags: apiDeck.tags || [],
+            is_active: apiDeck.is_active,
+            is_public: apiDeck.is_public,
+            creator_id: apiDeck.creator_id,
+            view_count: apiDeck.view_count || 0,
+            last_viewed_at: apiDeck.last_viewed_at,
+            created_at: apiDeck.created_at,
+            updated_at: apiDeck.updated_at,
+          };
+          
+          set((state) => ({
+            decks: [...state.decks, newDeck]
+          }));
+        } catch (error) {
+          console.error('Failed to create deck:', error);
+          throw error;
+        }
       },
       
       updateDeck: async (id, updates) => {
-        // TODO: Implement API call
-        set((state) => {
-          const deck = state.decks.find(d => d.id === id);
-          if (!deck) return state;
-          
-          // Handle slug updates when name changes
-          let newSlug = deck.slug;
-          if (updates.name && updates.name !== deck.name) {
-            const existingSlugs = state.decks.filter(d => d.id !== id).map(d => d.slug);
-            newSlug = generateUniqueSlug(updates.name, existingSlugs);
+        try {
+          const response = await fetch(`/api/decks/${id}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${localStorage.getItem('admin_token')}`,
+            },
+            body: JSON.stringify({
+              name: updates.name,
+              slug: updates.slug,
+              description: updates.description,
+              type: updates.type,
+              keep_warm: updates.keep_warm,
+              preload_strategy: updates.preload_strategy,
+              scene_ids: updates.scene_ids,
+              tags: updates.tags,
+              is_active: updates.is_active,
+              is_public: updates.is_public,
+            }),
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Failed to update deck');
           }
+
+          const result = await response.json();
+          const apiDeck = result.data;
           
-          return {
-            decks: state.decks.map(deck =>
-              deck.id === id
-                ? { ...deck, ...updates, slug: newSlug, updated_at: new Date().toISOString() }
-                : deck
-            )
+          // Transform API response to match frontend interface
+          const updatedDeck: Deck = {
+            id: apiDeck.id,
+            name: apiDeck.name,
+            slug: apiDeck.slug,
+            description: apiDeck.description,
+            type: apiDeck.type,
+            sceneIds: apiDeck.scene_ids || [],
+            navigation: apiDeck.navigation || {
+              type: 'sequential',
+              transitions: { type: 'slide', duration: 300 },
+              controls: { showProgress: true, allowRandomAccess: true, keyboardNavigation: true }
+            },
+            performance: {
+              keepWarm: apiDeck.keep_warm || false,
+              preloadStrategy: apiDeck.preload_strategy || 'proximity',
+            },
+            tags: apiDeck.tags || [],
+            is_active: apiDeck.is_active,
+            is_public: apiDeck.is_public,
+            creator_id: apiDeck.creator_id,
+            view_count: apiDeck.view_count || 0,
+            last_viewed_at: apiDeck.last_viewed_at,
+            created_at: apiDeck.created_at,
+            updated_at: apiDeck.updated_at,
           };
-        });
+          
+          set((state) => ({
+            decks: state.decks.map(deck =>
+              deck.id === id ? updatedDeck : deck
+            )
+          }));
+        } catch (error) {
+          console.error('Failed to update deck:', error);
+          throw error;
+        }
       },
       
       deleteDeck: async (id) => {
-        // TODO: Implement API call
-        set((state) => ({
-          decks: state.decks.filter(deck => deck.id !== id)
-        }));
+        try {
+          const response = await fetch(`/api/decks/${id}`, {
+            method: 'DELETE',
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('admin_token')}`,
+            },
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Failed to delete deck');
+          }
+
+          set((state) => ({
+            decks: state.decks.filter(deck => deck.id !== id)
+          }));
+        } catch (error) {
+          console.error('Failed to delete deck:', error);
+          throw error;
+        }
       },
       
       // Scene management actions
