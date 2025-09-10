@@ -85,6 +85,9 @@ const DocumentSceneAuthoring: React.FC<DocumentSceneAuthoringProps> = ({
   onCancel,
   className = ''
 }) => {
+  console.log('DocumentSceneAuthoring rendered with onSave:', typeof onSave);
+  console.log('DocumentSceneAuthoring onSave function:', onSave);
+  
   // Form state
   const [formData, setFormData] = useState<DocumentSceneData>({
     name: '',
@@ -334,7 +337,8 @@ const DocumentSceneAuthoring: React.FC<DocumentSceneAuthoringProps> = ({
             Preview
           </Button>
           <Button onClick={() => {
-            console.log('Save button clicked');
+            console.log('=== SAVE BUTTON CLICKED ===');
+            console.log('Button click handler called');
             handleSave();
           }}>
             <Save className="h-4 w-4 mr-2" />

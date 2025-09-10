@@ -83,6 +83,10 @@ function App() {
           data: design.designData || {},
           metadata: {},
         },
+        // Map design data to Scene model fields
+        config: design.designData?.config || {},
+        meta: design.designData?.metadata || {},
+        style: design.designData?.style || {},
         toolset: {
           libraries: [],
           preload: false,
