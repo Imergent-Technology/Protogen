@@ -102,6 +102,7 @@ interface DeckState {
   createDeck: (deck: Omit<Deck, 'id' | 'created_at' | 'updated_at'>) => Promise<void>;
   updateDeck: (id: string, updates: Partial<Deck>) => Promise<void>;
   deleteDeck: (id: string) => Promise<void>;
+  evaluateDeckType: (deckId: string) => Promise<void>;
   
   // Scene management
   loadScenes: (forceReload?: boolean) => Promise<void>;
@@ -380,6 +381,13 @@ export const useDeckStore = create<DeckState>()(
             scenes: [...state.scenes, newScene]
           }));
           
+          // Evaluate deck types for all decks this scene belongs to
+          if (sceneData.deckIds && sceneData.deckIds.length > 0) {
+            for (const deckId of sceneData.deckIds) {
+              await get().evaluateDeckType(deckId);
+            }
+          }
+          
           return newScene;
         } catch (error) {
           console.error('Failed to create scene:', error);
@@ -452,6 +460,13 @@ export const useDeckStore = create<DeckState>()(
               scene.id === id ? updatedScene : scene
             )
           }));
+          
+          // Evaluate deck types for all decks this scene belongs to
+          if (scene.deckIds && scene.deckIds.length > 0) {
+            for (const deckId of scene.deckIds) {
+              await get().evaluateDeckType(deckId);
+            }
+          }
         } catch (error) {
           console.error('Failed to update scene:', error);
           throw error;
@@ -480,6 +495,13 @@ export const useDeckStore = create<DeckState>()(
           set((state) => ({
             scenes: state.scenes.filter(scene => scene.id !== id)
           }));
+          
+          // Evaluate deck types for all decks this scene belonged to
+          if (scene.deckIds && scene.deckIds.length > 0) {
+            for (const deckId of scene.deckIds) {
+              await get().evaluateDeckType(deckId);
+            }
+          }
         } catch (error) {
           console.error('Failed to delete scene:', error);
           throw error;
@@ -565,6 +587,54 @@ export const useDeckStore = create<DeckState>()(
       // Error handling
       setDecksError: (error) => set({ decksError: error }),
       setScenesError: (error) => set({ scenesError: error }),
+      
+      // Deck type evaluation
+      evaluateDeckType: async (deckId) => {
+        const state = get();
+        const deck = state.decks.find(d => d.id === deckId);
+        if (!deck) return;
+        
+        // Get all scenes that belong to this deck
+        const deckScenes = state.scenes.filter(scene => scene.deckIds.includes(deckId));
+        const sceneTypes = deckScenes.map(scene => scene.type);
+        const uniqueTypes = [...new Set(sceneTypes)];
+        
+        let newType: DeckType;
+        if (uniqueTypes.length === 0) {
+          newType = 'graph'; // Default type for empty decks
+        } else if (uniqueTypes.length === 1) {
+          newType = uniqueTypes[0] as DeckType;
+        } else {
+          newType = 'hybrid'; // Multiple scene types = hybrid
+        }
+        
+        // Only update if the type has changed
+        if (deck.type !== newType) {
+          try {
+            const response = await fetch(`/api/decks/${deckId}`, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('admin_token')}`,
+              },
+              body: JSON.stringify({
+                type: newType,
+              }),
+            });
+            
+            if (response.ok) {
+              // Update the deck in the store
+              set((state) => ({
+                decks: state.decks.map(d => 
+                  d.id === deckId ? { ...d, type: newType } : d
+                )
+              }));
+            }
+          } catch (error) {
+            console.error('Failed to update deck type:', error);
+          }
+        }
+      },
     }),
     {
       name: 'deck-store',
