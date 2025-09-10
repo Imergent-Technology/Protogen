@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Save, Eye, Image, Video, Link, Upload, X, Plus, ExternalLink } from 'lucide-react';
 import { Button, Input, Label, Textarea, Card, Badge, Tabs, TabsList, TabsTrigger, TabsContent } from '@progress/shared';
 import NodeSelectionInterface, { NodeMetadata } from './NodeSelectionInterface';
@@ -85,8 +85,6 @@ const DocumentSceneAuthoring: React.FC<DocumentSceneAuthoringProps> = ({
   onCancel,
   className = ''
 }) => {
-  console.log('DocumentSceneAuthoring component rendered');
-  
   // Form state
   const [formData, setFormData] = useState<DocumentSceneData>({
     name: '',
@@ -142,14 +140,14 @@ const DocumentSceneAuthoring: React.FC<DocumentSceneAuthoringProps> = ({
   }, [scene]);
 
   // Handle form field changes
-  const handleFieldChange = (field: string, value: any) => {
+  const handleFieldChange = useCallback((field: string, value: any) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
     }));
-  };
+  }, []);
 
-  const handleMetadataChange = (field: string, value: any) => {
+  const handleMetadataChange = useCallback((field: string, value: any) => {
     setFormData(prev => ({
       ...prev,
       metadata: {
@@ -157,9 +155,9 @@ const DocumentSceneAuthoring: React.FC<DocumentSceneAuthoringProps> = ({
         [field]: value
       }
     }));
-  };
+  }, []);
 
-  const handleConfigChange = (field: string, value: any) => {
+  const handleConfigChange = useCallback((field: string, value: any) => {
     setFormData(prev => ({
       ...prev,
       config: {
@@ -167,9 +165,9 @@ const DocumentSceneAuthoring: React.FC<DocumentSceneAuthoringProps> = ({
         [field]: value
       }
     }));
-  };
+  }, []);
 
-  const handleStyleChange = (field: string, value: any) => {
+  const handleStyleChange = useCallback((field: string, value: any) => {
     setFormData(prev => ({
       ...prev,
       style: {
@@ -177,10 +175,10 @@ const DocumentSceneAuthoring: React.FC<DocumentSceneAuthoringProps> = ({
         [field]: value
       }
     }));
-  };
+  }, []);
 
   // Handle HTML content changes
-  const handleHtmlChange = (html: string) => {
+  const handleHtmlChange = useCallback((html: string) => {
     setHtmlContent(html);
     setFormData(prev => ({
       ...prev,
@@ -189,7 +187,7 @@ const DocumentSceneAuthoring: React.FC<DocumentSceneAuthoringProps> = ({
         html
       }
     }));
-  };
+  }, []);
 
   // Handle media management (for future use)
   // const addMedia = (media: Omit<DocumentMedia, 'id'>) => {
@@ -206,7 +204,7 @@ const DocumentSceneAuthoring: React.FC<DocumentSceneAuthoringProps> = ({
   //   }));
   // };
 
-  const removeMedia = (mediaId: string) => {
+  const removeMedia = useCallback((mediaId: string) => {
     setFormData(prev => ({
       ...prev,
       content: {
@@ -214,10 +212,10 @@ const DocumentSceneAuthoring: React.FC<DocumentSceneAuthoringProps> = ({
         media: prev.content.media.filter(media => media.id !== mediaId)
       }
     }));
-  };
+  }, []);
 
   // Handle link management
-  const addLink = (link: Omit<DocumentLink, 'id'>) => {
+  const addLink = useCallback((link: Omit<DocumentLink, 'id'>) => {
     const newLink: DocumentLink = {
       ...link,
       id: `link_${Date.now()}`
@@ -229,9 +227,9 @@ const DocumentSceneAuthoring: React.FC<DocumentSceneAuthoringProps> = ({
         links: [...prev.content.links, newLink]
       }
     }));
-  };
+  }, []);
 
-  const removeLink = (linkId: string) => {
+  const removeLink = useCallback((linkId: string) => {
     setFormData(prev => ({
       ...prev,
       content: {
@@ -239,10 +237,10 @@ const DocumentSceneAuthoring: React.FC<DocumentSceneAuthoringProps> = ({
         links: prev.content.links.filter(link => link.id !== linkId)
       }
     }));
-  };
+  }, []);
 
   // Handle node selection for internal links
-  const handleNodeSelection = (nodeIds: string[]) => {
+  const handleNodeSelection = useCallback((nodeIds: string[]) => {
     if (nodeIds.length > 0) {
       const node = availableNodes.find(n => n.id === nodeIds[0]);
       if (node) {
@@ -254,10 +252,10 @@ const DocumentSceneAuthoring: React.FC<DocumentSceneAuthoringProps> = ({
       }
     }
     setShowNodeSelection(false);
-  };
+  }, [availableNodes, addLink]);
 
   // Handle tag management
-  const addTag = () => {
+  const addTag = useCallback(() => {
     if (newTag.trim() && !formData.metadata.tags?.includes(newTag.trim())) {
       setFormData(prev => ({
         ...prev,
@@ -268,9 +266,9 @@ const DocumentSceneAuthoring: React.FC<DocumentSceneAuthoringProps> = ({
       }));
       setNewTag('');
     }
-  };
+  }, [newTag, formData.metadata.tags]);
 
-  const removeTag = (tagToRemove: string) => {
+  const removeTag = useCallback((tagToRemove: string) => {
     setFormData(prev => ({
       ...prev,
       metadata: {
@@ -278,10 +276,10 @@ const DocumentSceneAuthoring: React.FC<DocumentSceneAuthoringProps> = ({
         tags: prev.metadata.tags?.filter(tag => tag !== tagToRemove) || []
       }
     }));
-  };
+  }, []);
 
   // Handle save
-  const handleSave = () => {
+  const handleSave = useCallback(() => {
     console.log('=== DocumentSceneAuthoring handleSave function called ===');
     const sceneToSave = {
       ...formData,
@@ -301,10 +299,10 @@ const DocumentSceneAuthoring: React.FC<DocumentSceneAuthoringProps> = ({
     } else {
       console.error('onSave is not a function!', onSave);
     }
-  };
+  }, [formData, htmlContent, onSave]);
 
   // Handle preview
-  const handlePreview = () => {
+  const handlePreview = useCallback(() => {
     const sceneToPreview = {
       ...formData,
       content: {
@@ -313,7 +311,7 @@ const DocumentSceneAuthoring: React.FC<DocumentSceneAuthoringProps> = ({
       }
     };
     onPreview(sceneToPreview);
-  };
+  }, [formData, htmlContent, onPreview]);
 
   return (
     <div className={`document-scene-authoring ${className}`}>
