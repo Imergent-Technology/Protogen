@@ -339,6 +339,10 @@ export const useDeckStore = create<DeckState>()(
 
           if (!response.ok) {
             const errorData = await response.json();
+            console.error('=== SCENE CREATION API ERROR ===');
+            console.error('Response status:', response.status);
+            console.error('Error data:', errorData);
+            console.error('Validation errors:', errorData.errors);
             throw new Error(errorData.message || 'Failed to create scene');
           }
 

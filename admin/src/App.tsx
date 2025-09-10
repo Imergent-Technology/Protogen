@@ -81,7 +81,7 @@ function App() {
         name: basicDetails.name,
         slug: basicDetails.slug,
         description: basicDetails.description,
-        scene_type: basicDetails.type, // API expects 'scene_type', not 'type'
+        type: basicDetails.type, // deckStore expects 'type', it will map to 'scene_type' for API
         deckIds: basicDetails.deckIds,
         content: {
           data: design.designData || {},
@@ -96,15 +96,15 @@ function App() {
           preload: false,
           keepWarm: false,
         },
-        is_active: true,
-        is_public: false,
+        isActive: true,
+        isPublic: false,
       };
 
       console.log('=== SCENE CREATION DEBUG ===');
-      console.log('newScene data being sent to API:', newScene);
+      console.log('newScene data being sent to deckStore:', newScene);
       console.log('newScene.name:', newScene.name);
       console.log('newScene.slug:', newScene.slug);
-      console.log('newScene.scene_type:', newScene.scene_type);
+      console.log('newScene.type:', newScene.type);
 
       const createdScene = await createScene(newScene) as any;
       
