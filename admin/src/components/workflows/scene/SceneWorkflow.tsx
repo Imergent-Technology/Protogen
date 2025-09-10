@@ -51,16 +51,19 @@ const SceneWorkflow: React.FC<SceneWorkflowProps> = ({
 
   // Load scene data when in edit mode
   useEffect(() => {
-    if (mode === 'edit' && sceneId && initialData) {
+    if (mode === 'edit' && sceneId) {
       console.log('=== SCENE WORKFLOW EDIT MODE ===');
       console.log('sceneId:', sceneId);
       console.log('initialData:', initialData);
       
       // Load scene content for document scenes
-      if (initialData.basicDetails?.type === 'document') {
+      // Check both initialData and workflowData for the scene type
+      const sceneType = initialData.basicDetails?.type || workflowData.basicDetails?.type;
+      if (sceneType === 'document') {
+        console.log('Loading scene content for document scene...');
         loadSceneContent(sceneId, 'document', 'main').then((content) => {
           console.log('Loaded scene content:', content);
-          if (content && initialData.design?.designData) {
+          if (content) {
             setWorkflowData(prev => ({
               ...prev,
               design: {
@@ -80,7 +83,7 @@ const SceneWorkflow: React.FC<SceneWorkflowProps> = ({
         });
       }
     }
-  }, [mode, sceneId, initialData, loadSceneContent]);
+  }, [mode, sceneId, initialData, workflowData.basicDetails?.type, loadSceneContent]);
 
   // Update workflow data when external data changes (from WorkflowWizard)
   useEffect(() => {
@@ -224,6 +227,11 @@ const SceneWorkflow: React.FC<SceneWorkflowProps> = ({
         startStep={startStep}
         onComplete={handleWorkflowComplete}
         onCancel={handleWorkflowCancel}
+        onDataUpdate={(data) => {
+          console.log('=== WORKFLOW DATA UPDATE ===');
+          console.log('Updated workflow data:', data);
+          setWorkflowData(data);
+        }}
         showProgress={true}
         allowSave={true}
       />

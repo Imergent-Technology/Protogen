@@ -21,6 +21,7 @@ export interface WorkflowWizardProps {
   startStep?: number; // Which step to start on (0-based index)
   onComplete?: (data: Record<string, any>) => void;
   onCancel?: () => void;
+  onDataUpdate?: (data: Record<string, any>) => void; // Callback when workflow data is updated
   showProgress?: boolean;
   allowSave?: boolean;
   className?: string;
@@ -33,6 +34,7 @@ const WorkflowWizard: React.FC<WorkflowWizardProps> = ({
   startStep = 0,
   onComplete,
   onCancel,
+  onDataUpdate,
   showProgress = true,
   allowSave = true,
   className = ''
@@ -56,10 +58,19 @@ const WorkflowWizard: React.FC<WorkflowWizardProps> = ({
 
   // Update workflow data
   const updateWorkflowData = (stepId: string, data: any) => {
-    setWorkflowData(prev => ({
-      ...prev,
-      [stepId]: data
-    }));
+    setWorkflowData(prev => {
+      const newData = {
+        ...prev,
+        [stepId]: data
+      };
+      
+      // Call onDataUpdate callback to notify parent component
+      if (onDataUpdate) {
+        onDataUpdate(newData);
+      }
+      
+      return newData;
+    });
   };
 
   // Validate current step
@@ -94,9 +105,13 @@ const WorkflowWizard: React.FC<WorkflowWizardProps> = ({
     const isValid = await validateCurrentStep();
     if (!isValid) return;
 
+    // Update workflow data with current step's data
+    const currentStepData = workflowData[currentStep.id] || {};
+    updateWorkflowData(currentStep.id, currentStepData);
+
     // Call step's onNext handler
     if (currentStep.onNext) {
-      currentStep.onNext(workflowData[currentStep.id] || {});
+      currentStep.onNext(currentStepData);
     }
 
     if (isLastStep) {
