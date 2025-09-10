@@ -1,6 +1,6 @@
 import React from 'react';
 import { Badge } from '@progress/shared';
-import { ContextMenu, useContextMenu, getSceneContextMenuItems, SceneContextMenuActions } from '../common/ContextMenu';
+import { ContextMenu, useContextMenu, getSceneContextMenuItems, SceneContextMenuActions, getSelectionClasses } from '../common/ContextMenu';
 
 // Types for scene card
 export interface SceneCardData {
@@ -87,12 +87,14 @@ const SceneCard: React.FC<SceneCardProps> = ({
     };
 
     const menuItems = getSceneContextMenuItems(scene, actions);
-    showContextMenu(e, menuItems);
+    showContextMenu(e, menuItems, scene.id);
   };
+
+  const isSelected = contextMenu.isOpen && contextMenu.selectedEntityId === scene.id;
 
   return (
     <div 
-      className={`scene-card relative group transition-all duration-200 hover:shadow-lg ${className}`}
+      className={getSelectionClasses(isSelected, `scene-card relative group transition-all duration-200 hover:shadow-lg ${className}`)}
       onContextMenu={handleContextMenu}
     >
       {/* Main Card */}
@@ -104,12 +106,12 @@ const SceneCard: React.FC<SceneCardProps> = ({
             style={{ backgroundImage: `url(${scene.thumbnail})` }}
           />
         ) : (
-          <div className={`w-full h-full flex items-center justify-center ${
-            scene.type === 'graph' ? 'bg-blue-50 dark:bg-blue-950' :
-            scene.type === 'document' ? 'bg-green-50 dark:bg-green-950' :
-            scene.type === 'card' ? 'bg-purple-50 dark:bg-purple-950' :
-            'bg-muted'
-          }`}>
+              <div className={`w-full h-full flex items-center justify-center ${
+                scene.type === 'graph' ? 'bg-blue-50 dark:bg-blue-950' :
+                scene.type === 'document' ? 'bg-green-50 dark:bg-green-950' :
+                scene.type === 'card' ? 'bg-purple-50 dark:bg-purple-950' :
+                'bg-gray-50 dark:bg-gray-950'
+              }`}>
             <div className="text-center">
               <div className="text-4xl mb-2">{getSceneTypeIcon(scene.type)}</div>
               <div className="text-sm text-muted-foreground">No Preview</div>

@@ -94,29 +94,32 @@ export function ContextMenu({ items, isOpen, onClose, position }: ContextMenuPro
   );
 }
 
-// Hook for managing context menu state
+// Hook for managing context menu state with selection
 export function useContextMenu() {
   const [contextMenu, setContextMenu] = useState<{
     isOpen: boolean;
     position: { x: number; y: number };
     items: ContextMenuItem[];
+    selectedEntityId?: string;
   }>({
     isOpen: false,
     position: { x: 0, y: 0 },
-    items: []
+    items: [],
+    selectedEntityId: undefined
   });
 
-  const showContextMenu = (event: React.MouseEvent, items: ContextMenuItem[]) => {
+  const showContextMenu = (event: React.MouseEvent, items: ContextMenuItem[], entityId?: string) => {
     event.preventDefault();
     setContextMenu({
       isOpen: true,
       position: { x: event.clientX, y: event.clientY },
-      items
+      items,
+      selectedEntityId: entityId
     });
   };
 
   const hideContextMenu = () => {
-    setContextMenu(prev => ({ ...prev, isOpen: false }));
+    setContextMenu(prev => ({ ...prev, isOpen: false, selectedEntityId: undefined }));
   };
 
   return {
@@ -124,6 +127,22 @@ export function useContextMenu() {
     showContextMenu,
     hideContextMenu
   };
+}
+
+// Utility function to get selection styling classes
+export function getSelectionClasses(isSelected: boolean, baseClasses: string = '') {
+  if (!isSelected) return baseClasses;
+  
+  const selectionClasses = 'ring-2 ring-primary ring-offset-2 ring-offset-background';
+  return `${baseClasses} ${selectionClasses}`.trim();
+}
+
+// Utility function to get selection styling classes for list items
+export function getListSelectionClasses(isSelected: boolean, baseClasses: string = '') {
+  if (!isSelected) return baseClasses;
+  
+  const selectionClasses = 'ring-2 ring-primary ring-offset-2 ring-offset-background bg-primary/5';
+  return `${baseClasses} ${selectionClasses}`.trim();
 }
 
 // Scene context menu interface

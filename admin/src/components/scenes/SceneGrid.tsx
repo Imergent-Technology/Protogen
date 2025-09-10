@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Search, Filter } from 'lucide-react';
 import { Input, Button, Badge } from '@progress/shared';
 import SceneCard, { SceneCardData } from './SceneCard';
-import { ContextMenu, useContextMenu, getSceneContextMenuItems, SceneContextMenuActions } from '../common/ContextMenu';
+import { ContextMenu, useContextMenu, getSceneContextMenuItems, SceneContextMenuActions, getListSelectionClasses } from '../common/ContextMenu';
 
 export interface SceneGridProps {
   scenes: SceneCardData[];
@@ -190,12 +190,14 @@ const SceneListItem: React.FC<SceneListItemProps> = ({
     };
 
     const menuItems = getSceneContextMenuItems(scene, actions);
-    showContextMenu(e, menuItems);
+    showContextMenu(e, menuItems, scene.id);
   };
+
+  const isSelected = contextMenu.isOpen && contextMenu.selectedEntityId === scene.id;
 
   return (
     <div className="relative group" onContextMenu={handleContextMenu}>
-      <div className="flex items-center justify-between p-3 border border-border rounded-lg hover:bg-muted/30 transition-colors">
+      <div className={getListSelectionClasses(isSelected, 'flex items-center justify-between p-3 border border-border rounded-lg hover:bg-muted/30 transition-colors')}>
         <div className="flex items-center space-x-3 flex-1 min-w-0">
           {/* Thumbnail */}
           <div className="w-12 h-8 rounded border border-border overflow-hidden flex-shrink-0">
@@ -209,7 +211,7 @@ const SceneListItem: React.FC<SceneListItemProps> = ({
                 scene.type === 'graph' ? 'bg-blue-50 dark:bg-blue-950' :
                 scene.type === 'document' ? 'bg-green-50 dark:bg-green-950' :
                 scene.type === 'card' ? 'bg-purple-50 dark:bg-purple-950' :
-                'bg-muted'
+                'bg-gray-50 dark:bg-gray-950'
               }`}>
                 <span className="text-sm">
                   {getSceneTypeIcon(scene.type)}
