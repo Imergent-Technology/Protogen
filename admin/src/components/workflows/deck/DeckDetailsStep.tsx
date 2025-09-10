@@ -24,11 +24,17 @@ const DeckDetailsStep: React.FC<DeckDetailsStepProps> = ({
   onSave,
   isValidating
 }) => {
-  const [formData, setFormData] = useState(data);
+  const [formData, setFormData] = useState({
+    ...data,
+    type: 'graph' // Default type, will be auto-determined based on scenes
+  });
 
   // Update form data when props change
   useEffect(() => {
-    setFormData(data);
+    setFormData({
+      ...data,
+      type: 'graph' // Default type, will be auto-determined based on scenes
+    });
   }, [data]);
 
   const handleFieldChange = (field: string, value: any) => {
@@ -50,13 +56,6 @@ const DeckDetailsStep: React.FC<DeckDetailsStepProps> = ({
     }
   };
 
-  const deckTypes: { value: DeckType; label: string; description: string }[] = [
-    { value: 'graph', label: 'Graph', description: 'Data visualization and analytics' },
-    { value: 'card', label: 'Card', description: 'Interactive card-based content' },
-    { value: 'document', label: 'Document', description: 'Text and document-based content' },
-    { value: 'dashboard', label: 'Dashboard', description: 'Overview and monitoring interface' },
-    { value: 'hybrid', label: 'Hybrid', description: 'Mixed content types (auto-determined)' }
-  ];
 
   const preloadStrategies = [
     { value: 'proximity', label: 'Proximity', description: 'Load scenes based on user proximity' },
@@ -111,38 +110,15 @@ const DeckDetailsStep: React.FC<DeckDetailsStepProps> = ({
           />
         </div>
 
-        <div>
-          <label className="block text-sm font-medium mb-3">
-            Deck Type *
-          </label>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {deckTypes.map((type) => (
-              <div
-                key={type.value}
-                className={`p-3 border rounded-lg cursor-pointer transition-colors ${
-                  formData.type === type.value
-                    ? 'border-primary bg-primary/5'
-                    : 'border-border hover:border-primary/30'
-                }`}
-                onClick={() => handleFieldChange('type', type.value)}
-              >
-                <div className="flex items-center space-x-2">
-                  <input
-                    type="radio"
-                    name="type"
-                    value={type.value}
-                    checked={formData.type === type.value}
-                    onChange={() => handleFieldChange('type', type.value)}
-                    className="text-primary"
-                  />
-                  <div>
-                    <div className="font-medium">{type.label}</div>
-                    <div className="text-sm text-muted-foreground">{type.description}</div>
-                  </div>
-                </div>
-              </div>
-            ))}
+        <div className="p-4 bg-muted/50 border border-border rounded-lg">
+          <div className="flex items-center space-x-2 mb-2">
+            <div className="w-2 h-2 bg-primary rounded-full"></div>
+            <h3 className="font-medium">Deck Type</h3>
           </div>
+          <p className="text-sm text-muted-foreground">
+            Deck type is automatically determined based on the scenes it contains. 
+            Single scene type = that type, multiple types = hybrid.
+          </p>
         </div>
 
         <div>

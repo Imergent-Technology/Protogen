@@ -224,7 +224,6 @@ function App() {
           name: basicDetails.name,
           slug: basicDetails.slug,
           description: basicDetails.description,
-          type: basicDetails.type,
           keep_warm: basicDetails.keepWarm,
           preload_strategy: basicDetails.preloadStrategy,
         });
@@ -235,7 +234,7 @@ function App() {
           name: basicDetails.name,
           slug: basicDetails.slug,
           description: basicDetails.description,
-          type: basicDetails.type,
+          type: 'graph', // Default type, will be auto-determined when scenes are added
           keep_warm: basicDetails.keepWarm,
           preload_strategy: basicDetails.preloadStrategy,
           scene_ids: [],
@@ -1255,7 +1254,6 @@ function App() {
                       name: currentDeck?.name || '',
                       slug: currentDeck?.slug || '',
                       description: currentDeck?.description || '',
-                      type: currentDeck?.type || 'graph',
                       keepWarm: currentDeck?.performance?.keepWarm || true,
                       preloadStrategy: currentDeck?.performance?.preloadStrategy || 'proximity',
                     }
