@@ -1070,6 +1070,13 @@ function App() {
                   mode="edit"
                   sceneId={currentScene?.id}
                   initialData={{
+                    basicDetails: {
+                      name: currentScene?.name || '',
+                      slug: currentScene?.slug || '',
+                      description: currentScene?.description || '',
+                      type: currentScene?.type || 'graph',
+                      deckIds: currentScene?.deckIds || []
+                    },
                     design: {
                       type: currentScene?.type || 'graph',
                       designData: currentScene?.type === 'document' ? {

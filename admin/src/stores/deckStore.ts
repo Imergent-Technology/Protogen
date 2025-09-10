@@ -343,6 +343,7 @@ export const useDeckStore = create<DeckState>()(
             console.error('Response status:', response.status);
             console.error('Error data:', errorData);
             console.error('Validation errors:', errorData.errors);
+            console.error('Slug validation errors:', errorData.errors.slug);
             throw new Error(errorData.message || 'Failed to create scene');
           }
 
