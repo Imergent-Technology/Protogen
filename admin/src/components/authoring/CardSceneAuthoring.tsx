@@ -358,12 +358,6 @@ const CardSceneAuthoring: React.FC<CardSceneAuthoringProps> = ({
           <Button variant="outline" onClick={() => onPreview(formData)}>
             <Play className="h-4 w-4 mr-2" /> Preview
           </Button>
-          <Button onClick={() => onSave(formData)}>
-            <Save className="h-4 w-4 mr-2" /> Save Card Scene
-          </Button>
-          <Button variant="ghost" onClick={onCancel}>
-            <X className="h-4 w-4" /> Cancel
-          </Button>
         </div>
       </div>
 

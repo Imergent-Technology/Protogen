@@ -261,16 +261,9 @@ const GraphSceneAuthoring: React.FC<GraphSceneAuthoringProps> = ({
           </p>
         </div>
         <div className="flex items-center space-x-2">
-          <Button variant="outline" onClick={onCancel}>
-            Cancel
-          </Button>
           <Button variant="outline" onClick={handlePreview}>
             <Eye className="h-4 w-4 mr-2" />
             Preview
-          </Button>
-          <Button onClick={handleSave}>
-            <Save className="h-4 w-4 mr-2" />
-            Save Scene
           </Button>
         </div>
       </div>
