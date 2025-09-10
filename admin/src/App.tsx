@@ -169,11 +169,6 @@ function App() {
         return;
       }
 
-      console.log('=== SCENE DESIGN COMPLETION DEBUG ===');
-      console.log('Current scene:', currentScene);
-      console.log('Design data:', design);
-      console.log('Design designData:', design.designData);
-
       // Update the main scene record with metadata, config, and style
       const sceneUpdateData: any = {};
       
@@ -189,20 +184,15 @@ function App() {
         sceneUpdateData.style = design.designData.style;
       }
 
-      console.log('Scene update data:', sceneUpdateData);
-
       // Update the scene with metadata, config, and style
       if (Object.keys(sceneUpdateData).length > 0) {
         await updateScene(currentScene.id, sceneUpdateData);
-        console.log('Scene metadata/config/style updated successfully');
       }
 
       // Handle content separately based on scene type
       if (currentScene.type === 'document' && design.designData?.content?.html) {
         // For document scenes, save HTML content to scene_content table
-        console.log('Saving HTML content to scene_content table');
         await saveSceneContent(currentScene.id, design.designData.content.html, 'document', 'main');
-        console.log('HTML content saved successfully');
       } else if (design.designData) {
         // For other scene types, save to the main content field
         await updateScene(currentScene.id, {
@@ -218,7 +208,6 @@ function App() {
       setViewMode('scenes');
       updateURL('scenes');
     } catch (error) {
-      console.error('Scene design completion error:', error);
       showError('Failed to update scene design: ' + (error instanceof Error ? error.message : 'Unknown error'));
     }
   };
