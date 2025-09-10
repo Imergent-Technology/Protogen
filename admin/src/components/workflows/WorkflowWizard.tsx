@@ -266,21 +266,23 @@ const WorkflowWizard: React.FC<WorkflowWizardProps> = ({
           {allowSave && (
             <Button
               variant="outline"
-              onClick={handleSave}
+              onClick={isLastStep ? handleNext : handleSave}
               disabled={isValidating}
             >
               <Save className="h-4 w-4 mr-2" />
-              Save Draft
+              Save & Close
             </Button>
           )}
 
-          <Button
-            onClick={handleNext}
-            disabled={isValidating}
-          >
-            {isLastStep ? 'Complete' : 'Next'}
-            {!isLastStep && <ChevronRight className="h-4 w-4 ml-2" />}
-          </Button>
+          {!isLastStep && (
+            <Button
+              onClick={handleNext}
+              disabled={isValidating}
+            >
+              Next
+              <ChevronRight className="h-4 w-4 ml-2" />
+            </Button>
+          )}
         </div>
       </div>
     </div>
