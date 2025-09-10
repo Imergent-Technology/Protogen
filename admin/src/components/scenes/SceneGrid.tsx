@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Search, Filter } from 'lucide-react';
-import { Input } from '@progress/shared';
+import { Search, Filter, Settings, Eye, Edit, Trash2, Play, Pause, Volume2, VolumeX } from 'lucide-react';
+import { Input, Button, Badge } from '@progress/shared';
 import SceneCard, { SceneCardData } from './SceneCard';
 
 export interface SceneGridProps {
@@ -99,81 +99,19 @@ const SceneGrid: React.FC<SceneGridProps> = ({
           ))}
         </div>
       ) : (
-        <div className="space-y-2">
+        <div className="space-y-1">
           {filteredScenes.map((scene) => (
-            <div
+            <SceneListItem
               key={scene.id}
-              className="flex items-center justify-between p-4 border border-border rounded-lg hover:bg-muted/50 transition-colors"
-            >
-              <div className="flex items-center space-x-4">
-                {/* Thumbnail */}
-                <div className="w-16 h-12 rounded border border-border overflow-hidden flex-shrink-0">
-                  {scene.thumbnail ? (
-                    <div 
-                      className="w-full h-full bg-cover bg-center"
-                      style={{ backgroundImage: `url(${scene.thumbnail})` }}
-                    />
-                  ) : (
-                    <div className={`w-full h-full flex items-center justify-center ${
-                      scene.type === 'graph' ? 'bg-blue-50 dark:bg-blue-950' :
-                      scene.type === 'document' ? 'bg-green-50 dark:bg-green-950' :
-                      scene.type === 'card' ? 'bg-purple-50 dark:bg-purple-950' :
-                      'bg-muted'
-                    }`}>
-                      <span className="text-lg">
-                        {scene.type === 'graph' ? '📊' :
-                         scene.type === 'document' ? '📄' :
-                         scene.type === 'card' ? '🃏' : '📋'}
-                      </span>
-                    </div>
-                  )}
-                </div>
-
-                {/* Scene Info */}
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-medium truncate">{scene.name}</h3>
-                  {scene.metadata.title && (
-                    <p className="text-sm text-muted-foreground truncate">{scene.metadata.title}</p>
-                  )}
-                  <div className="flex items-center space-x-2 mt-1">
-                    <span className={`px-2 py-1 text-xs rounded-full ${
-                      scene.type === 'graph' ? 'bg-blue-100 text-blue-800' :
-                      scene.type === 'document' ? 'bg-green-100 text-green-800' :
-                      scene.type === 'card' ? 'bg-purple-100 text-purple-800' :
-                      'bg-gray-100 text-gray-800'
-                    }`}>
-                      {scene.type}
-                    </span>
-                    {scene.metadata.tags?.slice(0, 2).map((tag, index) => (
-                      <span key={index} className="text-xs text-muted-foreground">
-                        #{tag}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Actions */}
-              <div className="flex items-center space-x-2">
-                <span className="text-sm text-muted-foreground">
-                  {scene.stats.viewCount} views
-                </span>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => onSceneEdit(scene)}
-                >
-                  Edit
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => onScenePreview(scene)}
-                >
-                  Preview
-                </Button>
-              </div>
-            </div>
+              scene={scene}
+              onEdit={onSceneEdit}
+              onEditBasicDetails={onSceneEditBasicDetails}
+              onEditDesign={onSceneEditDesign}
+              onDelete={onSceneDelete}
+              onPreview={onScenePreview}
+              onToggleActive={onSceneToggleActive}
+              onTogglePublic={onSceneTogglePublic}
+            />
           ))}
         </div>
       )}
@@ -191,6 +129,215 @@ const SceneGrid: React.FC<SceneGridProps> = ({
           </p>
         </div>
       )}
+    </div>
+  );
+};
+
+// Scene List Item Component for streamlined list view
+interface SceneListItemProps {
+  scene: SceneCardData;
+  onEdit: (scene: SceneCardData) => void;
+  onEditBasicDetails?: (scene: SceneCardData) => void;
+  onEditDesign?: (scene: SceneCardData) => void;
+  onDelete: (scene: SceneCardData) => void;
+  onPreview: (scene: SceneCardData) => void;
+  onToggleActive?: (scene: SceneCardData) => void;
+  onTogglePublic?: (scene: SceneCardData) => void;
+}
+
+const SceneListItem: React.FC<SceneListItemProps> = ({
+  scene,
+  onEdit,
+  onEditBasicDetails,
+  onEditDesign,
+  onDelete,
+  onPreview,
+  onToggleActive,
+  onTogglePublic,
+}) => {
+  const [showOptions, setShowOptions] = useState(false);
+
+  // Generate scene type icon
+  const getSceneTypeIcon = (type: string) => {
+    switch (type) {
+      case 'graph': return '📊';
+      case 'document': return '📄';
+      case 'card': return '🃏';
+      default: return '📋';
+    }
+  };
+
+  // Generate scene type color
+  const getSceneTypeColor = (type: string) => {
+    switch (type) {
+      case 'graph': return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'document': return 'bg-green-100 text-green-800 border-green-200';
+      case 'card': return 'bg-purple-100 text-purple-800 border-purple-200';
+      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+    }
+  };
+
+  // Handle options menu
+  const handleOptionsClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setShowOptions(!showOptions);
+  };
+
+  // Handle option selection
+  const handleOptionSelect = (action: string) => {
+    setShowOptions(false);
+    switch (action) {
+      case 'edit':
+        onEdit(scene);
+        break;
+      case 'edit-basic':
+        onEditBasicDetails?.(scene);
+        break;
+      case 'edit-design':
+        onEditDesign?.(scene);
+        break;
+      case 'delete':
+        onDelete(scene);
+        break;
+      case 'preview':
+        onPreview(scene);
+        break;
+      case 'toggle-active':
+        onToggleActive?.(scene);
+        break;
+      case 'toggle-public':
+        onTogglePublic?.(scene);
+        break;
+    }
+  };
+
+  return (
+    <div className="relative group">
+      <div className="flex items-center justify-between p-3 border border-border rounded-lg hover:bg-muted/30 transition-colors">
+        <div className="flex items-center space-x-3 flex-1 min-w-0">
+          {/* Thumbnail */}
+          <div className="w-12 h-8 rounded border border-border overflow-hidden flex-shrink-0">
+            {scene.thumbnail ? (
+              <div 
+                className="w-full h-full bg-cover bg-center"
+                style={{ backgroundImage: `url(${scene.thumbnail})` }}
+              />
+            ) : (
+              <div className={`w-full h-full flex items-center justify-center ${
+                scene.type === 'graph' ? 'bg-blue-50 dark:bg-blue-950' :
+                scene.type === 'document' ? 'bg-green-50 dark:bg-green-950' :
+                scene.type === 'card' ? 'bg-purple-50 dark:bg-purple-950' :
+                'bg-muted'
+              }`}>
+                <span className="text-sm">
+                  {getSceneTypeIcon(scene.type)}
+                </span>
+              </div>
+            )}
+          </div>
+
+          {/* Scene Info */}
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center space-x-2">
+              <h3 className="font-medium truncate text-sm">{scene.name}</h3>
+              <Badge className={`text-xs ${getSceneTypeColor(scene.type)}`}>
+                {scene.type}
+              </Badge>
+            </div>
+            <div className="flex items-center space-x-2 mt-1">
+              <span className="text-xs text-muted-foreground">
+                {scene.stats.viewCount} views
+              </span>
+              {scene.metadata.tags?.slice(0, 2).map((tag, index) => (
+                <span key={index} className="text-xs text-muted-foreground">
+                  #{tag}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Status Indicators */}
+        <div className="flex items-center space-x-2">
+          {!scene.isActive && (
+            <div className="w-2 h-2 bg-red-500 rounded-full" title="Inactive" />
+          )}
+          {scene.isPublic && (
+            <div className="w-2 h-2 bg-green-500 rounded-full" title="Public" />
+          )}
+          
+          {/* Options Button */}
+          <div className="relative">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleOptionsClick}
+              className="h-7 w-7 p-0"
+            >
+              <Settings className="h-3 w-3" />
+            </Button>
+
+            {/* Options Menu */}
+            {showOptions && (
+              <div className="absolute right-0 top-8 bg-background border border-border rounded-lg shadow-lg z-20 min-w-[160px]">
+                <div className="py-1">
+                  {onEditBasicDetails && (
+                    <button
+                      onClick={() => handleOptionSelect('edit-basic')}
+                      className="w-full px-3 py-2 text-left text-sm hover:bg-muted flex items-center space-x-2"
+                    >
+                      <Edit className="h-4 w-4" />
+                      <span>Edit Details</span>
+                    </button>
+                  )}
+                  {onEditDesign && (
+                    <button
+                      onClick={() => handleOptionSelect('edit-design')}
+                      className="w-full px-3 py-2 text-left text-sm hover:bg-muted flex items-center space-x-2"
+                    >
+                      <Settings className="h-4 w-4" />
+                      <span>Edit Design</span>
+                    </button>
+                  )}
+                  <button
+                    onClick={() => handleOptionSelect('preview')}
+                    className="w-full px-3 py-2 text-left text-sm hover:bg-muted flex items-center space-x-2"
+                  >
+                    <Eye className="h-4 w-4" />
+                    <span>Preview</span>
+                  </button>
+                  {onToggleActive && (
+                    <button
+                      onClick={() => handleOptionSelect('toggle-active')}
+                      className="w-full px-3 py-2 text-left text-sm hover:bg-muted flex items-center space-x-2"
+                    >
+                      {scene.isActive ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+                      <span>{scene.isActive ? 'Deactivate' : 'Activate'}</span>
+                    </button>
+                  )}
+                  {onTogglePublic && (
+                    <button
+                      onClick={() => handleOptionSelect('toggle-public')}
+                      className="w-full px-3 py-2 text-left text-sm hover:bg-muted flex items-center space-x-2"
+                    >
+                      {scene.isPublic ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+                      <span>{scene.isPublic ? 'Make Private' : 'Make Public'}</span>
+                    </button>
+                  )}
+                  <hr className="my-1 border-border" />
+                  <button
+                    onClick={() => handleOptionSelect('delete')}
+                    className="w-full px-3 py-2 text-left text-sm hover:bg-destructive hover:text-destructive-foreground flex items-center space-x-2 text-destructive"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    <span>Delete Scene</span>
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

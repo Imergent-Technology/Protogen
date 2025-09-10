@@ -4,3 +4,5 @@ export type { Toast } from './Toast';
 export { ContextMenu, useContextMenu, getSceneContextMenuItems } from './ContextMenu';
 export { default as EntitySelector, SelectionModal } from './SelectionModal';
 export type { SelectableItem, EntitySelectorProps, SelectionModalProps } from './SelectionModal';
+export { default as ConfirmationDialog } from './ConfirmationDialog';
+export type { ConfirmationDialogProps } from './ConfirmationDialog';

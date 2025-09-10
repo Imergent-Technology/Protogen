@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Settings, Eye, Edit, Trash2, Play, Pause, Volume2, VolumeX } from 'lucide-react';
 import { Button, Badge } from '@progress/shared';
 
@@ -52,6 +52,24 @@ const SceneCard: React.FC<SceneCardProps> = ({
   className = ''
 }) => {
   const [showOptions, setShowOptions] = useState(false);
+  const optionsRef = useRef<HTMLDivElement>(null);
+
+  // Close options menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (optionsRef.current && !optionsRef.current.contains(event.target as Node)) {
+        setShowOptions(false);
+      }
+    };
+
+    if (showOptions) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showOptions]);
 
   // Generate scene type icon
   const getSceneTypeIcon = (type: string) => {
@@ -152,35 +170,27 @@ const SceneCard: React.FC<SceneCardProps> = ({
           )}
         </div>
 
-        {/* Options Button - Always Visible */}
-        <div className="absolute top-2 right-2">
+        {/* Options Button and Menu */}
+        <div className="absolute top-2 right-2" ref={optionsRef}>
           <Button
             variant="ghost"
             size="sm"
             onClick={handleOptionsClick}
-            className="h-8 w-8 p-0 bg-background/80 hover:bg-background"
+            className="h-8 w-8 p-0 bg-background/90 hover:bg-background border border-border/50"
           >
             <Settings className="h-4 w-4" />
           </Button>
-        </div>
 
-        {/* Options Menu */}
-        {showOptions && (
-          <div className="absolute top-10 right-2 bg-background border border-border rounded-lg shadow-lg z-10 min-w-[160px]">
+          {/* Options Menu */}
+          {showOptions && (
+            <div className="absolute top-10 right-0 bg-background border border-border rounded-lg shadow-lg z-20 min-w-[180px]">
             <div className="py-1">
-              <button
-                onClick={() => handleOptionSelect('edit')}
-                className="w-full px-3 py-2 text-left text-sm hover:bg-muted flex items-center space-x-2"
-              >
-                <Edit className="h-4 w-4" />
-                <span>Edit Scene</span>
-              </button>
               {onEditBasicDetails && (
                 <button
                   onClick={() => handleOptionSelect('edit-basic')}
                   className="w-full px-3 py-2 text-left text-sm hover:bg-muted flex items-center space-x-2"
                 >
-                  <Settings className="h-4 w-4" />
+                  <Edit className="h-4 w-4" />
                   <span>Edit Basic Details</span>
                 </button>
               )}
@@ -218,17 +228,18 @@ const SceneCard: React.FC<SceneCardProps> = ({
                   <span>{scene.isPublic ? 'Make Private' : 'Make Public'}</span>
                 </button>
               )}
-              <hr className="my-1" />
+              <hr className="my-1 border-border" />
               <button
                 onClick={() => handleOptionSelect('delete')}
-                className="w-full px-3 py-2 text-left text-sm hover:bg-destructive hover:text-destructive-foreground flex items-center space-x-2"
+                className="w-full px-3 py-2 text-left text-sm hover:bg-destructive hover:text-destructive-foreground flex items-center space-x-2 text-destructive"
               >
                 <Trash2 className="h-4 w-4" />
-                <span>Delete</span>
+                <span>Delete Scene</span>
               </button>
             </div>
-          </div>
-        )}
+            </div>
+          )}
+        </div>
 
       </div>
 
@@ -244,40 +255,6 @@ const SceneCard: React.FC<SceneCardProps> = ({
           </span>
         </div>
         
-        {/* Action Buttons */}
-        <div className="flex gap-1 mt-2">
-          {onEditBasicDetails && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handleOptionSelect('edit-basic')}
-              className="flex-1 text-xs h-7"
-            >
-              <Edit className="h-3 w-3 mr-1" />
-              Details
-            </Button>
-          )}
-          {onEditDesign && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handleOptionSelect('edit-design')}
-              className="flex-1 text-xs h-7"
-            >
-              <Settings className="h-3 w-3 mr-1" />
-              Design
-            </Button>
-          )}
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => handleOptionSelect('preview')}
-            className="flex-1 text-xs h-7"
-          >
-            <Eye className="h-3 w-3 mr-1" />
-            Preview
-          </Button>
-        </div>
       </div>
     </div>
   );

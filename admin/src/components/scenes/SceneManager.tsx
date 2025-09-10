@@ -7,6 +7,7 @@ import SceneGrid from './SceneGrid';
 import { SceneCardData } from './SceneCard';
 import { SelectionModal, SelectableItem } from '../common';
 import { Plus, SlidersHorizontal, Grid, List, Loader2 } from 'lucide-react';
+import ConfirmationDialog from '../common/ConfirmationDialog';
 
 // Scene type badges
 const SceneTypeBadge: React.FC<{ type: SceneType }> = ({ type }) => {
@@ -50,6 +51,17 @@ export const SceneManager: React.FC = () => {
   const [showListOptions, setShowListOptions] = useState(false);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const listOptionsRef = useRef<HTMLDivElement>(null);
+  
+  // Delete confirmation state
+  const [deleteConfirmation, setDeleteConfirmation] = useState<{
+    isOpen: boolean;
+    sceneId: string | null;
+    sceneName: string;
+  }>({
+    isOpen: false,
+    sceneId: null,
+    sceneName: ''
+  });
   // Remove activeTab state - this is now a pure scene manager
 
   // Form states
@@ -200,15 +212,43 @@ export const SceneManager: React.FC = () => {
 
   // Handle scene deletion
   const handleDeleteScene = async (sceneId: string) => {
-    if (!confirm('Are you sure you want to delete this scene? This action cannot be undone.')) {
-      return;
-    }
+    const scene = scenes.find(s => s.id === sceneId);
+    if (!scene) return;
+
+    setDeleteConfirmation({
+      isOpen: true,
+      sceneId,
+      sceneName: scene.name
+    });
+  };
+
+  // Confirm scene deletion
+  const confirmDeleteScene = async () => {
+    if (!deleteConfirmation.sceneId) return;
 
     try {
-      await deleteScene(sceneId);
+      setScenesLoading(true);
+      await deleteScene(deleteConfirmation.sceneId);
+      setDeleteConfirmation({
+        isOpen: false,
+        sceneId: null,
+        sceneName: ''
+      });
     } catch (error) {
       console.error('Failed to delete scene:', error);
+      setScenesError(error instanceof Error ? error.message : 'Failed to delete scene');
+    } finally {
+      setScenesLoading(false);
     }
+  };
+
+  // Cancel scene deletion
+  const cancelDeleteScene = () => {
+    setDeleteConfirmation({
+      isOpen: false,
+      sceneId: null,
+      sceneName: ''
+    });
   };
 
   // Get all decks that contain a specific scene
@@ -632,6 +672,19 @@ export const SceneManager: React.FC = () => {
         searchPlaceholder="Search decks..."
         emptyMessage="No decks available"
         confirmText="Select Decks"
+      />
+
+      {/* Delete Confirmation Dialog */}
+      <ConfirmationDialog
+        isOpen={deleteConfirmation.isOpen}
+        onClose={cancelDeleteScene}
+        onConfirm={confirmDeleteScene}
+        title="Delete Scene"
+        message={`Are you sure you want to delete "${deleteConfirmation.sceneName}"? This action cannot be undone.`}
+        confirmText="Delete Scene"
+        cancelText="Cancel"
+        variant="destructive"
+        isLoading={scenesLoading}
       />
 
     </div>
