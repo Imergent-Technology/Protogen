@@ -78,7 +78,8 @@ export const DeckManager: React.FC = () => {
 
   // Convert Deck to DeckCardData format
   const convertToDeckCardData = (deck: Deck): DeckCardData => {
-    const deckScenes = scenes.filter(scene => deck.sceneIds.includes(scene.id));
+    const deckSceneIds = deck.sceneIds || [];
+    const deckScenes = scenes.filter(scene => deckSceneIds.includes(scene.id));
     const sceneTypes = deckScenes.map(scene => scene.type);
     const determinedType = determineDeckType(sceneTypes);
 
@@ -96,7 +97,7 @@ export const DeckManager: React.FC = () => {
         updatedAt: deck.updated_at,
       },
       stats: {
-        sceneCount: deck.sceneIds.length,
+        sceneCount: deckSceneIds.length,
         viewCount: deck.view_count || 0,
         lastViewed: deck.last_viewed_at,
       },
