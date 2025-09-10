@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Card } from '@progress/shared';
 import { SceneType } from '../../../stores/deckStore';
 import GraphSceneAuthoring from '../../authoring/GraphSceneAuthoring';
@@ -12,7 +12,7 @@ export interface DesignStepProps {
   };
   onDataChange: (data: any) => void;
   errors: string[];
-  isValidating: boolean;
+  isValidating?: boolean;
 }
 
 const DesignStep: React.FC<DesignStepProps> = ({
@@ -22,29 +22,38 @@ const DesignStep: React.FC<DesignStepProps> = ({
   isValidating
 }) => {
   // Handle design data changes
-  const handleDesignChange = (designData: any) => {
+  const handleDesignChange = useCallback((designData: any) => {
     onDataChange({ ...data, designData });
-  };
+  }, [data, onDataChange]);
 
   // Handle save (from authoring components)
-  const handleSave = (designData: any) => {
-    onDataChange({ ...data, designData });
-  };
+  const handleSave = useCallback((designData: any) => {
+    console.log('DesignStep handleSave called with:', designData);
+    console.log('DesignStep current data:', data);
+    const updatedData = { 
+      ...data, 
+      designData,
+      type: data.type // Ensure type is preserved
+    };
+    console.log('DesignStep updated data:', updatedData);
+    onDataChange(updatedData);
+  }, [data, onDataChange]);
 
   // Handle preview (from authoring components)
-  const handlePreview = (designData: any) => {
+  const handlePreview = useCallback((designData: any) => {
     // Could open preview modal or navigate to preview
     console.log('Preview design:', designData);
-  };
+  }, []);
 
   // Handle cancel (from authoring components)
-  const handleCancel = () => {
+  const handleCancel = useCallback(() => {
     // Could navigate back or show confirmation
     console.log('Cancel design');
-  };
+  }, []);
 
   // Render appropriate authoring component based on scene type
   const renderAuthoringComponent = () => {
+    // console.log('DesignStep renderAuthoringComponent - data.type:', data.type);
     const commonProps = {
       onSave: handleSave,
       onPreview: handlePreview,
@@ -66,6 +75,7 @@ const DesignStep: React.FC<DesignStepProps> = ({
           <CardSceneAuthoring
             {...commonProps}
             scene={data.designData}
+            availableNodes={[]}
           />
         );
       

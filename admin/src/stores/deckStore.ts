@@ -110,6 +110,7 @@ interface DeckState {
   updateScene: (id: string, updates: Partial<Scene>) => Promise<void>;
   deleteScene: (id: string) => Promise<void>;
   saveSceneContent: (sceneId: string, contentData: string, contentType?: string, contentKey?: string) => Promise<void>;
+  loadSceneContent: (sceneId: string, contentType?: string, contentKey?: string) => Promise<string | null>;
   
   // Performance management
   warmScene: (sceneId: string) => void;
@@ -252,6 +253,7 @@ export const useDeckStore = create<DeckState>()(
           const scenes: SceneCardData[] = apiScenes.map((apiScene: any) => ({
             id: apiScene.guid,
             name: apiScene.name,
+            slug: apiScene.slug,
             type: apiScene.scene_type,
             description: apiScene.description,
             metadata: {
@@ -281,6 +283,32 @@ export const useDeckStore = create<DeckState>()(
             scenesError: error instanceof Error ? error.message : 'Failed to load scenes',
             scenesLoading: false 
           });
+        }
+      },
+      
+      loadSceneContent: async (sceneId, contentType = 'document', contentKey = 'main') => {
+        try {
+          const response = await fetch(`/api/scenes/${sceneId}/content/${contentType}/${contentKey}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${localStorage.getItem('admin_token')}`,
+            },
+          });
+
+          if (!response.ok) {
+            if (response.status === 404) {
+              return null; // Content doesn't exist yet
+            }
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Failed to load scene content');
+          }
+
+          const result = await response.json();
+          return result.data?.content_data || null;
+        } catch (error) {
+          console.error('Failed to load scene content:', error);
+          return null;
         }
       },
       
@@ -360,7 +388,7 @@ export const useDeckStore = create<DeckState>()(
             throw new Error('Scene not found');
           }
 
-          const response = await fetch(`/api/scenes/${scene.guid}`, {
+          const response = await fetch(`/api/scenes/${id}`, {
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json',

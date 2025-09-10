@@ -6,6 +6,7 @@ import { Button, Badge } from '@progress/shared';
 export interface SceneCardData {
   id: string;
   name: string;
+  slug?: string;
   type: 'graph' | 'document' | 'card' | 'custom';
   description?: string;
   thumbnail?: string; // base64 preview image

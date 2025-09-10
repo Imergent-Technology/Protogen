@@ -85,6 +85,7 @@ const DocumentSceneAuthoring: React.FC<DocumentSceneAuthoringProps> = ({
   onCancel,
   className = ''
 }) => {
+  // console.log('DocumentSceneAuthoring rendered with onSave:', onSave);
   // Form state
   const [formData, setFormData] = useState<DocumentSceneData>({
     name: '',
@@ -280,6 +281,7 @@ const DocumentSceneAuthoring: React.FC<DocumentSceneAuthoringProps> = ({
 
   // Handle save
   const handleSave = () => {
+    console.log('DocumentSceneAuthoring handleSave function called');
     const sceneToSave = {
       ...formData,
       content: {
@@ -287,6 +289,8 @@ const DocumentSceneAuthoring: React.FC<DocumentSceneAuthoringProps> = ({
         html: htmlContent
       }
     };
+    console.log('DocumentSceneAuthoring handleSave called with:', sceneToSave);
+    console.log('DocumentSceneAuthoring onSave function:', onSave);
     onSave(sceneToSave);
   };
 
@@ -322,10 +326,16 @@ const DocumentSceneAuthoring: React.FC<DocumentSceneAuthoringProps> = ({
             <Eye className="h-4 w-4 mr-2" />
             Preview
           </Button>
-          <Button onClick={handleSave}>
+          <Button onClick={() => {
+            console.log('Save button clicked');
+            handleSave();
+          }}>
             <Save className="h-4 w-4 mr-2" />
             Save Scene
           </Button>
+        </div>
+        <div className="text-xs text-muted-foreground mt-2">
+          Note: Click "Save Scene" to save your design before completing the workflow.
         </div>
       </div>
 
@@ -344,15 +354,6 @@ const DocumentSceneAuthoring: React.FC<DocumentSceneAuthoringProps> = ({
           <Card className="p-6">
             <h3 className="text-lg font-semibold mb-4">Document Information</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="name">Scene Name</Label>
-                <Input
-                  id="name"
-                  value={formData.name}
-                  onChange={(e) => handleFieldChange('name', e.target.value)}
-                  placeholder="Enter scene name"
-                />
-              </div>
               <div>
                 <Label htmlFor="title">Title</Label>
                 <Input

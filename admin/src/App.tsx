@@ -45,7 +45,7 @@ function App() {
   const [authChecking, setAuthChecking] = useState(true);
   
   // Deck store for scene management
-  const { createScene, updateScene, saveSceneContent, scenes: storeScenes } = useDeckStore();
+  const { createScene, updateScene, saveSceneContent, loadSceneContent, scenes: storeScenes } = useDeckStore();
   
   // Content management
   const [currentScene, setCurrentScene] = useState<any>(null);
@@ -95,6 +95,10 @@ function App() {
       const createdScene = await createScene(newScene) as any;
       
       // Save content separately for document scenes
+      console.log('Design data:', design);
+      console.log('Basic details type:', basicDetails.type);
+      console.log('Design type:', design.type);
+      console.log('Design designData:', design.designData);
       if (basicDetails.type === 'document' && design.designData?.content?.html) {
         await saveSceneContent(createdScene.id, design.designData.content.html, 'document', 'main');
       }
@@ -1046,7 +1050,29 @@ function App() {
                   initialData={{
                     design: {
                       type: currentScene?.type || 'graph',
-                      designData: currentScene
+                      designData: currentScene?.type === 'document' ? {
+                        content: {
+                          html: '', // Will be loaded from scene_content table
+                          markdown: '',
+                          media: [],
+                          links: []
+                        },
+                        metadata: {
+                          title: currentScene?.name || '',
+                          subtitle: '',
+                          author: '',
+                          version: '1.0.0',
+                          tags: []
+                        },
+                        style: {
+                          theme: 'default',
+                          typography: {
+                            fontFamily: 'Inter',
+                            fontSize: '16px',
+                            lineHeight: '1.6'
+                          }
+                        }
+                      } : currentScene
                     }
                   }}
                   onComplete={handleSceneDesignComplete}
