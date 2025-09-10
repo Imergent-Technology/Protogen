@@ -309,9 +309,8 @@ function App() {
 
   // Sync URL with state
   useEffect(() => {
-    if (isProgrammaticNavigation) return;
-
     const path = location.pathname;
+    console.log('Route useEffect triggered - path:', path, 'isProgrammaticNavigation:', isProgrammaticNavigation);
     
     if (path === '/users') {
       setViewMode('users');
@@ -329,6 +328,10 @@ function App() {
       console.log('Found deck:', deck);
       setCurrentDeck(deck || null);
       setViewMode('deck-edit');
+      // Reset programmatic navigation flag after handling the route
+      if (isProgrammaticNavigation) {
+        setTimeout(() => setIsProgrammaticNavigation(false), 100);
+      }
     } else if (path === '/scenes') {
       setViewMode('scenes');
       setCurrentScene(null); // Clear current scene when going to scenes list
