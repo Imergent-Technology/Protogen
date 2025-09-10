@@ -100,6 +100,8 @@ interface DeckState {
   setCurrentScene: (scene: Scene | null) => void;
   
   // Deck management
+  loadDecks: (forceReload?: boolean) => Promise<void>;
+  refreshDecks: () => Promise<void>;
   createDeck: (deck: Omit<Deck, 'id' | 'created_at' | 'updated_at'>) => Promise<void>;
   updateDeck: (id: string, updates: Partial<Deck>) => Promise<void>;
   deleteDeck: (id: string) => Promise<void>;
@@ -175,6 +177,46 @@ export const useDeckStore = create<DeckState>()(
       setScenes: (scenes) => set({ scenes }),
       setCurrentDeck: (deck) => set({ currentDeck: deck }),
       setCurrentScene: (scene) => set({ currentScene: scene }),
+      
+      // Deck loading actions
+      loadDecks: async (forceReload = false) => {
+        const currentState = get();
+        if (currentState.decksLoading || (!forceReload && currentState.decks.length > 0)) {
+          return;
+        }
+
+        try {
+          set({ decksLoading: true, decksError: null });
+          
+          const response = await fetch('/api/decks', {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('admin_token')}`,
+            },
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Failed to load decks');
+          }
+
+          const data = await response.json();
+          const decks = data.data?.data || data.data || [];
+          
+          set({ 
+            decks: decks,
+            decksLoading: false 
+          });
+        } catch (error) {
+          console.error('Failed to load decks:', error);
+          set({ 
+            decksError: error instanceof Error ? error.message : 'Failed to load decks',
+            decksLoading: false 
+          });
+        }
+      },
+      
+      refreshDecks: () => get().loadDecks(true),
       
       // Deck management actions
       createDeck: async (deckData) => {

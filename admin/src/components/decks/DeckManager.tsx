@@ -31,6 +31,7 @@ export const DeckManager: React.FC = () => {
     scenes,
     decksLoading,
     decksError,
+    loadDecks,
     createDeck,
     updateDeck,
     deleteDeck,
@@ -75,6 +76,11 @@ export const DeckManager: React.FC = () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [showListOptions]);
+
+  // Load decks on component mount
+  useEffect(() => {
+    loadDecks();
+  }, [loadDecks]);
 
   // Convert Deck to DeckCardData format
   const convertToDeckCardData = (deck: Deck): DeckCardData => {

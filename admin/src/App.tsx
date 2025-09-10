@@ -46,7 +46,7 @@ function App() {
   const [authChecking, setAuthChecking] = useState(true);
   
   // Deck store for scene management
-  const { createScene, updateScene, saveSceneContent, loadSceneContent, scenes: storeScenes, createDeck, updateDeck, decks } = useDeckStore();
+  const { createScene, updateScene, saveSceneContent, loadSceneContent, scenes: storeScenes, loadDecks, createDeck, updateDeck, decks } = useDeckStore();
   
   // Content management
   const [currentScene, setCurrentScene] = useState<any>(null);
@@ -408,6 +408,7 @@ function App() {
   useEffect(() => {
     if (isAuthenticated) {
       loadScenes();
+      loadDecks();
     }
   }, [isAuthenticated]);
 
@@ -520,10 +521,11 @@ function App() {
     }
   };
 
-  // Load scenes when component mounts
+  // Load scenes and decks when component mounts
   useEffect(() => {
     if (isAuthenticated) {
       loadScenes();
+      loadDecks();
     }
   }, [isAuthenticated]);
 
