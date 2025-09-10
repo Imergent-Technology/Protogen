@@ -71,7 +71,11 @@ function App() {
   // Scene workflow handlers
   const handleSceneWorkflowComplete = async (data: any) => {
     try {
+      console.log('=== APP.TSX WORKFLOW COMPLETION ===');
+      console.log('App.tsx received data:', data);
       const { basicDetails, design } = data;
+      console.log('App.tsx basicDetails:', basicDetails);
+      console.log('App.tsx design:', design);
       
       const newScene = {
         name: basicDetails.name,

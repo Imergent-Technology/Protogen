@@ -99,6 +99,9 @@ const WorkflowWizard: React.FC<WorkflowWizardProps> = ({
 
     if (isLastStep) {
       // Complete workflow
+      console.log('=== WORKFLOW COMPLETION ===');
+      console.log('WorkflowWizard workflowData at completion:', workflowData);
+      console.log('WorkflowWizard design data:', workflowData.design);
       if (onComplete) {
         onComplete(workflowData);
       }
