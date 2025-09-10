@@ -336,14 +336,29 @@ const DocumentSceneAuthoring: React.FC<DocumentSceneAuthoringProps> = ({
             <Eye className="h-4 w-4 mr-2" />
             Preview
           </Button>
-          <Button onClick={() => {
-            console.log('=== SAVE BUTTON CLICKED ===');
-            console.log('Button click handler called');
-            handleSave();
-          }}>
+          <Button 
+            onClick={() => {
+              console.log('=== SAVE BUTTON CLICKED ===');
+              console.log('Button click handler called');
+              handleSave();
+            }}
+            disabled={false}
+            style={{ pointerEvents: 'auto' }}
+          >
             <Save className="h-4 w-4 mr-2" />
             Save Scene
           </Button>
+        </div>
+        <div className="text-xs text-muted-foreground mt-2">
+          DEBUG: Save button should be clickable. Check console for click logs.
+        </div>
+        <div className="mt-2">
+          <button 
+            onClick={() => console.log('TEST BUTTON CLICKED')}
+            className="px-2 py-1 bg-blue-500 text-white text-xs rounded"
+          >
+            Test Button
+          </button>
         </div>
         <div className="text-xs text-muted-foreground mt-2">
           Note: Click "Save Scene" to save your design before completing the workflow.
