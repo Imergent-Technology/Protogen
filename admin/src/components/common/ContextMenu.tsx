@@ -1,14 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Edit, Copy, Trash2, Eye, EyeOff, Settings, ExternalLink, Share, Layers } from 'lucide-react';
+import { Edit, Copy, Trash2, Eye, EyeOff, Settings, ExternalLink, Share, Layers, Play, Pause, Volume2, VolumeX } from 'lucide-react';
 
-interface ContextMenuItem {
+export interface ContextMenuItem {
   id: string;
   label?: string;
   icon?: React.ReactNode;
   action?: () => void;
   disabled?: boolean;
   divider?: boolean;
+  variant?: 'default' | 'destructive';
 }
 
 interface ContextMenuProps {
@@ -74,8 +75,12 @@ export function ContextMenu({ items, isOpen, onClose, position }: ContextMenuPro
                    }
                  }}
                  disabled={item.disabled}
-                 className={`w-full flex items-center space-x-3 px-4 py-2 text-sm hover:bg-muted transition-colors ${
-                   item.disabled ? 'text-muted-foreground cursor-not-allowed' : 'text-foreground'
+                 className={`w-full flex items-center space-x-3 px-4 py-2 text-sm transition-colors ${
+                   item.disabled 
+                     ? 'text-muted-foreground cursor-not-allowed' 
+                     : item.variant === 'destructive'
+                       ? 'text-destructive hover:bg-destructive hover:text-destructive-foreground'
+                       : 'text-foreground hover:bg-muted'
                  }`}
                >
                  {item.icon && <span className="w-4 h-4">{item.icon}</span>}
@@ -121,8 +126,92 @@ export function useContextMenu() {
   };
 }
 
+// Scene context menu interface
+export interface SceneContextMenuActions {
+  onEditBasicDetails?: () => void;
+  onEditDesign?: () => void;
+  onPreview?: () => void;
+  onToggleActive?: () => void;
+  onTogglePublic?: () => void;
+  onDelete?: () => void;
+}
+
 // Predefined context menu items for scenes
 export const getSceneContextMenuItems = (
+  scene: any,
+  actions: SceneContextMenuActions
+): ContextMenuItem[] => {
+  const items: ContextMenuItem[] = [];
+
+  // Edit options
+  if (actions.onEditBasicDetails) {
+    items.push({
+      id: 'edit-basic',
+      label: 'Edit Basic Details',
+      icon: <Edit className="w-4 h-4" />,
+      action: actions.onEditBasicDetails
+    });
+  }
+
+  if (actions.onEditDesign) {
+    items.push({
+      id: 'edit-design',
+      label: 'Edit Design',
+      icon: <Settings className="w-4 h-4" />,
+      action: actions.onEditDesign
+    });
+  }
+
+  if (actions.onPreview) {
+    items.push({
+      id: 'preview',
+      label: 'Preview',
+      icon: <Eye className="w-4 h-4" />,
+      action: actions.onPreview
+    });
+  }
+
+  // Add divider if we have edit options
+  if (items.length > 0) {
+    items.push({ id: 'divider1', divider: true });
+  }
+
+  // Status toggle options
+  if (actions.onToggleActive) {
+    items.push({
+      id: 'toggle-active',
+      label: scene?.isActive ? 'Deactivate' : 'Activate',
+      icon: scene?.isActive ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />,
+      action: actions.onToggleActive
+    });
+  }
+
+  if (actions.onTogglePublic) {
+    items.push({
+      id: 'toggle-public',
+      label: scene?.isPublic ? 'Make Private' : 'Make Public',
+      icon: scene?.isPublic ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />,
+      action: actions.onTogglePublic
+    });
+  }
+
+  // Add divider before destructive action
+  if (actions.onDelete) {
+    items.push({ id: 'divider2', divider: true });
+    items.push({
+      id: 'delete',
+      label: 'Delete Scene',
+      icon: <Trash2 className="w-4 h-4" />,
+      action: actions.onDelete,
+      variant: 'destructive'
+    });
+  }
+
+  return items;
+};
+
+// Legacy scene context menu items (keeping for backward compatibility)
+export const getLegacySceneContextMenuItems = (
   scene: any,
   onEdit: () => void,
   onDelete: () => void,
@@ -185,7 +274,8 @@ export const getSceneContextMenuItems = (
     id: 'delete',
     label: 'Delete Stage',
     icon: <Trash2 className="w-4 h-4" />,
-    action: onDelete
+    action: onDelete,
+    variant: 'destructive'
   }
 ];
 

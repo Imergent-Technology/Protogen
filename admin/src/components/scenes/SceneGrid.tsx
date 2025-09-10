@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Search, Filter, Settings, Eye, Edit, Trash2, Play, Pause, Volume2, VolumeX } from 'lucide-react';
+import { Search, Filter } from 'lucide-react';
 import { Input, Button, Badge } from '@progress/shared';
 import SceneCard, { SceneCardData } from './SceneCard';
+import { ContextMenu, useContextMenu, getSceneContextMenuItems, SceneContextMenuActions } from '../common/ContextMenu';
 
 export interface SceneGridProps {
   scenes: SceneCardData[];
@@ -155,7 +156,7 @@ const SceneListItem: React.FC<SceneListItemProps> = ({
   onToggleActive,
   onTogglePublic,
 }) => {
-  const [showOptions, setShowOptions] = useState(false);
+  const { contextMenu, showContextMenu, hideContextMenu } = useContextMenu();
 
   // Generate scene type icon
   const getSceneTypeIcon = (type: string) => {
@@ -177,42 +178,23 @@ const SceneListItem: React.FC<SceneListItemProps> = ({
     }
   };
 
-  // Handle options menu
-  const handleOptionsClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setShowOptions(!showOptions);
-  };
+  // Handle context menu
+  const handleContextMenu = (e: React.MouseEvent) => {
+    const actions: SceneContextMenuActions = {
+      onEditBasicDetails: onEditBasicDetails ? () => onEditBasicDetails(scene) : undefined,
+      onEditDesign: onEditDesign ? () => onEditDesign(scene) : undefined,
+      onPreview: onPreview ? () => onPreview(scene) : undefined,
+      onToggleActive: onToggleActive ? () => onToggleActive(scene) : undefined,
+      onTogglePublic: onTogglePublic ? () => onTogglePublic(scene) : undefined,
+      onDelete: onDelete ? () => onDelete(scene) : undefined,
+    };
 
-  // Handle option selection
-  const handleOptionSelect = (action: string) => {
-    setShowOptions(false);
-    switch (action) {
-      case 'edit':
-        onEdit(scene);
-        break;
-      case 'edit-basic':
-        onEditBasicDetails?.(scene);
-        break;
-      case 'edit-design':
-        onEditDesign?.(scene);
-        break;
-      case 'delete':
-        onDelete(scene);
-        break;
-      case 'preview':
-        onPreview(scene);
-        break;
-      case 'toggle-active':
-        onToggleActive?.(scene);
-        break;
-      case 'toggle-public':
-        onTogglePublic?.(scene);
-        break;
-    }
+    const menuItems = getSceneContextMenuItems(scene, actions);
+    showContextMenu(e, menuItems);
   };
 
   return (
-    <div className="relative group">
+    <div className="relative group" onContextMenu={handleContextMenu}>
       <div className="flex items-center justify-between p-3 border border-border rounded-lg hover:bg-muted/30 transition-colors">
         <div className="flex items-center space-x-3 flex-1 min-w-0">
           {/* Thumbnail */}
@@ -265,79 +247,16 @@ const SceneListItem: React.FC<SceneListItemProps> = ({
           {scene.isPublic && (
             <div className="w-2 h-2 bg-green-500 rounded-full" title="Public" />
           )}
-          
-          {/* Options Button */}
-          <div className="relative">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleOptionsClick}
-              className="h-7 w-7 p-0"
-            >
-              <Settings className="h-3 w-3" />
-            </Button>
-
-            {/* Options Menu */}
-            {showOptions && (
-              <div className="absolute right-0 bottom-full mb-2 bg-background border border-border rounded-lg shadow-lg z-20 w-48">
-                <div className="py-1">
-                  {onEditBasicDetails && (
-                    <button
-                      onClick={() => handleOptionSelect('edit-basic')}
-                      className="w-full px-3 py-2 text-left text-sm hover:bg-muted flex items-center space-x-2 whitespace-nowrap"
-                    >
-                      <Edit className="h-4 w-4 flex-shrink-0" />
-                      <span>Edit Details</span>
-                    </button>
-                  )}
-                  {onEditDesign && (
-                    <button
-                      onClick={() => handleOptionSelect('edit-design')}
-                      className="w-full px-3 py-2 text-left text-sm hover:bg-muted flex items-center space-x-2 whitespace-nowrap"
-                    >
-                      <Settings className="h-4 w-4 flex-shrink-0" />
-                      <span>Edit Design</span>
-                    </button>
-                  )}
-                  <button
-                    onClick={() => handleOptionSelect('preview')}
-                    className="w-full px-3 py-2 text-left text-sm hover:bg-muted flex items-center space-x-2 whitespace-nowrap"
-                  >
-                    <Eye className="h-4 w-4 flex-shrink-0" />
-                    <span>Preview</span>
-                  </button>
-                  {onToggleActive && (
-                    <button
-                      onClick={() => handleOptionSelect('toggle-active')}
-                      className="w-full px-3 py-2 text-left text-sm hover:bg-muted flex items-center space-x-2 whitespace-nowrap"
-                    >
-                      {scene.isActive ? <Pause className="h-4 w-4 flex-shrink-0" /> : <Play className="h-4 w-4 flex-shrink-0" />}
-                      <span>{scene.isActive ? 'Deactivate' : 'Activate'}</span>
-                    </button>
-                  )}
-                  {onTogglePublic && (
-                    <button
-                      onClick={() => handleOptionSelect('toggle-public')}
-                      className="w-full px-3 py-2 text-left text-sm hover:bg-muted flex items-center space-x-2 whitespace-nowrap"
-                    >
-                      {scene.isPublic ? <VolumeX className="h-4 w-4 flex-shrink-0" /> : <Volume2 className="h-4 w-4 flex-shrink-0" />}
-                      <span>{scene.isPublic ? 'Make Private' : 'Make Public'}</span>
-                    </button>
-                  )}
-                  <hr className="my-1 border-border" />
-                  <button
-                    onClick={() => handleOptionSelect('delete')}
-                    className="w-full px-3 py-2 text-left text-sm hover:bg-destructive hover:text-destructive-foreground flex items-center space-x-2 text-destructive whitespace-nowrap"
-                  >
-                    <Trash2 className="h-4 w-4 flex-shrink-0" />
-                    <span>Delete Scene</span>
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
         </div>
       </div>
+
+      {/* Context Menu */}
+      <ContextMenu
+        items={contextMenu.items}
+        isOpen={contextMenu.isOpen}
+        onClose={hideContextMenu}
+        position={contextMenu.position}
+      />
     </div>
   );
 };
