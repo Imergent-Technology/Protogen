@@ -37,6 +37,7 @@ export interface Scene {
   is_public: boolean;
   creator_id?: number;
   published_at?: string;
+  thumbnail?: string;
   created_at: string;
   updated_at: string;
 }
@@ -55,6 +56,12 @@ export interface Deck {
     keepWarm: boolean;
     preloadStrategy: 'immediate' | 'proximity' | 'on-demand';
   };
+  creator_id?: number;
+  tags?: string[];
+  view_count?: number;
+  last_viewed_at?: string;
+  is_active?: boolean;
+  is_public?: boolean;
   created_at: string;
   updated_at: string;
 }

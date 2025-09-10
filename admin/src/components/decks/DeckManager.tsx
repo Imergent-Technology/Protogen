@@ -32,8 +32,6 @@ export const DeckManager: React.FC = () => {
     decksLoading,
     decksError,
     loadDecks,
-    createDeck,
-    updateDeck,
     deleteDeck,
     setDecksLoading,
     setDecksError,
@@ -134,10 +132,6 @@ export const DeckManager: React.FC = () => {
       // For now, we'll use a simple approach - the App component will handle this
       console.log('Navigating to:', `/decks/edit/${deck.id}`);
       navigate(`/decks/edit/${deck.id}`);
-      // Reset the programmatic navigation flag after a short delay
-      setTimeout(() => {
-        // This will be handled by the App component
-      }, 100);
     } else {
       console.error('Original deck not found for deck ID:', deck.id);
     }
