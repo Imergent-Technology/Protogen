@@ -333,9 +333,8 @@ const DocumentSceneAuthoring: React.FC<DocumentSceneAuthoringProps> = ({
     });
   }, [onSave]);
 
-  // Handle save
+  // Handle save (now used for auto-save on form changes)
   const handleSave = useCallback(() => {
-    console.log('=== DocumentSceneAuthoring handleSave function called ===');
     const sceneToSave = {
       ...formData,
       content: {
@@ -343,16 +342,9 @@ const DocumentSceneAuthoring: React.FC<DocumentSceneAuthoringProps> = ({
         html: htmlContent
       }
     };
-    console.log('DocumentSceneAuthoring handleSave called with:', sceneToSave);
-    console.log('DocumentSceneAuthoring onSave function:', onSave);
-    console.log('DocumentSceneAuthoring onSave function type:', typeof onSave);
     
     if (typeof onSave === 'function') {
-      console.log('Calling onSave function...');
       onSave(sceneToSave);
-      console.log('onSave function called successfully');
-    } else {
-      console.error('onSave is not a function!', onSave);
     }
   }, [formData, htmlContent, onSave]);
 
@@ -381,51 +373,13 @@ const DocumentSceneAuthoring: React.FC<DocumentSceneAuthoringProps> = ({
           </p>
         </div>
         <div className="flex items-center space-x-2">
-          <Button variant="outline" onClick={onCancel}>
-            Cancel
-          </Button>
           <Button variant="outline" onClick={handlePreview}>
             <Eye className="h-4 w-4 mr-2" />
             Preview
           </Button>
-          <Button 
-            onClick={() => {
-              console.log('=== SAVE BUTTON CLICKED ===');
-              console.log('Button click handler called');
-              handleSave();
-            }}
-            disabled={false}
-            style={{ pointerEvents: 'auto', backgroundColor: 'red', color: 'white' }}
-          >
-            <Save className="h-4 w-4 mr-2" />
-            Save Scene (RED BUTTON)
-          </Button>
-          <button 
-            onClick={() => {
-              console.log('=== HTML SAVE BUTTON CLICKED ===');
-              console.log('HTML button click handler called');
-              handleSave();
-            }}
-            style={{ backgroundColor: 'green', color: 'white', padding: '8px 16px', marginLeft: '8px' }}
-          >
-            HTML Save Button
-          </button>
         </div>
         <div className="text-xs text-muted-foreground mt-2">
-          DEBUG: Save button should be clickable. Check console for click logs.
-        </div>
-        <div className="mt-4 p-4 bg-yellow-100 border border-yellow-300 rounded">
-          <p className="text-sm font-bold text-yellow-800 mb-2">DEBUG SECTION</p>
-          <button 
-            onClick={() => console.log('TEST BUTTON CLICKED')}
-            className="px-4 py-2 bg-blue-500 text-white text-sm rounded hover:bg-blue-600"
-          >
-            Test Button (Click Me!)
-          </button>
-          <p className="text-xs text-yellow-700 mt-2">If you can see this, the component is rendering correctly.</p>
-        </div>
-        <div className="text-xs text-muted-foreground mt-2">
-          Note: Click "Save Scene" to save your design before completing the workflow.
+          Changes are automatically saved as you type. Use the Complete button below to finish editing.
         </div>
       </div>
 
