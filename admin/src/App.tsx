@@ -218,9 +218,9 @@ function App() {
     try {
       const { basicDetails } = data;
       
-      if (viewMode === 'deck-edit' && currentDeck?.id) {
+      if (viewMode === 'deck-edit' && currentDeck?.guid) {
         // Update existing deck
-        await updateDeck(currentDeck.id, {
+        await updateDeck(currentDeck.guid, {
           name: basicDetails.name,
           slug: basicDetails.slug,
           description: basicDetails.description,
@@ -323,7 +323,7 @@ function App() {
       setViewMode('deck-workflow');
     } else if (path.startsWith('/decks/') && path.endsWith('/edit')) {
       const deckId = path.split('/')[2];
-      const deck = decks.find(d => d.id === deckId);
+      const deck = decks.find(d => d.guid === deckId);
       setCurrentDeck(deck || null);
       setViewMode('deck-edit');
     } else if (path === '/scenes') {

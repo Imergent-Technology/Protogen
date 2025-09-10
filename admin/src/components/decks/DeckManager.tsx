@@ -84,7 +84,7 @@ export const DeckManager: React.FC = () => {
     const determinedType = determineDeckType(sceneTypes);
 
     return {
-      id: deck.id,
+      id: deck.guid, // Use GUID for API calls
       name: deck.name,
       type: determinedType,
       description: deck.description,
@@ -119,7 +119,7 @@ export const DeckManager: React.FC = () => {
 
   // Handle deck editing navigation
   const handleEditDeck = (deck: DeckCardData) => {
-    const originalDeck = decks.find(d => d.id === deck.id);
+    const originalDeck = decks.find(d => d.guid === deck.id);
     if (originalDeck) {
       // Store the deck in a way that the App component can access it
       // For now, we'll use a simple approach - the App component will handle this

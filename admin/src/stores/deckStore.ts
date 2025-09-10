@@ -44,6 +44,7 @@ export interface Scene {
 // Deck interface for grouping related scenes
 export interface Deck {
   id: string;
+  guid: string; // UUID for API calls
   name: string;
   slug: string; // URL-friendly identifier
   description?: string;
@@ -102,7 +103,7 @@ interface DeckState {
   createDeck: (deck: Omit<Deck, 'id' | 'created_at' | 'updated_at'>) => Promise<void>;
   updateDeck: (id: string, updates: Partial<Deck>) => Promise<void>;
   deleteDeck: (id: string) => Promise<void>;
-  evaluateDeckType: (deckId: string) => Promise<void>;
+  evaluateDeckType: (deckGuid: string) => Promise<void>;
   
   // Scene management
   loadScenes: (forceReload?: boolean) => Promise<void>;
@@ -242,9 +243,9 @@ export const useDeckStore = create<DeckState>()(
         }
       },
       
-      updateDeck: async (id, updates) => {
+      updateDeck: async (guid, updates) => {
         try {
-          const response = await fetch(`/api/decks/${id}`, {
+          const response = await fetch(`/api/decks/${guid}`, {
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json',
@@ -310,9 +311,9 @@ export const useDeckStore = create<DeckState>()(
         }
       },
       
-      deleteDeck: async (id) => {
+      deleteDeck: async (guid) => {
         try {
-          const response = await fetch(`/api/decks/${id}`, {
+          const response = await fetch(`/api/decks/${guid}`, {
             method: 'DELETE',
             headers: {
               'Authorization': `Bearer ${localStorage.getItem('admin_token')}`,
@@ -325,7 +326,7 @@ export const useDeckStore = create<DeckState>()(
           }
 
           set((state) => ({
-            decks: state.decks.filter(deck => deck.id !== id)
+            decks: state.decks.filter(deck => deck.guid !== guid)
           }));
         } catch (error) {
           console.error('Failed to delete deck:', error);
@@ -493,7 +494,10 @@ export const useDeckStore = create<DeckState>()(
           // Evaluate deck types for all decks this scene belongs to
           if (sceneData.deckIds && sceneData.deckIds.length > 0) {
             for (const deckId of sceneData.deckIds) {
-              await get().evaluateDeckType(deckId);
+              const deck = get().decks.find(d => d.id === deckId);
+              if (deck) {
+                await get().evaluateDeckType(deck.guid);
+              }
             }
           }
           
@@ -573,7 +577,10 @@ export const useDeckStore = create<DeckState>()(
           // Evaluate deck types for all decks this scene belongs to
           if (scene.deckIds && scene.deckIds.length > 0) {
             for (const deckId of scene.deckIds) {
-              await get().evaluateDeckType(deckId);
+              const deck = get().decks.find(d => d.id === deckId);
+              if (deck) {
+                await get().evaluateDeckType(deck.guid);
+              }
             }
           }
         } catch (error) {
@@ -608,7 +615,10 @@ export const useDeckStore = create<DeckState>()(
           // Evaluate deck types for all decks this scene belonged to
           if (scene.deckIds && scene.deckIds.length > 0) {
             for (const deckId of scene.deckIds) {
-              await get().evaluateDeckType(deckId);
+              const deck = get().decks.find(d => d.id === deckId);
+              if (deck) {
+                await get().evaluateDeckType(deck.guid);
+              }
             }
           }
         } catch (error) {
@@ -698,13 +708,13 @@ export const useDeckStore = create<DeckState>()(
       setScenesError: (error) => set({ scenesError: error }),
       
       // Deck type evaluation
-      evaluateDeckType: async (deckId) => {
+      evaluateDeckType: async (deckGuid) => {
         const state = get();
-        const deck = state.decks.find(d => d.id === deckId);
+        const deck = state.decks.find(d => d.guid === deckGuid);
         if (!deck) return;
         
         // Get all scenes that belong to this deck
-        const deckScenes = state.scenes.filter(scene => scene.deckIds.includes(deckId));
+        const deckScenes = state.scenes.filter(scene => scene.deckIds.includes(deck.id));
         const sceneTypes = deckScenes.map(scene => scene.type);
         const uniqueTypes = [...new Set(sceneTypes)];
         
@@ -720,7 +730,7 @@ export const useDeckStore = create<DeckState>()(
         // Only update if the type has changed
         if (deck.type !== newType) {
           try {
-            const response = await fetch(`/api/decks/${deckId}`, {
+            const response = await fetch(`/api/decks/${deck.guid}`, {
               method: 'PUT',
               headers: {
                 'Content-Type': 'application/json',
