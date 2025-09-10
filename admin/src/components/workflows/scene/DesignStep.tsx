@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useRef, useEffect } from 'react';
 import { Card } from '@progress/shared';
 import { SceneType } from '../../../stores/deckStore';
 import GraphSceneAuthoring from '../../authoring/GraphSceneAuthoring';
@@ -20,6 +20,12 @@ const DesignStep: React.FC<DesignStepProps> = ({
   onDataChange,
   errors
 }) => {
+  // Use ref to store current data to avoid stale closures
+  const dataRef = useRef(data);
+  useEffect(() => {
+    dataRef.current = data;
+  }, [data]);
+
   // Handle design data changes (currently unused but kept for future use)
   // const handleDesignChange = useCallback((designData: any) => {
   //   onDataChange({ ...data, designData });
@@ -28,17 +34,17 @@ const DesignStep: React.FC<DesignStepProps> = ({
   // Handle save (from authoring components)
   const handleSave = useCallback((designData: any) => {
     console.log('=== DesignStep handleSave called with ===', designData);
-    console.log('DesignStep current data:', data);
+    console.log('DesignStep current data:', dataRef.current);
     const updatedData = { 
-      ...data, 
+      ...dataRef.current, 
       designData,
-      type: data.type // Ensure type is preserved
+      type: dataRef.current.type // Ensure type is preserved
     };
     console.log('DesignStep updated data:', updatedData);
     console.log('DesignStep calling onDataChange with:', updatedData);
     onDataChange(updatedData);
     console.log('DesignStep onDataChange called successfully');
-  }, [data.type, onDataChange]); // Only depend on type, not the entire data object
+  }, [onDataChange]); // Remove data dependency to prevent infinite re-rendering
 
   // Handle preview (from authoring components)
   const handlePreview = useCallback((designData: any) => {

@@ -85,9 +85,6 @@ const DocumentSceneAuthoring: React.FC<DocumentSceneAuthoringProps> = ({
   onCancel,
   className = ''
 }) => {
-  console.log('DocumentSceneAuthoring rendered with onSave:', typeof onSave);
-  console.log('DocumentSceneAuthoring onSave function:', onSave);
-  
   // Form state
   const [formData, setFormData] = useState<DocumentSceneData>({
     name: '',
