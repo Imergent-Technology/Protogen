@@ -20,6 +20,7 @@ import {
   DocumentSceneAuthoring,
 } from './components';
 import { SceneWorkflow } from './components/workflows';
+import DeckWorkflow from './components/workflows/deck/DeckWorkflow';
 import { useDeckStore } from './stores/deckStore';
 import { AnimatePresence, motion } from 'framer-motion';
 import { initializeTheme } from '@progress/shared';
@@ -31,7 +32,7 @@ interface AdminUser {
   is_admin: boolean;
 }
 
-type ViewMode = 'admin' | 'scenes' | 'decks' | 'contexts' | 'flows' | 'users' | 'analytics' | 'graph-studio' | 'tenants' | 'create-scene' | 'edit-scene' | 'scene-workflow' | 'scene-edit' | 'scene-design';
+type ViewMode = 'admin' | 'scenes' | 'decks' | 'contexts' | 'flows' | 'users' | 'analytics' | 'graph-studio' | 'tenants' | 'create-scene' | 'edit-scene' | 'scene-workflow' | 'scene-edit' | 'scene-design' | 'deck-workflow' | 'deck-edit';
 
 function App() {
   const navigate = useNavigate();
@@ -45,10 +46,11 @@ function App() {
   const [authChecking, setAuthChecking] = useState(true);
   
   // Deck store for scene management
-  const { createScene, updateScene, saveSceneContent, loadSceneContent, scenes: storeScenes } = useDeckStore();
+  const { createScene, updateScene, saveSceneContent, loadSceneContent, scenes: storeScenes, createDeck, updateDeck, decks } = useDeckStore();
   
   // Content management
   const [currentScene, setCurrentScene] = useState<any>(null);
+  const [currentDeck, setCurrentDeck] = useState<any>(null);
   const [scenes, setScenes] = useState<any[]>([]);
   const [_scenesLoading, _setScenesLoading] = useState(false);
   
@@ -212,6 +214,46 @@ function App() {
     }
   };
 
+  const handleDeckWorkflowComplete = async (data: any) => {
+    try {
+      const { basicDetails } = data;
+      
+      if (viewMode === 'deck-edit' && currentDeck?.id) {
+        // Update existing deck
+        await updateDeck(currentDeck.id, {
+          name: basicDetails.name,
+          slug: basicDetails.slug,
+          description: basicDetails.description,
+          type: basicDetails.type,
+          keep_warm: basicDetails.keepWarm,
+          preload_strategy: basicDetails.preloadStrategy,
+        });
+        showSuccess('Deck updated successfully!');
+      } else {
+        // Create new deck
+        await createDeck({
+          name: basicDetails.name,
+          slug: basicDetails.slug,
+          description: basicDetails.description,
+          type: basicDetails.type,
+          keep_warm: basicDetails.keepWarm,
+          preload_strategy: basicDetails.preloadStrategy,
+          scene_ids: [],
+          tags: [],
+          is_active: true,
+          is_public: false,
+        });
+        showSuccess('Deck created successfully!');
+      }
+      
+      setCurrentDeck(null);
+      setViewMode('decks');
+      updateURL('decks');
+    } catch (error) {
+      showError('Failed to save deck: ' + (error instanceof Error ? error.message : 'Unknown error'));
+    }
+  };
+
   // Helper function to get view subtitle
   const getViewSubtitle = (view: ViewMode): string => {
     switch (view) {
@@ -243,6 +285,10 @@ function App() {
         return 'Edit Scene Details';
       case 'scene-design':
         return 'Edit Scene Design';
+      case 'deck-workflow':
+        return 'Create New Deck';
+      case 'deck-edit':
+        return 'Edit Deck';
       default:
         return '';
     }
@@ -274,6 +320,13 @@ function App() {
       setViewMode('analytics');
     } else if (path === '/decks') {
       setViewMode('decks');
+    } else if (path === '/decks/new') {
+      setViewMode('deck-workflow');
+    } else if (path.startsWith('/decks/') && path.endsWith('/edit')) {
+      const deckId = path.split('/')[2];
+      const deck = decks.find(d => d.id === deckId);
+      setCurrentDeck(deck || null);
+      setViewMode('deck-edit');
     } else if (path === '/scenes') {
       setViewMode('scenes');
       setCurrentScene(null); // Clear current scene when going to scenes list
@@ -339,6 +392,12 @@ function App() {
         break;
       case 'scene-design':
         // This will be handled by the component based on current scene
+        break;
+      case 'deck-workflow':
+        navigate('/decks/new');
+        break;
+      case 'deck-edit':
+        // This will be handled by the component based on current deck
         break;
       default:
         navigate('/');
@@ -1167,6 +1226,44 @@ function App() {
                   onCancel={() => {
                     setViewMode('scenes');
                     updateURL('scenes');
+                  }}
+                />
+              </div>
+            )}
+
+            {/* New Deck Workflow */}
+            {viewMode === 'deck-workflow' && (
+              <div className="h-full">
+                <DeckWorkflow
+                  mode="create"
+                  onComplete={handleDeckWorkflowComplete}
+                  onCancel={() => {
+                    setViewMode('decks');
+                    updateURL('decks');
+                  }}
+                />
+              </div>
+            )}
+
+            {/* Edit Deck Workflow */}
+            {viewMode === 'deck-edit' && (
+              <div className="h-full">
+                <DeckWorkflow
+                  mode="edit"
+                  initialData={{
+                    basicDetails: {
+                      name: currentDeck?.name || '',
+                      slug: currentDeck?.slug || '',
+                      description: currentDeck?.description || '',
+                      type: currentDeck?.type || 'graph',
+                      keepWarm: currentDeck?.performance?.keepWarm || true,
+                      preloadStrategy: currentDeck?.performance?.preloadStrategy || 'proximity',
+                    }
+                  }}
+                  onComplete={handleDeckWorkflowComplete}
+                  onCancel={() => {
+                    setViewMode('decks');
+                    updateURL('decks');
                   }}
                 />
               </div>

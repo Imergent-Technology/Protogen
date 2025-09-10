@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useDeckStore, Deck } from '../../stores/deckStore';
 import { DeckType } from '../../stores/deckStore';
 import { performanceManager } from '../../services/PerformanceManager';
 import { Plus, SlidersHorizontal, Grid, List, Loader2 } from 'lucide-react';
 import DeckGrid from './DeckGrid';
 import { DeckCardData } from './DeckCard';
-import DeckWorkflow, { DeckWorkflowData } from '../workflows/deck/DeckWorkflow';
 import ConfirmationDialog from '../common/ConfirmationDialog';
 
 // Function to determine deck type based on scene types
@@ -25,6 +25,7 @@ const determineDeckType = (sceneTypes: string[]): DeckType => {
 
 // Deck Manager Component
 export const DeckManager: React.FC = () => {
+  const navigate = useNavigate();
   const {
     decks,
     scenes,
@@ -37,9 +38,6 @@ export const DeckManager: React.FC = () => {
     setDecksError,
   } = useDeckStore();
 
-  const [showCreateDeck, setShowCreateDeck] = useState(false);
-  const [showEditDeck, setShowEditDeck] = useState(false);
-  const [editingDeck, setEditingDeck] = useState<Deck | null>(null);
   const [showListOptions, setShowListOptions] = useState(false);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const listOptionsRef = useRef<HTMLDivElement>(null);
@@ -113,45 +111,18 @@ export const DeckManager: React.FC = () => {
     };
   };
 
-  // Handle deck creation/editing
-  const handleDeckWorkflowComplete = async (data: DeckWorkflowData) => {
-    try {
-      setDecksLoading(true);
-      
-      if (showEditDeck && editingDeck) {
-        // Update existing deck
-        await updateDeck(editingDeck.id, {
-          name: data.basicDetails.name,
-          slug: data.basicDetails.slug,
-          description: data.basicDetails.description,
-          type: data.basicDetails.type as DeckType,
-          keep_warm: data.basicDetails.keepWarm,
-          preload_strategy: data.basicDetails.preloadStrategy,
-        });
-      } else {
-        // Create new deck
-        await createDeck({
-          name: data.basicDetails.name,
-          slug: data.basicDetails.slug,
-          description: data.basicDetails.description,
-          type: data.basicDetails.type as DeckType,
-          keep_warm: data.basicDetails.keepWarm,
-          preload_strategy: data.basicDetails.preloadStrategy,
-          scene_ids: [],
-          tags: [],
-          is_active: true,
-          is_public: false,
-        });
-      }
-      
-      setShowCreateDeck(false);
-      setShowEditDeck(false);
-      setEditingDeck(null);
-    } catch (error) {
-      console.error('Failed to save deck:', error);
-      setDecksError(error instanceof Error ? error.message : 'Failed to save deck');
-    } finally {
-      setDecksLoading(false);
+  // Handle deck creation navigation
+  const handleCreateDeck = () => {
+    navigate('/decks/new');
+  };
+
+  // Handle deck editing navigation
+  const handleEditDeck = (deck: DeckCardData) => {
+    const originalDeck = decks.find(d => d.id === deck.id);
+    if (originalDeck) {
+      // Store the deck in a way that the App component can access it
+      // For now, we'll use a simple approach - the App component will handle this
+      navigate(`/decks/edit/${deck.id}`);
     }
   };
 
@@ -250,39 +221,39 @@ export const DeckManager: React.FC = () => {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-bold text-foreground mb-2">Deck Management</h1>
-          <p className="text-muted-foreground">
+        <p className="text-muted-foreground">
             Create and manage presentation decks to organize your scenes
-          </p>
-        </div>
-        
+        </p>
+      </div>
+
         {/* Action Buttons */}
         <div className="flex items-center space-x-2">
         {/* List Options Button */}
         <div className="relative" ref={listOptionsRef}>
-          <button
+        <button
             onClick={() => setShowListOptions(!showListOptions)}
             className="p-2 border border-border rounded-md hover:bg-muted transition-colors"
             title="List Options"
           >
             <SlidersHorizontal className="h-4 w-4" />
-          </button>
+        </button>
           {showListOptions && (
             <div className="absolute right-0 top-full mt-1 w-48 bg-background border border-border rounded-md shadow-lg z-10">
               <div className="p-2">
                 <div className="text-xs font-medium text-muted-foreground mb-2">View Options</div>
                 <div className="space-y-1">
-                  <button
+        <button
                     onClick={() => { setViewMode('grid'); setShowListOptions(false); }}
                     className={`w-full text-left px-2 py-1 text-sm rounded hover:bg-muted flex items-center ${viewMode === 'grid' ? 'bg-muted' : ''}`}
                   >
                     <Grid className="h-4 w-4 mr-2" /> Grid View
-                  </button>
-                  <button
+                        </button>
+                        <button
                     onClick={() => { setViewMode('list'); setShowListOptions(false); }}
                     className={`w-full text-left px-2 py-1 text-sm rounded hover:bg-muted flex items-center ${viewMode === 'list' ? 'bg-muted' : ''}`}
                   >
                     <List className="h-4 w-4 mr-2" /> List View
-                  </button>
+                        </button>
                 </div>
               </div>
             </div>
@@ -290,15 +261,15 @@ export const DeckManager: React.FC = () => {
         </div>
 
         {/* Create Deck Button */}
-        <button
-          onClick={() => setShowCreateDeck(true)}
+            <button
+          onClick={handleCreateDeck}
           className="p-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
           title="Create Deck"
-        >
+            >
           <Plus className="h-4 w-4" />
-        </button>
-        </div>
-      </div>
+            </button>
+          </div>
+            </div>
 
       {/* Error Display */}
       {decksError && (
@@ -316,13 +287,7 @@ export const DeckManager: React.FC = () => {
       ) : (
         <DeckGrid
           decks={decks.map(convertToDeckCardData)}
-          onDeckEdit={(deck) => {
-            const originalDeck = decks.find(d => d.id === deck.id);
-            if (originalDeck) {
-              setEditingDeck(originalDeck);
-              setShowEditDeck(true);
-            }
-          }}
+          onDeckEdit={handleEditDeck}
           onDeckDelete={handleDeckDelete}
           onDeckPreview={(deck) => {
             // TODO: Implement deck preview
@@ -340,36 +305,6 @@ export const DeckManager: React.FC = () => {
       )}
 
 
-      {/* Create Deck Workflow */}
-      {showCreateDeck && (
-        <DeckWorkflow
-          mode="create"
-          onComplete={handleDeckWorkflowComplete}
-          onCancel={() => setShowCreateDeck(false)}
-        />
-      )}
-
-      {/* Edit Deck Workflow */}
-      {showEditDeck && editingDeck && (
-        <DeckWorkflow
-          mode="edit"
-          initialData={{
-            basicDetails: {
-              name: editingDeck.name,
-              slug: editingDeck.slug,
-              description: editingDeck.description || '',
-              type: editingDeck.type,
-              keepWarm: editingDeck.performance?.keepWarm || true,
-              preloadStrategy: editingDeck.performance?.preloadStrategy || 'proximity',
-            }
-          }}
-          onComplete={handleDeckWorkflowComplete}
-          onCancel={() => {
-            setShowEditDeck(false);
-            setEditingDeck(null);
-          }}
-        />
-      )}
 
       {/* Delete Confirmation Dialog */}
       <ConfirmationDialog
