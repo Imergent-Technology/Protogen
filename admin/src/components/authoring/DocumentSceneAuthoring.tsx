@@ -282,7 +282,7 @@ const DocumentSceneAuthoring: React.FC<DocumentSceneAuthoringProps> = ({
 
   // Handle save
   const handleSave = () => {
-    console.log('DocumentSceneAuthoring handleSave function called');
+    console.log('=== DocumentSceneAuthoring handleSave function called ===');
     const sceneToSave = {
       ...formData,
       content: {
@@ -292,7 +292,15 @@ const DocumentSceneAuthoring: React.FC<DocumentSceneAuthoringProps> = ({
     };
     console.log('DocumentSceneAuthoring handleSave called with:', sceneToSave);
     console.log('DocumentSceneAuthoring onSave function:', onSave);
-    onSave(sceneToSave);
+    console.log('DocumentSceneAuthoring onSave function type:', typeof onSave);
+    
+    if (typeof onSave === 'function') {
+      console.log('Calling onSave function...');
+      onSave(sceneToSave);
+      console.log('onSave function called successfully');
+    } else {
+      console.error('onSave is not a function!', onSave);
+    }
   };
 
   // Handle preview

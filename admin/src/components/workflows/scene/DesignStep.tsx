@@ -27,7 +27,7 @@ const DesignStep: React.FC<DesignStepProps> = ({
 
   // Handle save (from authoring components)
   const handleSave = useCallback((designData: any) => {
-    console.log('DesignStep handleSave called with:', designData);
+    console.log('=== DesignStep handleSave called with ===', designData);
     console.log('DesignStep current data:', data);
     const updatedData = { 
       ...data, 
@@ -35,7 +35,9 @@ const DesignStep: React.FC<DesignStepProps> = ({
       type: data.type // Ensure type is preserved
     };
     console.log('DesignStep updated data:', updatedData);
+    console.log('DesignStep calling onDataChange with:', updatedData);
     onDataChange(updatedData);
+    console.log('DesignStep onDataChange called successfully');
   }, [data, onDataChange]);
 
   // Handle preview (from authoring components)
