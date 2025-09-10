@@ -490,7 +490,14 @@ export const useDeckStore = create<DeckState>()(
             throw new Error('Scene not found');
           }
 
-          const response = await fetch(`/api/scenes/${scene.guid}/content`, {
+          // Use scene.id as the GUID (since id is actually the GUID from the API)
+          const sceneGuid = scene.id;
+          console.log('=== SAVE SCENE CONTENT DEBUG ===');
+          console.log('sceneId:', sceneId);
+          console.log('scene:', scene);
+          console.log('sceneGuid:', sceneGuid);
+
+          const response = await fetch(`/api/scenes/${sceneGuid}/content`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
