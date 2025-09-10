@@ -241,9 +241,9 @@ class SceneApiController extends Controller
 
             $validated = $request->validate([
                 'content_data' => 'required|string',
-                'content_type' => 'sometimes|string|default:document',
-                'content_key' => 'sometimes|string|default:main',
-                'content_format' => 'sometimes|string|default:html',
+                'content_type' => 'sometimes|string',
+                'content_key' => 'sometimes|string',
+                'content_format' => 'sometimes|string',
                 'metadata' => 'nullable|array',
             ]);
 
