@@ -17,6 +17,7 @@ export interface SceneWorkflowProps {
   initialData?: Partial<SceneWorkflowData>;
   sceneId?: string; // For editing existing scenes
   mode?: 'create' | 'edit';
+  startStep?: number; // Which step to start on (0 = Basic Details, 1 = Design)
   onComplete?: (data: SceneWorkflowData) => void;
   onCancel?: () => void;
   availableDecks?: Array<{ id: string; name: string; type: string }>;
@@ -26,6 +27,7 @@ const SceneWorkflow: React.FC<SceneWorkflowProps> = ({
   initialData = {},
   sceneId,
   mode = 'create',
+  startStep = 0,
   onComplete,
   onCancel,
   availableDecks = []
@@ -209,6 +211,7 @@ const SceneWorkflow: React.FC<SceneWorkflowProps> = ({
           basicDetails: workflowData.basicDetails,
           design: workflowData.design
         }}
+        startStep={startStep}
         onComplete={handleWorkflowComplete}
         onCancel={handleWorkflowCancel}
         showProgress={true}

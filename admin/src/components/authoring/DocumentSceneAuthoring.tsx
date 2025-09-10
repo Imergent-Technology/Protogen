@@ -134,8 +134,28 @@ const DocumentSceneAuthoring: React.FC<DocumentSceneAuthoringProps> = ({
   // Initialize form data
   useEffect(() => {
     if (scene) {
-      setFormData(scene);
-      setHtmlContent(scene.content.html);
+      // Merge scene data with default formData to ensure all fields are present
+      setFormData(prev => ({
+        ...prev,
+        ...scene,
+        metadata: {
+          ...prev.metadata,
+          ...scene.metadata
+        },
+        content: {
+          ...prev.content,
+          ...scene.content
+        },
+        style: {
+          ...prev.style,
+          ...scene.style
+        },
+        config: {
+          ...prev.config,
+          ...scene.config
+        }
+      }));
+      setHtmlContent(scene.content?.html || '');
     }
   }, [scene]);
 

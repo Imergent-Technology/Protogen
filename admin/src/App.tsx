@@ -1069,6 +1069,7 @@ function App() {
                 <SceneWorkflow
                   mode="edit"
                   sceneId={currentScene?.id}
+                  startStep={1}
                   initialData={{
                     basicDetails: {
                       name: currentScene?.name || '',
