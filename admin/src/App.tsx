@@ -81,7 +81,7 @@ function App() {
         name: basicDetails.name,
         slug: basicDetails.slug,
         description: basicDetails.description,
-        type: basicDetails.type,
+        scene_type: basicDetails.type, // API expects 'scene_type', not 'type'
         deckIds: basicDetails.deckIds,
         content: {
           data: design.designData || {},
@@ -100,7 +100,18 @@ function App() {
         is_public: false,
       };
 
+      console.log('=== SCENE CREATION DEBUG ===');
+      console.log('newScene data being sent to API:', newScene);
+      console.log('newScene.name:', newScene.name);
+      console.log('newScene.slug:', newScene.slug);
+      console.log('newScene.scene_type:', newScene.scene_type);
+
       const createdScene = await createScene(newScene) as any;
+      
+      console.log('=== CREATED SCENE DEBUG ===');
+      console.log('createdScene:', createdScene);
+      console.log('createdScene.id:', createdScene.id);
+      console.log('createdScene.guid:', createdScene.guid);
       
       // Save content separately for document scenes
       console.log('Design data:', design);
@@ -108,6 +119,9 @@ function App() {
       console.log('Design type:', design.type);
       console.log('Design designData:', design.designData);
       if (basicDetails.type === 'document' && design.designData?.content?.html) {
+        console.log('=== SAVING SCENE CONTENT ===');
+        console.log('Using scene ID:', createdScene.id);
+        console.log('Content HTML length:', design.designData.content.html.length);
         await saveSceneContent(createdScene.id, design.designData.content.html, 'document', 'main');
       }
       
