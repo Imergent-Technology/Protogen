@@ -180,7 +180,7 @@ export const useDeckStore = create<DeckState>()(
       
       // Deck loading actions
       loadDecks: async (forceReload = false) => {
-        const currentState = get();
+        const currentState = _get();
         if (currentState.decksLoading || (!forceReload && currentState.decks.length > 0)) {
           return;
         }
@@ -216,7 +216,7 @@ export const useDeckStore = create<DeckState>()(
         }
       },
       
-      refreshDecks: () => get().loadDecks(true),
+      refreshDecks: () => _get().loadDecks(true),
       
       // Deck management actions
       createDeck: async (deckData) => {
@@ -536,9 +536,9 @@ export const useDeckStore = create<DeckState>()(
           // Evaluate deck types for all decks this scene belongs to
           if (sceneData.deckIds && sceneData.deckIds.length > 0) {
             for (const deckId of sceneData.deckIds) {
-              const deck = get().decks.find(d => d.id === deckId);
+              const deck = _get().decks.find(d => d.id === deckId);
               if (deck) {
-                await get().evaluateDeckType(deck.guid);
+                await _get().evaluateDeckType(deck.guid);
               }
             }
           }
@@ -619,9 +619,9 @@ export const useDeckStore = create<DeckState>()(
           // Evaluate deck types for all decks this scene belongs to
           if (scene.deckIds && scene.deckIds.length > 0) {
             for (const deckId of scene.deckIds) {
-              const deck = get().decks.find(d => d.id === deckId);
+              const deck = _get().decks.find(d => d.id === deckId);
               if (deck) {
-                await get().evaluateDeckType(deck.guid);
+                await _get().evaluateDeckType(deck.guid);
               }
             }
           }
@@ -657,9 +657,9 @@ export const useDeckStore = create<DeckState>()(
           // Evaluate deck types for all decks this scene belonged to
           if (scene.deckIds && scene.deckIds.length > 0) {
             for (const deckId of scene.deckIds) {
-              const deck = get().decks.find(d => d.id === deckId);
+              const deck = _get().decks.find(d => d.id === deckId);
               if (deck) {
-                await get().evaluateDeckType(deck.guid);
+                await _get().evaluateDeckType(deck.guid);
               }
             }
           }
@@ -751,7 +751,7 @@ export const useDeckStore = create<DeckState>()(
       
       // Deck type evaluation
       evaluateDeckType: async (deckGuid) => {
-        const state = get();
+        const state = _get();
         const deck = state.decks.find(d => d.guid === deckGuid);
         if (!deck) return;
         
