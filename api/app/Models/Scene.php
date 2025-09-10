@@ -65,6 +65,11 @@ class Scene extends Model
         return $this->hasMany(SceneEdge::class);
     }
 
+    public function content(): HasMany
+    {
+        return $this->hasMany(SceneContent::class);
+    }
+
     // Scopes
     public function scopeActive($query)
     {
@@ -128,5 +133,42 @@ class Scene extends Model
     public function isPublished(): bool
     {
         return !is_null($this->published_at);
+    }
+
+    // Content management methods
+    public function getContent(string $type = 'document', string $key = 'main'): ?SceneContent
+    {
+        return $this->content()
+            ->byType($type)
+            ->byKey($key)
+            ->active()
+            ->first();
+    }
+
+    public function setContent(string $contentData, string $type = 'document', string $key = 'main', string $format = 'html', array $metadata = []): SceneContent
+    {
+        return $this->content()->updateOrCreate(
+            [
+                'content_type' => $type,
+                'content_key' => $key,
+            ],
+            [
+                'content_data' => $contentData,
+                'content_format' => $format,
+                'metadata' => $metadata,
+                'is_active' => true,
+            ]
+        );
+    }
+
+    public function getDocumentContent(): ?string
+    {
+        $content = $this->getContent('document', 'main');
+        return $content ? $content->content_data : null;
+    }
+
+    public function setDocumentContent(string $htmlContent): SceneContent
+    {
+        return $this->setContent($htmlContent, 'document', 'main', 'html');
     }
 }

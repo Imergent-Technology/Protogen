@@ -45,7 +45,7 @@ function App() {
   const [authChecking, setAuthChecking] = useState(true);
   
   // Deck store for scene management
-  const { createScene, updateScene, scenes: storeScenes } = useDeckStore();
+  const { createScene, updateScene, saveSceneContent, scenes: storeScenes } = useDeckStore();
   
   // Content management
   const [currentScene, setCurrentScene] = useState<any>(null);
@@ -92,8 +92,15 @@ function App() {
         is_public: false,
       };
 
-      await createScene(newScene);
+      const createdScene = await createScene(newScene) as any;
+      
+      // Save content separately for document scenes
+      if (basicDetails.type === 'document' && design.designData?.content?.html) {
+        await saveSceneContent(createdScene.id, design.designData.content.html, 'document', 'main');
+      }
+      
       showSuccess('Scene created successfully!');
+      setCurrentScene(null);
       setViewMode('scenes');
       updateURL('scenes');
     } catch (error) {
@@ -119,6 +126,7 @@ function App() {
       });
 
       showSuccess('Scene updated successfully!');
+      setCurrentScene(null);
       setViewMode('scenes');
       updateURL('scenes');
     } catch (error) {
@@ -135,14 +143,22 @@ function App() {
         return;
       }
 
-      await updateScene(currentScene.id, {
-        content: {
-          data: design.designData || {},
-          metadata: {},
-        },
-      });
+      // Handle different scene types
+      if (currentScene.type === 'document' && design.designData?.content?.html) {
+        // For document scenes, save HTML content to scene_content table
+        await saveSceneContent(currentScene.id, design.designData.content.html, 'document', 'main');
+      } else {
+        // For other scene types, save to the main content field
+        await updateScene(currentScene.id, {
+          content: {
+            data: design.designData || {},
+            metadata: {},
+          },
+        });
+      }
 
       showSuccess('Scene design updated successfully!');
+      setCurrentScene(null);
       setViewMode('scenes');
       updateURL('scenes');
     } catch (error) {
@@ -214,6 +230,7 @@ function App() {
       setViewMode('decks');
     } else if (path === '/scenes') {
       setViewMode('scenes');
+      setCurrentScene(null); // Clear current scene when going to scenes list
     } else if (path === '/scenes/new') {
       setViewMode('scene-workflow');
     } else if (path.startsWith('/scenes/') && path.endsWith('/edit')) {
@@ -448,8 +465,8 @@ function App() {
   const handleCloseScene = () => {
     _setTransitionDirection('backward');
     setCurrentScene(null);
-    setViewMode('admin');
-    updateURL('admin');
+    setViewMode('scenes');
+    updateURL('scenes');
   };
 
   const handleNavigationSection = (section: string) => {

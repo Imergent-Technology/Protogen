@@ -6,7 +6,7 @@ import { performanceManager } from '../../services/PerformanceManager';
 import SceneGrid from './SceneGrid';
 import { SceneCardData } from './SceneCard';
 import { SelectionModal, SelectableItem } from '../common';
-import { Plus, SlidersHorizontal, Grid, List } from 'lucide-react';
+import { Plus, SlidersHorizontal, Grid, List, Loader2 } from 'lucide-react';
 
 // Scene type badges
 const SceneTypeBadge: React.FC<{ type: SceneType }> = ({ type }) => {
@@ -34,6 +34,7 @@ export const SceneManager: React.FC = () => {
     scenes,
     scenesLoading,
     scenesError,
+    loadScenes,
     createScene,
     updateScene,
     deleteScene,
@@ -62,11 +63,12 @@ export const SceneManager: React.FC = () => {
 
   // Remove deck form state - this is now a pure scene manager
 
-  // Initialize performance manager
+  // Initialize performance manager and load scenes
   useEffect(() => {
     performanceManager.initialize();
+    loadScenes(); // Load scenes when component mounts
     return () => performanceManager.destroy();
-  }, []);
+  }, [loadScenes]);
 
   // Close list options menu when clicking outside
   useEffect(() => {
@@ -376,7 +378,10 @@ export const SceneManager: React.FC = () => {
 
       {/* Scenes Content */}
           {scenesLoading ? (
-            <div className="text-center py-8 text-muted-foreground">Loading scenes...</div>
+            <div className="flex flex-col items-center justify-center py-12">
+              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground mb-4" />
+              <p className="text-muted-foreground">Loading scenes...</p>
+            </div>
           ) : scenes.length === 0 ? (
             <div className="text-center py-12">
               <div className="text-4xl mb-4">🎬</div>

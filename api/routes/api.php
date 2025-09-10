@@ -90,10 +90,14 @@ Route::prefix('registry')->middleware(['auth:sanctum', 'admin'])->group(function
 // Scene API routes (admin only)
 Route::prefix('scenes')->middleware(['auth:sanctum', 'admin'])->group(function () {
     Route::get('/', [SceneApiController::class, 'index']);
+    Route::post('/', [SceneApiController::class, 'store']);
     Route::get('/stats', [SceneApiController::class, 'stats']);
     Route::get('/system', [SceneApiController::class, 'system']);
-    // Stage-related route removed - Stage system has been completely removed
     Route::get('/{guid}', [SceneApiController::class, 'show']);
+    Route::put('/{guid}', [SceneApiController::class, 'update']);
+    Route::delete('/{guid}', [SceneApiController::class, 'destroy']);
+    Route::post('/{guid}/content', [SceneApiController::class, 'saveContent']);
+    Route::get('/{guid}/content/{type?}/{key?}', [SceneApiController::class, 'getContent']);
 });
 
 // Snapshot API routes (admin only)

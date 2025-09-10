@@ -18,6 +18,13 @@ export default defineConfig({
     allowedHosts: ['protogen.local', 'localhost', '127.0.0.1'],
     hmr: {
       host: 'protogen.local'
+    },
+    proxy: {
+      '/api': {
+        target: 'http://webserver:80',
+        changeOrigin: true,
+        secure: false,
+      }
     }
   }
 }) 

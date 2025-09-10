@@ -47,7 +47,6 @@ const SceneCard: React.FC<SceneCardProps> = ({
   onTogglePublic,
   className = ''
 }) => {
-  const [showMetadata, setShowMetadata] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
 
   // Generate scene type icon
@@ -70,10 +69,7 @@ const SceneCard: React.FC<SceneCardProps> = ({
     }
   };
 
-  // Handle card click - enter authoring mode
-  const handleCardClick = () => {
-    onEdit(scene);
-  };
+  // Remove card-wide click functionality
 
   // Handle options menu
   const handleOptionsClick = (e: React.MouseEvent) => {
@@ -111,10 +107,7 @@ const SceneCard: React.FC<SceneCardProps> = ({
 
   return (
     <div 
-      className={`scene-card relative group cursor-pointer transition-all duration-200 hover:shadow-lg ${className}`}
-      onClick={handleCardClick}
-      onMouseEnter={() => setShowMetadata(true)}
-      onMouseLeave={() => setShowMetadata(false)}
+      className={`scene-card relative group transition-all duration-200 hover:shadow-lg ${className}`}
     >
       {/* Main Card */}
       <div className="relative bg-background border border-border rounded-lg overflow-hidden aspect-video">
@@ -155,8 +148,8 @@ const SceneCard: React.FC<SceneCardProps> = ({
           )}
         </div>
 
-        {/* Options Button */}
-        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+        {/* Options Button - Always Visible */}
+        <div className="absolute top-2 right-2">
           <Button
             variant="ghost"
             size="sm"
@@ -233,39 +226,6 @@ const SceneCard: React.FC<SceneCardProps> = ({
           </div>
         )}
 
-        {/* Hover Metadata Overlay */}
-        {showMetadata && (
-          <div className="absolute inset-0 bg-background/90 backdrop-blur-sm flex items-center justify-center">
-            <div className="text-center p-4">
-              <h3 className="font-semibold text-lg mb-2">{scene.name}</h3>
-              {scene.metadata.title && (
-                <p className="text-sm text-muted-foreground mb-2">{scene.metadata.title}</p>
-              )}
-              {scene.description && (
-                <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{scene.description}</p>
-              )}
-              <div className="flex flex-wrap gap-1 justify-center mb-3">
-                {scene.metadata.tags?.slice(0, 3).map((tag, index) => (
-                  <Badge key={index} variant="secondary" className="text-xs">
-                    {tag}
-                  </Badge>
-                ))}
-                {scene.metadata.tags && scene.metadata.tags.length > 3 && (
-                  <Badge variant="secondary" className="text-xs">
-                    +{scene.metadata.tags.length - 3}
-                  </Badge>
-                )}
-              </div>
-              <div className="text-xs text-muted-foreground">
-                <div>Views: {scene.stats.viewCount}</div>
-                <div>Updated: {new Date(scene.metadata.updatedAt).toLocaleDateString()}</div>
-                {scene.metadata.author && (
-                  <div>By: {scene.metadata.author}</div>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Card Footer */}
@@ -278,6 +238,41 @@ const SceneCard: React.FC<SceneCardProps> = ({
           <span className="text-xs text-muted-foreground">
             {scene.stats.viewCount} views
           </span>
+        </div>
+        
+        {/* Action Buttons */}
+        <div className="flex gap-1 mt-2">
+          {onEditBasicDetails && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleOptionSelect('edit-basic')}
+              className="flex-1 text-xs h-7"
+            >
+              <Edit className="h-3 w-3 mr-1" />
+              Details
+            </Button>
+          )}
+          {onEditDesign && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleOptionSelect('edit-design')}
+              className="flex-1 text-xs h-7"
+            >
+              <Settings className="h-3 w-3 mr-1" />
+              Design
+            </Button>
+          )}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handleOptionSelect('preview')}
+            className="flex-1 text-xs h-7"
+          >
+            <Eye className="h-3 w-3 mr-1" />
+            Preview
+          </Button>
         </div>
       </div>
     </div>

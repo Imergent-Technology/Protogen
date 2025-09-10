@@ -135,7 +135,16 @@ const WorkflowWizard: React.FC<WorkflowWizardProps> = ({
   // Render current step component
   const renderCurrentStep = () => {
     const StepComponent = currentStep.component;
-    const stepData = workflowData[currentStep.id] || {};
+    let stepData = workflowData[currentStep.id] || {};
+    
+    // Special handling for DesignStep to ensure it gets the correct type
+    if (currentStep.id === 'design' && workflowData.basicDetails?.type) {
+      stepData = {
+        ...stepData,
+        type: workflowData.basicDetails.type
+      };
+    }
+    
     const stepProps = {
       ...currentStep.props,
       data: stepData,

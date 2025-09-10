@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
+import { SceneCardData } from '../components/scenes/SceneCard';
 
 // Deck types based on presentation requirements
 export type DeckType = 'graph' | 'card' | 'document' | 'dashboard';
@@ -103,9 +104,12 @@ interface DeckState {
   deleteDeck: (id: string) => Promise<void>;
   
   // Scene management
-  createScene: (scene: Omit<Scene, 'id' | 'guid' | 'created_at' | 'updated_at'>) => Promise<void>;
+  loadScenes: (forceReload?: boolean) => Promise<void>;
+  refreshScenes: () => Promise<void>;
+  createScene: (scene: Omit<Scene, 'id' | 'guid' | 'created_at' | 'updated_at'>) => Promise<SceneCardData>;
   updateScene: (id: string, updates: Partial<Scene>) => Promise<void>;
   deleteScene: (id: string) => Promise<void>;
+  saveSceneContent: (sceneId: string, contentData: string, contentType?: string, contentKey?: string) => Promise<void>;
   
   // Performance management
   warmScene: (sceneId: string) => void;
@@ -219,53 +223,266 @@ export const useDeckStore = create<DeckState>()(
       },
       
       // Scene management actions
+      loadScenes: async (forceReload = false) => {
+        const currentState = _get();
+        if (currentState.scenesLoading || (!forceReload && currentState.scenes.length > 0)) {
+          return; // Prevent multiple simultaneous calls or reloading if scenes already exist
+        }
+        
+        try {
+          set({ scenesLoading: true, scenesError: null });
+          
+          const response = await fetch('/api/scenes', {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${localStorage.getItem('admin_token')}`,
+            },
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Failed to load scenes');
+          }
+
+          const result = await response.json();
+          const apiScenes = result.data || [];
+          
+          // Transform API responses to match frontend interface
+          const scenes: SceneCardData[] = apiScenes.map((apiScene: any) => ({
+            id: apiScene.guid,
+            name: apiScene.name,
+            type: apiScene.scene_type,
+            description: apiScene.description,
+            metadata: {
+              title: apiScene.name,
+              author: apiScene.creator?.name || 'Unknown',
+              tags: [],
+              createdAt: apiScene.created_at,
+              updatedAt: apiScene.updated_at,
+            },
+            stats: {
+              viewCount: 0,
+              likeCount: 0,
+              shareCount: 0,
+              lastViewed: apiScene.updated_at,
+            },
+            isActive: apiScene.is_active,
+            isPublic: apiScene.is_public,
+            config: apiScene.config || {},
+            meta: apiScene.meta || {},
+            style: apiScene.style || {},
+          }));
+          
+          set({ scenes, scenesLoading: false });
+        } catch (error) {
+          console.error('Failed to load scenes:', error);
+          set({ 
+            scenesError: error instanceof Error ? error.message : 'Failed to load scenes',
+            scenesLoading: false 
+          });
+        }
+      },
+      
+      refreshScenes: async () => {
+        return _get().loadScenes(true);
+      },
+      
       createScene: async (sceneData) => {
-        // TODO: Implement API call
-        const existingSlugs = _get().scenes.map(scene => scene.slug);
-        const slug = generateUniqueSlug(sceneData.name, existingSlugs);
-        
-        const newScene: Scene = {
-          ...sceneData,
-          slug,
-          id: self.crypto.randomUUID ? self.crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).substr(2),
-          guid: self.crypto.randomUUID ? self.crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).substr(2),
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        };
-        
-        set((state) => ({
-          scenes: [...state.scenes, newScene]
-        }));
+        try {
+          const response = await fetch('/api/scenes', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${localStorage.getItem('admin_token')}`,
+            },
+            body: JSON.stringify({
+              name: sceneData.name,
+              slug: sceneData.slug,
+              description: sceneData.description,
+              scene_type: sceneData.type,
+              config: sceneData.config || {},
+              meta: sceneData.meta || {},
+              style: sceneData.style || {},
+              is_active: sceneData.isActive !== false,
+              is_public: sceneData.isPublic || false,
+            }),
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Failed to create scene');
+          }
+
+          const result = await response.json();
+          const apiScene = result.data;
+          
+          // Transform API response to match frontend interface
+          const newScene: SceneCardData = {
+            id: apiScene.guid,
+            name: apiScene.name,
+            type: apiScene.scene_type,
+            description: apiScene.description,
+            metadata: {
+              title: apiScene.name,
+              author: apiScene.creator?.name || 'Unknown',
+              tags: [],
+              createdAt: apiScene.created_at,
+              updatedAt: apiScene.updated_at,
+            },
+            stats: {
+              viewCount: 0,
+              likeCount: 0,
+              shareCount: 0,
+            },
+            isActive: apiScene.is_active,
+            isPublic: apiScene.is_public,
+            config: apiScene.config || {},
+            meta: apiScene.meta || {},
+            style: apiScene.style || {},
+          };
+          
+          set((state) => ({
+            scenes: [...state.scenes, newScene]
+          }));
+          
+          return newScene;
+        } catch (error) {
+          console.error('Failed to create scene:', error);
+          throw error;
+        }
       },
       
       updateScene: async (id, updates) => {
-        // TODO: Implement API call
-        set((state) => {
-          const scene = state.scenes.find(s => s.id === id);
-          if (!scene) return state;
-          
-          // Handle slug updates when name changes
-          let newSlug = scene.slug;
-          if (updates.name && updates.name !== scene.name) {
-            const existingSlugs = state.scenes.filter(s => s.id !== id).map(s => s.slug);
-            newSlug = generateUniqueSlug(updates.name, existingSlugs);
+        try {
+          const scene = _get().scenes.find(s => s.id === id);
+          if (!scene) {
+            throw new Error('Scene not found');
           }
+
+          const response = await fetch(`/api/scenes/${scene.guid}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${localStorage.getItem('admin_token')}`,
+            },
+            body: JSON.stringify({
+              name: updates.name,
+              slug: updates.slug,
+              description: updates.description,
+              scene_type: updates.type,
+              config: updates.config,
+              meta: updates.meta,
+              style: updates.style,
+              is_active: updates.isActive,
+              is_public: updates.isPublic,
+            }),
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Failed to update scene');
+          }
+
+          const result = await response.json();
+          const apiScene = result.data;
           
-          return {
-            scenes: state.scenes.map(scene =>
-              scene.id === id
-                ? { ...scene, ...updates, slug: newSlug, updated_at: new Date().toISOString() }
-                : scene
-            )
+          // Transform API response to match frontend interface
+          const updatedScene: SceneCardData = {
+            id: apiScene.guid,
+            name: apiScene.name,
+            type: apiScene.scene_type,
+            description: apiScene.description,
+            metadata: {
+              title: apiScene.name,
+              author: apiScene.creator?.name || 'Unknown',
+              tags: [],
+              createdAt: apiScene.created_at,
+              updatedAt: apiScene.updated_at,
+            },
+            stats: {
+              viewCount: 0,
+              likeCount: 0,
+              shareCount: 0,
+            },
+            isActive: apiScene.is_active,
+            isPublic: apiScene.is_public,
+            config: apiScene.config || {},
+            meta: apiScene.meta || {},
+            style: apiScene.style || {},
           };
-        });
+          
+          set((state) => ({
+            scenes: state.scenes.map(scene =>
+              scene.id === id ? updatedScene : scene
+            )
+          }));
+        } catch (error) {
+          console.error('Failed to update scene:', error);
+          throw error;
+        }
       },
       
       deleteScene: async (id) => {
-        // TODO: Implement API call
-        set((state) => ({
-          scenes: state.scenes.filter(scene => scene.id !== id)
-        }));
+        try {
+          const scene = _get().scenes.find(s => s.id === id);
+          if (!scene) {
+            throw new Error('Scene not found');
+          }
+
+          const response = await fetch(`/api/scenes/${scene.guid}`, {
+            method: 'DELETE',
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('admin_token')}`,
+            },
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Failed to delete scene');
+          }
+
+          set((state) => ({
+            scenes: state.scenes.filter(scene => scene.id !== id)
+          }));
+        } catch (error) {
+          console.error('Failed to delete scene:', error);
+          throw error;
+        }
+      },
+
+      saveSceneContent: async (sceneId, contentData, contentType = 'document', contentKey = 'main') => {
+        try {
+          const scene = _get().scenes.find(s => s.id === sceneId);
+          if (!scene) {
+            throw new Error('Scene not found');
+          }
+
+          const response = await fetch(`/api/scenes/${scene.guid}/content`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${localStorage.getItem('admin_token')}`,
+            },
+            body: JSON.stringify({
+              content_data: contentData,
+              content_type: contentType,
+              content_key: contentKey,
+              content_format: 'html',
+            }),
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Failed to save scene content');
+          }
+
+          // Content is saved to the database, no need to update local state
+          // as it's stored separately in the scene_content table
+        } catch (error) {
+          console.error('Failed to save scene content:', error);
+          throw error;
+        }
       },
       
       // Performance management

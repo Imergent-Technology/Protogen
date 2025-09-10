@@ -32,7 +32,7 @@ const SceneGrid: React.FC<SceneGridProps> = ({
   const [filterType, setFilterType] = useState<string>('all');
 
   // Get unique scene types for filtering
-  const sceneTypes = Array.from(new Set(scenes.map(scene => scene.type)));
+  const sceneTypes = Array.from(new Set(scenes.map(scene => scene.type).filter(type => type !== undefined && type !== null)));
 
   // Filter scenes based on search and type
   const filteredScenes = scenes.filter(scene => {
