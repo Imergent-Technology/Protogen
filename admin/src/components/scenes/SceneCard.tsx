@@ -153,13 +153,6 @@ const SceneCard: React.FC<SceneCardProps> = ({
           </div>
         )}
 
-        {/* Scene Type Badge */}
-        <div className="absolute top-2 left-2">
-          <Badge className={`text-xs ${getSceneTypeColor(scene.type)}`}>
-            {scene.type}
-          </Badge>
-        </div>
-
         {/* Status Indicators */}
         <div className="absolute top-2 right-2 flex space-x-1">
           {!scene.isActive && (
@@ -171,7 +164,7 @@ const SceneCard: React.FC<SceneCardProps> = ({
         </div>
 
         {/* Options Button and Menu */}
-        <div className="absolute top-2 right-2" ref={optionsRef}>
+        <div className="absolute top-2 left-2" ref={optionsRef}>
           <Button
             variant="ghost"
             size="sm"
@@ -183,57 +176,57 @@ const SceneCard: React.FC<SceneCardProps> = ({
 
           {/* Options Menu */}
           {showOptions && (
-            <div className="absolute top-10 right-0 bg-background border border-border rounded-lg shadow-lg z-20 min-w-[180px]">
+            <div className="absolute bottom-full left-0 mb-2 bg-background border border-border rounded-lg shadow-lg z-20 w-48">
             <div className="py-1">
               {onEditBasicDetails && (
                 <button
                   onClick={() => handleOptionSelect('edit-basic')}
-                  className="w-full px-3 py-2 text-left text-sm hover:bg-muted flex items-center space-x-2"
+                  className="w-full px-3 py-2 text-left text-sm hover:bg-muted flex items-center space-x-2 whitespace-nowrap"
                 >
-                  <Edit className="h-4 w-4" />
+                  <Edit className="h-4 w-4 flex-shrink-0" />
                   <span>Edit Basic Details</span>
                 </button>
               )}
               {onEditDesign && (
                 <button
                   onClick={() => handleOptionSelect('edit-design')}
-                  className="w-full px-3 py-2 text-left text-sm hover:bg-muted flex items-center space-x-2"
+                  className="w-full px-3 py-2 text-left text-sm hover:bg-muted flex items-center space-x-2 whitespace-nowrap"
                 >
-                  <Settings className="h-4 w-4" />
+                  <Settings className="h-4 w-4 flex-shrink-0" />
                   <span>Edit Design</span>
                 </button>
               )}
               <button
                 onClick={() => handleOptionSelect('preview')}
-                className="w-full px-3 py-2 text-left text-sm hover:bg-muted flex items-center space-x-2"
+                className="w-full px-3 py-2 text-left text-sm hover:bg-muted flex items-center space-x-2 whitespace-nowrap"
               >
-                <Eye className="h-4 w-4" />
+                <Eye className="h-4 w-4 flex-shrink-0" />
                 <span>Preview</span>
               </button>
               {onToggleActive && (
                 <button
                   onClick={() => handleOptionSelect('toggle-active')}
-                  className="w-full px-3 py-2 text-left text-sm hover:bg-muted flex items-center space-x-2"
+                  className="w-full px-3 py-2 text-left text-sm hover:bg-muted flex items-center space-x-2 whitespace-nowrap"
                 >
-                  {scene.isActive ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+                  {scene.isActive ? <Pause className="h-4 w-4 flex-shrink-0" /> : <Play className="h-4 w-4 flex-shrink-0" />}
                   <span>{scene.isActive ? 'Deactivate' : 'Activate'}</span>
                 </button>
               )}
               {onTogglePublic && (
                 <button
                   onClick={() => handleOptionSelect('toggle-public')}
-                  className="w-full px-3 py-2 text-left text-sm hover:bg-muted flex items-center space-x-2"
+                  className="w-full px-3 py-2 text-left text-sm hover:bg-muted flex items-center space-x-2 whitespace-nowrap"
                 >
-                  {scene.isPublic ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+                  {scene.isPublic ? <VolumeX className="h-4 w-4 flex-shrink-0" /> : <Volume2 className="h-4 w-4 flex-shrink-0" />}
                   <span>{scene.isPublic ? 'Make Private' : 'Make Public'}</span>
                 </button>
               )}
               <hr className="my-1 border-border" />
               <button
                 onClick={() => handleOptionSelect('delete')}
-                className="w-full px-3 py-2 text-left text-sm hover:bg-destructive hover:text-destructive-foreground flex items-center space-x-2 text-destructive"
+                className="w-full px-3 py-2 text-left text-sm hover:bg-destructive hover:text-destructive-foreground flex items-center space-x-2 text-destructive whitespace-nowrap"
               >
-                <Trash2 className="h-4 w-4" />
+                <Trash2 className="h-4 w-4 flex-shrink-0" />
                 <span>Delete Scene</span>
               </button>
             </div>
