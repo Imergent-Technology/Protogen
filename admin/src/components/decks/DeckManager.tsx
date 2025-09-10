@@ -28,11 +28,10 @@ export const DeckManager: React.FC = () => {
   const {
     decks,
     scenes,
-    currentDeck,
     decksLoading,
     decksError,
-    setCurrentDeck,
     createDeck,
+    updateDeck,
     deleteDeck,
     setDecksLoading,
     setDecksError,
@@ -244,38 +243,6 @@ export const DeckManager: React.FC = () => {
     }
   };
 
-  // Handle deck selection
-  const handleDeckSelect = (deck: Deck) => {
-    setSelectedDeckId(deck.id);
-    setCurrentDeck(deck);
-    
-    // Preload deck scenes if configured
-    if (deck.performance.keepWarm) {
-      performanceManager.preloadDeck(deck, scenes);
-    }
-  };
-
-  // Handle deck deletion
-  const handleDeleteDeck = async (deckId: string) => {
-    if (!confirm('Are you sure you want to delete this deck? This action cannot be undone.')) {
-      return;
-    }
-
-    try {
-      await deleteDeck(deckId);
-      if (selectedDeckId === deckId) {
-        setSelectedDeckId(null);
-        setCurrentDeck(null);
-      }
-    } catch (error) {
-      console.error('Failed to delete deck:', error);
-    }
-  };
-
-  // Get scenes for a specific deck
-  const getDeckScenes = (deckId: string) => {
-    return scenes.filter(scene => scene.deckIds.includes(deckId));
-  };
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
@@ -372,71 +339,6 @@ export const DeckManager: React.FC = () => {
         />
       )}
 
-      {/* Selected Deck Details */}
-      {selectedDeckId && currentDeck && (
-        <div className="mt-8 p-6 border border-border rounded-lg bg-card">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center space-x-3">
-              <DeckTypeIcon type={currentDeck.type} />
-              <div>
-                <h3 className="text-lg font-semibold">{currentDeck.name}</h3>
-                <p className="text-muted-foreground">{currentDeck.description}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4 text-sm mb-6">
-            <div>
-              <span className="text-muted-foreground">Type:</span>
-              <span className="ml-2 font-medium">{currentDeck.type}</span>
-            </div>
-            <div>
-              <span className="text-muted-foreground">Scenes:</span>
-              <span className="ml-2 font-medium">{getDeckScenes(selectedDeckId).length}</span>
-            </div>
-            <div>
-              <span className="text-muted-foreground">Keep Warm:</span>
-              <span className="ml-2 font-medium">
-                {currentDeck.performance.keepWarm ? 'Yes' : 'No'}
-              </span>
-            </div>
-            <div>
-              <span className="text-muted-foreground">Preload:</span>
-              <span className="ml-2 font-medium">
-                {currentDeck.performance.preloadStrategy}
-              </span>
-            </div>
-          </div>
-
-          {/* Deck Scenes */}
-          <div>
-            <h4 className="font-medium mb-3">Scenes in this Deck</h4>
-            {getDeckScenes(selectedDeckId).length === 0 ? (
-              <p className="text-muted-foreground text-sm">No scenes in this deck yet</p>
-            ) : (
-              <div className="space-y-2">
-                {getDeckScenes(selectedDeckId).map((scene) => (
-                  <div
-                    key={scene.id}
-                    className="p-3 border border-border rounded-lg flex items-center justify-between"
-                  >
-                    <div className="flex items-center space-x-3">
-                      <SceneTypeBadge type={scene.type} />
-                      <div>
-                        <h5 className="font-medium">{scene.name}</h5>
-                        <p className="text-sm text-muted-foreground">{scene.description}</p>
-                      </div>
-                    </div>
-                    <span className="text-xs text-muted-foreground">
-                      View in Scene Manager
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-      )}
 
       {/* Create Deck Workflow */}
       {showCreateDeck && (
