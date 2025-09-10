@@ -171,6 +171,10 @@ const SceneWorkflow: React.FC<SceneWorkflowProps> = ({
           basicDetails: workflowData.basicDetails,
           design: workflowData.design
         }}
+        data={{
+          basicDetails: workflowData.basicDetails,
+          design: workflowData.design
+        }}
         onComplete={handleWorkflowComplete}
         onCancel={handleWorkflowCancel}
         showProgress={true}

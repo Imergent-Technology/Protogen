@@ -38,7 +38,7 @@ const DesignStep: React.FC<DesignStepProps> = ({
     console.log('DesignStep calling onDataChange with:', updatedData);
     onDataChange(updatedData);
     console.log('DesignStep onDataChange called successfully');
-  }, [data, onDataChange]);
+  }, [data.type, onDataChange]); // Only depend on type, not the entire data object
 
   // Handle preview (from authoring components)
   const handlePreview = useCallback((designData: any) => {
@@ -54,14 +54,11 @@ const DesignStep: React.FC<DesignStepProps> = ({
 
   // Render appropriate authoring component based on scene type
   const renderAuthoringComponent = () => {
-    console.log('DesignStep renderAuthoringComponent - data.type:', data.type);
-    console.log('DesignStep renderAuthoringComponent - data:', data);
     const commonProps = {
       onSave: handleSave,
       onPreview: handlePreview,
       onCancel: handleCancel
     };
-    console.log('DesignStep commonProps:', commonProps);
 
     switch (data.type) {
       case 'graph':

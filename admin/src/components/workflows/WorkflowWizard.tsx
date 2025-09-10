@@ -17,6 +17,7 @@ export interface WorkflowStep {
 export interface WorkflowWizardProps {
   steps: WorkflowStep[];
   initialData?: Record<string, any>;
+  data?: Record<string, any>; // External data that can update the workflow state
   onComplete?: (data: Record<string, any>) => void;
   onCancel?: () => void;
   showProgress?: boolean;
@@ -27,6 +28,7 @@ export interface WorkflowWizardProps {
 const WorkflowWizard: React.FC<WorkflowWizardProps> = ({
   steps,
   initialData = {},
+  data,
   onComplete,
   onCancel,
   showProgress = true,
@@ -37,6 +39,13 @@ const WorkflowWizard: React.FC<WorkflowWizardProps> = ({
   const [workflowData, setWorkflowData] = useState<Record<string, any>>(initialData);
   const [stepErrors, setStepErrors] = useState<Record<string, string[]>>({});
   const [isValidating, setIsValidating] = useState(false);
+
+  // Update workflow data when external data changes
+  useEffect(() => {
+    if (data) {
+      setWorkflowData(prev => ({ ...prev, ...data }));
+    }
+  }, [data]);
 
   const currentStep = steps[currentStepIndex];
   const isFirstStep = currentStepIndex === 0;
