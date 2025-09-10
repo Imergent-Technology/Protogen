@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { SceneType } from '../../../stores/deckStore';
+import { SceneType, useDeckStore } from '../../../stores/deckStore';
 import WorkflowWizard, { WorkflowStep } from '../WorkflowWizard';
 import BasicDetailsStep, { BasicDetailsData } from './BasicDetailsStep';
 import DesignStep from './DesignStep';
@@ -31,6 +31,7 @@ const SceneWorkflow: React.FC<SceneWorkflowProps> = ({
   availableDecks = []
 }) => {
   const navigate = useNavigate();
+  const { loadSceneContent } = useDeckStore();
   const [workflowData, setWorkflowData] = useState<SceneWorkflowData>({
     basicDetails: {
       name: '',
@@ -45,6 +46,39 @@ const SceneWorkflow: React.FC<SceneWorkflowProps> = ({
     },
     ...initialData
   });
+
+  // Load scene data when in edit mode
+  useEffect(() => {
+    if (mode === 'edit' && sceneId && initialData) {
+      console.log('=== SCENE WORKFLOW EDIT MODE ===');
+      console.log('sceneId:', sceneId);
+      console.log('initialData:', initialData);
+      
+      // Load scene content for document scenes
+      if (initialData.basicDetails?.type === 'document') {
+        loadSceneContent(sceneId, 'document', 'main').then((content) => {
+          console.log('Loaded scene content:', content);
+          if (content && initialData.design?.designData) {
+            setWorkflowData(prev => ({
+              ...prev,
+              design: {
+                ...prev.design,
+                designData: {
+                  ...prev.design.designData,
+                  content: {
+                    ...prev.design.designData.content,
+                    html: content
+                  }
+                }
+              }
+            }));
+          }
+        }).catch((error) => {
+          console.error('Failed to load scene content:', error);
+        });
+      }
+    }
+  }, [mode, sceneId, initialData, loadSceneContent]);
 
   // Validation functions
   const validateBasicDetails = (data: BasicDetailsData): { isValid: boolean; errors: string[] } => {

@@ -353,6 +353,7 @@ export const useDeckStore = create<DeckState>()(
           const newScene: SceneCardData = {
             id: apiScene.guid,
             name: apiScene.name,
+            slug: apiScene.slug,
             type: apiScene.scene_type,
             description: apiScene.description,
             metadata: {
@@ -423,6 +424,7 @@ export const useDeckStore = create<DeckState>()(
           const updatedScene: SceneCardData = {
             id: apiScene.guid,
             name: apiScene.name,
+            slug: apiScene.slug,
             type: apiScene.scene_type,
             description: apiScene.description,
             metadata: {
