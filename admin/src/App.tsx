@@ -323,7 +323,10 @@ function App() {
       setViewMode('deck-workflow');
     } else if (path.startsWith('/decks/') && path.endsWith('/edit')) {
       const deckId = path.split('/')[2];
+      console.log('Edit deck route - deckId:', deckId);
+      console.log('Available decks:', decks.map(d => ({ id: d.id, guid: d.guid, name: d.name })));
       const deck = decks.find(d => d.guid === deckId);
+      console.log('Found deck:', deck);
       setCurrentDeck(deck || null);
       setViewMode('deck-edit');
     } else if (path === '/scenes') {

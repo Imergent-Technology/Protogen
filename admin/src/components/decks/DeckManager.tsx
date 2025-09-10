@@ -125,11 +125,17 @@ export const DeckManager: React.FC = () => {
 
   // Handle deck editing navigation
   const handleEditDeck = (deck: DeckCardData) => {
+    console.log('handleEditDeck called with deck:', deck);
+    console.log('Available decks:', decks.map(d => ({ id: d.id, guid: d.guid, name: d.name })));
     const originalDeck = decks.find(d => d.guid === deck.id);
+    console.log('Found original deck:', originalDeck);
     if (originalDeck) {
       // Store the deck in a way that the App component can access it
       // For now, we'll use a simple approach - the App component will handle this
+      console.log('Navigating to:', `/decks/edit/${deck.id}`);
       navigate(`/decks/edit/${deck.id}`);
+    } else {
+      console.error('Original deck not found for deck ID:', deck.id);
     }
   };
 
