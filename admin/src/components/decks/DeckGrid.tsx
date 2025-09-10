@@ -76,7 +76,7 @@ const DeckGrid: React.FC<DeckGridProps> = ({
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredDecks.map((deck) => (
             <DeckCard
-              key={deck.id}
+              key={`deck-${deck.id}`}
               deck={deck}
               onEdit={onDeckEdit}
               onDelete={onDeckDelete}
@@ -90,7 +90,7 @@ const DeckGrid: React.FC<DeckGridProps> = ({
         <div className="space-y-1">
           {filteredDecks.map((deck) => (
             <DeckListItem
-              key={deck.id}
+              key={`deck-list-${deck.id}`}
               deck={deck}
               onEdit={onDeckEdit}
               onDelete={onDeckDelete}
@@ -207,7 +207,7 @@ const DeckListItem: React.FC<DeckListItemProps> = ({
                 {deck.stats.viewCount} views
               </span>
               {deck.metadata.tags?.slice(0, 2).map((tag, index) => (
-                <span key={index} className="text-xs text-muted-foreground">
+                <span key={`${deck.id}-tag-${index}`} className="text-xs text-muted-foreground">
                   #{tag}
                 </span>
               ))}

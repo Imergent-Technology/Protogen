@@ -114,7 +114,7 @@ const DeckCard: React.FC<DeckCardProps> = ({
               <div className="absolute bottom-2 right-2">
                 {deck.scenes.slice(1, 4).map((scene, index) => (
                   <div
-                    key={scene.id}
+                    key={`${deck.id}-scene-${index + 1}`}
                     className={`absolute w-8 h-8 rounded border-2 border-background shadow-sm ${
                       index === 0 ? 'bottom-0 right-0' :
                       index === 1 ? 'bottom-1 right-1' :
