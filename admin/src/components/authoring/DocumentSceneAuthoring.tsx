@@ -161,53 +161,78 @@ const DocumentSceneAuthoring: React.FC<DocumentSceneAuthoringProps> = ({
 
   // Handle form field changes
   const handleFieldChange = useCallback((field: string, value: any) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  }, []);
+    setFormData(prev => {
+      const newData = {
+        ...prev,
+        [field]: value
+      };
+      // Auto-save to parent component
+      onSave(newData);
+      return newData;
+    });
+  }, [onSave]);
 
   const handleMetadataChange = useCallback((field: string, value: any) => {
-    setFormData(prev => ({
-      ...prev,
-      metadata: {
-        ...prev.metadata,
-        [field]: value
-      }
-    }));
-  }, []);
+    setFormData(prev => {
+      const newData = {
+        ...prev,
+        metadata: {
+          ...prev.metadata,
+          [field]: value
+        }
+      };
+      // Auto-save to parent component
+      onSave(newData);
+      return newData;
+    });
+  }, [onSave]);
 
   const handleConfigChange = useCallback((field: string, value: any) => {
-    setFormData(prev => ({
-      ...prev,
-      config: {
-        ...prev.config,
-        [field]: value
-      }
-    }));
-  }, []);
+    setFormData(prev => {
+      const newData = {
+        ...prev,
+        config: {
+          ...prev.config,
+          [field]: value
+        }
+      };
+      // Auto-save to parent component
+      onSave(newData);
+      return newData;
+    });
+  }, [onSave]);
 
   const handleStyleChange = useCallback((field: string, value: any) => {
-    setFormData(prev => ({
-      ...prev,
-      style: {
-        ...prev.style,
-        [field]: value
-      }
-    }));
-  }, []);
+    setFormData(prev => {
+      const newData = {
+        ...prev,
+        style: {
+          ...prev.style,
+          [field]: value
+        }
+      };
+      // Auto-save to parent component
+      onSave(newData);
+      return newData;
+    });
+  }, [onSave]);
 
   // Handle HTML content changes
   const handleHtmlChange = useCallback((html: string) => {
     setHtmlContent(html);
-    setFormData(prev => ({
-      ...prev,
-      content: {
-        ...prev.content,
-        html
-      }
-    }));
-  }, []);
+    setFormData(prev => {
+      const newData = {
+        ...prev,
+        content: {
+          ...prev.content,
+          html
+        }
+      };
+      // Auto-save to parent component
+      onSave(newData);
+      return newData;
+    });
+  }, [onSave]);
 
   // Handle media management (for future use)
   // const addMedia = (media: Omit<DocumentMedia, 'id'>) => {
@@ -277,26 +302,36 @@ const DocumentSceneAuthoring: React.FC<DocumentSceneAuthoringProps> = ({
   // Handle tag management
   const addTag = useCallback(() => {
     if (newTag.trim() && !formData.metadata.tags?.includes(newTag.trim())) {
-      setFormData(prev => ({
+      setFormData(prev => {
+        const newData = {
+          ...prev,
+          metadata: {
+            ...prev.metadata,
+            tags: [...(prev.metadata.tags || []), newTag.trim()]
+          }
+        };
+        // Auto-save to parent component
+        onSave(newData);
+        return newData;
+      });
+      setNewTag('');
+    }
+  }, [newTag, formData.metadata.tags, onSave]);
+
+  const removeTag = useCallback((tagToRemove: string) => {
+    setFormData(prev => {
+      const newData = {
         ...prev,
         metadata: {
           ...prev.metadata,
-          tags: [...(prev.metadata.tags || []), newTag.trim()]
+          tags: prev.metadata.tags?.filter(tag => tag !== tagToRemove) || []
         }
-      }));
-      setNewTag('');
-    }
-  }, [newTag, formData.metadata.tags]);
-
-  const removeTag = useCallback((tagToRemove: string) => {
-    setFormData(prev => ({
-      ...prev,
-      metadata: {
-        ...prev.metadata,
-        tags: prev.metadata.tags?.filter(tag => tag !== tagToRemove) || []
-      }
-    }));
-  }, []);
+      };
+      // Auto-save to parent component
+      onSave(newData);
+      return newData;
+    });
+  }, [onSave]);
 
   // Handle save
   const handleSave = useCallback(() => {
