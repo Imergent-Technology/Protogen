@@ -166,6 +166,9 @@ const DocumentSceneAuthoring: React.FC<DocumentSceneAuthoringProps> = ({
         ...prev,
         [field]: value
       };
+      console.log('=== DocumentSceneAuthoring handleFieldChange ===');
+      console.log('Field:', field, 'Value:', value);
+      console.log('New data being auto-saved:', newData);
       // Auto-save to parent component
       onSave(newData);
       return newData;
@@ -181,6 +184,9 @@ const DocumentSceneAuthoring: React.FC<DocumentSceneAuthoringProps> = ({
           [field]: value
         }
       };
+      console.log('=== DocumentSceneAuthoring handleMetadataChange ===');
+      console.log('Field:', field, 'Value:', value);
+      console.log('New data being auto-saved:', newData);
       // Auto-save to parent component
       onSave(newData);
       return newData;
@@ -196,6 +202,9 @@ const DocumentSceneAuthoring: React.FC<DocumentSceneAuthoringProps> = ({
           [field]: value
         }
       };
+      console.log('=== DocumentSceneAuthoring handleConfigChange ===');
+      console.log('Field:', field, 'Value:', value);
+      console.log('New data being auto-saved:', newData);
       // Auto-save to parent component
       onSave(newData);
       return newData;
@@ -211,6 +220,9 @@ const DocumentSceneAuthoring: React.FC<DocumentSceneAuthoringProps> = ({
           [field]: value
         }
       };
+      console.log('=== DocumentSceneAuthoring handleStyleChange ===');
+      console.log('Field:', field, 'Value:', value);
+      console.log('New data being auto-saved:', newData);
       // Auto-save to parent component
       onSave(newData);
       return newData;

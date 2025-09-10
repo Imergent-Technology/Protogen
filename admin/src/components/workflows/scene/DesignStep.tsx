@@ -35,6 +35,12 @@ const DesignStep: React.FC<DesignStepProps> = ({
   const handleSave = useCallback((designData: any) => {
     console.log('=== DesignStep handleSave called with ===', designData);
     console.log('DesignStep current data:', dataRef.current);
+    console.log('DesignStep designData keys:', Object.keys(designData || {}));
+    console.log('DesignStep designData.metadata:', designData?.metadata);
+    console.log('DesignStep designData.config:', designData?.config);
+    console.log('DesignStep designData.style:', designData?.style);
+    console.log('DesignStep designData.content:', designData?.content);
+    
     const updatedData = { 
       ...dataRef.current, 
       designData,
