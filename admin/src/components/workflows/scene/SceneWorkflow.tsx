@@ -71,7 +71,7 @@ const SceneWorkflow: React.FC<SceneWorkflowProps> = ({
                 designData: {
                   ...prev.design.designData,
                   content: {
-                    ...prev.design.designData.content,
+                    ...(prev.design.designData?.content || {}),
                     html: content
                   }
                 }
