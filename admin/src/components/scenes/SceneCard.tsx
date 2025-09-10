@@ -23,6 +23,9 @@ export interface SceneCardData {
   };
   isActive: boolean;
   isPublic: boolean;
+  config?: Record<string, any>;
+  meta?: Record<string, any>;
+  style?: Record<string, any>;
 }
 
 export interface SceneCardProps {

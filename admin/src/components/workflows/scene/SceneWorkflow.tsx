@@ -82,6 +82,16 @@ const SceneWorkflow: React.FC<SceneWorkflowProps> = ({
     }
   }, [mode, sceneId, initialData, loadSceneContent]);
 
+  // Update workflow data when external data changes (from WorkflowWizard)
+  useEffect(() => {
+    if (initialData) {
+      setWorkflowData(prev => ({
+        ...prev,
+        ...initialData
+      }));
+    }
+  }, [initialData]);
+
   // Validation functions
   const validateBasicDetails = (data: BasicDetailsData): { isValid: boolean; errors: string[] } => {
     const errors: string[] = [];

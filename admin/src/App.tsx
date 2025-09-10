@@ -1088,19 +1088,25 @@ function App() {
                           links: []
                         },
                         metadata: {
-                          title: currentScene?.name || '',
-                          subtitle: '',
-                          author: '',
-                          version: '1.0.0',
-                          tags: []
+                          title: currentScene?.meta?.title || currentScene?.name || '',
+                          subtitle: currentScene?.meta?.subtitle || '',
+                          author: currentScene?.meta?.author || currentScene?.metadata?.author || '',
+                          version: currentScene?.meta?.version || '1.0.0',
+                          tags: currentScene?.meta?.tags || currentScene?.metadata?.tags || []
                         },
                         style: {
-                          theme: 'default',
+                          theme: currentScene?.style?.theme || 'default',
                           typography: {
-                            fontFamily: 'Inter',
-                            fontSize: '16px',
-                            lineHeight: '1.6'
+                            fontFamily: currentScene?.style?.typography?.fontFamily || 'Inter',
+                            fontSize: currentScene?.style?.typography?.fontSize || '16px',
+                            lineHeight: currentScene?.style?.typography?.lineHeight || '1.6'
                           }
+                        },
+                        config: {
+                          showTableOfContents: currentScene?.config?.showTableOfContents || true,
+                          enableSearch: currentScene?.config?.enableSearch || true,
+                          allowComments: currentScene?.config?.allowComments || false,
+                          autoSave: currentScene?.config?.autoSave || true
                         }
                       } : currentScene
                     }
