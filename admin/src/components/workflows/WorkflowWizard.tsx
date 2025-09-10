@@ -105,9 +105,8 @@ const WorkflowWizard: React.FC<WorkflowWizardProps> = ({
     const isValid = await validateCurrentStep();
     if (!isValid) return;
 
-    // Update workflow data with current step's data
+    // Get current step's data
     const currentStepData = workflowData[currentStep.id] || {};
-    updateWorkflowData(currentStep.id, currentStepData);
 
     // Call step's onNext handler
     if (currentStep.onNext) {
