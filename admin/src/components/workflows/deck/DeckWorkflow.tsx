@@ -66,7 +66,19 @@ const DeckWorkflow: React.FC<DeckWorkflowProps> = ({
   ];
 
   return (
-    <div className="deck-workflow">
+    <div className="max-w-6xl mx-auto p-6">
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold mb-2">
+          {mode === 'create' ? 'Create New Deck' : 'Edit Deck'}
+        </h1>
+        <p className="text-muted-foreground">
+          {mode === 'create' 
+            ? 'Follow the steps below to create a new deck'
+            : 'Update your deck configuration'
+          }
+        </p>
+      </div>
+
       <WorkflowWizard
         steps={steps}
         initialData={workflowData}
