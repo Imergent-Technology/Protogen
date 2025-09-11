@@ -320,8 +320,9 @@ function App() {
       setViewMode('decks');
     } else if (path === '/decks/new') {
       setViewMode('deck-workflow');
-    } else if (path.startsWith('/decks/') && path.endsWith('/edit')) {
-      const deckId = path.split('/')[2];
+    } else if (path.startsWith('/decks/edit/')) {
+      console.log('Deck edit route matched!');
+      const deckId = path.split('/')[3]; // /decks/edit/{guid} - guid is at index 3
       console.log('Edit deck route - deckId:', deckId);
       console.log('Available decks:', decks.map(d => ({ id: d.id, guid: d.guid, name: d.name })));
       const deck = decks.find(d => d.guid === deckId);
@@ -358,6 +359,8 @@ function App() {
     } else if (path === '/') {
       setViewMode('admin');
       setCurrentScene(null);
+    } else {
+      console.log('Route not matched:', path);
     }
   }, [location.pathname, isProgrammaticNavigation]);
 
