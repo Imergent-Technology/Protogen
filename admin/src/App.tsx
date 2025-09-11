@@ -312,6 +312,12 @@ function App() {
     const path = location.pathname;
     console.log('Route useEffect triggered - path:', path, 'isProgrammaticNavigation:', isProgrammaticNavigation);
     
+    // Skip route handling for programmatic navigation to prevent flashing
+    if (isProgrammaticNavigation) {
+      console.log('Skipping route handling for programmatic navigation');
+      return;
+    }
+    
     if (path === '/users') {
       setViewMode('users');
     } else if (path === '/analytics') {
