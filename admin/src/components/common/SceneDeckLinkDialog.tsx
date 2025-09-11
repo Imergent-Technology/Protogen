@@ -115,10 +115,10 @@ export function SceneDeckLinkDialog({
   // Determine the action text
   const getActionText = () => {
     if (mode === 'scene-to-deck' && selectedScene && selectedDeck) {
-      const isAlreadyLinked = selectedDeck.sceneIds.includes(selectedScene.id);
+      const isAlreadyLinked = selectedDeck.sceneIds && selectedDeck.sceneIds.includes(selectedScene.id);
       return isAlreadyLinked ? 'Remove from Deck' : 'Add to Deck';
     } else if (mode === 'deck-to-scene' && selectedDeck && selectedScene) {
-      const isAlreadyLinked = selectedDeck.sceneIds.includes(selectedScene.id);
+      const isAlreadyLinked = selectedDeck.sceneIds && selectedDeck.sceneIds.includes(selectedScene.id);
       return isAlreadyLinked ? 'Remove from Deck' : 'Add to Deck';
     }
     return 'Link';
