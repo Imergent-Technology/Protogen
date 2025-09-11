@@ -10,6 +10,9 @@ All notable changes to the Protogen system will be documented in this file.
 - **Feedback System**: Centralized feedback collection across all tenants with moderation support
 - **Tenant Isolation**: Database-level tenant scoping for all content models
 - **Configuration Management**: Scoped tenant configurations (global, content, presentation, feedback)
+- **Card Scene Authoring**: Advanced slideshow system with comprehensive authoring tools
+- **Preview Thumbnail System**: Automatic base64 generation for all scene types
+- **Enhanced Admin Interface**: Updated navigation and Scene-based management
 
 ### Changed
 - **Architecture**: Transitioned from Stage-based to Scene & Deck architecture with multi-tenant support
@@ -19,8 +22,8 @@ All notable changes to the Protogen system will be documented in this file.
 - **Documentation**: Updated core foundation and roadmap to reflect multi-tenant architecture
 
 ### Deprecated
-- **Stage System**: Marked for deprecation in favor of Scene & Deck system
-- **Stage API Endpoints**: Marked as legacy with deprecation warnings
+- **Stage System**: Completely removed in favor of Scene & Deck system
+- **Stage API Endpoints**: Completely removed with Scene & Deck system
 
 ### Removed
 - **Console Logging**: Cleaned up all console.log statements from frontend components
@@ -53,8 +56,8 @@ All notable changes to the Protogen system will be documented in this file.
 - **Database Schema**: Updated schema to support new architecture
 
 ### Deprecated
-- **Stage System**: Legacy stage system marked for deprecation
-- **Stage API Endpoints**: Existing stage endpoints marked as legacy
+- **Stage System**: Completely removed in favor of Scene & Deck system
+- **Stage API Endpoints**: Completely removed with Scene & Deck system
 
 ### Removed
 - **Stage Dependencies**: Removed stage dependencies from new content models

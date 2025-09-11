@@ -5,14 +5,14 @@ This document outlines the core architectural principles and implementation deta
 
 ## Historical Context
 
-Protogen represents a significant architectural evolution from its initial Stage-based system to the current Scene & Deck architecture. This transformation was driven by the need for:
+Protogen represents a significant architectural evolution to the current Scene & Deck architecture. This transformation was driven by the need for:
 
-- **Greater Flexibility**: The Stage system was too rigid for diverse content types
+- **Greater Flexibility**: Modern architecture supports diverse content types
 - **Better Performance**: Scene-based architecture enables more efficient content delivery
 - **Multi-Tenant Support**: Clean separation of concerns enables isolated content environments
 - **Modern Development**: React-based UI with TypeScript and comprehensive tooling
 
-The project has evolved through 7 completed phases, with the Stage system completely removed in Phase 7 to create a clean, modern architecture. All legacy Stage references have been eliminated, and the system now operates entirely on the Scene & Deck foundation described in this document.
+The project has evolved through 7 completed phases, with a clean, modern architecture. The system now operates entirely on the Scene & Deck foundation described in this document.
 
 ## Core Principles
 
@@ -559,12 +559,11 @@ interface FlowBranch {
 
 ## Migration Strategy
 
-### 1. Content Migration to Default Tenant
+### 1. Content Management
 - Assign existing content to default "Progress" tenant
 - Migrate any legacy content to new Scene/Deck/Context system
 - Update routing to use new architecture
-- No backward compatibility needed - clean break from Stage system
-- **NEW**: Establish default tenant as primary content owner
+- Establish default tenant as primary content owner
 
 ### 2. Context System Implementation
 - Create Context model and database schema
@@ -580,12 +579,10 @@ interface FlowBranch {
 - Implement feedback aggregation system
 - **NEW**: Gradual tenant rollout and migration
 
-### 4. Legacy Content Support
-- No Stage system endpoints to maintain
-- Provide tools for importing legacy content if needed
+### 4. Content Management
 - Document new architecture and workflows
-- Focus on new Scene/Deck/Context system
-- **NEW**: Maintain tenant isolation during content import
+- Focus on Scene/Deck/Context system
+- Maintain tenant isolation during content import
 
 ## Future Considerations
 

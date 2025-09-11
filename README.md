@@ -136,6 +136,7 @@ protogen/
 - ✅ **Card-Based Scene Management**: Preview thumbnails, hover metadata, click-to-edit
 - ✅ **Enhanced Card Scene Authoring**: Advanced slideshow system with backgrounds, text, and CTAs
 - ✅ **Preview Thumbnail System**: Automatic base64 generation for all scene types
+- ✅ **Card Scene Authoring**: Comprehensive slideshow authoring with advanced features
 - 🔄 **Document Scene Authoring**: Rich text editing with TipTap integration
 - 🔄 **Node Selection Interface**: Global node selection across scene types
 - 🔄 **Graph Studio Integration**: Admin panel integration
