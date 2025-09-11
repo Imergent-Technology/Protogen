@@ -7,6 +7,7 @@ import { Plus, SlidersHorizontal, Grid, List, Loader2 } from 'lucide-react';
 import DeckGrid from './DeckGrid';
 import { DeckCardData } from './DeckCard';
 import ConfirmationDialog from '../common/ConfirmationDialog';
+import { SceneDeckLinkDialog } from '../common';
 
 // Function to determine deck type based on scene types
 const determineDeckType = (sceneTypes: string[]): DeckType => {
@@ -32,6 +33,7 @@ export const DeckManager: React.FC = () => {
     decksLoading,
     decksError,
     loadDecks,
+    updateDeck,
     deleteDeck,
     setDecksLoading,
     setDecksError,
@@ -50,6 +52,15 @@ export const DeckManager: React.FC = () => {
     isOpen: false,
     deckId: null,
     deckName: ''
+  });
+
+  // Deck-Scene linking state
+  const [linkDialog, setLinkDialog] = useState<{
+    isOpen: boolean;
+    currentDeck: Deck | null;
+  }>({
+    isOpen: false,
+    currentDeck: null
   });
 
   // Initialize performance manager
@@ -167,6 +178,70 @@ export const DeckManager: React.FC = () => {
     });
   };
 
+  // Deck-Scene linking handlers
+  const handleDeckLinkToScene = (deckData: DeckCardData) => {
+    const deck = decks.find(d => d.guid === deckData.id);
+    if (deck) {
+      setLinkDialog({
+        isOpen: true,
+        currentDeck: deck
+      });
+    }
+  };
+
+  const handleDeckSceneLink = async (linkData: {
+    sceneId: string;
+    deckId: string;
+    action: 'add' | 'remove';
+  }) => {
+    try {
+      setDecksLoading(true);
+      
+      // Find the scene and deck
+      const scene = scenes.find(s => s.id === linkData.sceneId);
+      const deck = decks.find(d => d.id === linkData.deckId);
+      
+      if (!scene || !deck) {
+        throw new Error('Scene or deck not found');
+      }
+
+      if (linkData.action === 'add') {
+        // Add scene to deck
+        const updatedDeck = {
+          ...deck,
+          sceneIds: [...deck.sceneIds, scene.id]
+        };
+        await updateDeck(deck.guid, updatedDeck);
+      } else {
+        // Remove scene from deck
+        const updatedDeck = {
+          ...deck,
+          sceneIds: deck.sceneIds.filter(id => id !== scene.id)
+        };
+        await updateDeck(deck.guid, updatedDeck);
+      }
+      
+      // Close dialog
+      setLinkDialog({
+        isOpen: false,
+        currentDeck: null
+      });
+      
+    } catch (error) {
+      console.error('Failed to link deck to scene:', error);
+      setDecksError(error instanceof Error ? error.message : 'Failed to link deck to scene');
+    } finally {
+      setDecksLoading(false);
+    }
+  };
+
+  const closeLinkDialog = () => {
+    setLinkDialog({
+      isOpen: false,
+      currentDeck: null
+    });
+  };
+
 
 
   return (
@@ -252,6 +327,7 @@ export const DeckManager: React.FC = () => {
           onDeckTogglePublic={(deck) => {
             // TODO: Implement toggle public
           }}
+          onDeckLinkToScene={handleDeckLinkToScene}
         />
       )}
 
@@ -268,6 +344,17 @@ export const DeckManager: React.FC = () => {
         cancelText="Cancel"
         variant="destructive"
         isLoading={decksLoading}
+      />
+
+      {/* Deck-Scene Link Dialog */}
+      <SceneDeckLinkDialog
+        isOpen={linkDialog.isOpen}
+        onClose={closeLinkDialog}
+        onLink={handleDeckSceneLink}
+        scenes={scenes}
+        decks={decks}
+        currentDeck={linkDialog.currentDeck}
+        mode="deck-to-scene"
       />
     </div>
   );

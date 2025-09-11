@@ -5,7 +5,7 @@ import { SceneType } from '../../stores/deckStore';
 import { performanceManager } from '../../services/PerformanceManager';
 import SceneGrid from './SceneGrid';
 import { SceneCardData } from './SceneCard';
-import { SelectionModal, SelectableItem } from '../common';
+import { SelectionModal, SelectableItem, SceneDeckLinkDialog } from '../common';
 import { Plus, SlidersHorizontal, Grid, List, Loader2 } from 'lucide-react';
 import ConfirmationDialog from '../common/ConfirmationDialog';
 
@@ -31,6 +31,7 @@ export const SceneManager: React.FC = () => {
     loadScenes,
     createScene,
     updateScene,
+    updateDeck,
     deleteScene,
     setScenesLoading,
     setScenesError,
@@ -54,6 +55,15 @@ export const SceneManager: React.FC = () => {
     isOpen: false,
     sceneId: null,
     sceneName: ''
+  });
+
+  // Scene-Deck linking state
+  const [linkDialog, setLinkDialog] = useState<{
+    isOpen: boolean;
+    currentScene: Scene | null;
+  }>({
+    isOpen: false,
+    currentScene: null
   });
   // Remove activeTab state - this is now a pure scene manager
 
@@ -336,6 +346,70 @@ export const SceneManager: React.FC = () => {
     navigate(`/scenes/${sceneData.id}/design`);
   };
 
+  // Scene-Deck linking handlers
+  const handleSceneLinkToDeck = (sceneData: SceneCardData) => {
+    const scene = scenes.find(s => s.id === sceneData.id);
+    if (scene) {
+      setLinkDialog({
+        isOpen: true,
+        currentScene: scene
+      });
+    }
+  };
+
+  const handleSceneDeckLink = async (linkData: {
+    sceneId: string;
+    deckId: string;
+    action: 'add' | 'remove';
+  }) => {
+    try {
+      setScenesLoading(true);
+      
+      // Find the scene and deck
+      const scene = scenes.find(s => s.id === linkData.sceneId);
+      const deck = decks.find(d => d.id === linkData.deckId);
+      
+      if (!scene || !deck) {
+        throw new Error('Scene or deck not found');
+      }
+
+      if (linkData.action === 'add') {
+        // Add scene to deck
+        const updatedDeck = {
+          ...deck,
+          sceneIds: [...deck.sceneIds, scene.id]
+        };
+        await updateDeck(deck.guid, updatedDeck);
+      } else {
+        // Remove scene from deck
+        const updatedDeck = {
+          ...deck,
+          sceneIds: deck.sceneIds.filter(id => id !== scene.id)
+        };
+        await updateDeck(deck.guid, updatedDeck);
+      }
+      
+      // Close dialog
+      setLinkDialog({
+        isOpen: false,
+        currentScene: null
+      });
+      
+    } catch (error) {
+      console.error('Failed to link scene to deck:', error);
+      setScenesError(error instanceof Error ? error.message : 'Failed to link scene to deck');
+    } finally {
+      setScenesLoading(false);
+    }
+  };
+
+  const closeLinkDialog = () => {
+    setLinkDialog({
+      isOpen: false,
+      currentScene: null
+    });
+  };
+
   return (
     <div className="p-6 max-w-7xl mx-auto">
       {/* Header with Action Buttons */}
@@ -439,8 +513,9 @@ export const SceneManager: React.FC = () => {
               onScenePreview={handleSceneCardPreview}
               onSceneToggleActive={handleSceneCardToggleActive}
               onSceneTogglePublic={handleSceneCardTogglePublic}
-          viewMode={viewMode}
-        />
+              onSceneLinkToDeck={handleSceneLinkToDeck}
+              viewMode={viewMode}
+            />
       )}
 
       {/* Create Scene Modal */}
@@ -678,6 +753,17 @@ export const SceneManager: React.FC = () => {
         cancelText="Cancel"
         variant="destructive"
         isLoading={scenesLoading}
+      />
+
+      {/* Scene-Deck Link Dialog */}
+      <SceneDeckLinkDialog
+        isOpen={linkDialog.isOpen}
+        onClose={closeLinkDialog}
+        onLink={handleSceneDeckLink}
+        scenes={scenes}
+        decks={decks}
+        currentScene={linkDialog.currentScene}
+        mode="scene-to-deck"
       />
 
     </div>

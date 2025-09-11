@@ -37,6 +37,7 @@ export interface SceneCardProps {
   onPreview: (scene: SceneCardData) => void;
   onToggleActive?: (scene: SceneCardData) => void;
   onTogglePublic?: (scene: SceneCardData) => void;
+  onLinkToDeck?: (scene: SceneCardData) => void;
   className?: string;
 }
 
@@ -49,6 +50,7 @@ const SceneCard: React.FC<SceneCardProps> = ({
   onPreview,
   onToggleActive,
   onTogglePublic,
+  onLinkToDeck,
   className = ''
 }) => {
   const { contextMenu, showContextMenu, hideContextMenu } = useContextMenu();
@@ -72,6 +74,7 @@ const SceneCard: React.FC<SceneCardProps> = ({
       onEditBasicDetails: onEditBasicDetails ? () => onEditBasicDetails(scene) : undefined,
       onEditDesign: onEditDesign ? () => onEditDesign(scene) : undefined,
       onPreview: onPreview ? () => onPreview(scene) : undefined,
+      onLinkToDeck: onLinkToDeck ? () => onLinkToDeck(scene) : undefined,
       onToggleActive: onToggleActive ? () => onToggleActive(scene) : undefined,
       onTogglePublic: onTogglePublic ? () => onTogglePublic(scene) : undefined,
       onDelete: onDelete ? () => onDelete(scene) : undefined,

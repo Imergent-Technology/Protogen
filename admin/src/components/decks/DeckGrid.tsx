@@ -11,6 +11,7 @@ export interface DeckGridProps {
   onDeckPreview: (deck: DeckCardData) => void;
   onDeckToggleActive?: (deck: DeckCardData) => void;
   onDeckTogglePublic?: (deck: DeckCardData) => void;
+  onDeckLinkToScene?: (deck: DeckCardData) => void;
   className?: string;
 }
 
@@ -21,6 +22,7 @@ const DeckGrid: React.FC<DeckGridProps> = ({
   onDeckPreview,
   onDeckToggleActive,
   onDeckTogglePublic,
+  onDeckLinkToScene,
   className = ''
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -83,6 +85,7 @@ const DeckGrid: React.FC<DeckGridProps> = ({
               onPreview={onDeckPreview}
               onToggleActive={onDeckToggleActive}
               onTogglePublic={onDeckTogglePublic}
+              onLinkToScene={onDeckLinkToScene}
             />
           ))}
         </div>
@@ -97,6 +100,7 @@ const DeckGrid: React.FC<DeckGridProps> = ({
               onPreview={onDeckPreview}
               onToggleActive={onDeckToggleActive}
               onTogglePublic={onDeckTogglePublic}
+              onLinkToScene={onDeckLinkToScene}
             />
           ))}
         </div>
@@ -129,6 +133,7 @@ interface DeckListItemProps {
   onPreview: (deck: DeckCardData) => void;
   onToggleActive?: (deck: DeckCardData) => void;
   onTogglePublic?: (deck: DeckCardData) => void;
+  onLinkToScene?: (deck: DeckCardData) => void;
 }
 
 const DeckListItem: React.FC<DeckListItemProps> = ({
@@ -138,6 +143,7 @@ const DeckListItem: React.FC<DeckListItemProps> = ({
   onPreview,
   onToggleActive,
   onTogglePublic,
+  onLinkToScene,
 }) => {
   const { contextMenu, showContextMenu, hideContextMenu } = useContextMenu();
 
@@ -158,6 +164,7 @@ const DeckListItem: React.FC<DeckListItemProps> = ({
     const actions: DeckContextMenuActions = {
       onEdit: onEdit ? () => onEdit(deck) : undefined,
       onPreview: onPreview ? () => onPreview(deck) : undefined,
+      onLinkToScene: onLinkToScene ? () => onLinkToScene(deck) : undefined,
       onToggleActive: onToggleActive ? () => onToggleActive(deck) : undefined,
       onTogglePublic: onTogglePublic ? () => onTogglePublic(deck) : undefined,
       onDelete: onDelete ? () => onDelete(deck) : undefined,

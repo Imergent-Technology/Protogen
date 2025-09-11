@@ -13,6 +13,7 @@ export interface SceneGridProps {
   onScenePreview: (scene: SceneCardData) => void;
   onSceneToggleActive?: (scene: SceneCardData) => void;
   onSceneTogglePublic?: (scene: SceneCardData) => void;
+  onSceneLinkToDeck?: (scene: SceneCardData) => void;
   viewMode?: 'grid' | 'list';
   className?: string;
 }
@@ -26,6 +27,7 @@ const SceneGrid: React.FC<SceneGridProps> = ({
   onScenePreview,
   onSceneToggleActive,
   onSceneTogglePublic,
+  onSceneLinkToDeck,
   viewMode = 'grid',
   className = ''
 }) => {
@@ -96,6 +98,7 @@ const SceneGrid: React.FC<SceneGridProps> = ({
               onPreview={onScenePreview}
               onToggleActive={onSceneToggleActive}
               onTogglePublic={onSceneTogglePublic}
+              onLinkToDeck={onSceneLinkToDeck}
             />
           ))}
         </div>
@@ -112,6 +115,7 @@ const SceneGrid: React.FC<SceneGridProps> = ({
               onPreview={onScenePreview}
               onToggleActive={onSceneToggleActive}
               onTogglePublic={onSceneTogglePublic}
+              onLinkToDeck={onSceneLinkToDeck}
             />
           ))}
         </div>
@@ -144,6 +148,7 @@ interface SceneListItemProps {
   onPreview: (scene: SceneCardData) => void;
   onToggleActive?: (scene: SceneCardData) => void;
   onTogglePublic?: (scene: SceneCardData) => void;
+  onLinkToDeck?: (scene: SceneCardData) => void;
 }
 
 const SceneListItem: React.FC<SceneListItemProps> = ({
@@ -155,6 +160,7 @@ const SceneListItem: React.FC<SceneListItemProps> = ({
   onPreview,
   onToggleActive,
   onTogglePublic,
+  onLinkToDeck,
 }) => {
   const { contextMenu, showContextMenu, hideContextMenu } = useContextMenu();
 
@@ -175,6 +181,7 @@ const SceneListItem: React.FC<SceneListItemProps> = ({
       onEditBasicDetails: onEditBasicDetails ? () => onEditBasicDetails(scene) : undefined,
       onEditDesign: onEditDesign ? () => onEditDesign(scene) : undefined,
       onPreview: onPreview ? () => onPreview(scene) : undefined,
+      onLinkToDeck: onLinkToDeck ? () => onLinkToDeck(scene) : undefined,
       onToggleActive: onToggleActive ? () => onToggleActive(scene) : undefined,
       onTogglePublic: onTogglePublic ? () => onTogglePublic(scene) : undefined,
       onDelete: onDelete ? () => onDelete(scene) : undefined,

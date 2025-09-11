@@ -7,3 +7,4 @@ export { default as EntitySelector, SelectionModal } from './SelectionModal';
 export type { SelectableItem, EntitySelectorProps, SelectionModalProps } from './SelectionModal';
 export { default as ConfirmationDialog } from './ConfirmationDialog';
 export type { ConfirmationDialogProps } from './ConfirmationDialog';
+export { SceneDeckLinkDialog } from './SceneDeckLinkDialog';

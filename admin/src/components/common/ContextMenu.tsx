@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Edit, Copy, Trash2, Eye, EyeOff, Settings, ExternalLink, Share, Layers, Play, Pause, Volume2, VolumeX } from 'lucide-react';
+import { Edit, Copy, Trash2, Eye, EyeOff, Settings, ExternalLink, Share, Layers, Play, Pause, Volume2, VolumeX, Link } from 'lucide-react';
 
 export interface ContextMenuItem {
   id: string;
@@ -150,6 +150,7 @@ export interface SceneContextMenuActions {
   onEditBasicDetails?: () => void;
   onEditDesign?: () => void;
   onPreview?: () => void;
+  onLinkToDeck?: () => void;
   onToggleActive?: () => void;
   onTogglePublic?: () => void;
   onDelete?: () => void;
@@ -159,6 +160,7 @@ export interface SceneContextMenuActions {
 export interface DeckContextMenuActions {
   onEdit?: () => void;
   onPreview?: () => void;
+  onLinkToScene?: () => void;
   onToggleActive?: () => void;
   onTogglePublic?: () => void;
   onDelete?: () => void;
@@ -196,6 +198,15 @@ export const getSceneContextMenuItems = (
       label: 'Preview',
       icon: <Eye className="w-4 h-4" />,
       action: actions.onPreview
+    });
+  }
+
+  if (actions.onLinkToDeck) {
+    items.push({
+      id: 'link-to-deck',
+      label: 'Link to Deck',
+      icon: <Link className="w-4 h-4" />,
+      action: actions.onLinkToDeck
     });
   }
 
@@ -261,6 +272,15 @@ export const getDeckContextMenuItems = (
       label: 'Preview',
       icon: <Eye className="w-4 h-4" />,
       action: actions.onPreview
+    });
+  }
+
+  if (actions.onLinkToScene) {
+    items.push({
+      id: 'link-to-scene',
+      label: 'Link to Scene',
+      icon: <Link className="w-4 h-4" />,
+      action: actions.onLinkToScene
     });
   }
 

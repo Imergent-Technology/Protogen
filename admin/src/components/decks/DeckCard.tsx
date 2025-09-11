@@ -39,6 +39,7 @@ export interface DeckCardProps {
   onPreview: (deck: DeckCardData) => void;
   onToggleActive?: (deck: DeckCardData) => void;
   onTogglePublic?: (deck: DeckCardData) => void;
+  onLinkToScene?: (deck: DeckCardData) => void;
   className?: string;
 }
 
@@ -49,6 +50,7 @@ const DeckCard: React.FC<DeckCardProps> = ({
   onPreview,
   onToggleActive,
   onTogglePublic,
+  onLinkToScene,
   className = ''
 }) => {
   const { contextMenu, showContextMenu, hideContextMenu } = useContextMenu();
@@ -70,6 +72,7 @@ const DeckCard: React.FC<DeckCardProps> = ({
     const actions: DeckContextMenuActions = {
       onEdit: onEdit ? () => onEdit(deck) : undefined,
       onPreview: onPreview ? () => onPreview(deck) : undefined,
+      onLinkToScene: onLinkToScene ? () => onLinkToScene(deck) : undefined,
       onToggleActive: onToggleActive ? () => onToggleActive(deck) : undefined,
       onTogglePublic: onTogglePublic ? () => onTogglePublic(deck) : undefined,
       onDelete: onDelete ? () => onDelete(deck) : undefined,
