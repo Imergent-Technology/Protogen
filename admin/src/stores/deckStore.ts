@@ -325,6 +325,7 @@ export const useDeckStore = create<DeckState>()(
           // Transform API response to match frontend interface
           const updatedDeck: Deck = {
             id: apiDeck.id,
+            guid: apiDeck.guid,
             name: apiDeck.name,
             slug: apiDeck.slug,
             description: apiDeck.description,
@@ -351,7 +352,7 @@ export const useDeckStore = create<DeckState>()(
           
           set((state) => ({
             decks: state.decks.map(deck =>
-              deck.id === id ? updatedDeck : deck
+              deck.guid === guid ? updatedDeck : deck
             )
           }));
         } catch (error) {
