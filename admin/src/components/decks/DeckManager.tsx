@@ -209,14 +209,14 @@ export const DeckManager: React.FC = () => {
         // Add scene to deck
         const updatedDeck = {
           ...deck,
-          sceneIds: [...deck.sceneIds, scene.id]
+          sceneIds: [...(deck.sceneIds || []), scene.id]
         };
         await updateDeck(deck.guid, updatedDeck);
       } else {
         // Remove scene from deck
         const updatedDeck = {
           ...deck,
-          sceneIds: deck.sceneIds.filter(id => id !== scene.id)
+          sceneIds: (deck.sceneIds || []).filter(id => id !== scene.id)
         };
         await updateDeck(deck.guid, updatedDeck);
       }

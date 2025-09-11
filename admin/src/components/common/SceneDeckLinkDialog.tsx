@@ -60,7 +60,7 @@ export function SceneDeckLinkDialog({
   const handleLink = () => {
     if (mode === 'scene-to-deck' && selectedScene && selectedDeck) {
       // Check if scene is already linked to this deck
-      const isAlreadyLinked = selectedDeck.sceneIds.includes(selectedScene.id);
+      const isAlreadyLinked = selectedDeck.sceneIds && selectedDeck.sceneIds.includes(selectedScene.id);
       onLink({
         sceneId: selectedScene.id,
         deckId: selectedDeck.id,
@@ -68,7 +68,7 @@ export function SceneDeckLinkDialog({
       });
     } else if (mode === 'deck-to-scene' && selectedDeck && selectedScene) {
       // Check if scene is already linked to this deck
-      const isAlreadyLinked = selectedDeck.sceneIds.includes(selectedScene.id);
+      const isAlreadyLinked = selectedDeck.sceneIds && selectedDeck.sceneIds.includes(selectedScene.id);
       onLink({
         sceneId: selectedScene.id,
         deckId: selectedDeck.id,
@@ -237,7 +237,7 @@ export function SceneDeckLinkDialog({
               </div>
             ) : (
               filteredDecks.map((deck) => {
-                const isAlreadyLinked = selectedScene && deck.sceneIds.includes(selectedScene.id);
+                const isAlreadyLinked = selectedScene && deck.sceneIds && deck.sceneIds.includes(selectedScene.id);
                 return (
                   <button
                     key={deck.id}
@@ -275,7 +275,7 @@ export function SceneDeckLinkDialog({
               </div>
             ) : (
               filteredScenes.map((scene) => {
-                const isAlreadyLinked = selectedDeck && selectedDeck.sceneIds.includes(scene.id);
+                const isAlreadyLinked = selectedDeck && selectedDeck.sceneIds && selectedDeck.sceneIds.includes(scene.id);
                 return (
                   <button
                     key={scene.id}
