@@ -1,69 +1,103 @@
-# React + TypeScript + Vite
+# Protogen User Portal
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+The **User Portal** is the public-facing interface of Protogen, where community members discover, explore, and interact with the rich content created through the admin interface.
 
-Currently, two official plugins are available:
+## 🎯 Purpose
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+The User Portal serves as the **content consumption hub** of the Protogen ecosystem, providing users with:
 
-## Expanding the ESLint configuration
+- **Content Discovery**: Browse and explore scenes, decks, and community content
+- **Interactive Experiences**: Engage with graphs, documents, and presentations
+- **Community Features**: Participate in discussions and feedback systems
+- **Multi-tenant Access**: Access content from different communities and organizations
+- **Personalized Experience**: Customized content based on user preferences and community membership
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 🏗️ Architecture
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+Built with **React 18 + TypeScript + Vite**, the user portal delivers:
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+- **Content Rendering**: Display scenes and decks created in the admin interface
+- **Interactive Components**: Engage with graphs, documents, and presentation cards
+- **Community Features**: User profiles, discussions, and feedback systems
+- **Responsive Design**: Optimized for desktop, tablet, and mobile experiences
+- **Performance Optimization**: Fast loading through snapshot-based content delivery
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## 🔗 System Integration
+
+The User Portal works closely with:
+
+- **Admin Interface**: Consumes content created by administrators and content creators
+- **API Backend**: Fetches content, user data, and community information
+- **Shared Components**: Uses shared UI components for consistent experience
+- **Snapshot System**: Delivers optimized, versioned content for fast loading
+- **Theme System**: Adapts to community-specific branding and styling
+
+## 🚀 Key Features
+
+### Content Consumption
+- **Scene Viewing**: Interactive graphs, rich documents, and presentation cards
+- **Deck Navigation**: Browse through organized presentation decks
+- **Search & Discovery**: Find relevant content across the community
+- **Bookmarking**: Save favorite content for later access
+
+### Community Engagement
+- **User Profiles**: Personal dashboards and activity tracking
+- **Discussion Forums**: Community discussions around content
+- **Feedback Systems**: Provide input and suggestions on content
+- **Social Features**: Share and recommend content to others
+
+### Multi-tenant Experience
+- **Community Switching**: Access content from different organizations
+- **Custom Branding**: Experience community-specific themes and styling
+- **Isolated Content**: Secure access to community-specific information
+- **Shared Knowledge**: Access to public content across communities
+
+## 🛠️ Development
+
+### Quick Start
+```bash
+# From project root
+npm run dev:portal    # Start portal development server
+npm run build:portal  # Build for production
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Access
+- **Development**: http://protogen.local:3000
+- **Authentication**: Community-specific login systems
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### Key Directories
+- `src/components/`: User-facing UI components
+- `src/pages/`: Main application pages and routes
+- `src/hooks/`: Custom React hooks for data management
+- `src/services/`: API integration and data fetching
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## 📋 Content Types
+
+### Graph Experiences
+Interactive visualizations where users can explore complex relationships, zoom into details, and discover connections between concepts.
+
+### Document Reading
+Rich text documents with embedded media, cross-references, and collaborative annotations for deep knowledge consumption.
+
+### Presentation Viewing
+Immersive slideshow experiences with animations, call-to-action elements, and full-screen presentation modes.
+
+## 🔄 User Journey
+
+1. **Discovery**: Browse community content through search and recommendations
+2. **Exploration**: Dive into scenes and decks that match interests
+3. **Interaction**: Engage with interactive elements and provide feedback
+4. **Community**: Participate in discussions and connect with other users
+5. **Contribution**: Provide feedback and suggestions to improve content
+
+## 🎨 User Experience
+
+The User Portal prioritizes:
+
+- **Performance**: Fast loading through optimized content delivery
+- **Accessibility**: Inclusive design for users with different abilities
+- **Responsiveness**: Seamless experience across all device types
+- **Community Feel**: Features that foster connection and collaboration
+- **Content Quality**: Rich, engaging experiences that educate and inspire
+
+The User Portal transforms the content created in the admin interface into meaningful, interactive experiences that bring communities together around shared knowledge and interests.

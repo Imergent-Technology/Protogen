@@ -1,46 +1,89 @@
-# Getting Started with Create React App
+# Protogen Admin Interface
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+The **Admin Interface** is the content management and authoring system for Protogen, providing administrators and content creators with powerful tools to build and manage the platform's knowledge base.
 
-## Available Scripts
+## 🎯 Purpose
 
-In the project directory, you can run:
+The Admin Interface serves as the **content creation hub** of the Protogen ecosystem, enabling users to:
 
-### `npm start`
+- **Create & Manage Scenes**: Build interactive graphs, rich documents, and presentation cards
+- **Organize Content**: Structure scenes into presentation decks with custom navigation
+- **Link Relationships**: Connect scenes to decks and manage content associations
+- **Preview & Test**: Preview content before publishing to the user portal
+- **Manage Tenants**: Configure multi-tenant settings and branding
 
-Runs the app in the development mode.\
-Open [http://protogen.local:3001](http://protogen.local:3001) to view it in the browser.
+## 🏗️ Architecture
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+Built with **React 18 + TypeScript + Vite**, the admin interface provides:
 
-### `npm test`
+- **Scene Management**: Create, edit, and organize different types of content scenes
+- **Deck Management**: Build presentation decks by linking scenes together
+- **Workflow System**: Guided creation workflows for complex content types
+- **Context Menus**: Right-click interfaces for quick actions and content linking
+- **Real-time Preview**: Live preview of content as it's being created
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## 🔗 System Integration
 
-### `npm run build`
+The Admin Interface works closely with:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- **API Backend**: Communicates with Laravel API for data persistence
+- **Shared Components**: Uses shared UI components and TypeScript types
+- **User Portal**: Content created here is consumed by the user-facing portal
+- **Snapshot System**: Manages content versioning and delivery optimization
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## 🚀 Key Features
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### Content Authoring
+- **Graph Scenes**: Interactive node-and-edge visualizations
+- **Document Scenes**: Rich text editing with TipTap integration
+- **Card Scenes**: Advanced slideshow presentations with animations
 
-### `npm run eject`
+### Content Organization
+- **Scene-Deck Linking**: Associate scenes with presentation decks
+- **Context Menus**: Quick access to edit, link, and manage content
+- **Workflow Wizards**: Guided creation process for complex content
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+### Management Tools
+- **Multi-tenant Support**: Manage content across different communities
+- **Preview System**: Test content before publishing
+- **Version Control**: Track changes and manage content history
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## 🛠️ Development
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+### Quick Start
+```bash
+# From project root
+npm run dev:admin    # Start admin development server
+npm run build:admin  # Build for production
+```
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+### Access
+- **Development**: http://protogen.local:3001
+- **Login**: Use admin credentials from your environment setup
 
-## Learn More
+### Key Directories
+- `src/components/`: Reusable UI components
+- `src/stores/`: State management with Zustand
+- `src/workflows/`: Content creation workflows
+- `src/authoring/`: Scene-specific authoring tools
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## 📋 Content Types
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### Graph Scenes
+Interactive visualizations with nodes, edges, and advanced layouts for complex knowledge representation.
+
+### Document Scenes  
+Rich text documents with embedded media, internal/external linking, and collaborative editing capabilities.
+
+### Card Scenes
+Advanced presentation slides with multiple background types, text positioning, call-to-action systems, and full-screen presentation modes.
+
+## 🔄 Workflow
+
+1. **Create Scenes**: Build individual content pieces (graphs, documents, cards)
+2. **Organize Decks**: Group related scenes into presentation decks
+3. **Link Content**: Associate scenes with decks for structured presentations
+4. **Preview & Test**: Review content before publishing
+5. **Publish**: Make content available to users through the portal
+
+The Admin Interface is where the magic happens - transforming ideas into the rich, interactive content that users experience in the Protogen portal.
