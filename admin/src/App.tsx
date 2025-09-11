@@ -329,10 +329,6 @@ function App() {
       console.log('Found deck:', deck);
       setCurrentDeck(deck || null);
       setViewMode('deck-edit');
-      // Reset programmatic navigation flag after handling the route
-      if (isProgrammaticNavigation) {
-        setTimeout(() => setIsProgrammaticNavigation(false), 100);
-      }
     } else if (path === '/scenes') {
       setViewMode('scenes');
       setCurrentScene(null); // Clear current scene when going to scenes list
@@ -363,6 +359,16 @@ function App() {
       console.log('Route not matched:', path);
     }
   }, [location.pathname, isProgrammaticNavigation]);
+
+  // Reset programmatic navigation flag after route handling
+  useEffect(() => {
+    if (isProgrammaticNavigation) {
+      const timer = setTimeout(() => {
+        setIsProgrammaticNavigation(false);
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [isProgrammaticNavigation]);
 
   // Update URL when state changes
   const updateURL = (mode: ViewMode) => {
