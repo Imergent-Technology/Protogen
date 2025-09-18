@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Save, Eye, Image, Video, Link, Upload, X, Plus, ExternalLink } from 'lucide-react';
 import { Button, Input, Label, Textarea, Card, Badge, Tabs, TabsList, TabsTrigger, TabsContent } from '@protogen/shared';
-import { DocumentSceneData, DocumentMedia, DocumentLink, DocumentSceneAuthoringProps, NodeMetadata } from '../types';
+import { DocumentSceneData, DocumentMedia, DocumentLink, DocumentSceneAuthoringProps } from '../types';
 import { useAuthoringPermissions } from '../hooks/useAuthoringPermissions';
 import { useSceneAuthoring } from '../hooks/useSceneAuthoring';
 import NodeSelectionInterface from './NodeSelectionInterface';

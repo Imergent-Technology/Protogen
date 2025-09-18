@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Save, Eye, Plus, Trash2, Settings, Play, X } from 'lucide-react';
 import { Button, Input, Label, Card, Badge, Tabs, TabsList, TabsTrigger, TabsContent, Textarea } from '@protogen/shared';
-import { CardSceneData, CardSlide, CardSceneAuthoringProps } from '../types';
-import { NodeMetadata } from '../types/node-selection';
+import { CardSceneData, CardSlide, CardSceneAuthoringProps, NodeMetadata } from '../types';
 import { useAuthoringPermissions } from '../hooks/useAuthoringPermissions';
 import { useSceneAuthoring } from '../hooks/useSceneAuthoring';
 
