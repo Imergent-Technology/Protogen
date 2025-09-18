@@ -1,12 +1,12 @@
 // Scene authoring types
-export type SceneType = 'graph' | 'card' | 'document' | 'dashboard' | 'custom';
+export type SceneTypeId = 'graph' | 'card' | 'document' | 'dashboard' | 'custom';
 
 // Base scene interface
 export interface BaseSceneData {
   id?: string;
   name: string;
   description?: string;
-  type: SceneType;
+  type: SceneTypeId;
   metadata: {
     title?: string;
     subtitle?: string;
@@ -242,22 +242,27 @@ export type SceneData = GraphSceneData | CardSceneData | DocumentSceneData | Das
 // Scene authoring props
 export interface SceneAuthoringProps<T extends SceneData = SceneData> {
   scene?: T;
-  availableNodes: NodeMetadata[];
+  availableNodes: any[]; // NodeMetadata[] - will be properly typed later
   onSave: (scene: T) => void;
   onPreview: (scene: T) => void;
   onCancel: () => void;
   className?: string;
-  permissions?: AuthoringPermissions;
+  permissions?: any; // Will be properly typed when AuthoringPermissions is available
 }
 
+// Specific component props
+export interface CardSceneAuthoringProps extends SceneAuthoringProps<CardSceneData> {}
+export interface GraphSceneAuthoringProps extends SceneAuthoringProps<GraphSceneData> {}
+export interface DocumentSceneAuthoringProps extends SceneAuthoringProps<DocumentSceneData> {}
+
 // Node selection types (imported from node-selection.ts)
-export interface NodeMetadata {
-  id: string;
-  name: string;
-  type: string;
-  description?: string;
-  tags?: string[];
-  properties?: Record<string, any>;
-  createdAt: string;
-  updatedAt: string;
-}
+// export interface NodeMetadata {
+//   id: string;
+//   name: string;
+//   type: string;
+//   description?: string;
+//   tags?: string[];
+//   properties?: Record<string, any>;
+//   createdAt: string;
+//   updatedAt: string;
+// }

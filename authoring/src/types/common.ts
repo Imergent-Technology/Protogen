@@ -23,7 +23,7 @@ export interface SceneTypeManagerProps {
 // Common authoring props
 export interface BaseAuthoringProps {
   className?: string;
-  permissions?: AuthoringPermissions;
+  permissions?: any; // Will be properly typed when AuthoringPermissions is available
   onSave: (data: any) => void;
   onPreview: (data: any) => void;
   onCancel: () => void;

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Plus, FileText, Grid, Layers, Image, Code, Settings } from 'lucide-react';
 import { Button, Card, Badge } from '@protogen/shared';
-import { SceneType, SceneTypeManagerProps } from '../types';
+import { SceneType, SceneTypeManagerProps, SceneTypeId } from '../types';
 import { useAuthoringPermissions } from '../hooks/useAuthoringPermissions';
 
 const SceneTypeManager: React.FC<SceneTypeManagerProps> = ({
@@ -91,7 +91,7 @@ const SceneTypeManager: React.FC<SceneTypeManagerProps> = ({
 
   // Check if user can create specific scene type
   const canCreateSceneType = (typeId: string): boolean => {
-    return permissions.canCreateScene(typeId);
+    return permissions.canCreateScene(typeId as SceneTypeId);
   };
 
   // Handle scene creation with permission check

@@ -5,4 +5,4 @@ export * from './node-selection';
 export * from './common';
 
 // Re-export shared types that are commonly used
-export type { User, Tenant } from '@protogen/shared';
+// export type { User, Tenant } from '@protogen/shared';

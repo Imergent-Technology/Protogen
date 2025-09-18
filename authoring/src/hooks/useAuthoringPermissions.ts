@@ -6,6 +6,8 @@ const useMerit = () => {
   // This will be replaced with actual merit service integration
   return {
     meritScore: {
+      userId: 1,
+      tenantId: 1,
       merit: 50,
       trust: 0.7,
       level: 'contributor' as AccessLevel,
@@ -23,7 +25,7 @@ const useMerit = () => {
 };
 
 // Permission requirements for different features
-const PERMISSION_REQUIREMENTS = {
+const PERMISSION_REQUIREMENTS: Record<string, { level: AccessLevel; trust: number }> = {
   'scene.create.card': { level: 'member', trust: 0.3 },
   'scene.create.graph': { level: 'contributor', trust: 0.5 },
   'scene.create.document': { level: 'member', trust: 0.3 },
@@ -158,9 +160,9 @@ export const usePermission = (permission: string): boolean => {
     'graph.edge.create': permissions.canCreateEdge,
     'graph.modify.core': permissions.canModifyCoreGraph,
     'graph.metadata.access': permissions.canAccessNodeMetadata,
-    'content.publish': (sceneId: string) => permissions.canPublishScene(sceneId),
-    'content.share': (contentId: string) => permissions.canShareContent(contentId),
-    'content.export': (contentId: string) => permissions.canExportContent(contentId),
+      'content.publish': () => permissions.canPublishScene(''),
+      'content.share': () => permissions.canShareContent(''),
+      'content.export': () => permissions.canExportContent(''),
   };
   
   const permissionFunction = permissionMap[permission];

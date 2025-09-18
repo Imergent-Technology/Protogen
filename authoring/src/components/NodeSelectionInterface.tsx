@@ -37,7 +37,7 @@ const NodeSelectionInterface: React.FC<NodeSelectionProps> = ({
   } = useNodeSelection(nodes, selectedNodes, onSelectionChange, options);
 
   // Check if user can create nodes
-  const canCreateNode = permissions.canCreateNode && onNodeCreate;
+  const canCreateNode = permissions.canCreateNode() && onNodeCreate;
 
   // Handle node selection with permission check
   const handleNodeSelectWithPermission = (nodeId: string) => {
