@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Save, Eye, Settings, Plus, Trash2, EyeOff, X } from 'lucide-react';
 import { Button, Input, Label, Textarea, Card, Badge, Tabs, TabsList, TabsTrigger, TabsContent } from '@protogen/shared';
-import { GraphSceneData, GraphEdge, GraphSceneAuthoringProps, NodeMetadata } from '../types';
+import { GraphSceneData, GraphEdge, GraphSceneAuthoringProps } from '../types';
+import { NodeMetadata } from '../types/node-selection';
 import { useAuthoringPermissions } from '../hooks/useAuthoringPermissions';
 import { useSceneAuthoring } from '../hooks/useSceneAuthoring';
 import NodeSelectionInterface from './NodeSelectionInterface';

@@ -247,7 +247,7 @@ const DocumentSceneAuthoring: React.FC<DocumentSceneAuthoringProps> = ({
         <Card className="p-4 border-destructive/20 bg-destructive/5 mb-4">
           <h4 className="font-medium text-destructive mb-2">Validation Errors</h4>
           <ul className="text-sm text-destructive space-y-1">
-            {state.errors.map((error, index) => (
+            {state.errors.map((error: any, index: number) => (
               <li key={index}>• {error.message}</li>
             ))}
           </ul>

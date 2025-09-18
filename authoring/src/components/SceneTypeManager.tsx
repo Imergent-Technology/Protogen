@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Plus, FileText, Grid, Layers, Image, Code, Settings } from 'lucide-react';
 import { Button, Card, Badge } from '@protogen/shared';
-import { SceneType, SceneTypeManagerProps, SceneTypeId } from '../types';
+import { SceneType, SceneTypeManagerProps } from '../types';
+import { SceneTypeId } from '../types/scene';
 import { useAuthoringPermissions } from '../hooks/useAuthoringPermissions';
 
 const SceneTypeManager: React.FC<SceneTypeManagerProps> = ({
