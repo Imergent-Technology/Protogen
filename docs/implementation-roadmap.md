@@ -179,6 +179,20 @@ This roadmap outlines the phased implementation of the Protogen system, transiti
 - [ ] Implement phantom element support
 - [ ] Update existing components for Scene awareness
 
+### 5.5 Merit System Foundation 🔄 NEW
+- [ ] **Merit Score Implementation**: Create MeritScore model and calculation service
+- [ ] **Trust System**: Implement trust score calculation (replacing reputation)
+- [ ] **Access Levels**: Create progressive access level system
+- [ ] **Database Schema**: Add merit fields to users table and create merit_scores table
+- [ ] **Basic Merit Calculation**: Implement participation, expertise, and leadership tracking
+
+### 5.6 Permissions Architecture 🔄 NEW
+- [ ] **Permission System**: Create comprehensive permission framework
+- [ ] **Merit-Based Permissions**: Integrate permissions with merit system
+- [ ] **Scene Authoring Permissions**: Add permission hooks to authoring library
+- [ ] **Trust-Based Security**: Implement trust-based access controls
+- [ ] **Permission Management**: Create permission management UI and API
+
 ## Phase 6: Multi-Tenant Architecture ✅ COMPLETED
 **Status**: All tasks completed and tested
 
@@ -231,48 +245,72 @@ This roadmap outlines the phased implementation of the Protogen system, transiti
 - [x] Remove Stage-related state and functions
 - [x] Update admin toolbar and navigation
 
-## Phase 8: Performance & Polish 📋 PLANNED
+## Phase 8: Advanced Merit & Permissions 📋 PLANNED
+**Status**: Planning phase, to be implemented after Phase 5
+
+### 8.1 Advanced Merit Features 📋
+- [ ] **Progressive Visibility**: Users see more metrics as they level up
+- [ ] **Resource Allocation**: Automatic resource assignment based on merit
+- [ ] **Rewards System**: Badges, titles, and benefits for merit achievements
+- [ ] **Cross-Tenant Merit**: Merit recognition across multiple communities
+- [ ] **Mentorship Networks**: Merit for teaching and guiding others
+
+### 8.2 Advanced Permissions 📋
+- [ ] **Permission Inheritance**: Users inherit permissions from merit level
+- [ ] **Tenant-Specific Overrides**: Custom permission models per tenant
+- [ ] **Permission Auditing**: Track permission changes and violations
+- [ ] **Security Analytics**: Monitor permission usage and security
+- [ ] **Permission Recovery**: Mechanisms for permission restoration
+
+### 8.3 Community Leadership Tools 📋
+- [ ] **Leadership Analytics**: Track community influence and guidance
+- [ ] **Content Moderation**: Merit-based moderation tools
+- [ ] **Community Health**: Monitor community growth and engagement
+- [ ] **Leadership Elections**: Community leaders chosen by merit
+- [ ] **Collaboration Tools**: Merit-based resource sharing
+
+## Phase 9: Performance & Polish 📋 PLANNED
 **Status**: Planning phase, not yet started
 
-### 8.1 Rebuild Triggers 📋
+### 9.1 Rebuild Triggers 📋
 - [ ] Implement debounced rebuild triggers (500ms-2s)
 - [ ] Add Core Graph change detection
 - [ ] Create background job processing
 - [ ] Add performance monitoring
 
-### 8.2 Engagement System 📋
+### 9.2 Engagement System 📋
 - [ ] Implement user engagement tracking
 - [ ] Add analytics and reporting
 - [ ] Create engagement-based recommendations
 - [ ] Add A/B testing framework
 
-### 8.3 Testing & Documentation 📋
+### 9.3 Testing & Documentation 📋
 - [ ] Complete unit test coverage
 - [ ] Add integration tests for all workflows
 - [ ] Create end-to-end testing suite
 - [ ] Update all documentation
 
-## Phase 9: Content Sharing System 📋 PLANNED
+## Phase 10: Content Sharing System 📋 PLANNED
 **Status**: Planning phase, not yet started
 
-### 9.1 Shared Content Registry 📋
+### 10.1 Shared Content Registry 📋
 - [ ] Implement content discovery and licensing system
 - [ ] Add content import/export workflows
 - [ ] Create dependency resolution and validation
 - [ ] Implement content attribution and tracking
 - [ ] Add usage analytics for shared content
 
-### 9.2 Content Licensing & Permissions 📋
+### 10.2 Content Licensing & Permissions 📋
 - [ ] Implement Creative Commons license support
 - [ ] Add custom license creation and management
 - [ ] Create permission management system
 - [ ] Add content ownership and transfer workflows
 - [ ] Implement content moderation and approval
 
-## Phase 10: Music & Audio System 📋 PLANNED
+## Phase 11: Music & Audio System 📋 PLANNED
 **Status**: Planning phase, to be added after core authoring tools
 
-### 10.1 Music Integration for Decks 🔄
+### 11.1 Music Integration for Decks 🔄
 - [ ] **Deck-level music configuration** with audio file upload/selection
 - [ ] **Music playback controls** (play, pause, stop, volume)
 - [ ] **Audio format support** (MP3, WAV, OGG, etc.)
@@ -280,7 +318,7 @@ This roadmap outlines the phased implementation of the Protogen system, transiti
 - [ ] **Music metadata** (title, artist, duration, loop settings)
 - [ ] **Background music persistence** across scene navigation
 
-### 10.2 Audio Conflict Resolution 🔄
+### 11.2 Audio Conflict Resolution 🔄
 - [ ] **Video sound override system** for music vs video audio
 - [ ] **Volume ducking** when video with sound is playing
 - [ ] **Audio priority management** (music, video, system sounds)
@@ -288,7 +326,7 @@ This roadmap outlines the phased implementation of the Protogen system, transiti
 - [ ] **Automatic audio detection** for media content
 - [ ] **Manual audio control** overrides
 
-### 10.3 Music Library Management 🔄
+### 11.3 Music Library Management 🔄
 - [ ] **Music library interface** for organizing audio assets
 - [ ] **Music categorization** (ambient, energetic, thematic, etc.)
 - [ ] **Music search and filtering** by mood, genre, duration
@@ -296,10 +334,10 @@ This roadmap outlines the phased implementation of the Protogen system, transiti
 - [ ] **Music preview system** before assignment to decks
 - [ ] **Music usage analytics** and reporting
 
-## Phase 11: Flow System 📋 PLANNED
+## Phase 12: Flow System 📋 PLANNED
 **Status**: Planning phase, to be added after music system
 
-### 11.1 Core Flow Engine 🔄
+### 12.1 Core Flow Engine 🔄
 - [ ] **Flow model** with step sequences and branching support
 - [ ] **Flow step targeting** for scenes, decks, nodes/coordinates, and contexts
 - [ ] **Flow state management** with position tracking and history
@@ -307,7 +345,7 @@ This roadmap outlines the phased implementation of the Protogen system, transiti
 - [ ] **Flow navigation** (play, pause, advance, rewind, return to step)
 - [ ] **Flow exit** capability to regain full session control
 
-### 11.2 Exploration Management 🔄
+### 12.2 Exploration Management 🔄
 - [ ] **Position tracking** during user exploration
 - [ ] **Flow context preservation** during exploration
 - [ ] **Return to flow** from any exploration point
@@ -315,7 +353,7 @@ This roadmap outlines the phased implementation of the Protogen system, transiti
 - [ ] **Auto-focus** return to next step when flow advances
 - [ ] **Exploration mode** toggle (on/off per flow)
 
-### 11.3 Branching & Conditional Navigation 🔄
+### 12.3 Branching & Conditional Navigation 🔄
 - [ ] **Flow branches** with multiple path options
 - [ ] **Conditional logic** for dynamic path selection
 - [ ] **Return paths** to main flow after branch exploration
@@ -323,7 +361,7 @@ This roadmap outlines the phased implementation of the Protogen system, transiti
 - [ ] **User choice integration** for branch selection
 - [ ] **Context-aware branching** based on user behavior
 
-### 11.4 Flow Authoring & Management 🔄
+### 12.4 Flow Authoring & Management 🔄
 - [ ] **Flow authoring interface** for creating step sequences
 - [ ] **Step configuration** with target types and transitions
 - [ ] **Mode selection** (guided, free-explore, hybrid)
@@ -331,7 +369,7 @@ This roadmap outlines the phased implementation of the Protogen system, transiti
 - [ ] **Flow templates** and reusable sequences
 - [ ] **Flow versioning** and change management
 
-### 11.5 Advanced Flow Features 🔄
+### 12.5 Advanced Flow Features 🔄
 - [ ] **Flow analytics** (completion rates, exploration patterns, etc.)
 - [ ] **Flow sharing** and collaboration features
 - [ ] **Flow export** to various formats (PDF, video, etc.)
@@ -339,53 +377,53 @@ This roadmap outlines the phased implementation of the Protogen system, transiti
 - [ ] **Audience interaction features** (polls, Q&A, etc.)
 - [ ] **Flow recording** and playback capabilities
 
-## Phase 12: Flow System Integration 📋 PLANNED
+## Phase 13: Flow System Integration 📋 PLANNED
 **Status**: Planning phase, not yet started
 
-### 12.1 Admin Portal Flow Integration 📋
+### 13.1 Admin Portal Flow Integration 📋
 - [ ] **Setup wizards** for guided configuration processes
 - [ ] **Onboarding flows** for user introduction and training
 - [ ] **Feature tours** for guided exploration of new capabilities
 - [ ] **Content creation flows** for guided authoring processes
 - [ ] **Review workflows** for structured content review and approval
 
-### 12.2 Flow Publishing & Delivery 📋
+### 13.2 Flow Publishing & Delivery 📋
 - [ ] **Automated flow publishing** workflow with dependency validation
 - [ ] **Flow performance optimization** for large and complex flows
 - [ ] **Cross-tenant flow sharing** and collaboration
 - [ ] **Flow analytics dashboard** with completion rates and insights
 - [ ] **Flow export capabilities** to various formats and platforms
 
-## Phase 13: Task & Volunteer Management 📋 PLANNED
+## Phase 14: Task & Volunteer Management 📋 PLANNED
 **Status**: Planning phase, not yet started
 
-### 13.1 Basic Task System 📋
+### 14.1 Basic Task System 📋
 - [ ] Implement simple task creation for nodes, contexts, scenes, and decks
 - [ ] Add basic task description and status tracking
 - [ ] Create task association with content entities
 - [ ] Implement simple task listing and filtering
 
-### 13.2 Volunteer Interest System 📋
+### 14.2 Volunteer Interest System 📋
 - [ ] Add "interested in helping" flag for tasks
 - [ ] Implement basic volunteer contact information collection
 - [ ] Add basic volunteer management interface
 
-### 13.3 Integration with Content System 📋
+### 14.3 Integration with Content System 📋
 - [ ] Link tasks to specific content coordinates
 - [ ] Integrate with feedback system for task-related feedback
 - [ ] Add task context to content delivery
 - [ ] Implement basic task analytics and reporting
 
-## Phase 14: Multi-Tenancy & Community Management 📋 PLANNED
+## Phase 15: Multi-Tenancy & Community Management 📋 PLANNED
 **Status**: Planning phase, not yet started
 
-### 14.1 Advanced Tenant Features 📋
+### 15.1 Advanced Tenant Features 📋
 - [ ] Implement custom domain support
 - [ ] Add tenant-specific branding
 - [ ] Create tenant analytics and reporting
 - [ ] Add tenant collaboration features
 
-### 14.2 Community Features 📋
+### 15.2 Community Features 📋
 - [ ] Implement user-generated content
 - [ ] Add community moderation tools
 - [ ] Create content discovery system

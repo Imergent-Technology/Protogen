@@ -45,6 +45,13 @@ The project has evolved through 7 completed phases, with a clean, modern archite
 - **Shared Knowledge**: Core Graph serves as shared knowledge base across tenants
 - **Tenant Management**: Centralized tenant administration with isolated content
 
+### 5. Merit-Based Permissions
+- **Merit System**: User progression based on participation, expertise, and leadership
+- **Trust Scoring**: Reliability metrics for security-sensitive operations
+- **Progressive Access**: Features unlock as users advance through merit levels
+- **Resource Allocation**: Automatic resource assignment based on merit
+- **Community Leadership**: Natural leaders emerge through merit-based recognition
+
 ## Conceptual Model
 
 ### Core Graph (Canonical Data - Shared Across Tenants)

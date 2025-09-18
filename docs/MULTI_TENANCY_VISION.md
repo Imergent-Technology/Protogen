@@ -52,6 +52,31 @@ Community-Specific Frontend Experience
 - **University Students**: Academic rigor and research methodology
 - **Professional Development**: Industry-specific applications and case studies
 
+## 🏆 **Merit-Based Community Progression**
+
+### **Merit System Integration**
+Each tenant can implement its own merit system to encourage community participation and quality contributions:
+
+- **Participation Merit**: Content creation, feedback, discussions, collaborations
+- **Expertise Merit**: Domain knowledge, technical skills, content quality
+- **Leadership Merit**: Community influence, content curation, mentorship
+
+### **Progressive Access Levels**
+- **Visitor** (0-20 merit): Basic viewing and limited feedback
+- **Member** (21-40 merit): Content creation and basic authoring
+- **Contributor** (41-60 merit): Advanced authoring and content curation
+- **Expert** (61-80 merit): Graph operations and cross-tenant access
+- **Leader** (81-95 merit): Community leadership and moderation
+- **Architect** (96-100 merit): System administration and architecture
+
+### **Trust-Based Security**
+High-trust users gain access to sensitive operations:
+- Core graph modifications
+- Content moderation tools
+- Advanced authoring features
+- System administration
+- Cross-tenant operations
+
 ## 🔧 **Technical Implementation**
 
 ### **1. Tenant System Foundation**
