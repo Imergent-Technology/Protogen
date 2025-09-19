@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Button } from '@progress/shared';
+import { Button } from '@protogen/shared';
 import { Modal } from './Modal';
 import { Search, Link as LinkIcon, Layers } from 'lucide-react';
 import { Scene, Deck } from '../../stores/deckStore';

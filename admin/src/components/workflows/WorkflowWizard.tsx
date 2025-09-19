@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Save, X, AlertCircle } from 'lucide-react';
-import { Button } from '@progress/shared';
+import { Button } from '@protogen/shared';
 
 export interface WorkflowStep {
   id: string;

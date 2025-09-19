@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Scene } from '@progress/shared';
-import { Button } from '@progress/shared';
+import { Scene } from '@protogen/shared';
+import { Button } from '@protogen/shared';
 import { Modal } from '../common/Modal';
 import { Search, Link as LinkIcon } from 'lucide-react';
 

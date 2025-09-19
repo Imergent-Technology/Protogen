@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Search, Filter } from 'lucide-react';
-import { Input, Button, Badge } from '@progress/shared';
+import { Input, Button, Badge } from '@protogen/shared';
 import SceneCard, { SceneCardData } from './SceneCard';
 import { ContextMenu, useContextMenu, getSceneContextMenuItems, SceneContextMenuActions } from '../common/ContextMenu';
 

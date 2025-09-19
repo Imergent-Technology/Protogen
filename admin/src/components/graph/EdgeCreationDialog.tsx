@@ -3,7 +3,7 @@ import {
   CoreGraphNode, 
   CoreGraphEdgeType,
   apiClient 
-} from '@progress/shared';
+} from '@protogen/shared';
 import { X, ArrowRight } from 'lucide-react';
 
 interface EdgeCreationDialogProps {

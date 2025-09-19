@@ -55,6 +55,7 @@ services:
     volumes:
       - ./portal:/app
       - ./shared:/shared
+      - ./authoring:/authoring
       - ./config:/config
       - /app/node_modules
     ports:
@@ -72,6 +73,7 @@ services:
     volumes:
       - ./admin:/app
       - ./shared:/shared
+      - ./authoring:/authoring
       - ./config:/config
       - /app/node_modules
     ports:

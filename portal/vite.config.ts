@@ -9,6 +9,8 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": fileURLToPath(new URL('./src', import.meta.url)),
+      "@protogen/shared": fileURLToPath(new URL('../shared/dist/src', import.meta.url)),
+      "@protogen/authoring": fileURLToPath(new URL('../authoring/dist', import.meta.url)),
     },
   },
   server: {

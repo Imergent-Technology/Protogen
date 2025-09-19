@@ -10,8 +10,10 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@protogen/shared": ["../shared/src"],
-      "@protogen/shared/*": ["../shared/src/*"]
+      "@protogen/shared": ["../shared/dist/src"],
+      "@protogen/shared/*": ["../shared/dist/src/*"],
+      "@protogen/authoring": ["../authoring/dist"],
+      "@protogen/authoring/*": ["../authoring/dist/*"]
     }
   },
   "include": ["src", "../shared/src"]

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Input } from '@progress/shared';
+import { Input } from '@protogen/shared';
 import { DeckType } from '../../../stores/deckStore';
 
 export interface DeckDetailsStepProps {

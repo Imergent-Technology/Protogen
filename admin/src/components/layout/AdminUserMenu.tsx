@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { ChevronDown, LogOut, Settings, User } from 'lucide-react';
-import { ThemeToggle } from '@progress/shared';
+import { ThemeToggle } from '@protogen/shared';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface AdminUser {

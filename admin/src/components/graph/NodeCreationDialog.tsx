@@ -3,7 +3,7 @@ import {
   CoreGraphNodeType, 
   CreateNodeRequest, 
   apiClient 
-} from '@progress/shared';
+} from '@protogen/shared';
 import { X, Save, Loader2 } from 'lucide-react';
 
 interface NodeCreationDialogProps {

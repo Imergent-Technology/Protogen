@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Layers, Users, BarChart3, Network, Settings, Building2 } from 'lucide-react';
-import { apiClient } from '@progress/shared';
+import { apiClient } from '@protogen/shared';
 import {
   UsersList,
   AdminLogin,
@@ -15,15 +15,17 @@ import {
   DeckManager,
   TenantManager,
   SceneNavigation,
+} from './components';
+import {
   SceneTypeManager,
   GraphSceneAuthoring,
   DocumentSceneAuthoring,
-} from './components';
+} from '@protogen/authoring';
 import { SceneWorkflow } from './components/workflows';
 import DeckWorkflow from './components/workflows/deck/DeckWorkflow';
 import { useDeckStore } from './stores/deckStore';
 import { AnimatePresence, motion } from 'framer-motion';
-import { initializeTheme } from '@progress/shared';
+import { initializeTheme } from '@protogen/shared';
 
 interface AdminUser {
   id: number;

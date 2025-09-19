@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Button } from '@progress/shared';
-import { Input } from '@progress/shared';
-import { Label } from '@progress/shared';
-import { Textarea } from '@progress/shared';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@progress/shared';
-import { Badge } from '@progress/shared';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@progress/shared';
-import { Switch } from '@progress/shared';
+import { Button } from '@protogen/shared';
+import { Input } from '@protogen/shared';
+import { Label } from '@protogen/shared';
+import { Textarea } from '@protogen/shared';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@protogen/shared';
+import { Badge } from '@protogen/shared';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@protogen/shared';
+import { Switch } from '@protogen/shared';
 import { 
   Building2, 
   Settings, 

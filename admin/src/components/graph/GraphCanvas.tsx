@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { CoreGraphNode, CoreGraphEdge, apiClient } from '@progress/shared';
+import { CoreGraphNode, CoreGraphEdge, apiClient } from '@protogen/shared';
 import * as Sigma from 'sigma';
 import * as Graph from 'graphology';
 import { NodeDonut } from './NodeDonut';

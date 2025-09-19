@@ -1,5 +1,5 @@
 import React from 'react';
-import { Badge } from '@progress/shared';
+import { Badge } from '@protogen/shared';
 import { ContextMenu, useContextMenu, getSceneContextMenuItems, SceneContextMenuActions } from '../common/ContextMenu';
 
 // Types for scene card

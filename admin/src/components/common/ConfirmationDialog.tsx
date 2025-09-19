@@ -1,6 +1,6 @@
 import React from 'react';
 import { AlertTriangle, X } from 'lucide-react';
-import { Button } from '@progress/shared';
+import { Button } from '@protogen/shared';
 
 export interface ConfirmationDialogProps {
   isOpen: boolean;

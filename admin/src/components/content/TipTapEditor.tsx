@@ -7,7 +7,7 @@ import Image from '@tiptap/extension-image';
 import Placeholder from '@tiptap/extension-placeholder';
 import TextAlign from '@tiptap/extension-text-align';
 import { UnifiedLinkDialog } from './UnifiedLinkDialog';
-import { Scene } from '@progress/shared';
+import { Scene } from '@protogen/shared';
 import { Extension } from '@tiptap/core';
 import { Plugin } from 'prosemirror-state';
 

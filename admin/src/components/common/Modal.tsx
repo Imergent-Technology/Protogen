@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 
 import { X } from 'lucide-react';
-import { Button } from '@progress/shared';
+import { Button } from '@protogen/shared';
 
 interface ModalProps {
   isOpen: boolean;

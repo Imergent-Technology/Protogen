@@ -1,6 +1,6 @@
 import React from 'react';
 import { Layers } from 'lucide-react';
-import { Badge } from '@progress/shared';
+import { Badge } from '@protogen/shared';
 import { ContextMenu, useContextMenu, getDeckContextMenuItems, DeckContextMenuActions } from '../common/ContextMenu';
 
 // Types for deck card

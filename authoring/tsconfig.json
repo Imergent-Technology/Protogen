@@ -7,7 +7,12 @@
     "declarationMap": true,
     "sourceMap": true,
     "composite": true,
-    "noEmit": false
+    "noEmit": false,
+    "baseUrl": ".",
+    "paths": {
+      "@protogen/shared": ["../shared/dist/src"],
+      "@protogen/shared/*": ["../shared/dist/src/*"]
+    }
   },
   "include": [
     "src/**/*"

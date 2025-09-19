@@ -4,7 +4,7 @@ import {
   CoreGraphEdge, 
   CoreGraphNodeType, 
   apiClient 
-} from '@progress/shared';
+} from '@protogen/shared';
 import { Network, Plus, Search, Settings, Eye, Edit3, Trash2, Loader2, Grid3X3, List, Link } from 'lucide-react';
 import { NodeCreationDialog } from './NodeCreationDialog';
 import { EdgeCreationDialog } from './EdgeCreationDialog';

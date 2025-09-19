@@ -1,9 +1,11 @@
 import React, { useCallback, useRef, useEffect } from 'react';
-import { Card } from '@progress/shared';
+import { Card } from '@protogen/shared';
 import { SceneType } from '../../../stores/deckStore';
-import GraphSceneAuthoring from '../../authoring/GraphSceneAuthoring';
-import CardSceneAuthoring from '../../authoring/CardSceneAuthoring';
-import DocumentSceneAuthoring from '../../authoring/DocumentSceneAuthoring';
+import { 
+  GraphSceneAuthoring, 
+  CardSceneAuthoring, 
+  DocumentSceneAuthoring 
+} from '@protogen/authoring';
 
 export interface DesignStepProps {
   data: {

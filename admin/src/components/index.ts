@@ -22,8 +22,8 @@ export * from './users';
 // Tenant management components
 export * from './tenants';
 
-// Authoring components
-export * from './authoring';
+// Authoring components - now using @protogen/authoring library
+// export * from './authoring';
 
 // Content and editing components
 export * from './content';

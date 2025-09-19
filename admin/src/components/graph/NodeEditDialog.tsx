@@ -3,7 +3,7 @@ import {
   CoreGraphNode, 
   CoreGraphNodeType,
   apiClient 
-} from '@progress/shared';
+} from '@protogen/shared';
 import { X } from 'lucide-react';
 
 interface NodeEditDialogProps {

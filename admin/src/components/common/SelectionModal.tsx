@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { X, Search, Grid, List, Check } from 'lucide-react';
-import { Button, Input } from '@progress/shared';
+import { Button, Input } from '@protogen/shared';
 
 export interface SelectableItem {
   id: string;

@@ -1,5 +1,5 @@
 
-import { CoreGraphNode } from '@progress/shared';
+import { CoreGraphNode } from '@protogen/shared';
 import { Lock, Unlock, X, Edit3, Trash2 } from 'lucide-react';
 
 interface NodeDonutProps {
