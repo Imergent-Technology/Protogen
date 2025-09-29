@@ -10,6 +10,8 @@ use App\Http\Controllers\Api\SceneApiController;
 use App\Http\Controllers\Api\SnapshotApiController;
 use App\Http\Controllers\Api\ContextApiController;
 use App\Http\Controllers\Api\DeckApiController;
+use App\Http\Controllers\Api\SubgraphController;
+use App\Http\Controllers\Api\SceneItemController;
 use App\Http\Controllers\Auth\AdminAuthController;
 
 /*
@@ -91,6 +93,7 @@ Route::prefix('registry')->middleware(['auth:sanctum', 'admin'])->group(function
 Route::prefix('scenes')->middleware(['auth:sanctum', 'admin'])->group(function () {
     Route::get('/', [SceneApiController::class, 'index']);
     Route::post('/', [SceneApiController::class, 'store']);
+    Route::post('/graph', [SceneApiController::class, 'createGraphScene']);
     Route::get('/stats', [SceneApiController::class, 'stats']);
     Route::get('/system', [SceneApiController::class, 'system']);
     Route::get('/{guid}', [SceneApiController::class, 'show']);
@@ -98,6 +101,10 @@ Route::prefix('scenes')->middleware(['auth:sanctum', 'admin'])->group(function (
     Route::delete('/{guid}', [SceneApiController::class, 'destroy']);
     Route::post('/{guid}/content', [SceneApiController::class, 'saveContent']);
     Route::get('/{guid}/content/{type?}/{key?}', [SceneApiController::class, 'getContent']);
+    Route::get('/{guid}/nodes', [SceneApiController::class, 'getNodes']);
+    Route::get('/{guid}/edges', [SceneApiController::class, 'getEdges']);
+    Route::get('/{guid}/items', [SceneApiController::class, 'getSceneItems']);
+    Route::post('/{guid}/nodes', [SceneApiController::class, 'addNodeToScene']);
 });
 
 // Snapshot API routes (admin only)
@@ -141,4 +148,29 @@ Route::prefix('contexts')->middleware(['auth:sanctum', 'admin'])->group(function
     Route::get('/{guid}/resolve', [ContextApiController::class, 'resolve']);
     Route::get('/scene/{sceneSlug}', [ContextApiController::class, 'forScene']);
     Route::get('/deck/{deckSlug}', [ContextApiController::class, 'forDeck']);
+});
+
+// Subgraph API routes (admin only)
+Route::prefix('subgraphs')->middleware(['auth:sanctum', 'admin'])->group(function () {
+    Route::get('/', [SubgraphController::class, 'index']);
+    Route::post('/', [SubgraphController::class, 'store']);
+    Route::get('/{subgraph}', [SubgraphController::class, 'show']);
+    Route::put('/{subgraph}', [SubgraphController::class, 'update']);
+    Route::delete('/{subgraph}', [SubgraphController::class, 'destroy']);
+    Route::post('/{subgraph}/nodes', [SubgraphController::class, 'addNode']);
+    Route::delete('/{subgraph}/nodes', [SubgraphController::class, 'removeNode']);
+    Route::get('/{subgraph}/edges', [SubgraphController::class, 'getEdges']);
+    Route::get('/{subgraph}/nodes', [SubgraphController::class, 'getNodes']);
+});
+
+// Scene Items API routes (admin only)
+Route::prefix('scene-items')->middleware(['auth:sanctum', 'admin'])->group(function () {
+    Route::get('/', [SceneItemController::class, 'index']);
+    Route::post('/', [SceneItemController::class, 'store']);
+    Route::get('/{sceneItem}', [SceneItemController::class, 'show']);
+    Route::put('/{sceneItem}', [SceneItemController::class, 'update']);
+    Route::delete('/{sceneItem}', [SceneItemController::class, 'destroy']);
+    Route::put('/{sceneItem}/position', [SceneItemController::class, 'updatePosition']);
+    Route::put('/{sceneItem}/dimensions', [SceneItemController::class, 'updateDimensions']);
+    Route::get('/by-type', [SceneItemController::class, 'getByType']);
 });

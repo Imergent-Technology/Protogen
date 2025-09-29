@@ -47,7 +47,7 @@ class Subgraph extends Model
      */
     public function nodes(): BelongsToMany
     {
-        return $this->belongsToMany(CoreGraphNode::class, 'subgraph_nodes');
+        return $this->belongsToMany(CoreGraphNode::class, 'subgraph_nodes', 'subgraph_id', 'node_id');
     }
 
     /**
