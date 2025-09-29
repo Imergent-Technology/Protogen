@@ -25,6 +25,7 @@ class Scene extends Model
         'is_public',
         'created_by',
         'tenant_id',
+        'subgraph_id',
         'published_at',
     ];
 
@@ -68,6 +69,22 @@ class Scene extends Model
     public function content(): HasMany
     {
         return $this->hasMany(SceneContent::class);
+    }
+
+    /**
+     * Get the subgraph associated with this scene (for graph scenes).
+     */
+    public function subgraph(): BelongsTo
+    {
+        return $this->belongsTo(Subgraph::class);
+    }
+
+    /**
+     * Get the scene items for this scene (for card/document scenes).
+     */
+    public function items(): HasMany
+    {
+        return $this->hasMany(SceneItem::class);
     }
 
     // Scopes
@@ -170,5 +187,49 @@ class Scene extends Model
     public function setDocumentContent(string $htmlContent): SceneContent
     {
         return $this->setContent($htmlContent, 'document', 'main', 'html');
+    }
+
+    // New architecture helper methods
+    public function isGraphScene(): bool
+    {
+        return $this->scene_type === 'graph';
+    }
+
+    public function isCardScene(): bool
+    {
+        return $this->scene_type === 'card';
+    }
+
+    public function isDocumentScene(): bool
+    {
+        return $this->scene_type === 'document';
+    }
+
+    /**
+     * Get nodes for this scene based on scene type.
+     */
+    public function getSceneNodes()
+    {
+        if ($this->isGraphScene() && $this->subgraph) {
+            // For graph scenes, get nodes from subgraph
+            return $this->subgraph->nodes;
+        } else {
+            // For card/document scenes, get nodes from scene items
+            return $this->items()->where('item_type', 'node')->with('node')->get()->pluck('node');
+        }
+    }
+
+    /**
+     * Get edges for this scene based on scene type.
+     */
+    public function getSceneEdges()
+    {
+        if ($this->isGraphScene() && $this->subgraph) {
+            // For graph scenes, get edges between nodes in subgraph
+            return $this->subgraph->getEdges();
+        } else {
+            // For card/document scenes, get edges from scene items
+            return $this->items()->where('item_type', 'edge')->with('edge')->get()->pluck('edge');
+        }
     }
 }

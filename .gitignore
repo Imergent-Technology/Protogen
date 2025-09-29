@@ -11,6 +11,7 @@ vendor/
 dist/
 build/
 public/build/
+shared/src/styles/output.css
 
 # IDE files
 .vscode/

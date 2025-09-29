@@ -26,9 +26,10 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             CoreGraphSystemSeeder::class,
-            StageSeeder::class,
+            DefaultTenantSeeder::class,
             RegistryCatalogSeeder::class,
             SystemSceneSeeder::class,
+            SubgraphSeeder::class,
         ]);
     }
 }

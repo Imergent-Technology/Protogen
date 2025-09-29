@@ -129,25 +129,36 @@ protogen/
 - **Phase 4**: Shared Library & Hydration (TypeScript types, services)
 - **Phase 7**: Stage System Removal (Clean architecture migration)
 
-### 🔄 Current Phase: UI Integration & Authoring
+### 🚀 **Current Evolution: Central Graph System**
 
-**Phase 5** focuses on building sophisticated authoring tools:
+**Status**: In Development - See [Central Graph Roadmap](CENTRAL_GRAPH_ROADMAP.md)
+
+The system is evolving to a **Central Graph System** that simplifies graph traversal while maintaining the excellent multi-tenant, snapshot, and scene type systems. This evolution introduces:
+
+- **Central Graph**: Single source of truth for all graph data
+- **Subgraph System**: Logical groupings of nodes for efficient traversal
+- **Enhanced Scene Items**: Spatial positioning for all scene types
+- **Improved Performance**: Optimized graph operations and caching
+
+### 🔄 Previous Phase: UI Integration & Authoring
+
+**Phase 5** focused on building sophisticated authoring tools:
 
 - ✅ **Card-Based Scene Management**: Preview thumbnails, hover metadata, click-to-edit
 - ✅ **Enhanced Card Scene Authoring**: Advanced slideshow system with backgrounds, text, and CTAs
 - ✅ **Preview Thumbnail System**: Automatic base64 generation for all scene types
 - ✅ **Card Scene Authoring**: Comprehensive slideshow authoring with advanced features
-- 🔄 **Document Scene Authoring**: Rich text editing with TipTap integration
-- 🔄 **Node Selection Interface**: Global node selection across scene types
-- 🔄 **Graph Studio Integration**: Admin panel integration
+- ✅ **Document Scene Authoring**: Rich text editing with TipTap integration
+- ✅ **Node Selection Interface**: Global node selection across scene types
+- ✅ **Graph Studio Integration**: Admin panel integration
 
 ### 📋 Upcoming Phases
 
-- **Phase 8**: Performance & Polish
-- **Phase 9**: Content Sharing System
-- **Phase 10**: Music & Audio System
-- **Phase 11**: Flow System
-- **Phase 12**: Advanced Flow Features
+- **Central Graph System**: Complete the central graph architecture
+- **Unified Interface**: Merge admin and portal interfaces
+- **Modular Navigator**: Enhanced scene navigation and authoring
+- **User Registration**: Modern authentication and OAuth integration
+- **Tenant Templates**: Advanced tenant configuration system
 
 ## 🛠️ Development Commands
 

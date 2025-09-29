@@ -14,35 +14,52 @@ Protogen represents a significant architectural evolution to the current Scene &
 
 The project has evolved through 7 completed phases, with a clean, modern architecture. The system now operates entirely on the Scene & Deck foundation described in this document.
 
+## 🚀 **Current Evolution: Central Graph System**
+
+**Status**: In Development - See [Central Graph Roadmap](../CENTRAL_GRAPH_ROADMAP.md)
+
+The system is currently evolving to a **Central Graph System** that simplifies graph traversal while maintaining the excellent multi-tenant, snapshot, and scene type systems. This evolution preserves the winning aspects of the current architecture while introducing:
+
+- **Central Graph**: Single source of truth for all graph data
+- **Subgraph System**: Logical groupings of nodes for efficient traversal
+- **Enhanced Scene Items**: Spatial positioning for all scene types
+- **Improved Performance**: Optimized graph operations and caching
+
 ## Core Principles
 
 ### 1. Separation of Concerns
-- **Core Graph**: Canonical data and relationships (source of truth)
-- **Scene**: Presentational arrangements with nodes, edges, and styling
+- **Central Graph**: Canonical data and relationships (single source of truth)
+- **Subgraph System**: Logical groupings of nodes for efficient traversal and organization
+- **Scene**: Presentational arrangements with enhanced scene items for spatial positioning
 - **Deck**: Collections of related scenes for presentation and navigation
 - **Context**: Anchors and coordinates within scenes, documents, and other content
 - **Tenant**: Isolated content environments with shared feedback aggregation
 - **Snapshot**: Deterministic serialization for instant loading and CDN delivery
 
 ### 2. Invariant Enforcement
-- Core ↔ System Scene mirror must always be maintained
-- Edge weights are required and must be numeric
-- Style cascade: Type defaults → Scene theme → Instance overrides
-- Engagement aggregation rolls up to Core counters across all tenants
-- Contexts must resolve to valid Scene+Deck coordinates within tenant scope
-- Tenant isolation must be maintained for content while allowing shared feedback
+- **Central Graph Integrity**: All graph operations must maintain data consistency
+- **Subgraph Boundaries**: Subgraphs must contain valid node references
+- **Edge weights are required and must be numeric**
+- **Style cascade**: Type defaults → Scene theme → Instance overrides
+- **Engagement aggregation rolls up to Central Graph counters across all tenants**
+- **Contexts must resolve to valid Scene+Deck coordinates within tenant scope**
+- **Tenant isolation must be maintained for content while allowing shared feedback**
+- **Scene Items must have valid spatial positioning and item references**
 
 ### 3. Performance & Scalability
-- Aggressive caching via Snapshots
-- CDN-friendly static delivery
-- Progressive hydration on the client
-- Debounced rebuild triggers (500ms-2s)
-- Tenant-aware caching and performance optimization
+- **Subgraph-based caching**: Efficient caching of logical node groupings
+- **Aggressive caching via Snapshots**
+- **CDN-friendly static delivery**
+- **Progressive hydration on the client**
+- **Debounced rebuild triggers (500ms-2s)**
+- **Tenant-aware caching and performance optimization**
+- **Lazy loading of subgraph nodes and edges**
 
 ### 4. Multi-Tenant Architecture
 - **Content Isolation**: Each tenant has isolated scenes, decks, and presentations
-- **Feedback Aggregation**: All feedback flows back to centralized Core Graph
-- **Shared Knowledge**: Core Graph serves as shared knowledge base across tenants
+- **Subgraph Sharing**: Controlled sharing of subgraphs across tenants with access policies
+- **Feedback Aggregation**: All feedback flows back to centralized Central Graph
+- **Shared Knowledge**: Central Graph serves as shared knowledge base across tenants
 - **Tenant Management**: Centralized tenant administration with isolated content
 
 ### 5. Merit-Based Permissions
