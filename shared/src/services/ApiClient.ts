@@ -1,5 +1,7 @@
 // Stage types removed - Stage system has been completely removed
 
+import { Scene } from '../types/scene';
+
 export interface ApiResponse<T = any> {
   success: boolean;
   data: T;
@@ -96,6 +98,79 @@ export interface CreateNodeTypeRequest {
   description?: string;
   icon?: string;
   icon_color?: string;
+}
+
+// Central Graph System Types
+export interface User {
+  id: number;
+  name: string;
+  email: string;
+  is_admin: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Subgraph {
+  id: number;
+  guid: string;
+  name: string;
+  description?: string;
+  tenant_id: number;
+  created_by?: number;
+  is_public: boolean;
+  created_at: string;
+  updated_at: string;
+  nodes?: CoreGraphNode[];
+  scenes?: Scene[];
+  created_by_user?: User;
+}
+
+export interface SceneItem {
+  id: number;
+  scene_id: number;
+  item_type: 'node' | 'edge' | 'text' | 'image' | 'video' | 'other';
+  item_id?: number;
+  item_guid?: string;
+  position?: { x: number; y: number; z: number };
+  dimensions?: { width: number; height: number };
+  style?: Record<string, any>;
+  meta?: Record<string, any>;
+  is_visible: boolean;
+  z_index: number;
+  created_at: string;
+  updated_at: string;
+  node?: CoreGraphNode;
+  edge?: CoreGraphEdge;
+}
+
+export interface CreateSubgraphRequest {
+  name: string;
+  description?: string;
+  tenant_id: number;
+  is_public?: boolean;
+  node_ids?: number[];
+}
+
+export interface CreateSceneItemRequest {
+  scene_id: number;
+  item_type: 'node' | 'edge' | 'text' | 'image' | 'video' | 'other';
+  item_id?: number;
+  item_guid?: string;
+  position?: { x: number; y: number; z: number };
+  dimensions?: { width: number; height: number };
+  style?: Record<string, any>;
+  meta?: Record<string, any>;
+  is_visible?: boolean;
+  z_index?: number;
+}
+
+export interface UpdateSceneItemRequest {
+  position?: { x: number; y: number; z: number };
+  dimensions?: { width: number; height: number };
+  style?: Record<string, any>;
+  meta?: Record<string, any>;
+  is_visible?: boolean;
+  z_index?: number;
 }
 
 export class ApiClient {
@@ -254,6 +329,172 @@ export class ApiClient {
     edges: CoreGraphEdge[];
   }>> {
     return this.request('/graph');
+  }
+
+  // Subgraph API methods
+  async getSubgraphs(params?: {
+    tenant_id?: number;
+  }): Promise<ApiResponse<Subgraph[]>> {
+    const searchParams = new URLSearchParams();
+    
+    if (params?.tenant_id !== undefined) searchParams.append('tenant_id', params.tenant_id.toString());
+
+    const queryString = searchParams.toString();
+    const endpoint = `/subgraphs${queryString ? `?${queryString}` : ''}`;
+    
+    return this.request<Subgraph[]>(endpoint);
+  }
+
+  async createSubgraph(data: CreateSubgraphRequest): Promise<ApiResponse<Subgraph>> {
+    return this.request<Subgraph>('/subgraphs', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async getSubgraph(id: number): Promise<ApiResponse<Subgraph>> {
+    return this.request<Subgraph>(`/subgraphs/${id}`);
+  }
+
+  async updateSubgraph(id: number, data: Partial<CreateSubgraphRequest>): Promise<ApiResponse<Subgraph>> {
+    return this.request<Subgraph>(`/subgraphs/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteSubgraph(id: number): Promise<ApiResponse<void>> {
+    return this.request<void>(`/subgraphs/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async addNodeToSubgraph(subgraphId: number, nodeId: number): Promise<ApiResponse<void>> {
+    return this.request<void>(`/subgraphs/${subgraphId}/nodes`, {
+      method: 'POST',
+      body: JSON.stringify({ node_id: nodeId }),
+    });
+  }
+
+  async removeNodeFromSubgraph(subgraphId: number, nodeId: number): Promise<ApiResponse<void>> {
+    return this.request<void>(`/subgraphs/${subgraphId}/nodes`, {
+      method: 'DELETE',
+      body: JSON.stringify({ node_id: nodeId }),
+    });
+  }
+
+  async getSubgraphEdges(subgraphId: number): Promise<ApiResponse<CoreGraphEdge[]>> {
+    return this.request<CoreGraphEdge[]>(`/subgraphs/${subgraphId}/edges`);
+  }
+
+  async getSubgraphNodes(subgraphId: number): Promise<ApiResponse<CoreGraphNode[]>> {
+    return this.request<CoreGraphNode[]>(`/subgraphs/${subgraphId}/nodes`);
+  }
+
+  // Scene Items API methods
+  async getSceneItems(params?: {
+    scene_id?: number;
+  }): Promise<ApiResponse<SceneItem[]>> {
+    const searchParams = new URLSearchParams();
+    
+    if (params?.scene_id !== undefined) searchParams.append('scene_id', params.scene_id.toString());
+
+    const queryString = searchParams.toString();
+    const endpoint = `/scene-items${queryString ? `?${queryString}` : ''}`;
+    
+    return this.request<SceneItem[]>(endpoint);
+  }
+
+  async createSceneItem(data: CreateSceneItemRequest): Promise<ApiResponse<SceneItem>> {
+    return this.request<SceneItem>('/scene-items', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async getSceneItem(id: number): Promise<ApiResponse<SceneItem>> {
+    return this.request<SceneItem>(`/scene-items/${id}`);
+  }
+
+  async updateSceneItem(id: number, data: UpdateSceneItemRequest): Promise<ApiResponse<SceneItem>> {
+    return this.request<SceneItem>(`/scene-items/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteSceneItem(id: number): Promise<ApiResponse<void>> {
+    return this.request<void>(`/scene-items/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async updateSceneItemPosition(id: number, position: { x: number; y: number; z?: number }): Promise<ApiResponse<SceneItem>> {
+    return this.request<SceneItem>(`/scene-items/${id}/position`, {
+      method: 'PUT',
+      body: JSON.stringify(position),
+    });
+  }
+
+  async updateSceneItemDimensions(id: number, dimensions: { width: number; height: number }): Promise<ApiResponse<SceneItem>> {
+    return this.request<SceneItem>(`/scene-items/${id}/dimensions`, {
+      method: 'PUT',
+      body: JSON.stringify(dimensions),
+    });
+  }
+
+  async getSceneItemsByType(params: {
+    scene_id: number;
+    item_type: 'node' | 'edge' | 'text' | 'image' | 'video' | 'other';
+  }): Promise<ApiResponse<SceneItem[]>> {
+    const searchParams = new URLSearchParams();
+    searchParams.append('scene_id', params.scene_id.toString());
+    searchParams.append('item_type', params.item_type);
+
+    const queryString = searchParams.toString();
+    const endpoint = `/scene-items/by-type?${queryString}`;
+    
+    return this.request<SceneItem[]>(endpoint);
+  }
+
+  // Enhanced Scene API methods
+  async createGraphScene(data: {
+    name: string;
+    slug: string;
+    description?: string;
+    tenant_id: number;
+    node_ids?: number[];
+  }): Promise<ApiResponse<Scene>> {
+    return this.request<Scene>('/scenes/graph', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async getSceneNodes(sceneGuid: string): Promise<ApiResponse<CoreGraphNode[]>> {
+    return this.request<CoreGraphNode[]>(`/scenes/${sceneGuid}/nodes`);
+  }
+
+  async getSceneEdges(sceneGuid: string): Promise<ApiResponse<CoreGraphEdge[]>> {
+    return this.request<CoreGraphEdge[]>(`/scenes/${sceneGuid}/edges`);
+  }
+
+  async getSceneItems(sceneGuid: string): Promise<ApiResponse<SceneItem[]>> {
+    return this.request<SceneItem[]>(`/scenes/${sceneGuid}/items`);
+  }
+
+  async addNodeToScene(sceneGuid: string, data: {
+    node_id: number;
+    position?: { x: number; y: number; z: number };
+    dimensions?: { width: number; height: number };
+    style?: Record<string, any>;
+    meta?: Record<string, any>;
+    z_index?: number;
+  }): Promise<ApiResponse<SceneItem>> {
+    return this.request<SceneItem>(`/scenes/${sceneGuid}/nodes`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
   }
 
   // Utility methods

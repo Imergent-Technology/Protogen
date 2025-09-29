@@ -8,6 +8,7 @@ import {
   ContextMenu,
   useContextMenu,
   GraphStudio,
+  SubgraphStudio,
   AdminToolbar,
   ToastContainer,
   useToasts,
@@ -34,7 +35,7 @@ interface AdminUser {
   is_admin: boolean;
 }
 
-type ViewMode = 'admin' | 'scenes' | 'decks' | 'contexts' | 'flows' | 'users' | 'analytics' | 'graph-studio' | 'tenants' | 'create-scene' | 'edit-scene' | 'scene-workflow' | 'scene-edit' | 'scene-design' | 'deck-workflow' | 'deck-edit';
+type ViewMode = 'admin' | 'scenes' | 'decks' | 'contexts' | 'flows' | 'users' | 'analytics' | 'graph-studio' | 'subgraph-studio' | 'tenants' | 'create-scene' | 'edit-scene' | 'scene-workflow' | 'scene-edit' | 'scene-design' | 'deck-workflow' | 'deck-edit';
 
 function App() {
   const navigate = useNavigate();
@@ -276,6 +277,8 @@ function App() {
         return 'Analytics Dashboard';
       case 'graph-studio':
         return 'Graph Studio';
+      case 'subgraph-studio':
+        return 'Subgraph Studio';
       case 'create-scene':
         return 'Create New Scene';
       case 'edit-scene':
@@ -354,6 +357,8 @@ function App() {
       setViewMode('tenants');
     } else if (path === '/graph-studio') {
       setViewMode('graph-studio');
+    } else if (path === '/subgraph-studio') {
+      setViewMode('subgraph-studio');
     } else if (path === '/') {
       setViewMode('admin');
       setCurrentScene(null);
@@ -397,6 +402,9 @@ function App() {
         break;
       case 'graph-studio':
         navigate('/graph-studio');
+        break;
+      case 'subgraph-studio':
+        navigate('/subgraph-studio');
         break;
       case 'scene-workflow':
         navigate('/scenes/new');
@@ -630,6 +638,10 @@ function App() {
         setViewMode('graph-studio');
         updateURL('graph-studio');
         break;
+      case 'subgraph-studio':
+        setViewMode('subgraph-studio');
+        updateURL('subgraph-studio');
+        break;
     }
   };
 
@@ -848,6 +860,24 @@ function App() {
                     <div className="p-6 border border-border rounded-lg hover:border-primary/50 transition-colors">
                       <div className="flex items-center space-x-3 mb-4">
                         <div className="p-2 bg-primary/10 rounded-lg">
+                          <Network className="h-6 w-6 text-primary" />
+                        </div>
+                        <h3 className="text-lg font-medium">Subgraph Studio</h3>
+                      </div>
+                      <p className="text-muted-foreground mb-4">
+                        Manage logical groupings of nodes and create efficient subgraph structures.
+                      </p>
+                      <button
+                        onClick={() => updateURL('subgraph-studio')}
+                        className="w-full px-4 py-2 border border-border rounded-md hover:bg-muted transition-colors"
+                      >
+                        Open Subgraph Studio
+                      </button>
+                    </div>
+
+                    <div className="p-6 border border-border rounded-lg hover:border-primary/50 transition-colors">
+                      <div className="flex items-center space-x-3 mb-4">
+                        <div className="p-2 bg-primary/10 rounded-lg">
                           <Layers className="h-6 w-6 text-primary" />
                         </div>
                         <h3 className="text-lg font-medium">Scene Management</h3>
@@ -1059,6 +1089,18 @@ function App() {
                   onNodeCreate={() => {/* TODO: Implement node creation */}}
                   onNodeEdit={(_node) => {/* TODO: Implement node editing */}}
                   onNodeDelete={(_node) => {/* TODO: Implement node deletion */}}
+                />
+              </div>
+            )}
+
+            {viewMode === 'subgraph-studio' && (
+              <div className="h-full">
+                <SubgraphStudio
+                  tenantId={1} // TODO: Get from current tenant context
+                  onSubgraphSelect={(_subgraph) => {/* TODO: Implement subgraph selection */}}
+                  onSubgraphCreate={() => {/* TODO: Implement subgraph creation */}}
+                  onSubgraphEdit={(_subgraph) => {/* TODO: Implement subgraph editing */}}
+                  onSubgraphDelete={(_subgraph) => {/* TODO: Implement subgraph deletion */}}
                 />
               </div>
             )}
