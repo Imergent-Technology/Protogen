@@ -868,7 +868,7 @@ export function GraphCanvas({
         
         // Try to fit the graph in view
         try {
-          sigmaRef.current.getCamera().animatedFit({
+          sigmaRef.current.getCamera().animatedReset({
             duration: 0
           });
         } catch (error) {
@@ -919,7 +919,7 @@ export function GraphCanvas({
             
             // Try to fit the graph in view
             try {
-              sigmaRef.current.getCamera().animatedFit({
+              sigmaRef.current.getCamera().animatedReset({
                 duration: 0
               });
             } catch (error) {
@@ -939,7 +939,7 @@ export function GraphCanvas({
                 
                 // Try to fit the graph in view
                 try {
-                  sigmaRef.current.getCamera().animatedFit({
+                  sigmaRef.current.getCamera().animatedReset({
                     duration: 0
                   });
                 } catch (error) {
