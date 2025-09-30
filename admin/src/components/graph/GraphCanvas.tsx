@@ -33,7 +33,7 @@ export function GraphCanvas({
   const sigmaRef = useRef<any | null>(null);
   const graphRef = useRef<any | null>(null);
   // Note: clickedNode state removed as we now use context menu
-  const [nodePositions, setNodePositions] = useState<Map<string, NodePosition>>(new Map());
+  const [, setNodePositions] = useState<Map<string, NodePosition>>(new Map());
   const isDraggingRef = useRef(false);
   const draggedNodeRef = useRef<string | null>(null);
   const isInitializedRef = useRef(false);
@@ -68,6 +68,7 @@ export function GraphCanvas({
     });
     
     setNodePositions(positions);
+    return positions; // Return the positions Map
   }, [nodes]);
 
 
@@ -108,7 +109,7 @@ export function GraphCanvas({
 
       // Add nodes to the graph with saved positions
       nodes.forEach((node) => {
-        const position = nodePositions.get(node.guid) || {
+        const position = positions.get(node.guid) || {
           x: Math.random() * 800 + 100,
           y: Math.random() * 600 + 100,
           locked: false
@@ -129,11 +130,9 @@ export function GraphCanvas({
         });
         
         // Log the actual position after adding
-        console.log('Node added at:', graph.getNodeAttribute(node.guid, 'x'), graph.getNodeAttribute(node.guid, 'y'));
       });
 
       // Add edges to the graph
-      console.log('Adding edges to graph:', edges.length);
       edges.forEach((edge) => {
         if (graph.hasNode(edge.source_node_guid) && graph.hasNode(edge.target_node_guid)) {
           graph.addEdge(edge.source_node_guid, edge.target_node_guid, {
@@ -146,15 +145,7 @@ export function GraphCanvas({
         }
       });
 
-      console.log('Graph nodes count:', graph.nodes().length);
-      console.log('Graph edges count:', graph.edges().length);
       
-      // Log node positions for debugging
-      graph.nodes().forEach(nodeId => {
-        const x = graph.getNodeAttribute(nodeId, 'x');
-        const y = graph.getNodeAttribute(nodeId, 'y');
-        console.log(`Node ${nodeId} at (${x}, ${y})`);
-      });
 
       // Create Sigma instance with drag enabled but layout algorithms disabled
       const sigma = new Sigma.default(graph, containerRef.current!, {
@@ -181,14 +172,10 @@ export function GraphCanvas({
       });
 
       sigmaRef.current = sigma;
-      console.log('Sigma instance created successfully');
       
-      // Add debugging for graph visibility
-      console.log('Container dimensions:', containerRef.current?.offsetWidth, 'x', containerRef.current?.offsetHeight);
-      console.log('Graph container element:', containerRef.current);
 
       // Apply saved positions to nodes (but don't fix them to allow dragging)
-      nodePositions.forEach((position, nodeGuid) => {
+      positions.forEach((position, nodeGuid) => {
         if (graph.hasNode(nodeGuid)) {
           graph.setNodeAttribute(nodeGuid, 'x', position.x);
           graph.setNodeAttribute(nodeGuid, 'y', position.y);
@@ -208,7 +195,7 @@ export function GraphCanvas({
       });
 
       // Only run layout for nodes without saved positions
-      const nodesWithoutPositions = nodes.filter(node => !nodePositions.has(node.guid));
+      const nodesWithoutPositions = nodes.filter(node => !positions.has(node.guid));
       if (nodesWithoutPositions.length > 0) {
         // Run a single layout pass for new nodes only
         const runInitialLayout = () => {
@@ -289,11 +276,9 @@ export function GraphCanvas({
 
       // Add event handlers
       const handleNodeClick = (event: any) => {
-        console.log('Left-click detected on node:', event.node);
         const nodeId = event.node;
         const node = nodes.find(n => n.guid === nodeId);
         if (node) {
-          console.log('Node clicked:', node.label);
           // Removed onNodeClick to prevent opening Node Details pane on left-click
           // Node Details can be accessed via context menu instead
         }
@@ -344,10 +329,6 @@ export function GraphCanvas({
           const screenX = (containerRect?.left || 0) + (graphPosition?.x || 0);
           const screenY = (containerRect?.top || 0) + (graphPosition?.y || 0);
           
-          console.log('Node graph position:', graph.getNodeAttribute(nodeId, 'x'), graph.getNodeAttribute(nodeId, 'y'));
-          console.log('Graph to viewport:', graphPosition);
-          console.log('Container rect:', containerRect);
-          console.log('Screen coordinates:', screenX, screenY);
           
           // Create a proper mouse event for the context menu
           const mouseEvent = event.originalEvent || new MouseEvent('contextmenu', {
@@ -478,21 +459,16 @@ export function GraphCanvas({
     // Load positions first
     let initTimer: number;
     
-    loadNodePositions().then(() => {
-      
+    loadNodePositions().then((positions) => {
       // Add a small delay to ensure container is properly sized
       initTimer = setTimeout(() => {
       if (!containerRef.current) {
-        console.log('Container ref not available');
         return;
       }
       
       const rect = containerRef.current.getBoundingClientRect();
-      console.log('Container dimensions:', rect.width, 'x', rect.height);
-      console.log('Container element:', containerRef.current);
       
       if (rect.width < 100 || rect.height < 100) {
-        console.log('Container not properly sized, retrying...');
         // Force minimum size
         if (containerRef.current) {
           containerRef.current.style.minHeight = '400px';
@@ -501,10 +477,9 @@ export function GraphCanvas({
         setTimeout(() => {
           if (containerRef.current) {
             const newRect = containerRef.current.getBoundingClientRect();
-            console.log('Retry container dimensions:', newRect.width, 'x', newRect.height);
             if (newRect.width > 100 && newRect.height > 100) {
               // Retry initialization
-              initializeGraphInline();
+              initializeGraphInline(positions);
             }
           }
         }, 200);
@@ -512,10 +487,10 @@ export function GraphCanvas({
       }
       
       // Initialize the graph directly in the effect to avoid function recreation
-      initializeGraphInline();
+      initializeGraphInline(positions);
     }, 100);
     
-    const initializeGraphInline = () => {
+    const initializeGraphInline = (positions: Map<string, NodePosition>) => {
       try {
       // Create a new graph instance
       const graph = new Graph.default();
@@ -523,7 +498,7 @@ export function GraphCanvas({
 
       // Add nodes to the graph with saved positions
       nodes.forEach((node) => {
-        const position = nodePositions.get(node.guid) || {
+        const position = positions.get(node.guid) || {
           x: Math.random() * 800 + 100,
           y: Math.random() * 600 + 100,
           locked: false
@@ -544,11 +519,9 @@ export function GraphCanvas({
         });
         
         // Log the actual position after adding
-        console.log('Node added at:', graph.getNodeAttribute(node.guid, 'x'), graph.getNodeAttribute(node.guid, 'y'));
       });
 
       // Add edges to the graph
-      console.log('Adding edges to graph:', edges.length);
       edges.forEach((edge) => {
         if (graph.hasNode(edge.source_node_guid) && graph.hasNode(edge.target_node_guid)) {
           graph.addEdge(edge.source_node_guid, edge.target_node_guid, {
@@ -561,15 +534,7 @@ export function GraphCanvas({
         }
       });
       
-      console.log('Graph nodes count:', graph.nodes().length);
-      console.log('Graph edges count:', graph.edges().length);
       
-      // Log node positions for debugging
-      graph.nodes().forEach(nodeId => {
-        const x = graph.getNodeAttribute(nodeId, 'x');
-        const y = graph.getNodeAttribute(nodeId, 'y');
-        console.log(`Node ${nodeId} at (${x}, ${y})`);
-      });
 
       // Create Sigma instance with drag enabled but layout algorithms disabled
       const sigma = new Sigma.default(graph, containerRef.current!, {
@@ -596,14 +561,10 @@ export function GraphCanvas({
       });
 
       sigmaRef.current = sigma;
-      console.log('Sigma instance created successfully');
       
-      // Add debugging for graph visibility
-      console.log('Container dimensions:', containerRef.current?.offsetWidth, 'x', containerRef.current?.offsetHeight);
-      console.log('Graph container element:', containerRef.current);
 
       // Apply saved positions to nodes (but don't fix them to allow dragging)
-      nodePositions.forEach((position, nodeGuid) => {
+      positions.forEach((position, nodeGuid) => {
         if (graph.hasNode(nodeGuid)) {
           graph.setNodeAttribute(nodeGuid, 'x', position.x);
           graph.setNodeAttribute(nodeGuid, 'y', position.y);
@@ -622,85 +583,84 @@ export function GraphCanvas({
         graph.setNodeAttribute(nodeId, 'vy', 0);
       });
 
-      // Run initial layout to spread nodes
-      const runInitialLayout = () => {
-        // Simple force-directed layout for initial positioning
-        const forces = new Map();
-        
-        // Initialize forces
-        graph.nodes().forEach(nodeId => {
-          forces.set(nodeId, { x: 0, y: 0 });
-        });
-        
-        // Calculate repulsion forces between all nodes
-        graph.nodes().forEach(nodeId1 => {
-          const node1 = nodes.find(n => n.guid === nodeId1);
-          if (!node1) return;
+      // Only run layout for nodes without saved positions
+      const nodesWithoutPositions = nodes.filter(node => !positions.has(node.guid));
+      if (nodesWithoutPositions.length > 0) {
+        // Run a simple layout for new nodes only
+        const runInitialLayout = () => {
+          const forces = new Map();
           
-          graph.nodes().forEach(nodeId2 => {
-            if (nodeId1 === nodeId2) return;
-            
-            const node2 = nodes.find(n => n.guid === nodeId2);
-            if (!node2) return;
-            
-            const pos1 = {
-              x: graph.getNodeAttribute(nodeId1, 'x'),
-              y: graph.getNodeAttribute(nodeId1, 'y')
-            };
-            const pos2 = {
-              x: graph.getNodeAttribute(nodeId2, 'x'),
-              y: graph.getNodeAttribute(nodeId2, 'y')
-            };
-            
-            const dx = pos1.x - pos2.x;
-            const dy = pos1.y - pos2.y;
-            const distance = Math.sqrt(dx * dx + dy * dy);
-            
-            if (distance > 0 && distance < 200) {
-              const force = 1000 / (distance * distance);
-              const fx = (dx / distance) * force;
-              const fy = (dy / distance) * force;
-              
-              const currentForce = forces.get(nodeId1);
-              currentForce.x += fx;
-              currentForce.y += fy;
+          // Initialize forces only for nodes without positions
+          nodesWithoutPositions.forEach(node => {
+            if (graph.hasNode(node.guid)) {
+              forces.set(node.guid, { x: 0, y: 0 });
             }
           });
-        });
-        
-        // Apply forces once but don't fix nodes (allow dragging)
-        forces.forEach((force, nodeGuid) => {
-          const currentX = graph.getNodeAttribute(nodeGuid, 'x');
-          const currentY = graph.getNodeAttribute(nodeGuid, 'y');
           
-          const newX = currentX + force.x * 0.5;
-          const newY = currentY + force.y * 0.5;
+          // Calculate repulsion forces between new nodes and existing nodes
+          nodesWithoutPositions.forEach(node1 => {
+            if (!graph.hasNode(node1.guid)) return;
+            
+            const pos1 = {
+              x: graph.getNodeAttribute(node1.guid, 'x'),
+              y: graph.getNodeAttribute(node1.guid, 'y')
+            };
+            
+            // Repulsion from all other nodes (both new and existing)
+            graph.nodes().forEach(nodeId2 => {
+              if (node1.guid === nodeId2) return;
+              
+              const pos2 = {
+                x: graph.getNodeAttribute(nodeId2, 'x'),
+                y: graph.getNodeAttribute(nodeId2, 'y')
+              };
+              
+              const dx = pos1.x - pos2.x;
+              const dy = pos1.y - pos2.y;
+              const distance = Math.sqrt(dx * dx + dy * dy);
+              
+              if (distance > 0 && distance < 200) {
+                const force = 1000 / (distance * distance);
+                const fx = (dx / distance) * force;
+                const fy = (dy / distance) * force;
+                
+                const currentForce = forces.get(node1.guid);
+                currentForce.x += fx;
+                currentForce.y += fy;
+              }
+            });
+          });
           
-          graph.setNodeAttribute(nodeGuid, 'x', newX);
-          graph.setNodeAttribute(nodeGuid, 'y', newY);
-          // Don't set fixed: true to allow dragging
-        });
+          // Apply forces only to new nodes
+          forces.forEach((force, nodeGuid) => {
+            const currentX = graph.getNodeAttribute(nodeGuid, 'x');
+            const currentY = graph.getNodeAttribute(nodeGuid, 'y');
+            
+            const newX = currentX + force.x * 0.5;
+            const newY = currentY + force.y * 0.5;
+            
+            graph.setNodeAttribute(nodeGuid, 'x', newX);
+            graph.setNodeAttribute(nodeGuid, 'y', newY);
+          });
+          
+          // Ensure all nodes have zero velocity
+          graph.nodes().forEach(nodeId => {
+            graph.setNodeAttribute(nodeId, 'vx', 0);
+            graph.setNodeAttribute(nodeId, 'vy', 0);
+          });
+          
+          sigma.refresh();
+        };
         
-        // Ensure all nodes have zero velocity after layout (but don't fix them)
-        graph.nodes().forEach(nodeId => {
-          graph.setNodeAttribute(nodeId, 'vx', 0);
-          graph.setNodeAttribute(nodeId, 'vy', 0);
-          // Don't set fixed: true to allow dragging
-        });
-        
-        sigma.refresh();
-      };
-      
-      // Run initial layout once
-      runInitialLayout();
+        // Run initial layout for new nodes only
+        runInitialLayout();
+      }
 
       // Add event handlers
       const handleNodeClick = (event: any) => {
-        console.log('Left-click detected on node:', event.node);
         const nodeId = event.node;
         const node = nodes.find(n => n.guid === nodeId);
         if (node) {
-          console.log('Node clicked:', node.label);
           // Removed onNodeClick to prevent opening Node Details pane on left-click
           // Node Details can be accessed via context menu instead
         }
@@ -751,10 +711,6 @@ export function GraphCanvas({
           const screenX = (containerRect?.left || 0) + (graphPosition?.x || 0);
           const screenY = (containerRect?.top || 0) + (graphPosition?.y || 0);
           
-          console.log('Node graph position:', graph.getNodeAttribute(nodeId, 'x'), graph.getNodeAttribute(nodeId, 'y'));
-          console.log('Graph to viewport:', graphPosition);
-          console.log('Container rect:', containerRect);
-          console.log('Screen coordinates:', screenX, screenY);
           
           // Create a proper mouse event for the context menu
           const mouseEvent = event.originalEvent || new MouseEvent('contextmenu', {
