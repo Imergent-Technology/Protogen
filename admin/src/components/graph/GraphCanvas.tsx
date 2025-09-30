@@ -34,7 +34,8 @@ export function GraphCanvas({
   const graphRef = useRef<any | null>(null);
   // Note: clickedNode state removed as we now use context menu
   const [nodePositions, setNodePositions] = useState<Map<string, NodePosition>>(new Map());
-  const [isDragging, setIsDragging] = useState(false);
+  const isDraggingRef = useRef(false);
+  const draggedNodeRef = useRef<string | null>(null);
   const isInitializedRef = useRef(false);
   const initializationAttemptedRef = useRef(false);
   const shouldPreventCleanupRef = useRef(false);
@@ -293,7 +294,8 @@ export function GraphCanvas({
         const node = nodes.find(n => n.guid === nodeId);
         if (node) {
           console.log('Node clicked:', node.label);
-          onNodeClick?.(node);
+          // Removed onNodeClick to prevent opening Node Details pane on left-click
+          // Node Details can be accessed via context menu instead
         }
       };
 
@@ -699,7 +701,8 @@ export function GraphCanvas({
         const node = nodes.find(n => n.guid === nodeId);
         if (node) {
           console.log('Node clicked:', node.label);
-          onNodeClick?.(node);
+          // Removed onNodeClick to prevent opening Node Details pane on left-click
+          // Node Details can be accessed via context menu instead
         }
       };
 
@@ -774,7 +777,14 @@ export function GraphCanvas({
         const nodeId = event.node;
         const node = nodes.find(n => n.guid === nodeId);
         if (node) {
-          setIsDragging(true);
+          // Clear any previous drag state
+          isDraggingRef.current = false;
+          draggedNodeRef.current = null;
+          
+          // Start new drag
+          isDraggingRef.current = true;
+          draggedNodeRef.current = nodeId;
+          
           // Temporarily unfix the node for dragging
           graph.setNodeAttribute(nodeId, 'fixed', false);
         }
@@ -785,24 +795,26 @@ export function GraphCanvas({
         const nodeId = event.node;
         const node = nodes.find(n => n.guid === nodeId);
         if (node) {
-          setIsDragging(false);
+          isDraggingRef.current = false;
+          draggedNodeRef.current = null;
           
           // Get the new position
           const newX = graph.getNodeAttribute(nodeId, 'x');
           const newY = graph.getNodeAttribute(nodeId, 'y');
           
           // Save the new position
-          saveNodePosition(nodeId, { x: newX, y: newY, locked: true });
+          saveNodePosition(nodeId, { x: newX, y: newY, locked: false });
           
-          // Fix the node after dragging
-          graph.setNodeAttribute(nodeId, 'fixed', true);
+          // Keep the node unfixed to allow future dragging
+          graph.setNodeAttribute(nodeId, 'fixed', false);
         }
       };
 
       // Handle canvas mouse up (in case drag ends outside node)
       const handleCanvasUp = () => {
-        if (isDragging) {
-          setIsDragging(false);
+        if (isDraggingRef.current) {
+          isDraggingRef.current = false;
+          draggedNodeRef.current = null;
         }
       };
 
@@ -817,17 +829,48 @@ export function GraphCanvas({
       sigma.on('upNode', handleNodeUp);
       sigma.on('upStage', handleCanvasUp);
       
-      // Prevent default context menu on the container
+      // Add mouse move handler for manual node dragging
+      const handleMouseMove = (e: MouseEvent) => {
+        if (isDraggingRef.current && sigmaRef.current && draggedNodeRef.current) {
+          const nodeId = draggedNodeRef.current;
+          
+          // Prevent default to stop viewport panning
+          e.preventDefault();
+          e.stopPropagation();
+          
+          // Get mouse position relative to the container
+          const rect = containerRef.current?.getBoundingClientRect();
+          if (rect) {
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            // Convert screen coordinates to graph coordinates using Sigma instance
+            const graphCoords = sigmaRef.current.viewportToGraph({ x, y });
+            
+            // Update node position
+            graph.setNodeAttribute(nodeId, 'x', graphCoords.x);
+            graph.setNodeAttribute(nodeId, 'y', graphCoords.y);
+            
+            // Refresh the graph
+            sigmaRef.current.refresh();
+          }
+        }
+      };
+      
+      // Add mouse move listener to the container
       const container = containerRef.current;
       if (container) {
+        container.addEventListener('mousemove', handleMouseMove);
+        
         const preventContextMenu = (e: Event) => {
           e.preventDefault();
           e.stopPropagation();
         };
         container.addEventListener('contextmenu', preventContextMenu);
         
-        // Store the event listener for cleanup
+        // Store the event listeners for cleanup
         (sigma as any)._contextMenuListener = preventContextMenu;
+        (sigma as any)._mouseMoveListener = handleMouseMove;
       }
       } catch (error) {
         console.error('Error initializing graph:', error);
