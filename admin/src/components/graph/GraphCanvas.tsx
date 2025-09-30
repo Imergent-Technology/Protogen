@@ -82,7 +82,6 @@ export function GraphCanvas({
     setTimeout(async () => {
       try {
         await apiClient.updateNodePosition(nodeGuid, { x: position.x, y: position.y });
-        console.log('Node position saved to server:', nodeGuid, position);
       } catch (error) {
         console.error('Failed to save node position to server:', error);
         // Could implement retry logic here
@@ -115,7 +114,6 @@ export function GraphCanvas({
           locked: false
         };
 
-        console.log('Adding node:', node.guid, 'at position:', position);
         graph.addNode(node.guid, {
           label: node.label,
           size: 8,
@@ -303,15 +301,12 @@ export function GraphCanvas({
             onViewDetails: () => onNodeClick?.(node),
             onConnect: () => {
               // TODO: Implement connect functionality
-              console.log('Connect to node:', node.label);
             },
             onCopy: () => {
               // TODO: Implement copy functionality
-              console.log('Copy node:', node.label);
             },
             onMove: () => {
               // TODO: Implement move functionality
-              console.log('Move node:', node.label);
             }
           };
 
@@ -410,18 +405,37 @@ export function GraphCanvas({
   }, [nodes, edges, onNodeClick, saveNodePosition]);
   */
 
+  // Track the last mouse button pressed globally
+  const lastMouseButtonRef = useRef(0);
+  
+  // Add global mouse event listener to track button
+  const handleGlobalMouseDown = useCallback((e: MouseEvent) => {
+    lastMouseButtonRef.current = e.button;
+  }, []);
+  
+  const handleGlobalMouseUp = useCallback(() => {
+    // Reset after a short delay to allow for event processing
+    setTimeout(() => {
+      lastMouseButtonRef.current = 0;
+    }, 10);
+  }, []);
+  
+  // Prevent right-click from triggering downNode
+  const preventRightClickDown = useCallback((e: MouseEvent) => {
+    if (e.button === 2) { // Right-click
+      e.stopPropagation();
+      e.preventDefault();
+    }
+  }, []);
+
   // Initialize graph with force layout (only once)
   useEffect(() => {
-    console.log('Graph initialization effect triggered');
-    
     if (!containerRef.current || isInitializedRef.current || initializationAttemptedRef.current) {
-      console.log('Graph initialization skipped - container not ready, already initialized, or attempt in progress');
       return;
     }
 
     // Don't clean up if we already have a working instance
     if (sigmaRef.current && graphRef.current && isInitializedRef.current) {
-      console.log('Graph already initialized and working, skipping');
       return;
     }
 
@@ -432,19 +446,15 @@ export function GraphCanvas({
     const rect = container.getBoundingClientRect();
     
     if (rect.height === 0 || rect.width === 0) {
-      console.log('Container not ready, waiting for proper dimensions');
       // Wait for next frame and try again
       const timer = setTimeout(() => {
         if (containerRef.current! && !isInitializedRef.current) {
           const newRect = containerRef.current!.getBoundingClientRect();
-          console.log('Retry container check:', newRect);
           if (newRect.height > 0 && newRect.width > 0) {
-            console.log('Container ready, retrying initialization');
             // Retry initialization
             loadNodePositions();
             // Graph initialization moved to main effect
           } else {
-            console.log('Container still not ready, giving up');
             initializationAttemptedRef.current = false;
           }
         }
@@ -504,7 +514,6 @@ export function GraphCanvas({
           locked: false
         };
 
-        console.log('Adding node:', node.guid, 'at position:', position);
         graph.addNode(node.guid, {
           label: node.label,
           size: 8,
@@ -685,15 +694,12 @@ export function GraphCanvas({
             onViewDetails: () => onNodeClick?.(node),
             onConnect: () => {
               // TODO: Implement connect functionality
-              console.log('Connect to node:', node.label);
             },
             onCopy: () => {
               // TODO: Implement copy functionality
-              console.log('Copy node:', node.label);
             },
             onMove: () => {
               // TODO: Implement move functionality
-              console.log('Move node:', node.label);
             }
           };
 
@@ -728,10 +734,15 @@ export function GraphCanvas({
         }
       };
 
+      if (containerRef.current) {
+        containerRef.current.addEventListener('mousedown', handleGlobalMouseDown);
+        containerRef.current.addEventListener('mouseup', handleGlobalMouseUp);
+      }
+
       // Handle drag start
       const handleNodeDown = (event: any) => {
-        // Only allow left-click (button 0) to start dragging
-        if (event.originalEvent && event.originalEvent.button !== 0) {
+        // Check if this is a right-click (button 2) or middle-click (button 1)
+        if (lastMouseButtonRef.current === 2 || lastMouseButtonRef.current === 1) {
           return;
         }
         
@@ -782,11 +793,18 @@ export function GraphCanvas({
       // Add event listeners
       sigma.on('clickNode', handleNodeClick);
       sigma.on('rightClickNode', (event) => {
-        console.log('Sigma right-click event triggered:', event);
         handleNodeRightClick(event);
       });
       sigma.on('clickStage', handleCanvasClick);
+      
+      // Use downNode but with better button detection
       sigma.on('downNode', handleNodeDown);
+      
+      // Add a direct mousedown listener to prevent right-click from triggering downNode
+      if (containerRef.current) {
+        containerRef.current.addEventListener('mousedown', preventRightClickDown, true); // Use capture phase
+      }
+      
       sigma.on('upNode', handleNodeUp);
       sigma.on('upStage', handleCanvasUp);
       
@@ -954,20 +972,24 @@ export function GraphCanvas({
         container.removeEventListener('contextmenu', (sigmaRef.current as any)._contextMenuListener);
       }
       
+      // Clean up global mouse event listeners
+      if (container) {
+        container.removeEventListener('mousedown', handleGlobalMouseDown);
+        container.removeEventListener('mouseup', handleGlobalMouseUp);
+        // Clean up the right-click prevention listener
+        container.removeEventListener('mousedown', preventRightClickDown, true);
+      }
+      
       if (!shouldPreventCleanupRef.current) {
-        console.log('Cleaning up graph instances');
         if (sigmaRef.current) {
-          console.log('Killing Sigma instance in cleanup');
           sigmaRef.current.kill();
           sigmaRef.current = null;
         }
         if (graphRef.current) {
-          console.log('Clearing graph in cleanup');
           graphRef.current.clear();
           graphRef.current = null;
         }
       } else {
-        console.log('Preventing graph cleanup');
       }
     };
   }, [nodes, edges]);
@@ -975,18 +997,15 @@ export function GraphCanvas({
   // Handle node selection visual updates (without reinitializing graph)
   useEffect(() => {
     if (!sigmaRef.current || !graphRef.current || !isInitializedRef.current) {
-      console.log('Graph not ready for selection update');
       return;
     }
 
     // Add a small delay to ensure graph is fully rendered
     const updateTimer = setTimeout(() => {
       if (!sigmaRef.current || !graphRef.current) {
-        console.log('Graph no longer available for selection update');
         return;
       }
 
-      console.log('Updating node selection for:', selectedNodeGuid);
       const graph = graphRef.current;
 
     // Update node visual states based on selection
@@ -997,7 +1016,6 @@ export function GraphCanvas({
         // Highlight selected node
         graph.setNodeAttribute(nodeId, 'color', '#3b82f6');
         graph.setNodeAttribute(nodeId, 'size', 20);
-        console.log('Highlighted node:', nodeId);
       } else {
         // Reset to default appearance
         graph.setNodeAttribute(nodeId, 'color', '#666');
