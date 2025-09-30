@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('scene_id')->constrained('scenes')->onDelete('cascade');
             $table->string('item_type'); // 'node', 'edge', 'text', 'image', 'video', 'other'
-            $table->unsignedBigInteger('item_id')->nullable(); // Reference to core_graph_nodes, core_graph_edges, or other
+            $table->unsignedBigInteger('item_id')->nullable(); // Reference to nodes, edges, or other
             $table->uuid('item_guid')->nullable(); // Alternative reference
             $table->json('position')->nullable(); // {x, y, z} coordinates
             $table->json('dimensions')->nullable(); // {width, height} for sizing

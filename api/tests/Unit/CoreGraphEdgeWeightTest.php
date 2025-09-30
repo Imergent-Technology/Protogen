@@ -58,7 +58,7 @@ class CoreGraphEdgeWeightTest extends TestCase
         ]);
 
         $this->assertEquals(1.00000, $edge->weight);
-        $this->assertDatabaseHas('core_graph_edges', [
+        $this->assertDatabaseHas('edges', [
             'guid' => $edge->guid,
             'weight' => 1.00000,
         ]);
@@ -76,7 +76,7 @@ class CoreGraphEdgeWeightTest extends TestCase
         ]);
 
         $this->assertEquals(2.50000, $edge->weight);
-        $this->assertDatabaseHas('core_graph_edges', [
+        $this->assertDatabaseHas('edges', [
             'guid' => $edge->guid,
             'weight' => 2.50000,
         ]);
@@ -133,7 +133,7 @@ class CoreGraphEdgeWeightTest extends TestCase
         $edge->update(['weight' => 5.00000]);
 
         $this->assertEquals(5.00000, $edge->fresh()->weight);
-        $this->assertDatabaseHas('core_graph_edges', [
+        $this->assertDatabaseHas('edges', [
             'guid' => $edge->guid,
             'weight' => 5.00000,
         ]);

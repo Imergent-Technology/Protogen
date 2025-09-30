@@ -4,8 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Scene;
-use App\Models\SceneNode;
-use App\Models\SceneEdge;
+// Old SceneNode and SceneEdge models removed - now using subgraphs and scene items
 use App\Models\SceneContent;
 use App\Models\Subgraph;
 use App\Models\SceneItem;
@@ -21,7 +20,7 @@ class SceneApiController extends Controller
      */
     public function index(): JsonResponse
     {
-        $scenes = Scene::with(['creator', 'nodes', 'edges', 'content'])
+        $scenes = Scene::with(['creator', 'content', 'subgraph', 'items'])
             ->active()
             ->orderBy('created_at', 'desc')
             ->get();
@@ -81,8 +80,31 @@ class SceneApiController extends Controller
      */
     public function show(string $guid): JsonResponse
     {
-        $scene = Scene::with(['creator', 'nodes', 'edges', 'content', 'subgraph', 'items'])
+        $scene = Scene::with(['creator', 'content', 'subgraph', 'items'])
             ->where('guid', $guid)
+            ->first();
+
+        if (!$scene) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Scene not found'
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $scene,
+            'message' => 'Scene retrieved successfully'
+        ]);
+    }
+
+    /**
+     * Get scene by slug
+     */
+    public function getBySlug(string $slug): JsonResponse
+    {
+        $scene = Scene::with(['creator', 'content', 'subgraph', 'items'])
+            ->where('slug', $slug)
             ->first();
 
         if (!$scene) {
@@ -215,8 +237,7 @@ class SceneApiController extends Controller
             'template_scenes' => Scene::ofType('template')->count(),
             'active_scenes' => Scene::active()->count(),
             'public_scenes' => Scene::public()->count(),
-            'total_nodes' => SceneNode::count(),
-            'total_edges' => SceneEdge::count(),
+            // Old SceneNode and SceneEdge counts removed - now using subgraphs and scene items
         ];
 
         return response()->json([
@@ -327,7 +348,7 @@ class SceneApiController extends Controller
                 'description' => 'nullable|string',
                 'tenant_id' => 'required|exists:tenants,id',
                 'node_ids' => 'nullable|array',
-                'node_ids.*' => 'exists:core_graph_nodes,id'
+                'node_ids.*' => 'exists:nodes,id'
             ]);
 
             // Create subgraph first
@@ -483,7 +504,7 @@ class SceneApiController extends Controller
             }
 
             $validated = $request->validate([
-                'node_id' => 'required|exists:core_graph_nodes,id',
+                'node_id' => 'required|exists:nodes,id',
                 'position' => 'nullable|array',
                 'position.x' => 'nullable|numeric',
                 'position.y' => 'nullable|numeric',

@@ -6,4 +6,7 @@ export * from './tenant';
 export * from './feedback';
 export * from './deck';
 export * from './context';
-export * from './validation'; 
+export * from './validation';
+
+// Re-export types from services
+export type { Subgraph, CreateSubgraphRequest } from '../services/ApiClient'; 

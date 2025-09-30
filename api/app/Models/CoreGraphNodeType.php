@@ -10,6 +10,8 @@ class CoreGraphNodeType extends Model
 {
     use HasFactory;
 
+    protected $table = 'node_types';
+
     protected $fillable = [
         'name',
         'display_name',

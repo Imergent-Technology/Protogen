@@ -17,12 +17,17 @@ class SubgraphController extends Controller
     public function index(Request $request): JsonResponse
     {
         $request->validate([
-            'tenant_id' => 'required|exists:tenants,id',
+            'tenant_id' => 'nullable|exists:tenants,id',
         ]);
 
-        $subgraphs = Subgraph::where('tenant_id', $request->tenant_id)
-                            ->with(['nodes', 'createdBy'])
-                            ->get();
+        $query = Subgraph::query();
+
+        if ($request->has('tenant_id')) {
+            $query->where('tenant_id', $request->tenant_id);
+        }
+
+        $subgraphs = $query->with(['nodes', 'createdBy'])
+                          ->get();
 
         return response()->json([
             'success' => true,
@@ -42,7 +47,7 @@ class SubgraphController extends Controller
             'tenant_id' => 'required|exists:tenants,id',
             'is_public' => 'boolean',
             'node_ids' => 'nullable|array',
-            'node_ids.*' => 'exists:core_graph_nodes,id'
+            'node_ids.*' => 'exists:nodes,id'
         ]);
 
         $subgraph = Subgraph::create([
@@ -91,7 +96,7 @@ class SubgraphController extends Controller
             'description' => 'nullable|string',
             'is_public' => 'boolean',
             'node_ids' => 'nullable|array',
-            'node_ids.*' => 'exists:core_graph_nodes,id'
+            'node_ids.*' => 'exists:nodes,id'
         ]);
 
         $subgraph->update($request->only(['name', 'description', 'is_public']));
@@ -129,7 +134,7 @@ class SubgraphController extends Controller
     public function addNode(Request $request, Subgraph $subgraph): JsonResponse
     {
         $request->validate([
-            'node_id' => 'required|exists:core_graph_nodes,id'
+            'node_id' => 'required|exists:nodes,id'
         ]);
 
         $node = CoreGraphNode::findOrFail($request->node_id);
@@ -147,7 +152,7 @@ class SubgraphController extends Controller
     public function removeNode(Request $request, Subgraph $subgraph): JsonResponse
     {
         $request->validate([
-            'node_id' => 'required|exists:core_graph_nodes,id'
+            'node_id' => 'required|exists:nodes,id'
         ]);
 
         $node = CoreGraphNode::findOrFail($request->node_id);

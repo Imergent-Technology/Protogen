@@ -11,6 +11,8 @@ class CoreGraphEdge extends Model
 {
     use HasFactory;
 
+    protected $table = 'edges';
+
     protected $fillable = [
         'guid',
         'source_node_guid',

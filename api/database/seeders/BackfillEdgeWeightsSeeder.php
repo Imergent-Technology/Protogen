@@ -15,7 +15,7 @@ class BackfillEdgeWeightsSeeder extends Seeder
         $this->command->info('Backfilling edge weights...');
 
         // Update all existing edges to have weight = 1.00000
-        $updated = DB::table('core_graph_edges')
+        $updated = DB::table('edges')
             ->whereNull('weight')
             ->orWhere('weight', '=', 0)
             ->update(['weight' => 1.00000]);
@@ -23,7 +23,7 @@ class BackfillEdgeWeightsSeeder extends Seeder
         $this->command->info("Updated {$updated} edges with default weight.");
 
         // Verify all edges now have weights
-        $edgesWithoutWeight = DB::table('core_graph_edges')
+        $edgesWithoutWeight = DB::table('edges')
             ->whereNull('weight')
             ->count();
 
@@ -34,7 +34,7 @@ class BackfillEdgeWeightsSeeder extends Seeder
         }
 
         // Show weight distribution
-        $weightDistribution = DB::table('core_graph_edges')
+        $weightDistribution = DB::table('edges')
             ->select('weight', DB::raw('count(*) as count'))
             ->groupBy('weight')
             ->orderBy('weight')

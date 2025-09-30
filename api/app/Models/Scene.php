@@ -56,15 +56,7 @@ class Scene extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function nodes(): HasMany
-    {
-        return $this->hasMany(SceneNode::class);
-    }
-
-    public function edges(): HasMany
-    {
-        return $this->hasMany(SceneEdge::class);
-    }
+    // Old scene node/edge relationships removed - now using subgraphs and scene items
 
     public function content(): HasMany
     {

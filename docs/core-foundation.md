@@ -129,7 +129,7 @@ Scene (Presentational Layer - Tenant-Isolated)
 ├── created_by, stage_id (legacy, for migration)
 └── timestamps
 
-SceneNode (Presentational Instance - Tenant-Isolated)
+SceneItem (Presentational Instance - Tenant-Isolated)
 ├── id, guid, scene_id
 ├── core_node_guid (optional link to CoreGraphNode)
 ├── node_type (core, phantom, presentational)
@@ -140,7 +140,7 @@ SceneNode (Presentational Instance - Tenant-Isolated)
 ├── z_index, is_visible, is_locked
 └── timestamps
 
-SceneEdge (Presentational Connection - Tenant-Isolated)
+SceneItem (Presentational Connection - Tenant-Isolated)
 ├── id, guid, scene_id
 ├── core_edge_guid (optional link to CoreGraphEdge)
 ├── source_node_id, target_node_id

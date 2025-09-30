@@ -421,3 +421,87 @@ export const getNavigationContextMenuItems = (
     action: onExpandAll
   }
 ];
+
+// Graph node context menu interface
+export interface GraphNodeContextMenuActions {
+  onEdit?: () => void;
+  onDelete?: () => void;
+  onConnect?: () => void;
+  onViewDetails?: () => void;
+  onCopy?: () => void;
+  onMove?: () => void;
+}
+
+// Predefined context menu items for graph nodes
+export const getGraphNodeContextMenuItems = (
+  node: any,
+  actions: GraphNodeContextMenuActions
+): ContextMenuItem[] => {
+  const items: ContextMenuItem[] = [];
+
+  // Primary actions
+  if (actions.onEdit) {
+    items.push({
+      id: 'edit',
+      label: 'Edit Node',
+      icon: <Edit className="w-4 h-4" />,
+      action: actions.onEdit
+    });
+  }
+
+  if (actions.onViewDetails) {
+    items.push({
+      id: 'view-details',
+      label: 'View Details',
+      icon: <Eye className="w-4 h-4" />,
+      action: actions.onViewDetails
+    });
+  }
+
+  if (actions.onConnect) {
+    items.push({
+      id: 'connect',
+      label: 'Connect to Node',
+      icon: <Link className="w-4 h-4" />,
+      action: actions.onConnect
+    });
+  }
+
+  // Add divider if we have primary actions
+  if (items.length > 0) {
+    items.push({ id: 'divider1', divider: true });
+  }
+
+  // Secondary actions
+  if (actions.onCopy) {
+    items.push({
+      id: 'copy',
+      label: 'Copy Node',
+      icon: <Copy className="w-4 h-4" />,
+      action: actions.onCopy
+    });
+  }
+
+  if (actions.onMove) {
+    items.push({
+      id: 'move',
+      label: 'Move Node',
+      icon: <Settings className="w-4 h-4" />,
+      action: actions.onMove
+    });
+  }
+
+  // Add divider before destructive action
+  if (actions.onDelete) {
+    items.push({ id: 'divider2', divider: true });
+    items.push({
+      id: 'delete',
+      label: 'Delete Node',
+      icon: <Trash2 className="w-4 h-4" />,
+      action: actions.onDelete,
+      variant: 'destructive'
+    });
+  }
+
+  return items;
+};

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('subgraph_nodes', function (Blueprint $table) {
             $table->id();
             $table->foreignId('subgraph_id')->constrained('subgraphs')->onDelete('cascade');
-            $table->foreignId('node_id')->constrained('core_graph_nodes')->onDelete('cascade');
+            $table->foreignId('node_id')->constrained('nodes')->onDelete('cascade');
             $table->timestamp('added_at')->useCurrent();
             
             // Unique constraint to prevent duplicate node assignments

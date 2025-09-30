@@ -24,6 +24,17 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
+       // Create admin user for demo
+        User::firstOrCreate(
+            ['email' => 'admin@protogen.local'],
+            [
+                'name' => 'Admin User',
+                'email' => 'admin@protogen.local',
+                'password' => bcrypt('KeepCodeFlowin#333'),
+                'is_admin' => true,
+            ]
+        );
+
         $this->call([
             CoreGraphSystemSeeder::class,
             DefaultTenantSeeder::class,

@@ -8,7 +8,6 @@ import {
   ContextMenu,
   useContextMenu,
   GraphStudio,
-  SubgraphStudio,
   AdminToolbar,
   ToastContainer,
   useToasts,
@@ -1093,17 +1092,6 @@ function App() {
               </div>
             )}
 
-            {viewMode === 'subgraph-studio' && (
-              <div className="h-full">
-                <SubgraphStudio
-                  tenantId={1} // TODO: Get from current tenant context
-                  onSubgraphSelect={(_subgraph) => {/* TODO: Implement subgraph selection */}}
-                  onSubgraphCreate={() => {/* TODO: Implement subgraph creation */}}
-                  onSubgraphEdit={(_subgraph) => {/* TODO: Implement subgraph editing */}}
-                  onSubgraphDelete={(_subgraph) => {/* TODO: Implement subgraph deletion */}}
-                />
-              </div>
-            )}
 
             {viewMode === 'create-scene' && (
               <div className="p-8">

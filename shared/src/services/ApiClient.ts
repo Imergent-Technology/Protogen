@@ -458,6 +458,10 @@ export class ApiClient {
   }
 
   // Enhanced Scene API methods
+  async getSceneBySlug(slug: string): Promise<ApiResponse<Scene>> {
+    return this.request<Scene>(`/scenes/slug/${slug}`);
+  }
+
   async createGraphScene(data: {
     name: string;
     slug: string;
@@ -471,14 +475,7 @@ export class ApiClient {
     });
   }
 
-  async getSceneNodes(sceneGuid: string): Promise<ApiResponse<CoreGraphNode[]>> {
-    return this.request<CoreGraphNode[]>(`/scenes/${sceneGuid}/nodes`);
-  }
-
-  async getSceneEdges(sceneGuid: string): Promise<ApiResponse<CoreGraphEdge[]>> {
-    return this.request<CoreGraphEdge[]>(`/scenes/${sceneGuid}/edges`);
-  }
-
+  // Old getSceneNodes/getSceneEdges methods removed - now using getSceneItems for scene content
   async getSceneItems(sceneGuid: string): Promise<ApiResponse<SceneItem[]>> {
     return this.request<SceneItem[]>(`/scenes/${sceneGuid}/items`);
   }

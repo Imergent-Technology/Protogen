@@ -72,7 +72,7 @@ class CoreGraphApiController extends Controller
     public function createNode(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'node_type_id' => 'required|exists:core_graph_node_types,id',
+            'node_type_id' => 'required|exists:node_types,id',
             'label' => 'required|string|max:255',
             'description' => 'nullable|string',
             'properties' => 'nullable|array',
@@ -110,7 +110,7 @@ class CoreGraphApiController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'node_type_id' => 'sometimes|required|exists:core_graph_node_types,id',
+            'node_type_id' => 'sometimes|required|exists:node_types,id',
             'label' => 'sometimes|required|string|max:255',
             'description' => 'nullable|string',
             'properties' => 'nullable|array',
@@ -243,7 +243,7 @@ class CoreGraphApiController extends Controller
     public function createNodeType(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255|unique:core_graph_node_types,name',
+            'name' => 'required|string|max:255|unique:node_types,name',
             'display_name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'icon' => 'nullable|string|max:255',

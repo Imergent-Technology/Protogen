@@ -10,6 +10,8 @@ class CoreGraphEdgeType extends Model
 {
     use HasFactory;
 
+    protected $table = 'edge_types';
+
     protected $fillable = [
         'name',
         'display_name',

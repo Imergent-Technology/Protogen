@@ -3,13 +3,15 @@ import {
   CoreGraphNode, 
   CoreGraphEdge, 
   CoreGraphNodeType, 
+  Subgraph,
   apiClient 
 } from '@protogen/shared';
-import { Network, Plus, Search, Settings, Eye, Edit3, Trash2, Loader2, Grid3X3, List, Link } from 'lucide-react';
+import { Network, Plus, Search, Settings, Eye, Edit3, Trash2, Loader2, Grid3X3, List, Link, Layers, Filter, X } from 'lucide-react';
 import { NodeCreationDialog } from './NodeCreationDialog';
 import { EdgeCreationDialog } from './EdgeCreationDialog';
 import { NodeEditDialog } from './NodeEditDialog';
 import { GraphCanvas } from './GraphCanvas';
+import { CreateSubgraphDialog } from './CreateSubgraphDialog';
 
 interface GraphStudioProps {
   onNodeSelect?: (node: CoreGraphNode) => void;
@@ -27,8 +29,10 @@ export function GraphStudio({
   const [nodes, setNodes] = useState<CoreGraphNode[]>([]);
   const [edges, setEdges] = useState<CoreGraphEdge[]>([]);
   const [nodeTypes, setNodeTypes] = useState<CoreGraphNodeType[]>([]);
+  const [subgraphs, setSubgraphs] = useState<Subgraph[]>([]);
 
   const [selectedNode, setSelectedNode] = useState<CoreGraphNode | null>(null);
+  const [selectedSubgraph, setSelectedSubgraph] = useState<Subgraph | null>(null);
   const [viewMode, setViewMode] = useState<'explore' | 'edit' | 'design'>('explore');
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState<string>('all');
@@ -39,7 +43,9 @@ export function GraphStudio({
   const [showCreateEdgeDialog, setShowCreateEdgeDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [editingNode, setEditingNode] = useState<CoreGraphNode | null>(null);
-  const [displayMode, setDisplayMode] = useState<'grid' | 'list' | 'graph'>('grid');
+  const [displayMode, setDisplayMode] = useState<'grid' | 'list' | 'graph'>('graph');
+  const [showSubgraphPanel, setShowSubgraphPanel] = useState(true);
+  const [showCreateSubgraphDialog, setShowCreateSubgraphDialog] = useState(false);
 
   // Load core graph system data
   useEffect(() => {
@@ -63,7 +69,14 @@ export function GraphStudio({
       matchesConnections = connectionCount === 0;
     }
     
-    return matchesSearch && matchesType && matchesConnections;
+    // Subgraph filtering
+    let matchesSubgraph = true;
+    if (selectedSubgraph) {
+      // This will be updated when we load subgraph nodes
+      matchesSubgraph = true; // Placeholder for now
+    }
+    
+    return matchesSearch && matchesType && matchesConnections && matchesSubgraph;
   });
 
 
@@ -106,10 +119,11 @@ export function GraphStudio({
       setLoading(true);
       setError(null);
 
-      // Load node types and edge types
-      const [nodeTypesResponse, edgeTypesResponse] = await Promise.all([
+      // Load node types, edge types, and subgraphs
+      const [nodeTypesResponse, edgeTypesResponse, subgraphsResponse] = await Promise.all([
         apiClient.getGraphNodeTypes(),
-        apiClient.getGraphEdgeTypes()
+        apiClient.getGraphEdgeTypes(),
+        apiClient.getSubgraphs()
       ]);
 
       if (nodeTypesResponse.success) {
@@ -117,7 +131,11 @@ export function GraphStudio({
       }
 
       if (edgeTypesResponse.success) {
+        // Edge types loaded but not stored in state yet
+      }
 
+      if (subgraphsResponse.success) {
+        setSubgraphs(subgraphsResponse.data);
       }
 
       // Load nodes and edges
@@ -182,6 +200,57 @@ export function GraphStudio({
     }
   };
 
+  // Subgraph management functions
+  const handleSubgraphSelect = (subgraph: Subgraph | null) => {
+    setSelectedSubgraph(subgraph);
+  };
+
+  const handleCreateSubgraph = async (name: string, description?: string) => {
+    try {
+      const response = await apiClient.createSubgraph({
+        name,
+        description: description || '',
+        tenant_id: 1, // TODO: Get from context
+        is_public: false
+      });
+      
+      if (response.success) {
+        loadGraphData(); // Refresh subgraphs
+        setShowCreateSubgraphDialog(false);
+      } else {
+        alert('Failed to create subgraph: ' + (response.message || 'Unknown error'));
+      }
+    } catch (err) {
+      alert('Failed to create subgraph. Please try again.');
+    }
+  };
+
+  const handleAddNodeToSubgraph = async (node: CoreGraphNode, subgraph: Subgraph) => {
+    try {
+      const response = await apiClient.addNodeToSubgraph(subgraph.id, node.id);
+      if (response.success) {
+        loadGraphData(); // Refresh data
+      } else {
+        alert('Failed to add node to subgraph: ' + (response.message || 'Unknown error'));
+      }
+    } catch (err) {
+      alert('Failed to add node to subgraph. Please try again.');
+    }
+  };
+
+  const handleRemoveNodeFromSubgraph = async (node: CoreGraphNode, subgraph: Subgraph) => {
+    try {
+      const response = await apiClient.removeNodeFromSubgraph(subgraph.id, node.id);
+      if (response.success) {
+        loadGraphData(); // Refresh data
+      } else {
+        alert('Failed to remove node from subgraph: ' + (response.message || 'Unknown error'));
+      }
+    } catch (err) {
+      alert('Failed to remove node from subgraph. Please try again.');
+    }
+  };
+
 
   
   return (
@@ -227,6 +296,20 @@ export function GraphStudio({
             <Settings className="h-4 w-4 mr-1" />
             Design
           </button>
+          
+          <div className="w-px h-6 bg-border mx-2" />
+          
+          <button
+            onClick={() => setShowSubgraphPanel(!showSubgraphPanel)}
+            className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+              showSubgraphPanel
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-muted text-muted-foreground hover:bg-muted/80'
+            }`}
+          >
+            <Layers className="h-4 w-4 mr-1" />
+            Subgraphs
+          </button>
         </div>
       </div>
 
@@ -266,6 +349,21 @@ export function GraphStudio({
             <option value="connected">Connected Only</option>
             <option value="isolated">Isolated Only</option>
           </select>
+          
+          {selectedSubgraph && (
+            <div className="flex items-center gap-2 px-3 py-2 bg-primary/10 border border-primary/20 rounded-md">
+              <Filter className="h-4 w-4 text-primary" />
+              <span className="text-sm text-primary font-medium">
+                {selectedSubgraph.name}
+              </span>
+              <button
+                onClick={() => setSelectedSubgraph(null)}
+                className="p-1 hover:bg-primary/20 rounded"
+              >
+                <X className="h-3 w-3 text-primary" />
+              </button>
+            </div>
+          )}
         </div>
 
         {/* View Toggle */}
@@ -327,8 +425,58 @@ export function GraphStudio({
 
       {/* Main Content */}
       <div className="flex-1 flex">
+        {/* Subgraph Panel */}
+        {showSubgraphPanel && (
+          <div className="w-80 border-r border-border bg-background">
+            <div className="p-4 border-b border-border">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-semibold">Subgraphs</h3>
+                <button
+                  onClick={() => setShowCreateSubgraphDialog(true)}
+                  className="p-1 hover:bg-muted rounded"
+                  title="Create new subgraph"
+                >
+                  <Plus className="h-4 w-4" />
+                </button>
+              </div>
+              
+              <div className="space-y-2">
+                <button
+                  onClick={() => handleSubgraphSelect(null)}
+                  className={`w-full text-left p-2 rounded-md text-sm transition-colors ${
+                    !selectedSubgraph
+                      ? 'bg-primary text-primary-foreground'
+                      : 'hover:bg-muted'
+                  }`}
+                >
+                  All Nodes
+                </button>
+                
+                {subgraphs.map((subgraph) => (
+                  <button
+                    key={subgraph.id}
+                    onClick={() => handleSubgraphSelect(subgraph)}
+                    className={`w-full text-left p-2 rounded-md text-sm transition-colors ${
+                      selectedSubgraph?.id === subgraph.id
+                        ? 'bg-primary text-primary-foreground'
+                        : 'hover:bg-muted'
+                    }`}
+                  >
+                    <div className="font-medium">{subgraph.name}</div>
+                    {subgraph.description && (
+                      <div className="text-xs text-muted-foreground truncate">
+                        {subgraph.description}
+                      </div>
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Graph Canvas */}
-        <div className="flex-1 relative bg-muted/20 overflow-auto">
+        <div className="flex-1 relative bg-muted/20 overflow-auto w-full">
           <div className="p-4 min-h-full">
             {loading && (
               <div className="flex items-center justify-center h-full">
@@ -497,11 +645,20 @@ export function GraphStudio({
           </div>
         </div>
 
-        {/* Sidebar */}
+        {/* Floating Node Details Overlay */}
         {selectedNode && (
-          <div className="w-80 border-l border-border bg-background">
+          <div className="fixed top-4 right-4 w-80 bg-background/95 backdrop-blur-sm border border-border rounded-lg shadow-lg z-50 max-h-[calc(100vh-2rem)] overflow-y-auto">
             <div className="p-4 border-b border-border">
-              <h3 className="font-semibold mb-2">Node Details</h3>
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="font-semibold">Node Details</h3>
+                <button
+                  onClick={() => setSelectedNode(null)}
+                  className="p-1 hover:bg-muted rounded-md transition-colors"
+                  title="Close"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
               <div className="space-y-2 text-sm">
                 <div>
                   <span className="text-muted-foreground">Type:</span>
@@ -521,6 +678,41 @@ export function GraphStudio({
                     <span className="ml-2">{selectedNode.description}</span>
                   </div>
                 )}
+              </div>
+            </div>
+            
+            {/* Subgraph Management */}
+            <div className="p-4 border-b border-border">
+              <h4 className="font-medium mb-3">Subgraph Management</h4>
+              <div className="space-y-2">
+                {subgraphs.map((subgraph) => {
+                  // TODO: Check if node is in this subgraph
+                  const isInSubgraph = false; // Placeholder
+                  
+                  return (
+                    <div key={subgraph.id} className="flex items-center justify-between p-2 bg-muted rounded">
+                      <div className="flex-1">
+                        <div className="font-medium text-sm">{subgraph.name}</div>
+                        {subgraph.description && (
+                          <div className="text-xs text-muted-foreground">{subgraph.description}</div>
+                        )}
+                      </div>
+                      <button
+                        onClick={() => isInSubgraph 
+                          ? handleRemoveNodeFromSubgraph(selectedNode, subgraph)
+                          : handleAddNodeToSubgraph(selectedNode, subgraph)
+                        }
+                        className={`px-2 py-1 text-xs rounded transition-colors ${
+                          isInSubgraph
+                            ? 'bg-destructive/10 text-destructive hover:bg-destructive/20'
+                            : 'bg-primary/10 text-primary hover:bg-primary/20'
+                        }`}
+                      >
+                        {isInSubgraph ? 'Remove' : 'Add'}
+                      </button>
+                    </div>
+                  );
+                })}
               </div>
             </div>
             
@@ -590,6 +782,15 @@ export function GraphStudio({
         onNodeUpdated={handleNodeUpdated}
         node={editingNode}
       />
+
+      {/* Create Subgraph Dialog */}
+      {showCreateSubgraphDialog && (
+        <CreateSubgraphDialog
+          isOpen={showCreateSubgraphDialog}
+          onClose={() => setShowCreateSubgraphDialog(false)}
+          onCreateSubgraph={handleCreateSubgraph}
+        />
+      )}
     </div>
   );
 }

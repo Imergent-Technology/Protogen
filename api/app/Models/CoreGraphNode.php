@@ -12,6 +12,8 @@ class CoreGraphNode extends Model
 {
     use HasFactory;
 
+    protected $table = 'nodes';
+
     protected $fillable = [
         'guid',
         'node_type_id',
@@ -68,7 +70,7 @@ class CoreGraphNode extends Model
     {
         return $this->belongsToMany(
             CoreGraphNode::class, 
-            'core_graph_edges', 
+            'edges', 
             'source_node_guid', 
             'target_node_guid', 
             'guid', 

@@ -20,9 +20,9 @@ class CoreGraphEdgeRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'source_node_guid' => 'required|uuid|exists:core_graph_nodes,guid',
-            'target_node_guid' => 'required|uuid|exists:core_graph_nodes,guid',
-            'edge_type_id' => 'required|exists:core_graph_edge_types,id',
+            'source_node_guid' => 'required|uuid|exists:nodes,guid',
+            'target_node_guid' => 'required|uuid|exists:nodes,guid',
+            'edge_type_id' => 'required|exists:edge_types,id',
             'weight' => 'required|numeric|min:0.00001|max:999.99999',
             'label' => 'nullable|string|max:255',
             'description' => 'nullable|string|max:1000',

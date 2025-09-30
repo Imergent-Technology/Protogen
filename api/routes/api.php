@@ -96,6 +96,7 @@ Route::prefix('scenes')->middleware(['auth:sanctum', 'admin'])->group(function (
     Route::post('/graph', [SceneApiController::class, 'createGraphScene']);
     Route::get('/stats', [SceneApiController::class, 'stats']);
     Route::get('/system', [SceneApiController::class, 'system']);
+    Route::get('/slug/{slug}', [SceneApiController::class, 'getBySlug']);
     Route::get('/{guid}', [SceneApiController::class, 'show']);
     Route::put('/{guid}', [SceneApiController::class, 'update']);
     Route::delete('/{guid}', [SceneApiController::class, 'destroy']);
