@@ -21,6 +21,46 @@ interface ContextMenuProps {
 
 export function ContextMenu({ items, isOpen, onClose, position }: ContextMenuProps) {
   const menuRef = useRef<HTMLDivElement>(null);
+  const [adjustedPosition, setAdjustedPosition] = useState(position);
+
+  // Calculate optimal position considering screen edges
+  const calculateOptimalPosition = (originalPosition: { x: number; y: number }) => {
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    
+    // Estimate menu dimensions (will be refined after render)
+    const estimatedMenuWidth = 200;
+    const estimatedMenuHeight = 300;
+    
+    let x = originalPosition.x;
+    let y = originalPosition.y;
+    
+    // Check horizontal boundaries
+    if (x + estimatedMenuWidth > viewportWidth) {
+      // Flip to the left side of the cursor
+      x = originalPosition.x - estimatedMenuWidth;
+      // If still out of bounds, adjust to viewport edge
+      if (x < 0) {
+        x = viewportWidth - estimatedMenuWidth - 10; // 10px margin from edge
+      }
+    }
+    
+    // Check vertical boundaries
+    if (y + estimatedMenuHeight > viewportHeight) {
+      // Flip to the top side of the cursor
+      y = originalPosition.y - estimatedMenuHeight;
+      // If still out of bounds, adjust to viewport edge
+      if (y < 0) {
+        y = viewportHeight - estimatedMenuHeight - 10; // 10px margin from edge
+      }
+    }
+    
+    // Ensure minimum margins from edges
+    x = Math.max(10, Math.min(x, viewportWidth - estimatedMenuWidth - 10));
+    y = Math.max(10, Math.min(y, viewportHeight - estimatedMenuHeight - 10));
+    
+    return { x, y };
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -38,13 +78,54 @@ export function ContextMenu({ items, isOpen, onClose, position }: ContextMenuPro
     if (isOpen) {
       document.addEventListener('mousedown', handleClickOutside);
       document.addEventListener('keydown', handleEscape);
+      
+      // Calculate initial optimal position
+      const optimalPosition = calculateOptimalPosition(position);
+      setAdjustedPosition(optimalPosition);
+      
+      // Refine position after menu is rendered with actual dimensions
+      const refinePosition = () => {
+        if (menuRef.current) {
+          const menuRect = menuRef.current.getBoundingClientRect();
+          const viewportWidth = window.innerWidth;
+          const viewportHeight = window.innerHeight;
+          
+          let x = position.x;
+          let y = position.y;
+          
+          // Check horizontal boundaries with actual dimensions
+          if (x + menuRect.width > viewportWidth) {
+            x = position.x - menuRect.width;
+            if (x < 0) {
+              x = viewportWidth - menuRect.width - 10;
+            }
+          }
+          
+          // Check vertical boundaries with actual dimensions
+          if (y + menuRect.height > viewportHeight) {
+            y = position.y - menuRect.height;
+            if (y < 0) {
+              y = viewportHeight - menuRect.height - 10;
+            }
+          }
+          
+          // Ensure minimum margins from edges
+          x = Math.max(10, Math.min(x, viewportWidth - menuRect.width - 10));
+          y = Math.max(10, Math.min(y, viewportHeight - menuRect.height - 10));
+          
+          setAdjustedPosition({ x, y });
+        }
+      };
+      
+      // Refine position after a short delay to allow menu to render
+      setTimeout(refinePosition, 10);
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
       document.removeEventListener('keydown', handleEscape);
     };
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, position]);
 
   if (!isOpen) return null;
 
@@ -58,8 +139,8 @@ export function ContextMenu({ items, isOpen, onClose, position }: ContextMenuPro
         transition={{ duration: 0.1 }}
         className="fixed z-50 min-w-[200px] bg-background border border-border rounded-lg shadow-lg py-1"
         style={{
-          left: position.x,
-          top: position.y,
+          left: adjustedPosition.x,
+          top: adjustedPosition.y,
         }}
       >
                  {items.map((item) => (
@@ -434,7 +515,7 @@ export interface GraphNodeContextMenuActions {
 
 // Predefined context menu items for graph nodes
 export const getGraphNodeContextMenuItems = (
-  node: any,
+  _node: any,
   actions: GraphNodeContextMenuActions
 ): ContextMenuItem[] => {
   const items: ContextMenuItem[] = [];
