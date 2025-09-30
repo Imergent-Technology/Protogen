@@ -25,6 +25,7 @@ export interface CoreGraphNode {
   label: string;
   description?: string;
   properties?: Record<string, any>;
+  position?: { x: number; y: number };
   is_active: boolean;
   created_at: string;
   updated_at: string;
@@ -263,6 +264,20 @@ export class ApiClient {
     });
   }
 
+  async updateNodePosition(guid: string, position: { x: number; y: number }): Promise<ApiResponse<CoreGraphNode>> {
+    return this.request<CoreGraphNode>(`/graph/nodes/${guid}/position`, {
+      method: 'PUT',
+      body: JSON.stringify({ position }),
+    });
+  }
+
+  async updateNodePositions(positions: Array<{ node_guid: string; position: { x: number; y: number } }>): Promise<ApiResponse<CoreGraphNode[]>> {
+    return this.request<CoreGraphNode[]>('/graph/nodes/positions', {
+      method: 'PUT',
+      body: JSON.stringify({ positions }),
+    });
+  }
+
   async getGraphEdges(params?: {
     edge_type_id?: number;
     node_guid?: string;
@@ -476,7 +491,7 @@ export class ApiClient {
   }
 
   // Old getSceneNodes/getSceneEdges methods removed - now using getSceneItems for scene content
-  async getSceneItems(sceneGuid: string): Promise<ApiResponse<SceneItem[]>> {
+  async getSceneItemsByScene(sceneGuid: string): Promise<ApiResponse<SceneItem[]>> {
     return this.request<SceneItem[]>(`/scenes/${sceneGuid}/items`);
   }
 

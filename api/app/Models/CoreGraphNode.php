@@ -20,11 +20,13 @@ class CoreGraphNode extends Model
         'label',
         'description',
         'properties',
+        'position',
         'is_active',
     ];
 
     protected $casts = [
         'properties' => 'array',
+        'position' => 'array',
         'is_active' => 'boolean',
     ];
 

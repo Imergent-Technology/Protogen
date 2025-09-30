@@ -306,4 +306,81 @@ class CoreGraphApiController extends Controller
             ]
         ]);
     }
+
+    /**
+     * Update node position
+     */
+    public function updateNodePosition(Request $request, string $nodeGuid): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'position' => 'required|array',
+            'position.x' => 'required|numeric',
+            'position.y' => 'required|numeric',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $node = CoreGraphNode::where('guid', $nodeGuid)->first();
+
+        if (!$node) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Node not found'
+            ], 404);
+        }
+
+        $node->position = $request->position;
+        $node->save();
+
+        return response()->json([
+            'success' => true,
+            'data' => $node,
+            'message' => 'Node position updated successfully'
+        ]);
+    }
+
+    /**
+     * Update multiple node positions (batch update)
+     */
+    public function updateNodePositions(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'positions' => 'required|array',
+            'positions.*.node_guid' => 'required|string',
+            'positions.*.position' => 'required|array',
+            'positions.*.position.x' => 'required|numeric',
+            'positions.*.position.y' => 'required|numeric',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $updatedNodes = [];
+        
+        foreach ($request->positions as $positionData) {
+            $node = CoreGraphNode::where('guid', $positionData['node_guid'])->first();
+            if ($node) {
+                $node->position = $positionData['position'];
+                $node->save();
+                $updatedNodes[] = $node;
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $updatedNodes,
+            'message' => 'Node positions updated successfully'
+        ]);
+    }
 }

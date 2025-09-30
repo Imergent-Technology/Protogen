@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { CoreGraphNode, CoreGraphEdge } from '@protogen/shared';
+import { CoreGraphNode, CoreGraphEdge, apiClient } from '@protogen/shared';
 import * as Sigma from 'sigma';
 import * as Graph from 'graphology';
 import { ContextMenu, useContextMenu, getGraphNodeContextMenuItems, GraphNodeContextMenuActions } from '../common/ContextMenu';
@@ -40,26 +40,21 @@ export function GraphCanvas({
   const shouldPreventCleanupRef = useRef(false);
   const { contextMenu, showContextMenu, hideContextMenu } = useContextMenu();
 
-  // Load saved positions from SceneItem database (temporarily disabled for testing)
+  // Load saved positions from node position field
   const loadNodePositions = useCallback(async () => {
-    // Temporarily use fallback positioning until API issues are resolved
-    loadFallbackPositions();
-  }, [nodes]);
-
-  // Fallback positioning when database is not available
-  const loadFallbackPositions = useCallback(() => {
     const positions = new Map<string, NodePosition>();
-    nodes.forEach((node, index) => {
-      const savedPosition = node.properties?.position;
-      if (savedPosition && typeof savedPosition.x === 'number' && typeof savedPosition.y === 'number') {
+    
+    nodes.forEach((node) => {
+      if (node.position) {
         positions.set(node.guid, {
-          x: savedPosition.x,
-          y: savedPosition.y,
-          locked: true
+          x: node.position.x,
+          y: node.position.y,
+          locked: false // Allow dragging even for saved positions
         });
       } else {
-        // Generate consistent grid-based position instead of random
+        // Generate initial position if none exists
         const gridSize = Math.ceil(Math.sqrt(nodes.length));
+        const index = nodes.indexOf(node);
         const x = (index % gridSize) * 200 + 100;
         const y = Math.floor(index / gridSize) * 200 + 100;
         
@@ -70,15 +65,28 @@ export function GraphCanvas({
         });
       }
     });
+    
     setNodePositions(positions);
   }, [nodes]);
 
-  // Save node position to SceneItem database (temporarily disabled for testing)
+
+  // Save node position to database with client-first updates
   const saveNodePosition = useCallback(async (nodeGuid: string, position: NodePosition) => {
-    // Temporarily just update local state until API issues are resolved
+    // Update local state immediately for smooth UX
     const lockedPosition = { ...position, locked: true };
     setNodePositions(prev => new Map(prev).set(nodeGuid, lockedPosition));
-  }, [nodes]);
+    
+    // Defer server update for smooth performance
+    setTimeout(async () => {
+      try {
+        await apiClient.updateNodePosition(nodeGuid, { x: position.x, y: position.y });
+        console.log('Node position saved to server:', nodeGuid, position);
+      } catch (error) {
+        console.error('Failed to save node position to server:', error);
+        // Could implement retry logic here
+      }
+    }, 500); // 500ms delay for batching
+  }, []);
 
   // Note: Lock functionality removed as nodes are now freely draggable but maintain position
 
@@ -105,21 +113,26 @@ export function GraphCanvas({
           locked: false
         };
 
+        console.log('Adding node:', node.guid, 'at position:', position);
         graph.addNode(node.guid, {
           label: node.label,
           size: 8,
           color: getNodeColor(node.node_type?.name || 'unknown'),
           x: position.x,
           y: position.y,
-          fixed: position.locked, // Lock position if saved as locked
+          fixed: false, // Always allow dragging
           type: 'circle', // Explicitly set node type for Sigma.js
           nodeType: node.node_type?.name || 'unknown',
           nodeTypeDisplay: node.node_type?.display_name || 'Unknown',
           description: node.description || ''
         });
+        
+        // Log the actual position after adding
+        console.log('Node added at:', graph.getNodeAttribute(node.guid, 'x'), graph.getNodeAttribute(node.guid, 'y'));
       });
 
       // Add edges to the graph
+      console.log('Adding edges to graph:', edges.length);
       edges.forEach((edge) => {
         if (graph.hasNode(edge.source_node_guid) && graph.hasNode(edge.target_node_guid)) {
           graph.addEdge(edge.source_node_guid, edge.target_node_guid, {
@@ -130,6 +143,16 @@ export function GraphCanvas({
             edgeTypeDisplay: edge.edge_type?.display_name || 'Unknown'
           });
         }
+      });
+
+      console.log('Graph nodes count:', graph.nodes().length);
+      console.log('Graph edges count:', graph.edges().length);
+      
+      // Log node positions for debugging
+      graph.nodes().forEach(nodeId => {
+        const x = graph.getNodeAttribute(nodeId, 'x');
+        const y = graph.getNodeAttribute(nodeId, 'y');
+        console.log(`Node ${nodeId} at (${x}, ${y})`);
       });
 
       // Create Sigma instance with drag enabled but layout algorithms disabled
@@ -158,6 +181,10 @@ export function GraphCanvas({
 
       sigmaRef.current = sigma;
       console.log('Sigma instance created successfully');
+      
+      // Add debugging for graph visibility
+      console.log('Container dimensions:', containerRef.current?.offsetWidth, 'x', containerRef.current?.offsetHeight);
+      console.log('Graph container element:', containerRef.current);
 
       // Apply saved positions to nodes (but don't fix them to allow dragging)
       nodePositions.forEach((position, nodeGuid) => {
@@ -184,7 +211,7 @@ export function GraphCanvas({
       if (nodesWithoutPositions.length > 0) {
         // Run a single layout pass for new nodes only
         const runInitialLayout = () => {
-          const nodes = graph.nodes();
+        const nodes = graph.nodes();
           
           // Calculate forces only for nodes without positions
           const forces = new Map();
@@ -197,36 +224,36 @@ export function GraphCanvas({
           // Repulsion between new nodes and existing nodes
           nodesWithoutPositions.forEach(node1 => {
             if (!graph.hasNode(node1.guid)) return;
-            
-            const pos1 = {
+          
+          const pos1 = {
               x: graph.getNodeAttribute(node1.guid, 'x'),
               y: graph.getNodeAttribute(node1.guid, 'y')
+          };
+          
+          nodes.forEach(nodeId2 => {
+              if (node1.guid === nodeId2) return;
+            
+            const pos2 = {
+              x: graph.getNodeAttribute(nodeId2, 'x'),
+              y: graph.getNodeAttribute(nodeId2, 'y')
             };
             
-            nodes.forEach(nodeId2 => {
-              if (node1.guid === nodeId2) return;
-              
-              const pos2 = {
-                x: graph.getNodeAttribute(nodeId2, 'x'),
-                y: graph.getNodeAttribute(nodeId2, 'y')
-              };
-              
-              const dx = pos1.x - pos2.x;
-              const dy = pos1.y - pos2.y;
-              const distance = Math.sqrt(dx * dx + dy * dy);
-              
+            const dx = pos1.x - pos2.x;
+            const dy = pos1.y - pos2.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
               if (distance > 0 && distance < 200) {
                 const force = 1000 / (distance * distance);
-                const fx = (dx / distance) * force;
-                const fy = (dy / distance) * force;
-                
+              const fx = (dx / distance) * force;
+              const fy = (dy / distance) * force;
+              
                 const currentForce = forces.get(node1.guid);
-                currentForce.x += fx;
-                currentForce.y += fy;
-              }
-            });
+              currentForce.x += fx;
+              currentForce.y += fy;
+            }
           });
-          
+        });
+        
           // Apply forces once and fix the nodes
           forces.forEach((force, nodeGuid) => {
             const currentX = graph.getNodeAttribute(nodeGuid, 'x');
@@ -261,15 +288,25 @@ export function GraphCanvas({
 
       // Add event handlers
       const handleNodeClick = (event: any) => {
+        console.log('Left-click detected on node:', event.node);
         const nodeId = event.node;
         const node = nodes.find(n => n.guid === nodeId);
         if (node) {
+          console.log('Node clicked:', node.label);
           onNodeClick?.(node);
         }
       };
 
       const handleNodeRightClick = (event: any) => {
-        event.preventDefault();
+        // Prevent default browser context menu
+        if (event.originalEvent) {
+          event.originalEvent.preventDefault();
+          event.originalEvent.stopPropagation();
+        }
+        // Also prevent the Sigma.js default behavior
+        if (event.preventSigmaDefault) {
+          event.preventSigmaDefault();
+        }
         const nodeId = event.node;
         const node = nodes.find(n => n.guid === nodeId);
         if (node) {
@@ -292,7 +329,30 @@ export function GraphCanvas({
           };
 
           const menuItems = getGraphNodeContextMenuItems(node, actions);
-          showContextMenu(event.originalEvent, menuItems, node.guid);
+          // Convert graph coordinates to screen coordinates
+          const graphPosition = sigmaRef.current?.graphToViewport({
+            x: graph.getNodeAttribute(nodeId, 'x'),
+            y: graph.getNodeAttribute(nodeId, 'y')
+          });
+          
+          // Get the container's bounding rectangle
+          const containerRect = containerRef.current?.getBoundingClientRect();
+          
+          // Calculate screen coordinates
+          const screenX = (containerRect?.left || 0) + (graphPosition?.x || 0);
+          const screenY = (containerRect?.top || 0) + (graphPosition?.y || 0);
+          
+          console.log('Node graph position:', graph.getNodeAttribute(nodeId, 'x'), graph.getNodeAttribute(nodeId, 'y'));
+          console.log('Graph to viewport:', graphPosition);
+          console.log('Container rect:', containerRect);
+          console.log('Screen coordinates:', screenX, screenY);
+          
+          // Create a proper mouse event for the context menu
+          const mouseEvent = event.originalEvent || new MouseEvent('contextmenu', {
+            clientX: screenX,
+            clientY: screenY
+          });
+          showContextMenu(mouseEvent, menuItems, node.guid);
         }
       };
 
@@ -308,8 +368,8 @@ export function GraphCanvas({
         const nodeId = event.node;
         const node = nodes.find(n => n.guid === nodeId);
         if (!node) return;
-        
-        setIsDragging(true);
+
+          setIsDragging(true);
         // Temporarily unfix the node to allow dragging
         graph.setNodeAttribute(nodeId, 'fixed', false);
       };
@@ -318,28 +378,28 @@ export function GraphCanvas({
       const handleNodeUp = (event: any) => {
         if (!isDragging) return;
         
-        const nodeId = event.node;
-        const node = nodes.find(n => n.guid === nodeId);
+          const nodeId = event.node;
+          const node = nodes.find(n => n.guid === nodeId);
         if (!node) return;
         
         setIsDragging(false);
         
         // Get the final position
-        const nodeData = graph.getNodeAttributes(nodeId);
-        const newPosition = {
-          x: nodeData.x,
-          y: nodeData.y,
+            const nodeData = graph.getNodeAttributes(nodeId);
+            const newPosition = {
+              x: nodeData.x,
+              y: nodeData.y,
           locked: true // Auto-lock after dragging
-        };
-        
+            };
+            
         // Save the new position
-        setNodePositions(prev => new Map(prev).set(nodeId, newPosition));
-        saveNodePosition(nodeId, newPosition);
-        
+            setNodePositions(prev => new Map(prev).set(nodeId, newPosition));
+            saveNodePosition(nodeId, newPosition);
+            
         // Fix the node in its new position
-        graph.setNodeAttribute(nodeId, 'fixed', true);
-        graph.setNodeAttribute(nodeId, 'x', newPosition.x);
-        graph.setNodeAttribute(nodeId, 'y', newPosition.y);
+            graph.setNodeAttribute(nodeId, 'fixed', true);
+            graph.setNodeAttribute(nodeId, 'x', newPosition.x);
+            graph.setNodeAttribute(nodeId, 'y', newPosition.y);
         graph.setNodeAttribute(nodeId, 'vx', 0);
         graph.setNodeAttribute(nodeId, 'vy', 0);
       };
@@ -370,6 +430,7 @@ export function GraphCanvas({
   // Initialize graph with force layout (only once)
   useEffect(() => {
     console.log('Graph initialization effect triggered');
+    
     if (!containerRef.current || isInitializedRef.current || initializationAttemptedRef.current) {
       console.log('Graph initialization skipped - container not ready, already initialized, or attempt in progress');
       return;
@@ -393,6 +454,7 @@ export function GraphCanvas({
       const timer = setTimeout(() => {
         if (containerRef.current! && !isInitializedRef.current) {
           const newRect = containerRef.current!.getBoundingClientRect();
+          console.log('Retry container check:', newRect);
           if (newRect.height > 0 && newRect.width > 0) {
             console.log('Container ready, retrying initialization');
             // Retry initialization
@@ -412,10 +474,12 @@ export function GraphCanvas({
     }
 
     // Load positions first
-    loadNodePositions();
-
-    // Add a small delay to ensure container is properly sized
-    const initTimer = setTimeout(() => {
+    let initTimer: number;
+    
+    loadNodePositions().then(() => {
+      
+      // Add a small delay to ensure container is properly sized
+      initTimer = setTimeout(() => {
       if (!containerRef.current) {
         console.log('Container ref not available');
         return;
@@ -463,21 +527,26 @@ export function GraphCanvas({
           locked: false
         };
 
+        console.log('Adding node:', node.guid, 'at position:', position);
         graph.addNode(node.guid, {
           label: node.label,
           size: 8,
           color: getNodeColor(node.node_type?.name || 'unknown'),
           x: position.x,
           y: position.y,
-          fixed: position.locked, // Lock position if saved as locked
+          fixed: false, // Always allow dragging
           type: 'circle', // Explicitly set node type for Sigma.js
           nodeType: node.node_type?.name || 'unknown',
           nodeTypeDisplay: node.node_type?.display_name || 'Unknown',
           description: node.description || ''
         });
+        
+        // Log the actual position after adding
+        console.log('Node added at:', graph.getNodeAttribute(node.guid, 'x'), graph.getNodeAttribute(node.guid, 'y'));
       });
 
       // Add edges to the graph
+      console.log('Adding edges to graph:', edges.length);
       edges.forEach((edge) => {
         if (graph.hasNode(edge.source_node_guid) && graph.hasNode(edge.target_node_guid)) {
           graph.addEdge(edge.source_node_guid, edge.target_node_guid, {
@@ -488,6 +557,16 @@ export function GraphCanvas({
             edgeTypeDisplay: edge.edge_type?.display_name || 'Unknown'
           });
         }
+      });
+      
+      console.log('Graph nodes count:', graph.nodes().length);
+      console.log('Graph edges count:', graph.edges().length);
+      
+      // Log node positions for debugging
+      graph.nodes().forEach(nodeId => {
+        const x = graph.getNodeAttribute(nodeId, 'x');
+        const y = graph.getNodeAttribute(nodeId, 'y');
+        console.log(`Node ${nodeId} at (${x}, ${y})`);
       });
 
       // Create Sigma instance with drag enabled but layout algorithms disabled
@@ -516,6 +595,10 @@ export function GraphCanvas({
 
       sigmaRef.current = sigma;
       console.log('Sigma instance created successfully');
+      
+      // Add debugging for graph visibility
+      console.log('Container dimensions:', containerRef.current?.offsetWidth, 'x', containerRef.current?.offsetHeight);
+      console.log('Graph container element:', containerRef.current);
 
       // Apply saved positions to nodes (but don't fix them to allow dragging)
       nodePositions.forEach((position, nodeGuid) => {
@@ -583,7 +666,7 @@ export function GraphCanvas({
           });
         });
         
-        // Apply forces once and fix the nodes
+        // Apply forces once but don't fix nodes (allow dragging)
         forces.forEach((force, nodeGuid) => {
           const currentX = graph.getNodeAttribute(nodeGuid, 'x');
           const currentY = graph.getNodeAttribute(nodeGuid, 'y');
@@ -593,7 +676,7 @@ export function GraphCanvas({
           
           graph.setNodeAttribute(nodeGuid, 'x', newX);
           graph.setNodeAttribute(nodeGuid, 'y', newY);
-          graph.setNodeAttribute(nodeGuid, 'fixed', true); // Fix after initial positioning
+          // Don't set fixed: true to allow dragging
         });
         
         // Ensure all nodes have zero velocity after layout (but don't fix them)
@@ -611,15 +694,25 @@ export function GraphCanvas({
 
       // Add event handlers
       const handleNodeClick = (event: any) => {
+        console.log('Left-click detected on node:', event.node);
         const nodeId = event.node;
         const node = nodes.find(n => n.guid === nodeId);
         if (node) {
+          console.log('Node clicked:', node.label);
           onNodeClick?.(node);
         }
       };
 
       const handleNodeRightClick = (event: any) => {
-        event.preventDefault();
+        // Prevent default browser context menu
+        if (event.originalEvent) {
+          event.originalEvent.preventDefault();
+          event.originalEvent.stopPropagation();
+        }
+        // Also prevent the Sigma.js default behavior
+        if (event.preventSigmaDefault) {
+          event.preventSigmaDefault();
+        }
         const nodeId = event.node;
         const node = nodes.find(n => n.guid === nodeId);
         if (node) {
@@ -642,7 +735,30 @@ export function GraphCanvas({
           };
 
           const menuItems = getGraphNodeContextMenuItems(node, actions);
-          showContextMenu(event.originalEvent, menuItems, node.guid);
+          // Convert graph coordinates to screen coordinates
+          const graphPosition = sigmaRef.current?.graphToViewport({
+            x: graph.getNodeAttribute(nodeId, 'x'),
+            y: graph.getNodeAttribute(nodeId, 'y')
+          });
+          
+          // Get the container's bounding rectangle
+          const containerRect = containerRef.current?.getBoundingClientRect();
+          
+          // Calculate screen coordinates
+          const screenX = (containerRect?.left || 0) + (graphPosition?.x || 0);
+          const screenY = (containerRect?.top || 0) + (graphPosition?.y || 0);
+          
+          console.log('Node graph position:', graph.getNodeAttribute(nodeId, 'x'), graph.getNodeAttribute(nodeId, 'y'));
+          console.log('Graph to viewport:', graphPosition);
+          console.log('Container rect:', containerRect);
+          console.log('Screen coordinates:', screenX, screenY);
+          
+          // Create a proper mouse event for the context menu
+          const mouseEvent = event.originalEvent || new MouseEvent('contextmenu', {
+            clientX: screenX,
+            clientY: screenY
+          });
+          showContextMenu(mouseEvent, menuItems, node.guid);
         }
       };
 
@@ -692,25 +808,148 @@ export function GraphCanvas({
 
       // Add event listeners
       sigma.on('clickNode', handleNodeClick);
-      sigma.on('rightClickNode', handleNodeRightClick);
+      sigma.on('rightClickNode', (event) => {
+        console.log('Sigma right-click event triggered:', event);
+        handleNodeRightClick(event);
+      });
       sigma.on('clickStage', handleCanvasClick);
       sigma.on('downNode', handleNodeDown);
       sigma.on('upNode', handleNodeUp);
       sigma.on('upStage', handleCanvasUp);
+      
+      // Prevent default context menu on the container
+      const container = containerRef.current;
+      if (container) {
+        const preventContextMenu = (e: Event) => {
+          e.preventDefault();
+          e.stopPropagation();
+        };
+        container.addEventListener('contextmenu', preventContextMenu);
+        
+        // Store the event listener for cleanup
+        (sigma as any)._contextMenuListener = preventContextMenu;
+      }
       } catch (error) {
         console.error('Error initializing graph:', error);
       }
 
       // Mark graph as initialized
       isInitializedRef.current = true;
+      
+      // Force immediate render to ensure visibility
+      if (graphRef.current.order > 0) {
+        // Get the graph bounds to position the camera correctly
+        sigmaRef.current.getBBox();
+        
+        // Reset camera to fit the graph
+        sigmaRef.current.getCamera().animatedReset();
+        
+        // Try to fit the graph in view
+        try {
+          sigmaRef.current.getCamera().animatedFit({
+            duration: 0
+          });
+        } catch (error) {
+          console.log('Camera fit failed, using reset:', error);
+        }
+        
+        // Force render
+        sigmaRef.current.refresh();
+        sigmaRef.current.render();
+      }
+      
+      // Force a refresh to ensure the graph is visible
+      setTimeout(() => {
+        if (sigmaRef.current) {
+          sigmaRef.current.refresh();
+          
+          // Ensure camera is positioned to show the graph
+          sigmaRef.current.getCamera();
+          
+          // Fit the graph in view
+          sigmaRef.current.getCamera().animatedReset();
+          
+          // Force a render
+          sigmaRef.current.render();
+          
+          // Try to fit the graph in view with proper zoom
+          setTimeout(() => {
+            if (sigmaRef.current) {
+              sigmaRef.current.getCamera().animatedReset();
+              sigmaRef.current.render();
+            }
+          }, 200);
+        }
+      }, 100);
+      
+      // Additional delayed initialization to ensure visibility
+      setTimeout(() => {
+        if (sigmaRef.current && containerRef.current) {
+          const container = containerRef.current;
+          const rect = container.getBoundingClientRect();
+          
+          if (rect.width > 0 && rect.height > 0) {
+            // Ensure camera is positioned to show the graph
+            sigmaRef.current.getBBox();
+            
+            // Reset camera to fit the graph
+            sigmaRef.current.getCamera().animatedReset();
+            
+            // Try to fit the graph in view
+            try {
+              sigmaRef.current.getCamera().animatedFit({
+                duration: 0
+              });
+            } catch (error) {
+              console.log('Camera fit failed in delayed check, using reset:', error);
+            }
+            
+            sigmaRef.current.refresh();
+            sigmaRef.current.render();
+          } else {
+            // Force minimum size and retry
+            container.style.minHeight = '400px';
+            container.style.minWidth = '400px';
+            setTimeout(() => {
+              if (sigmaRef.current) {
+                // Reset camera to fit the graph
+                sigmaRef.current.getCamera().animatedReset();
+                
+                // Try to fit the graph in view
+                try {
+                  sigmaRef.current.getCamera().animatedFit({
+                    duration: 0
+                  });
+                } catch (error) {
+                  console.log('Camera fit failed in retry, using reset:', error);
+                }
+                
+                sigmaRef.current.refresh();
+                sigmaRef.current.render();
+              }
+            }, 100);
+          }
+        }
+      }, 500);
     };
     
     // Mark that we should prevent cleanup
     shouldPreventCleanupRef.current = true;
-
+    }).catch((error) => {
+      console.error('Error loading node positions:', error);
+      initializationAttemptedRef.current = false;
+    });
+    
     // Return cleanup function
     return () => {
       clearTimeout(initTimer);
+      
+      // Clean up context menu event listener
+      const container = containerRef.current;
+      if (container && sigmaRef.current && (sigmaRef.current as any)._contextMenuListener) {
+        container.removeEventListener('contextmenu', (sigmaRef.current as any)._contextMenuListener);
+      }
+      
       if (!shouldPreventCleanupRef.current) {
         console.log('Cleaning up graph instances');
         if (sigmaRef.current) {

@@ -73,6 +73,10 @@ Route::prefix('graph')->middleware(['auth:sanctum', 'admin'])->group(function ()
     
     // Complete graph
     Route::get('/', [CoreGraphApiController::class, 'getGraph']);
+    
+    // Node position updates
+    Route::put('/nodes/{nodeGuid}/position', [CoreGraphApiController::class, 'updateNodePosition']);
+    Route::put('/nodes/positions', [CoreGraphApiController::class, 'updateNodePositions']);
 });
 
 // Registry API routes (admin only)
