@@ -730,6 +730,11 @@ export function GraphCanvas({
 
       // Handle drag start
       const handleNodeDown = (event: any) => {
+        // Only allow left-click (button 0) to start dragging
+        if (event.originalEvent && event.originalEvent.button !== 0) {
+          return;
+        }
+        
         const nodeId = event.node;
         const node = nodes.find(n => n.guid === nodeId);
         if (node) {
