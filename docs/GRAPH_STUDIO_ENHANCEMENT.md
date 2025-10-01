@@ -9,35 +9,43 @@ This document outlines the enhancement of the GraphStudio component to provide c
 ### Existing GraphStudio Implementation
 - **Component**: `admin/src/components/graph/GraphStudio.tsx`
 - **Canvas**: `admin/src/components/graph/GraphCanvas.tsx`
-- **Rendering**: Sigma.js with Graphology
-- **Positioning**: Basic random positioning with manual save/load
-- **Interactions**: Basic node selection and editing
+- **Rendering**: Sigma.js 3.0 with Graphology
+- **Positioning**: ✅ **IMPLEMENTED** - Database-backed position persistence with JSON field
+- **Interactions**: ✅ **IMPLEMENTED** - Full drag-and-drop, context menus, node selection
 
-### Current Limitations
-- Nodes appear in random positions on each load
-- No intelligent layout algorithms
-- Limited user control over positioning
-- No consistent placement across sessions
-- Basic drag-and-drop without layout constraints
+### ✅ Completed Features (as of 2025-10-01)
+- ✅ Nodes maintain consistent positions across sessions (database persistence)
+- ✅ Full left-click drag-and-drop functionality with proper mouse button detection
+- ✅ Right-click context menu without drag interference
+- ✅ Real-time position updates with deferred server sync
+- ✅ Manual node placement with coordinate conversion
+- ✅ Sigma.js 3.0 API compatibility (camera methods)
+
+### Remaining Limitations
+- No intelligent force-directed layout algorithms (grid-based fallback only)
+- Limited automated initial placement (center-based with collision avoidance)
+- No advanced layout algorithms (hierarchical, circular, etc.)
+- No snap-to-grid or constraint systems
 
 ## Enhancement Goals
 
-### 1. Consistent Node Placement
-- **Deterministic Positioning**: Nodes maintain consistent positions across sessions
-- **Layout Persistence**: Save and restore node positions automatically
-- **Grid Alignment**: Optional grid-based positioning for clean layouts
+### 1. Consistent Node Placement ✅ COMPLETED
+- ✅ **Deterministic Positioning**: Nodes maintain consistent positions across sessions
+- ✅ **Layout Persistence**: Save and restore node positions automatically via database JSON field
+- ⏳ **Grid Alignment**: Optional grid-based positioning for clean layouts (PENDING)
 
-### 2. Force-Directed Layout Algorithms
-- **Initial Layout**: Intelligent placement using force-directed algorithms
-- **Proximity-Based**: Related nodes positioned closer together
-- **Network-Aware**: Consider existing connections and node relationships
-- **Performance Optimized**: Efficient algorithms for large graphs
+### 2. Force-Directed Layout Algorithms ⏳ PENDING
+- ⏳ **Initial Layout**: Intelligent placement using force-directed algorithms
+- ⏳ **Proximity-Based**: Related nodes positioned closer together
+- ⏳ **Network-Aware**: Consider existing connections and node relationships
+- ⏳ **Performance Optimized**: Efficient algorithms for large graphs
 
-### 3. User Control & Drag-and-Drop
-- **Static After Layout**: Nodes become static after initial placement
-- **Drag-and-Drop**: Full user control over final positioning
-- **Snap-to-Grid**: Optional grid snapping for precise placement
-- **Constraint System**: Prevent overlapping and maintain relationships
+### 3. User Control & Drag-and-Drop ✅ COMPLETED
+- ✅ **Static After Layout**: Nodes remain static after placement
+- ✅ **Drag-and-Drop**: Full user control over final positioning with left-click
+- ✅ **Right-Click Context Menu**: Proper separation from drag operations
+- ⏳ **Snap-to-Grid**: Optional grid snapping for precise placement (PENDING)
+- ⏳ **Constraint System**: Prevent overlapping and maintain relationships (PENDING)
 
 ## Technical Architecture
 
@@ -244,15 +252,21 @@ interface GraphInteractionManager {
 
 ### 1. Database Schema Updates
 ```sql
--- Add position storage to scene_nodes table
-ALTER TABLE scene_nodes ADD COLUMN saved_position JSONB;
-ALTER TABLE scene_nodes ADD COLUMN layout_metadata JSONB;
-ALTER TABLE scene_nodes ADD COLUMN position_version INTEGER DEFAULT 1;
+-- ✅ IMPLEMENTED: Position storage in nodes table (Central Graph System)
+ALTER TABLE nodes ADD COLUMN position JSONB;
 
--- Add layout configuration to scenes table
-ALTER TABLE scenes ADD COLUMN layout_config JSONB;
-ALTER TABLE scenes ADD COLUMN layout_version INTEGER DEFAULT 1;
+-- Position format: { "x": 123.45, "y": 67.89 }
+-- Stores graph coordinates for persistent node placement
+
+-- PENDING: Layout configuration (future enhancement)
+-- ALTER TABLE scenes ADD COLUMN layout_config JSONB;
+-- ALTER TABLE scenes ADD COLUMN layout_version INTEGER DEFAULT 1;
 ```
+
+**Implementation Notes:**
+- Position persistence implemented at the `nodes` table level (Central Graph)
+- Client-first updates with 500ms deferred server sync for performance
+- API endpoints: `PUT /api/graph/nodes/{guid}/position` and `PUT /api/graph/nodes/positions`
 
 ### 2. Layout Engine Service
 ```typescript
@@ -280,23 +294,45 @@ export class LayoutEngine {
 }
 ```
 
-### 3. GraphStudio Integration
+### 3. GraphStudio Integration ✅ PARTIALLY IMPLEMENTED
 ```typescript
-// admin/src/components/graph/GraphStudio.tsx
-export function GraphStudio() {
-  const [layoutEngine] = useState(() => new LayoutEngine());
-  const [positionManager] = useState(() => new PositionManager());
-  const [layoutPhase, setLayoutPhase] = useState<'calculating' | 'static' | 'editing'>('calculating');
-  
-  const handleLayoutCalculation = async () => {
-    setLayoutPhase('calculating');
-    const result = await layoutEngine.calculateLayout(nodes, edges, layoutOptions);
-    await positionManager.savePositions(sceneId, result.positions);
-    setLayoutPhase('static');
-  };
-  
-  // Implementation details
-}
+// admin/src/components/graph/GraphCanvas.tsx
+// ✅ IMPLEMENTED: Position persistence and drag-and-drop
+
+// Position loading from database
+const loadNodePositions = useCallback(async () => {
+  const positions = new Map<string, NodePosition>();
+  nodes.forEach((node) => {
+    if (node.position?.x !== undefined && node.position?.y !== undefined) {
+      positions.set(node.guid, {
+        x: node.position.x,
+        y: node.position.y,
+        locked: false
+      });
+    }
+  });
+  return positions;
+}, [nodes]);
+
+// Position saving with deferred server sync
+const saveNodePosition = useCallback((nodeGuid: string, position: NodePosition) => {
+  // Update local state immediately
+  // Defer server update for smooth performance
+  setTimeout(async () => {
+    await apiClient.updateNodePosition(nodeGuid, { x: position.x, y: position.y });
+  }, 500);
+}, []);
+
+// ✅ IMPLEMENTED: Mouse button tracking and drag handling
+const lastMouseButtonRef = useRef(0);
+const preventRightClickDown = useCallback((e: MouseEvent) => {
+  if (e.button === 2) {
+    e.stopPropagation();
+    e.preventDefault();
+  }
+}, []);
+
+// ⏳ PENDING: Advanced layout engine integration
 ```
 
 ## Performance Considerations
@@ -375,6 +411,64 @@ export function GraphStudio() {
 This enhancement will transform the GraphStudio from a basic graph viewer into a professional, intelligent graph visualization tool. The combination of automated layout algorithms with user control provides the best of both worlds: efficient initial placement and precise user customization.
 
 The implementation follows a phased approach that allows for incremental improvement while maintaining system stability. Each phase builds upon the previous one, creating a robust foundation for advanced graph visualization features.
+
+---
+
+## ✅ Implementation Status (Updated 2025-10-01)
+
+### Completed Features
+1. **Node Position Persistence** ✅
+   - Database storage via JSON field in `nodes` table
+   - Client-first updates with deferred server sync (500ms)
+   - API endpoints for single and batch position updates
+   - Automatic position loading on graph initialization
+
+2. **Drag-and-Drop System** ✅
+   - Full left-click drag functionality
+   - Manual coordinate conversion using Sigma.js 3.0 API
+   - Real-time position updates during drag
+   - Proper mouse button detection with capture phase events
+
+3. **Context Menu Integration** ✅
+   - Right-click shows context menu without drag interference
+   - Screen edge detection with dynamic positioning
+   - Proper event separation (left-click = drag, right-click = menu)
+   - Global mouse button tracking for reliable detection
+
+4. **Sigma.js 3.0 Compatibility** ✅
+   - Updated camera methods (`animatedFit` → `animatedReset`)
+   - Proper viewport-to-graph coordinate conversion
+   - Compatible event handling
+
+### Pending Features
+1. **Force-Directed Layout** ⏳
+   - Intelligent initial node placement
+   - Physics-based positioning algorithms
+   - Relationship-aware clustering
+
+2. **Advanced Layout Algorithms** ⏳
+   - Hierarchical layouts
+   - Circular layouts
+   - Grid-based layouts with constraints
+
+3. **User Experience Enhancements** ⏳
+   - Snap-to-grid functionality
+   - Collision detection and prevention
+   - Layout presets and templates
+   - Undo/redo for position changes
+
+### Known Issues & Limitations
+- No intelligent force-directed layout (uses simple grid-based fallback)
+- Limited automated initial placement (center-based)
+- No snap-to-grid or alignment tools
+- No layout constraint system
+
+### Next Steps
+When scene navigation, feedback, and authoring tools are modularized, consider:
+1. Implementing force-directed layout algorithms
+2. Adding layout presets and templates
+3. Creating advanced positioning tools (snap-to-grid, alignment)
+4. Enhancing performance for large graphs (>1000 nodes)
 
 ---
 

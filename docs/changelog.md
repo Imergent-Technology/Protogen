@@ -37,6 +37,26 @@ All notable changes to the Protogen system will be documented in this file.
 - **Tenant Isolation**: Implemented proper tenant isolation at database and API levels
 - **Access Control**: Added tenant-aware authentication and authorization
 
+## [2025-10-01] - Graph Studio Interaction Fixes
+
+### Added
+- **Node Position Persistence**: Nodes now store positions in database JSON field
+- **Capture Phase Event Prevention**: Right-click events properly intercepted before Sigma.js handling
+- **Global Mouse Button Tracking**: Reliable button detection using React refs
+
+### Changed
+- **Graph Studio Interactions**: Complete rewrite of mouse event handling
+- **Context Menu Behavior**: Right-click now only shows context menu without drag initiation
+- **Node Dragging**: Left-click drag fully operational with proper button detection
+
+### Fixed
+- **Right-Click Drag Bug**: Fixed right-click incorrectly initiating drag-and-drop
+- **Sigma.js 3.0 Compatibility**: Replaced deprecated `animatedFit` with `animatedReset`
+- **Camera Positioning**: Fixed camera method compatibility errors on graph load
+
+### Removed
+- **Debug Console Logs**: Cleaned up debugging output while preserving error handling
+
 ## [2025-01-15] - Multi-Tenant Architecture & Scene System
 
 ### Added
