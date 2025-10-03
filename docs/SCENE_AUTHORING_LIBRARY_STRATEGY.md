@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document outlines the strategic approach for extracting and evolving the scene authoring tools into a separate library, integrated with the Merit system and permissions architecture. This approach enables multi-tenant authoring capabilities while maintaining security and encouraging community participation.
+This document outlines the strategic approach for extracting and evolving the scene authoring tools into a separate library, integrated with the Standing system and permissions architecture. This approach enables multi-tenant authoring capabilities while maintaining security and encouraging community participation.
 
 ## Strategic Objectives
 
@@ -12,15 +12,15 @@ This document outlines the strategic approach for extracting and evolving the sc
 - **Multi-Tenant Ready**: Library supports tenant-specific authoring
 - **Permission Integration**: Built-in permission hooks for security
 
-### 2. Merit System Integration
-- **Progressive Access**: Features unlock based on merit levels
+### 2. Standing System Integration
+- **Progressive Access**: Features unlock based on standing levels
 - **Trust-Based Security**: Sensitive operations require high trust
-- **Community Building**: Merit encourages quality participation
-- **Resource Allocation**: Automatic benefits based on merit
+- **Community Building**: Standing encourages quality participation
+- **Resource Allocation**: Automatic benefits based on standing
 
 ### 3. Permissions Architecture
 - **Granular Control**: Fine-grained permissions for specific features
-- **Merit-Based**: Permissions determined by user merit and trust
+- **Standing-Based**: Permissions determined by user standing and trust
 - **Multi-Tenant**: Tenant-specific permission models
 - **Scalable**: System grows with community needs
 
@@ -36,17 +36,17 @@ This document outlines the strategic approach for extracting and evolving the sc
 - [ ] Create comprehensive TypeScript types
 - [ ] Update imports in admin/portal projects
 
-#### Merit System Foundation
-- [ ] Create MeritScore model and database schema
-- [ ] Implement basic merit calculation service
+#### Standing System Foundation
+- [ ] Create StandingScore model and database schema
+- [ ] Implement basic standing calculation service
 - [ ] Add trust score calculation (replacing reputation)
 - [ ] Create access level determination
-- [ ] Update user model with merit fields
+- [ ] Update user model with standing fields
 
 #### Permissions Architecture
 - [ ] Create permission database schema
 - [ ] Implement PermissionService
-- [ ] Add merit-based permission checks
+- [ ] Add standing-based permission checks
 - [ ] Create permission hooks for frontend
 - [ ] Update scene authoring library with permissions
 
@@ -60,11 +60,11 @@ This document outlines the strategic approach for extracting and evolving the sc
 - [ ] Implement Graph Studio Integration
 - [ ] Add comprehensive authoring tests
 
-#### Merit System Enhancement
+#### Standing System Enhancement
 - [ ] Implement progressive visibility system
-- [ ] Add resource allocation based on merit
-- [ ] Create rewards and benefits system
-- [ ] Add merit-based content recommendations
+- [ ] Add resource allocation based on standing
+- [ ] Create cosmetic system and benefits
+- [ ] Add standing-based content recommendations
 - [ ] Implement community leadership tools
 
 #### Permission Integration
@@ -81,14 +81,14 @@ This document outlines the strategic approach for extracting and evolving the sc
 - [ ] Integrate authoring library into portal
 - [ ] Add user-facing authoring capabilities
 - [ ] Implement permission-based access controls
-- [ ] Add merit display to user profiles
+- [ ] Add standing display to user profiles
 - [ ] Create user progression interface
 
 #### Advanced Features
-- [ ] Add merit-based content curation
+- [ ] Add standing-based content curation
 - [ ] Implement community leadership tools
-- [ ] Create merit analytics dashboard
-- [ ] Add cross-tenant merit recognition
+- [ ] Create standing analytics dashboard
+- [ ] Add cross-tenant standing recognition
 - [ ] Implement mentorship networks
 
 ## Technical Architecture
@@ -116,20 +116,20 @@ This document outlines the strategic approach for extracting and evolving the sc
 └── index.ts
 ```
 
-### Merit System Integration
+### Standing System Integration
 ```typescript
 // Permission hooks for scene authoring
 export const useAuthoringPermissions = (): AuthoringPermissions => {
   const { user, tenant } = useAuth();
-  const { meritScore } = useMerit();
+  const { standingScore } = useStanding();
   
   return {
-    canCreateScene: (type) => meritScore.merit >= getRequiredMerit('create', type),
-    canUseCardAuthoring: () => meritScore.level >= 'member',
-    canUseGraphAuthoring: () => meritScore.level >= 'contributor',
-    canCreateNode: () => meritScore.level >= 'expert',
-    canModifyCoreGraph: () => meritScore.trust >= 0.8 && meritScore.level >= 'expert',
-    canModerateContent: () => meritScore.trust >= 0.9 && meritScore.leadership.moderation >= 0.7,
+    canCreateScene: (type) => standingScore.standing >= getRequiredStanding('create', type),
+    canUseCardAuthoring: () => standingScore.level >= 'collaborator',
+    canUseGraphAuthoring: () => standingScore.level >= 'steward',
+    canCreateNode: () => standingScore.level >= 'curator',
+    canModifyCoreGraph: () => standingScore.trust >= 0.8 && standingScore.level >= 'curator',
+    canModerateContent: () => standingScore.trust >= 0.9 && standingScore.reputation.moderation >= 0.7,
   };
 };
 ```
@@ -138,19 +138,19 @@ export const useAuthoringPermissions = (): AuthoringPermissions => {
 ```sql
 -- Update users table
 ALTER TABLE users RENAME COLUMN reputation TO trust;
-ALTER TABLE users ADD COLUMN merit_score FLOAT DEFAULT 0.0;
+ALTER TABLE users ADD COLUMN standing_score FLOAT DEFAULT 0.0;
 ALTER TABLE users ADD COLUMN trust_score FLOAT DEFAULT 0.5;
-ALTER TABLE users ADD COLUMN access_level VARCHAR(20) DEFAULT 'visitor';
+ALTER TABLE users ADD COLUMN access_level VARCHAR(20) DEFAULT 'contributor';
 
--- Create merit_scores table
-CREATE TABLE merit_scores (
+-- Create standing_scores table
+CREATE TABLE standing_scores (
     id BIGINT PRIMARY KEY,
     user_id BIGINT NOT NULL,
     tenant_id BIGINT NOT NULL,
-    participation JSON NOT NULL,
-    expertise JSON NOT NULL,
-    leadership JSON NOT NULL,
-    merit_score FLOAT NOT NULL,
+    reputation JSON NOT NULL,
+    engagement JSON NOT NULL,
+    affinity JSON NOT NULL,
+    standing_score FLOAT NOT NULL,
     trust_score FLOAT NOT NULL,
     access_level VARCHAR(20) NOT NULL,
     visible_metrics JSON,
@@ -180,19 +180,19 @@ CREATE TABLE permissions (
 
 ### For Users
 - **Clear Progression**: Understand how to advance in the community
-- **Meaningful Rewards**: Merit unlocks real benefits and features
+- **Meaningful Rewards**: Standing unlocks real benefits and features
 - **Recognition**: Community standing based on contributions
 - **Transparency**: See progress and next steps
 
 ### For Community
 - **Quality Control**: Trust-based permissions ensure quality
-- **Engagement**: Merit system encourages participation
-- **Leadership**: Natural leaders emerge through merit
+- **Engagement**: Standing system encourages participation
+- **Leadership**: Natural leaders emerge through standing
 - **Growth**: Progressive system scales with community
 
 ### For System
 - **Security**: Trust-based access to sensitive operations
-- **Resource Management**: Automatic allocation based on merit
+- **Resource Management**: Automatic allocation based on standing
 - **Scalability**: System grows with community needs
 - **Analytics**: Rich data for community insights
 
@@ -204,9 +204,9 @@ CREATE TABLE permissions (
 - **Performance Impact**: Minimized through efficient permission checks
 
 ### Community Risks
-- **Merit Gaming**: Prevented through trust-based security
+- **Standing Gaming**: Prevented through trust-based security
 - **Permission Abuse**: Mitigated through auditing and monitoring
-- **Community Fragmentation**: Addressed through cross-tenant merit recognition
+- **Community Fragmentation**: Addressed through cross-tenant standing recognition
 
 ## Success Metrics
 
@@ -218,26 +218,26 @@ CREATE TABLE permissions (
 
 ### Community Metrics
 - **User Engagement**: Increased participation and content creation
-- **Merit Progression**: Users advancing through merit levels
+- **Standing Progression**: Users advancing through standing levels
 - **Quality Improvement**: Higher quality content and contributions
-- **Leadership Emergence**: Natural leaders identified through merit
+- **Leadership Emergence**: Natural leaders identified through standing
 
 ## Future Enhancements
 
-### Advanced Merit Features
-- **Domain Expertise**: Specialized merit in specific knowledge areas
-- **Cross-Tenant Merit**: Merit recognition across multiple communities
-- **Mentorship Networks**: Merit for teaching and guiding others
-- **Innovation Tracking**: Merit for new ideas and contributions
+### Advanced Standing Features
+- **Domain Expertise**: Specialized standing in specific knowledge areas
+- **Cross-Tenant Standing**: Standing recognition across multiple communities
+- **Mentorship Networks**: Standing for teaching and guiding others
+- **Innovation Tracking**: Standing for new ideas and contributions
 
 ### Community Features
-- **Merit-Based Voting**: Influence proportional to merit
-- **Leadership Elections**: Community leaders chosen by merit
-- **Resource Sharing**: Merit-based resource allocation
-- **Collaboration**: Merit encourages working together
+- **Standing-Based Voting**: Influence proportional to standing
+- **Leadership Elections**: Community leaders chosen by standing
+- **Resource Sharing**: Standing-based resource allocation
+- **Collaboration**: Standing encourages working together
 
 ## Conclusion
 
-This strategic approach provides a comprehensive framework for evolving the scene authoring system into a sophisticated, merit-based platform that will grow with your community while maintaining security and encouraging quality participation. The phased implementation ensures manageable development while delivering immediate value.
+This strategic approach provides a comprehensive framework for evolving the scene authoring system into a sophisticated, standing-based platform that will grow with your community while maintaining security and encouraging quality participation. The phased implementation ensures manageable development while delivering immediate value.
 
-The integration of the Merit system, permissions architecture, and scene authoring library creates a powerful foundation for community-driven knowledge synthesis that aligns with your vision for Protogen's evolution toward Endogen and Ethosphere.
+The integration of the Standing system, permissions architecture, and scene authoring library creates a powerful foundation for community-driven knowledge synthesis that aligns with your vision for Protogen's evolution toward Endogen and Ethosphere.

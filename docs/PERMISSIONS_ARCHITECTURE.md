@@ -2,15 +2,15 @@
 
 ## Overview
 
-The Permissions Architecture provides a comprehensive, scalable system for managing user access and feature availability across the Protogen platform. This system integrates with the Merit System to provide dynamic, trust-based permissions that grow with the community.
+The Permissions Architecture provides a comprehensive, scalable system for managing user access and feature availability across the Protogen platform. This system integrates with the Standing System to provide dynamic, trust-based permissions that grow with the community.
 
 ## Core Principles
 
-### 1. Merit-Based Access
-Permissions are determined by user merit scores and trust levels, ensuring that access is earned through community contribution and reliability.
+### 1. Standing-Based Access
+Permissions are determined by user standing scores and trust levels, ensuring that access is earned through community contribution and reliability.
 
 ### 2. Progressive Permissions
-Users gain access to more features as they advance through merit levels, creating a clear progression path.
+Users gain access to more features as they advance through standing levels, creating a clear progression path.
 
 ### 3. Trust-Based Security
 Sensitive operations require high trust scores, ensuring only reliable users can perform critical actions.
@@ -95,42 +95,42 @@ User-specific permissions for individual users:
 
 ## Access Levels
 
-### Visitor (0-20 Merit)
-Basic viewing permissions:
+### Contributor
+Basic viewing and limited content creation permissions:
 - View public content
 - Basic navigation
 - Limited feedback
-- No content creation
+- Basic content creation
 
-### Member (21-40 Merit)
+### Collaborator
 Content creation permissions:
 - Create scenes and decks
 - Basic authoring tools
 - Content editing
 - Limited sharing
 
-### Contributor (41-60 Merit)
+### Steward
 Advanced authoring permissions:
 - Advanced authoring tools
 - Node selection interface
 - Content curation
 - Enhanced sharing
 
-### Expert (61-80 Merit)
+### Curator
 Graph operation permissions:
 - Core graph access
 - Node and edge creation
 - Advanced analytics
 - Cross-tenant operations
 
-### Leader (81-95 Merit)
+### Guardian
 Community leadership permissions:
 - Content moderation
 - User management
 - Community analytics
 - Leadership tools
 
-### Architect (96-100 Merit)
+### Architect
 System architecture permissions:
 - System administration
 - Global configuration
@@ -208,16 +208,16 @@ class PermissionService {
 }
 ```
 
-#### Merit-Based Permission Check
+#### Standing-Based Permission Check
 ```php
 public function check(User $user, string $permission, ?Tenant $tenant = null): bool
 {
-    $merit = $user->meritScore($tenant);
+    $standing = $user->standingScore($tenant);
     $requiredLevel = $this->getRequiredLevel($permission);
     $requiredTrust = $this->getRequiredTrust($permission);
     
-    return $merit->level >= $requiredLevel && 
-           $merit->trust >= $requiredTrust;
+    return $standing->level >= $requiredLevel && 
+           $standing->trust >= $requiredTrust;
 }
 ```
 
@@ -227,7 +227,7 @@ public function check(User $user, string $permission, ?Tenant $tenant = null): b
 ```typescript
 export const usePermissions = () => {
   const { user, tenant } = useAuth();
-  const { meritScore } = useMerit();
+  const { standingScore } = useStanding();
   
   const hasPermission = (permission: string): boolean => {
     return permissionService.check(user, permission, tenant);
@@ -246,7 +246,7 @@ export const usePermissions = () => {
 ```typescript
 export const useAuthoringPermissions = (): AuthoringPermissions => {
   const { hasPermission } = usePermissions();
-  const { meritScore } = useMerit();
+  const { standingScore } = useStanding();
   
   return {
     canCreateScene: (type) => hasPermission(`scene.create.${type}`),
@@ -269,31 +269,31 @@ export const useAuthoringPermissions = (): AuthoringPermissions => {
 ```php
 $defaultPermissions = [
     // Content permissions
-    'scene.create.card' => ['level' => 'member', 'trust' => 0.3],
-    'scene.create.graph' => ['level' => 'contributor', 'trust' => 0.5],
-    'scene.create.document' => ['level' => 'member', 'trust' => 0.3],
-    'scene.edit.own' => ['level' => 'member', 'trust' => 0.3],
-    'scene.edit.any' => ['level' => 'expert', 'trust' => 0.7],
-    'scene.delete.own' => ['level' => 'member', 'trust' => 0.5],
-    'scene.delete.any' => ['level' => 'leader', 'trust' => 0.8],
+    'scene.create.card' => ['level' => 'collaborator', 'trust' => 0.3],
+    'scene.create.graph' => ['level' => 'steward', 'trust' => 0.5],
+    'scene.create.document' => ['level' => 'collaborator', 'trust' => 0.3],
+    'scene.edit.own' => ['level' => 'collaborator', 'trust' => 0.3],
+    'scene.edit.any' => ['level' => 'curator', 'trust' => 0.7],
+    'scene.delete.own' => ['level' => 'collaborator', 'trust' => 0.5],
+    'scene.delete.any' => ['level' => 'guardian', 'trust' => 0.8],
     
     // Authoring permissions
-    'authoring.card' => ['level' => 'member', 'trust' => 0.3],
-    'authoring.graph' => ['level' => 'contributor', 'trust' => 0.5],
-    'authoring.document' => ['level' => 'member', 'trust' => 0.3],
-    'authoring.advanced' => ['level' => 'expert', 'trust' => 0.7],
+    'authoring.card' => ['level' => 'collaborator', 'trust' => 0.3],
+    'authoring.graph' => ['level' => 'steward', 'trust' => 0.5],
+    'authoring.document' => ['level' => 'collaborator', 'trust' => 0.3],
+    'authoring.advanced' => ['level' => 'curator', 'trust' => 0.7],
     
     // Graph permissions
-    'graph.node.create' => ['level' => 'expert', 'trust' => 0.7],
-    'graph.edge.create' => ['level' => 'expert', 'trust' => 0.7],
-    'graph.modify.core' => ['level' => 'expert', 'trust' => 0.8],
-    'graph.metadata.access' => ['level' => 'contributor', 'trust' => 0.5],
+    'graph.node.create' => ['level' => 'curator', 'trust' => 0.7],
+    'graph.edge.create' => ['level' => 'curator', 'trust' => 0.7],
+    'graph.modify.core' => ['level' => 'curator', 'trust' => 0.8],
+    'graph.metadata.access' => ['level' => 'steward', 'trust' => 0.5],
     
     // Tenant permissions
-    'tenant.create' => ['level' => 'leader', 'trust' => 0.8],
-    'tenant.configure' => ['level' => 'leader', 'trust' => 0.8],
-    'tenant.manage.users' => ['level' => 'leader', 'trust' => 0.8],
-    'tenant.analytics' => ['level' => 'expert', 'trust' => 0.7],
+    'tenant.create' => ['level' => 'guardian', 'trust' => 0.8],
+    'tenant.configure' => ['level' => 'guardian', 'trust' => 0.8],
+    'tenant.manage.users' => ['level' => 'guardian', 'trust' => 0.8],
+    'tenant.analytics' => ['level' => 'curator', 'trust' => 0.7],
     
     // System permissions
     'system.admin' => ['level' => 'architect', 'trust' => 0.9],
@@ -339,7 +339,7 @@ class TenantPermissionOverride {
 ### Phase 5A: Permission Foundation
 - [ ] Create permission database schema
 - [ ] Implement PermissionService
-- [ ] Add merit-based permission checks
+- [ ] Add standing-based permission checks
 - [ ] Create permission hooks for frontend
 - [ ] Update scene authoring library with permissions
 

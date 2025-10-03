@@ -62,12 +62,12 @@ The system is currently evolving to a **Central Graph System** that simplifies g
 - **Shared Knowledge**: Central Graph serves as shared knowledge base across tenants
 - **Tenant Management**: Centralized tenant administration with isolated content
 
-### 5. Merit-Based Permissions
-- **Merit System**: User progression based on participation, expertise, and leadership
+### 5. Standing-Based Permissions
+- **Standing System**: User progression based on reputation, engagement, and affinity
 - **Trust Scoring**: Reliability metrics for security-sensitive operations
-- **Progressive Access**: Features unlock as users advance through merit levels
-- **Resource Allocation**: Automatic resource assignment based on merit
-- **Community Leadership**: Natural leaders emerge through merit-based recognition
+- **Progressive Access**: Features unlock as users advance through standing levels
+- **Resource Allocation**: Automatic resource assignment based on standing
+- **Community Leadership**: Natural leaders emerge through standing-based recognition
 
 ## Conceptual Model
 

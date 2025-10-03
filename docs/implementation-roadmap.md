@@ -179,16 +179,16 @@ This roadmap outlines the phased implementation of the Protogen system, transiti
 - [ ] Implement phantom element support
 - [ ] Update existing components for Scene awareness
 
-### 5.5 Merit System Foundation 🔄 NEW
-- [ ] **Merit Score Implementation**: Create MeritScore model and calculation service
-- [ ] **Trust System**: Implement trust score calculation (replacing reputation)
-- [ ] **Access Levels**: Create progressive access level system
-- [ ] **Database Schema**: Add merit fields to users table and create merit_scores table
-- [ ] **Basic Merit Calculation**: Implement participation, expertise, and leadership tracking
+### 5.5 Standing System Foundation 🔄 NEW
+- [ ] **Standing Score Implementation**: Create StandingScore model and calculation service
+- [ ] **R/E/A Axes**: Implement Reputation, Engagement, and Affinity tracking
+- [ ] **Standing Levels**: Create progressive standing level system
+- [ ] **Database Schema**: Add standing fields to users table and create standing_scores table
+- [ ] **Basic Standing Calculation**: Implement reputation, engagement, and affinity tracking
 
 ### 5.6 Permissions Architecture 🔄 NEW
 - [ ] **Permission System**: Create comprehensive permission framework
-- [ ] **Merit-Based Permissions**: Integrate permissions with merit system
+- [ ] **Standing-Based Permissions**: Integrate permissions with standing system
 - [ ] **Scene Authoring Permissions**: Add permission hooks to authoring library
 - [ ] **Trust-Based Security**: Implement trust-based access controls
 - [ ] **Permission Management**: Create permission management UI and API
@@ -245,18 +245,18 @@ This roadmap outlines the phased implementation of the Protogen system, transiti
 - [x] Remove Stage-related state and functions
 - [x] Update admin toolbar and navigation
 
-## Phase 8: Advanced Merit & Permissions 📋 PLANNED
+## Phase 8: Advanced Standing & Permissions 📋 PLANNED
 **Status**: Planning phase, to be implemented after Phase 5
 
-### 8.1 Advanced Merit Features 📋
+### 8.1 Advanced Standing Features 📋
 - [ ] **Progressive Visibility**: Users see more metrics as they level up
-- [ ] **Resource Allocation**: Automatic resource assignment based on merit
-- [ ] **Rewards System**: Badges, titles, and benefits for merit achievements
-- [ ] **Cross-Tenant Merit**: Merit recognition across multiple communities
-- [ ] **Mentorship Networks**: Merit for teaching and guiding others
+- [ ] **Resource Allocation**: Automatic resource assignment based on standing
+- [ ] **Cosmetic System**: Optional profile enhancements and recognition
+- [ ] **Cross-Tenant Standing**: Standing recognition across multiple communities
+- [ ] **Mentorship Networks**: Standing for teaching and guiding others
 
 ### 8.2 Advanced Permissions 📋
-- [ ] **Permission Inheritance**: Users inherit permissions from merit level
+- [ ] **Permission Inheritance**: Users inherit permissions from standing level
 - [ ] **Tenant-Specific Overrides**: Custom permission models per tenant
 - [ ] **Permission Auditing**: Track permission changes and violations
 - [ ] **Security Analytics**: Monitor permission usage and security
@@ -264,10 +264,10 @@ This roadmap outlines the phased implementation of the Protogen system, transiti
 
 ### 8.3 Community Leadership Tools 📋
 - [ ] **Leadership Analytics**: Track community influence and guidance
-- [ ] **Content Moderation**: Merit-based moderation tools
+- [ ] **Content Moderation**: Standing-based moderation tools
 - [ ] **Community Health**: Monitor community growth and engagement
-- [ ] **Leadership Elections**: Community leaders chosen by merit
-- [ ] **Collaboration Tools**: Merit-based resource sharing
+- [ ] **Leadership Elections**: Community leaders chosen by standing
+- [ ] **Collaboration Tools**: Standing-based resource sharing
 
 ## Phase 9: Performance & Polish 📋 PLANNED
 **Status**: Planning phase, not yet started
