@@ -11,7 +11,18 @@ export default defineConfig({
       "@": fileURLToPath(new URL('./src', import.meta.url)),
       "@protogen/shared": fileURLToPath(new URL('../shared/dist/src', import.meta.url)),
       "@protogen/authoring": fileURLToPath(new URL('../authoring/dist', import.meta.url)),
+      // Ensure single React instance
+      "react": fileURLToPath(new URL('./node_modules/react', import.meta.url)),
+      "react-dom": fileURLToPath(new URL('./node_modules/react-dom', import.meta.url)),
     },
+  },
+  optimizeDeps: {
+    include: ['@protogen/shared', 'react', 'react-dom']
+  },
+  build: {
+    commonjsOptions: {
+      include: [/node_modules/]
+    }
   },
   server: {
     host: '0.0.0.0',  // Allow access from outside the container

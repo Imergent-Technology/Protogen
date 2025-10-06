@@ -24,6 +24,13 @@ class OAuthController extends Controller
             return response()->json(['error' => 'Invalid provider'], 400);
         }
 
+        // Check if OAuth credentials are configured
+        $clientId = config("services.{$provider}.client_id");
+        if (empty($clientId) || $clientId === "your-{$provider}-client-id") {
+            // Development mode: redirect to callback with mock data
+            return redirect("/api/auth/oauth/{$provider}/callback?dev_mode=true");
+        }
+
         return Socialite::driver($provider)->redirect();
     }
 
@@ -39,7 +46,19 @@ class OAuthController extends Controller
                 throw new \Exception('Invalid OAuth provider');
             }
 
-            $socialUser = Socialite::driver($provider)->user();
+            // Handle development mode
+            if ($request->has('dev_mode')) {
+                $socialUser = new class {
+                    public function getId() { return 'dev-user-123'; }
+                    public function getName() { return 'Development User'; }
+                    public function getEmail() { return 'dev@protogen.local'; }
+                    public function getAvatar() { return null; }
+                    public function getNickname() { return 'devuser'; }
+                    public function getRaw() { return []; }
+                };
+            } else {
+                $socialUser = Socialite::driver($provider)->user();
+            }
             
             // Validate social user data
             if (!$socialUser->getEmail()) {

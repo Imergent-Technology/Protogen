@@ -19,12 +19,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('stages/{stage:slug}', [StageController::class, 'show'])->name('stages.show');
 });
 
-// OAuth routes (need session support)
-Route::prefix('api/auth/oauth')->group(function () {
-    Route::get('{provider}/redirect', [App\Http\Controllers\Auth\OAuthController::class, 'redirect']);
-    Route::get('{provider}/callback', [App\Http\Controllers\Auth\OAuthController::class, 'callback']);
-    Route::post('logout', [App\Http\Controllers\Auth\OAuthController::class, 'logout'])->middleware('auth:sanctum');
-});
+// OAuth routes moved to api.php
 
 require __DIR__.'/settings.php';
 // require __DIR__.'/auth.php';

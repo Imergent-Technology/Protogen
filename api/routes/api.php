@@ -25,7 +25,12 @@ use App\Http\Controllers\Auth\AdminAuthController;
 |
 */
 
-// OAuth routes moved to web.php for session support
+// OAuth routes (need session support)
+Route::prefix('auth/oauth')->group(function () {
+    Route::get('{provider}/redirect', [App\Http\Controllers\Auth\OAuthController::class, 'redirect']);
+    Route::get('{provider}/callback', [App\Http\Controllers\Auth\OAuthController::class, 'callback']);
+    Route::post('logout', [App\Http\Controllers\Auth\OAuthController::class, 'logout'])->middleware('auth:sanctum');
+});
 
 // Admin authentication routes (use Sanctum for API auth)
 Route::group(['prefix' => 'auth/admin'], function () {
