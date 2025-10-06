@@ -6,17 +6,17 @@ This folder contains documentation for features currently being developed, recen
 
 ## 📁 **Current Active Development Areas**
 
-### **Unified Portal System**
-- `UNIFIED_PORTAL_ARCHITECTURE.md` - Architecture for unifying Admin and Portal
-- `UNIFIED_PORTAL_MIGRATION_STRATEGY.md` - Strategy for migrating Admin to Portal
-- `UNIFIED_PORTAL_ROADMAP.md` - Implementation roadmap for Portal unification
-- `UNIFIED_PORTAL_SYSTEM_DOCUMENTATION.md` - Updated system documentation
-- `UNIFIED_PORTAL_VALIDATION_CHECKLIST.md` - Validation criteria and checklist
+### **Portal Foundation** ✅
+- `PORTAL_FOUNDATION.md` - Complete Portal foundation setup, issues resolved, and current status
 
-### **Navigator, Flow, Context, and Engagement Systems**
-- `NAVIGATOR_FLOW_CONTEXT_ENGAGEMENT_ARCHITECTURE.md` - Integrated architecture
-- `NAVIGATOR_FLOW_CONTEXT_ENGAGEMENT_RECOMMENDATIONS.md` - Implementation recommendations
-- `NAVIGATOR_FLOW_CONTEXT_ENGAGEMENT_ROADMAP.md` - Implementation roadmap
+### **Unified Portal Design**
+- `UNIFIED_PORTAL_DESIGN.md` - Comprehensive unified portal architecture, migration strategy, and implementation plan
+
+### **Navigator Systems Architecture**
+- `NAVIGATOR_SYSTEMS_ARCHITECTURE.md` - Integrated architecture for Navigator, Flow, Context, and Engagement systems
+
+### **Development Planning**
+- `DEVELOPMENT_ROADMAP.md` - Comprehensive development roadmap with phases and timelines
 
 ### **Scene Authoring and Slide System**
 - `SCENE_AUTHORING_LIBRARY_STRATEGY.md` - Scene authoring library strategy with Slide System
@@ -59,16 +59,22 @@ This folder contains documentation for features currently being developed, recen
 ## 🎯 **Quick Reference**
 
 ### **Current Priority Areas**
-1. **Unified Portal Architecture** - Primary focus for Portal unification
-2. **Slide System Integration** - Scene authoring with slide capabilities
-3. **Navigator System** - Content navigation and traversal
-4. **Flow System** - Guided user experiences
+1. **Slide System Implementation** - Dynamic content with transitions (Phase 1)
+2. **Navigator System Enhancement** - Enhanced navigation with slide support (Phase 2)
+3. **Unified Portal Migration** - Admin functionality integration (Phase 6)
+4. **Flow System Implementation** - Guided user experiences (Phase 4)
 
-### **Recent Additions**
-- Slide System architecture integrated into Scene Authoring
-- Orchestrator system documentation for slide coordination
-- Navigator integration points for slide navigation
-- Context system enhancements for slide contexts
+### **Recent Achievements**
+- ✅ Portal Foundation complete and operational
+- ✅ Navigator System Foundation implemented
+- ✅ Modern app-like UI with responsive design
+- ✅ OAuth authentication working
+- ✅ Documentation consolidated and organized
+
+### **Next Steps**
+- 🎯 Phase 1: Slide System Implementation (2-3 weeks)
+- 🧭 Phase 2: Navigator System Enhancement (2-3 weeks)
+- 🎯 Phase 3: Enhanced Context System (1-2 weeks)
 
 ## 📚 **Related Documentation**
 
@@ -78,6 +84,15 @@ For stable, long-standing project documentation, see the main `docs/` folder:
 - `snapshot-system.md` - Snapshot system documentation
 - `PERMISSIONS_ARCHITECTURE.md` - Permissions and standing system
 - `implementation-roadmap.md` - Overall project roadmap
+
+## 📦 **Archive**
+
+The `archive/` folder contains historical development documents that have been consolidated into the main documentation files. These files are preserved for reference but are no longer actively maintained:
+
+- Portal Foundation documents (consolidated into `PORTAL_FOUNDATION.md`)
+- Unified Portal documents (consolidated into `UNIFIED_PORTAL_DESIGN.md`)
+- Navigator System documents (consolidated into `NAVIGATOR_SYSTEMS_ARCHITECTURE.md`)
+- Development planning documents (consolidated into `DEVELOPMENT_ROADMAP.md`)
 
 ## 🔧 **Maintenance**
 
