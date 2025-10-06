@@ -91,6 +91,293 @@ This document outlines the strategic approach for extracting and evolving the sc
 - [ ] Add cross-tenant standing recognition
 - [ ] Implement mentorship networks
 
+## Slide System Architecture
+
+### Overview
+The Slide System enables nodes within scenes to transition between different states and appearances. Slides are associated with scenes rather than decks, allowing for rich animations and state transitions within individual scenes. This system is fundamental to creating dynamic, interactive presentations within the Protogen platform.
+
+### Core Concepts
+
+#### **Slides and Scene Items**
+- **Slides**: Define states for nodes within a scene, allowing transitions between different positions and appearances
+- **Scene Items**: Represent nodes in a scene with an optional `slide_id` field
+- **Slide Items**: One slide item per slide per node, defining the node's state for that specific slide
+- **Tweening System**: Orchestrates smooth transitions between slide states
+
+#### **Scene Item Enhancement**
+```typescript
+interface SceneItem {
+  id: string;
+  scene_id: string;
+  item_type: 'node' | 'edge' | 'text' | 'image' | 'video' | 'other';
+  item_id: number;
+  item_guid: string;
+  position: { x: number; y: number; z?: number };
+  dimensions: { width: number; height: number };
+  style: Record<string, any>;
+  meta: Record<string, any>;
+  is_visible: boolean;
+  z_index: number;
+  slide_id?: string; // Optional slide association
+  created_at: string;
+  updated_at: string;
+}
+```
+
+#### **Slide Items**
+```typescript
+interface SlideItem {
+  id: string;
+  slide_id: string;
+  scene_item_id: string;
+  position: { x: number; y: number; z?: number };
+  dimensions: { width: number; height: number };
+  style: Record<string, any>;
+  meta: Record<string, any>;
+  is_visible: boolean;
+  z_index: number;
+  transition_duration?: number;
+  transition_easing?: string;
+  created_at: string;
+  updated_at: string;
+}
+```
+
+#### **Slides**
+```typescript
+interface Slide {
+  id: string;
+  scene_id: string;
+  name: string;
+  description?: string;
+  order: number;
+  duration?: number;
+  transition_type?: 'fade' | 'slide' | 'zoom' | 'custom';
+  transition_duration?: number;
+  transition_easing?: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+```
+
+### Database Schema
+
+#### **Slides Table**
+```sql
+CREATE TABLE slides (
+    id BIGSERIAL PRIMARY KEY,
+    scene_id BIGINT NOT NULL REFERENCES scenes(id) ON DELETE CASCADE,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    order_index INTEGER NOT NULL,
+    duration INTEGER, -- in milliseconds
+    transition_type VARCHAR(50),
+    transition_duration INTEGER,
+    transition_easing VARCHAR(50),
+    is_active BOOLEAN DEFAULT true,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
+);
+```
+
+#### **Slide Items Table**
+```sql
+CREATE TABLE slide_items (
+    id BIGSERIAL PRIMARY KEY,
+    slide_id BIGINT NOT NULL REFERENCES slides(id) ON DELETE CASCADE,
+    scene_item_id BIGINT NOT NULL REFERENCES scene_items(id) ON DELETE CASCADE,
+    position JSONB,
+    dimensions JSONB,
+    style JSONB,
+    meta JSONB,
+    is_visible BOOLEAN DEFAULT true,
+    z_index INTEGER DEFAULT 0,
+    transition_duration INTEGER,
+    transition_easing VARCHAR(50),
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW(),
+    UNIQUE(slide_id, scene_item_id)
+);
+```
+
+#### **Scene Items Enhancement**
+```sql
+-- Add slide_id to existing scene_items table
+ALTER TABLE scene_items ADD COLUMN slide_id BIGINT REFERENCES slides(id) ON DELETE SET NULL;
+CREATE INDEX idx_scene_items_slide_id ON scene_items(slide_id);
+```
+
+### Tweening System
+
+#### **Transition Logic**
+1. **Default State**: Scene items without `slide_id` render consistently across all slides
+2. **Slide-Specific State**: When a slide contains a `slide_item` for a node, that node transitions to the slide's defined state
+3. **State Persistence**: Nodes maintain their last slide state until encountering a new slide with different `slide_item` data
+4. **Smooth Transitions**: The tweening system orchestrates smooth transitions between states
+
+#### **Transition Types**
+- **Position**: Smooth movement between coordinates
+- **Scale**: Size changes with easing
+- **Rotation**: Angular transitions
+- **Opacity**: Fade in/out effects
+- **Style**: Color, border, and other CSS property transitions
+
+#### **Tweening Configuration**
+```typescript
+interface TweeningConfig {
+  duration: number; // milliseconds
+  easing: 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out' | 'cubic-bezier';
+  delay?: number; // milliseconds
+  repeat?: number; // -1 for infinite
+  yoyo?: boolean; // reverse animation
+}
+```
+
+### Deck System Evolution
+
+#### **New Deck Purpose**
+Decks are now focused on grouping highly related scenes together for optimization:
+- **Scene Grouping**: Group related scenes for efficient loading
+- **Code Optimization**: Load scene-specific code blobs in the right sequence
+- **Presentation Optimization**: Optimize presentation of included scenes
+- **Future Extensibility**: Support for advanced deck features
+
+#### **Deck-Scene Relationship**
+```typescript
+interface Deck {
+  id: string;
+  name: string;
+  description?: string;
+  scene_ids: string[]; // Ordered list of scene IDs
+  loading_strategy: 'sequential' | 'parallel' | 'lazy';
+  preload_scenes: number; // Number of scenes to preload
+  optimization_config: {
+    bundle_scenes: boolean;
+    shared_dependencies: string[];
+    cache_strategy: 'aggressive' | 'conservative';
+  };
+  created_at: string;
+  updated_at: string;
+}
+```
+
+### API Endpoints
+
+#### **Slide Management**
+```
+GET    /api/slides                    # List slides for a scene
+POST   /api/slides                    # Create new slide
+GET    /api/slides/{id}               # Get specific slide
+PUT    /api/slides/{id}               # Update slide
+DELETE /api/slides/{id}               # Delete slide
+```
+
+#### **Slide Items Management**
+```
+GET    /api/slides/{id}/items        # Get slide items for a slide
+POST   /api/slides/{id}/items         # Create slide item
+PUT    /api/slide-items/{id}          # Update slide item
+DELETE /api/slide-items/{id}          # Delete slide item
+```
+
+#### **Scene Item Enhancement**
+```
+PUT    /api/scene-items/{id}/slide    # Associate scene item with slide
+DELETE /api/scene-items/{id}/slide    # Remove slide association
+```
+
+### Use Cases
+
+#### **1. Node State Transitions**
+```typescript
+// Create a slide that highlights specific nodes
+const highlightSlide = {
+  name: "Key Concepts Highlight",
+  scene_id: sceneId,
+  order: 1,
+  duration: 3000,
+  transition_type: "fade",
+  items: [
+    {
+      scene_item_id: "node-1",
+      position: { x: 100, y: 200 },
+      style: { backgroundColor: "#ff6b6b", scale: 1.2 },
+      transition_duration: 500
+    }
+  ]
+};
+```
+
+#### **2. Progressive Disclosure**
+```typescript
+// Create slides that progressively reveal content
+const progressiveSlides = [
+  {
+    name: "Overview",
+    order: 1,
+    items: [
+      { scene_item_id: "title", is_visible: true },
+      { scene_item_id: "subtitle", is_visible: true },
+      { scene_item_id: "details", is_visible: false }
+    ]
+  },
+  {
+    name: "Details",
+    order: 2,
+    items: [
+      { scene_item_id: "details", is_visible: true, transition_duration: 800 }
+    ]
+  }
+];
+```
+
+#### **3. Animation Sequences**
+```typescript
+// Create complex animation sequences
+const animationSequence = {
+  slides: [
+    {
+      name: "Initial State",
+      order: 1,
+      items: [
+        { scene_item_id: "node-1", position: { x: 0, y: 0 }, scale: 1.0 }
+      ]
+    },
+    {
+      name: "Movement",
+      order: 2,
+      items: [
+        { 
+          scene_item_id: "node-1", 
+          position: { x: 200, y: 100 }, 
+          scale: 1.5,
+          transition_duration: 1000,
+          transition_easing: "ease-in-out"
+        }
+      ]
+    }
+  ]
+};
+```
+
+### Integration with Other Systems
+
+#### **Navigator System Integration**
+- **Slide Navigation**: Navigator handles slide transitions and state management
+- **Context Awareness**: Navigator tracks current slide and slide history
+- **Transition Coordination**: Navigator orchestrates slide transitions with scene navigation
+
+#### **Orchestrator System Integration**
+- **Scene Lifecycle**: Orchestrator manages slide states during scene loading/unloading
+- **State Management**: Orchestrator coordinates slide state with scene state
+- **Performance Optimization**: Orchestrator optimizes slide loading and caching
+
+#### **Context System Integration**
+- **Slide Contexts**: Context system supports slide-specific coordinate systems
+- **Navigation Anchors**: Slide positions can be used as navigation anchors
+- **Cross-Slide References**: Context system enables linking between slides
+
 ## Technical Architecture
 
 ### Scene Authoring Library Structure

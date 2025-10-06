@@ -441,17 +441,12 @@ The implementation follows a phased approach that allows for incremental improve
    - Compatible event handling
 
 ### Pending Features
-1. **Force-Directed Layout** ⏳
-   - Intelligent initial node placement
-   - Physics-based positioning algorithms
-   - Relationship-aware clustering
-
-2. **Advanced Layout Algorithms** ⏳
+1. **Advanced Layout Algorithms** ⏳
    - Hierarchical layouts
    - Circular layouts
    - Grid-based layouts with constraints
 
-3. **User Experience Enhancements** ⏳
+2. **User Experience Enhancements** ⏳
    - Snap-to-grid functionality
    - Collision detection and prevention
    - Layout presets and templates

@@ -138,139 +138,142 @@ This roadmap outlines the phased implementation of the Protogen system, transiti
 - [x] Design drag-and-drop interaction system
 - [x] Plan performance optimization strategies
 
-## Phase 5: Portal Integration & Authoring 🔄 IN PROGRESS
-**Status**: Significant progress with advanced features implemented
+## Phase 5: Core User Experience Foundation 🔄 IN PROGRESS
+**Status**: Restructuring to prioritize user-facing functionality and portal-first architecture
 
-### 5.1 Scene Management UI ✅
-- [x] Create SceneManager component
-- [x] Implement scene CRUD operations
-- [x] Add scene type management
+### 5.1 Scene Viewing & Navigation Restructuring 🔄 PRIORITY
+- [ ] **Modular Scene Viewer**: Extract and modularize scene viewing components
+- [ ] **Universal Navigation System**: Create consistent navigation across all scene types
+- [ ] **Context-Aware Navigation**: Implement context-specific navigation patterns
+- [ ] **Flow System Integration**: Design flow system to work with modular navigation
+- [ ] **Scene Type Abstraction**: Create unified interface for all scene types
+- [ ] **Performance Optimization**: Optimize scene loading and rendering
+
+### 5.2 Context-Specific User Engagement 🔄 PRIORITY
+- [ ] **Context-Aware Feedback System**: Implement feedback tied to specific contexts
+- [ ] **Social Features Integration**: Add commenting, sharing, and collaboration features
+- [ ] **User Engagement Tracking**: Track user interactions and engagement patterns
+- [ ] **Contextual Recommendations**: Suggest relevant content based on current context
+- [ ] **Community Features**: Implement community-driven content discovery
+- [ ] **Real-time Collaboration**: Add real-time collaborative features
+
+### 5.3 Scene Authoring with Permissions Integration 🔄 PRIORITY
+- [ ] **Standing System Foundation**: Create StandingScore model and R/E/A tracking
+- [ ] **Permission-Based Authoring**: Integrate permissions with all authoring tools
+- [ ] **Progressive Authoring Access**: Unlock features based on standing levels
+- [ ] **Context-Aware Authoring**: Authoring tools that understand context requirements
+- [ ] **Collaborative Authoring**: Multi-user authoring with permission controls
+- [ ] **Authoring Workflow Integration**: Seamless authoring within viewing experience
+
+### 5.4 Portal Project as Main Interface 🔄 PRIORITY
+- [ ] **Portal-First Architecture**: Redesign portal as primary user interface
+- [ ] **Unified User Experience**: Single interface for viewing, authoring, and engagement
+- [ ] **Responsive Design**: Mobile and desktop optimized portal interface
+- [ ] **User Dashboard**: Personalized dashboard with standing, content, and activity
+- [ ] **Content Discovery**: Advanced content discovery and recommendation engine
+- [ ] **Portal Performance**: Optimize portal for high-performance user experience
+
+## Phase 6: Admin Project as Secure Component Repository 🔄 IN PROGRESS
+**Status**: Restructuring admin project to be secure repository of admin-only components
+
+### 6.1 Admin Component Modularization 🔄 PRIORITY
+- [ ] **Extract Admin Components**: Modularize existing admin components for dynamic loading
+- [ ] **Secure Component Loading**: Implement secure dynamic component loading system
+- [ ] **Permission-Based Component Access**: Components only load based on user permissions
+- [ ] **Admin Component Registry**: Create registry of available admin components
+- [ ] **Component Isolation**: Ensure admin components are properly isolated from user interface
+- [ ] **Admin Component Testing**: Comprehensive testing for modular admin components
+
+### 6.2 Portal Integration with Admin Components 🔄 PRIORITY
+- [ ] **Dynamic Admin Slot Loading**: Load admin components into well-defined slots in portal
+- [ ] **Seamless Admin Integration**: Admin features appear naturally within user interface
+- [ ] **Permission-Based UI Slots**: UI slots only appear for users with appropriate permissions
+- [ ] **Admin Component Routing**: Secure routing system for admin component access
+- [ ] **Context-Aware Admin Features**: Admin components adapt to current user context
+- [ ] **Admin Component Performance**: Optimize admin component loading and rendering
+
+### 6.3 Legacy Admin Interface Migration 🔄 PRIORITY
+- [ ] **Multi-Tenant Architecture** ✅ COMPLETED (moved from previous phase)
+- [ ] **Feedback Aggregation System** ✅ COMPLETED (moved from previous phase)
+- [ ] **Tenant Management UI** ✅ COMPLETED (moved from previous phase)
+- [ ] **Admin Interface Deprecation**: Gradually deprecate standalone admin interface
+- [ ] **Admin Feature Migration**: Migrate remaining admin features to portal integration
+- [ ] **Admin Security Audit**: Ensure all admin features maintain proper security
+
+## Phase 7: Advanced Authoring & Scene Management 📋 DEFERRED
+**Status**: Deferred to focus on core user experience priorities
+
+### 7.1 Scene Management UI 📋 DEFERRED
 - [ ] Create dual-tab modal (List/Graph)
 - [ ] Implement text search and filtering
 - [ ] Add bulk actions (linked/phantom)
 - [ ] Integrate with Scene API
 - [ ] Add comprehensive UI tests
 
-### 5.1.1 Scene Type-Specific Authoring Tools 🔄
+### 7.2 Scene Type-Specific Authoring Tools 📋 DEFERRED
 - [ ] **Graph Scene Authoring**: Node/edge import and management tools
-- [x] **Card Scene Authoring**: Advanced slideshow system with comprehensive authoring tools
 - [ ] **Document Scene Authoring**: Text and media content tools
 - [ ] **Custom Scene Types**: Extensible architecture for new scene types
 - [ ] **Type-optimized workflows**: Specialized tools for each scene type
 
-### 5.2 Deck Management UI ✅
-- [x] Create DeckManager component
-- [x] Implement deck CRUD operations
-- [x] Add scene management within decks
+### 7.3 Deck Management UI 📋 DEFERRED
 - [ ] Implement Scene publishing controls
 - [ ] Add snapshot rollback UI
 - [ ] Create scene and deck management tests
 
-### 5.3 Context Management UI 🔄
-- [x] Add Contexts tab to DeckManager
+### 7.4 Context Management UI 📋 DEFERRED
 - [ ] Create Context creation/editing forms
 - [ ] Implement context resolution display
 - [ ] Add coordinate visualization tools
 - [ ] Create context management tests
 
-### 5.4 GraphStudio Integration 🔄
-- [x] Integrate Scene layer with existing GraphStudio
+### 7.5 GraphStudio Integration 📋 DEFERRED
 - [ ] Add Scene switching functionality
 - [ ] Implement phantom element support
 - [ ] Update existing components for Scene awareness
 
-### 5.5 Standing System Foundation 🔄 NEW
-- [ ] **Standing Score Implementation**: Create StandingScore model and calculation service
-- [ ] **R/E/A Axes**: Implement Reputation, Engagement, and Affinity tracking
-- [ ] **Standing Levels**: Create progressive standing level system
-- [ ] **Database Schema**: Add standing fields to users table and create standing_scores table
-- [ ] **Basic Standing Calculation**: Implement reputation, engagement, and affinity tracking
+## Phase 8: Advanced Standing & Permissions 📋 DEFERRED
+**Status**: Deferred to focus on core user experience priorities
 
-### 5.6 Permissions Architecture 🔄 NEW
-- [ ] **Permission System**: Create comprehensive permission framework
-- [ ] **Standing-Based Permissions**: Integrate permissions with standing system
-- [ ] **Scene Authoring Permissions**: Add permission hooks to authoring library
-- [ ] **Trust-Based Security**: Implement trust-based access controls
-- [ ] **Permission Management**: Create permission management UI and API
-
-## Phase 6: Multi-Tenant Architecture ✅ COMPLETED
-**Status**: All tasks completed and tested
-
-### 6.1 Tenant System Implementation ✅
-- [x] Create Tenant model with configuration management
-- [x] Create TenantConfiguration model with scoped settings
-- [x] Implement tenant isolation middleware
-- [x] Add tenant-aware routing and API endpoints
-- [x] Create database migrations
-- [x] Add tenant relationships to all content models
-
-### 6.2 Feedback Aggregation System ✅
-- [x] Create Feedback model for centralized collection
-- [x] Implement feedback types (comment, rating, bookmark, etc.)
-- [x] Add moderation system with status tracking
-- [x] Create tenant-aware feedback collection
-- [x] Implement feedback aggregation to Core Graph
-- [x] Add comprehensive API endpoints
-
-### 6.3 Tenant Management UI ✅
-- [x] Create TenantManager component
-- [x] Implement tenant CRUD operations
-- [x] Add configuration management interface
-- [x] Add branding customization
-- [x] Integrate with admin navigation
-- [x] Add tenant content statistics
-
-## Phase 7: Stage System Removal ✅ COMPLETED
-**Status**: Stage system completely removed, no backward compatibility
-
-### 7.1 Stage System Removal ✅
-- [x] Remove all Stage-related models and migrations
-- [x] Remove Stage API endpoints
-- [x] Remove Stage management UI components
-- [x] Remove Stage navigation and routing
-- [x] Update admin interface to use Scene-based navigation
-- [x] Rename admin portal to "Protogen Admin"
-
-### 7.2 Navigation System Update ✅
-- [x] Replace StageNavigation with SceneNavigation
-- [x] Add tenant dropdown menu to sidebar
-- [x] Update navigation structure for Scene/Deck system
-- [x] Set default tenant to "Progress"
-- [x] Remove all Stage-related navigation items
-
-### 7.3 Admin Interface Update ✅
-- [x] Update admin dashboard to use Scene management
-- [x] Remove Stage management cards and buttons
-- [x] Update view modes to use Scene/Deck system
-- [x] Remove Stage-related state and functions
-- [x] Update admin toolbar and navigation
-
-## Phase 8: Advanced Standing & Permissions 📋 PLANNED
-**Status**: Planning phase, to be implemented after Phase 5
-
-### 8.1 Advanced Standing Features 📋
+### 8.1 Advanced Standing Features 📋 DEFERRED
 - [ ] **Progressive Visibility**: Users see more metrics as they level up
 - [ ] **Resource Allocation**: Automatic resource assignment based on standing
 - [ ] **Cosmetic System**: Optional profile enhancements and recognition
 - [ ] **Cross-Tenant Standing**: Standing recognition across multiple communities
 - [ ] **Mentorship Networks**: Standing for teaching and guiding others
 
-### 8.2 Advanced Permissions 📋
+### 8.2 Advanced Permissions 📋 DEFERRED
 - [ ] **Permission Inheritance**: Users inherit permissions from standing level
 - [ ] **Tenant-Specific Overrides**: Custom permission models per tenant
 - [ ] **Permission Auditing**: Track permission changes and violations
 - [ ] **Security Analytics**: Monitor permission usage and security
 - [ ] **Permission Recovery**: Mechanisms for permission restoration
 
-### 8.3 Community Leadership Tools 📋
+### 8.3 Community Leadership Tools 📋 DEFERRED
 - [ ] **Leadership Analytics**: Track community influence and guidance
 - [ ] **Content Moderation**: Standing-based moderation tools
 - [ ] **Community Health**: Monitor community growth and engagement
 - [ ] **Leadership Elections**: Community leaders chosen by standing
 - [ ] **Collaboration Tools**: Standing-based resource sharing
 
-## Phase 9: Performance & Polish 📋 PLANNED
-**Status**: Planning phase, not yet started
+## Stage System Removal ✅ COMPLETED (Previously Phase 7)
+**Status**: Stage system completely removed, no backward compatibility
+
+### Completed Tasks ✅
+- [x] Remove all Stage-related models and migrations
+- [x] Remove Stage API endpoints
+- [x] Remove Stage management UI components
+- [x] Remove Stage navigation and routing
+- [x] Update admin interface to use Scene-based navigation
+- [x] Rename admin portal to "Protogen Admin"
+- [x] Replace StageNavigation with SceneNavigation
+- [x] Add tenant dropdown menu to sidebar
+- [x] Update navigation structure for Scene/Deck system
+- [x] Set default tenant to "Progress"
+- [x] Remove all Stage-related navigation items
+
+## Phase 9: Performance & Polish 📋 DEFERRED
+**Status**: Deferred to focus on core user experience priorities
 
 ### 9.1 Rebuild Triggers 📋
 - [ ] Implement debounced rebuild triggers (500ms-2s)
@@ -492,25 +495,25 @@ This roadmap outlines the phased implementation of the Protogen system, transiti
 - **Content Migration**: No existing Stage content to migrate
 - **System Stability**: Comprehensive testing and monitoring
 
-## Immediate Next Steps
-- [ ] Complete Context management UI components
-- [ ] Implement Context creation and editing forms
-- [ ] Implement Document Scene Authoring tools
-- [ ] Implement Node Selection Interface
-- [ ] Implement Graph Scene Authoring tools
-- [ ] Design Content Sharing System architecture
-- [ ] Plan Presentation System timeline engine
+## Immediate Next Steps (Phase 5 Priority)
+- [ ] **Modular Scene Viewer**: Extract and modularize scene viewing components
+- [ ] **Standing System Foundation**: Create StandingScore model and R/E/A tracking
+- [ ] **Permission-Based Authoring**: Integrate permissions with authoring tools
+- [ ] **Portal-First Architecture**: Redesign portal as primary user interface
+- [ ] **Context-Aware Feedback System**: Implement context-specific feedback
+- [ ] **Admin Component Modularization**: Extract admin components for dynamic loading
 
-## Timeline Estimate
-- **Phase 5**: 2-3 weeks (Remaining authoring tools completion)
-- **Phase 8**: 2-3 weeks (Performance & polish)
-- **Phase 9**: 3-4 weeks (Content sharing system)
+## Timeline Estimate (Updated Priorities)
+- **Phase 5**: 4-6 weeks (Core user experience foundation)
+- **Phase 6**: 3-4 weeks (Admin component repository and portal integration)
+- **Phase 7-8**: 6-8 weeks (Deferred advanced features)
+- **Phase 9+**: 8-12 weeks (Performance, content sharing, music, flow system)
 
-**Total Estimated Time**: 7-10 weeks for complete implementation
+**Total Estimated Time**: 7-10 weeks for Phase 5-6 (core priorities), 21-30 weeks for complete implementation
 
 ## Current Status Summary
 
-### ✅ **Completed (Phases 1, 2, 3, 4, 6, 7)**
+### ✅ **Completed (Phases 1, 2, 3, 4, Stage System Removal)**
 - Core Foundation with edge weights and registry
 - Scene & Deck system with tenant isolation
 - Context system with coordinate validation
@@ -521,13 +524,25 @@ This roadmap outlines the phased implementation of the Protogen system, transiti
 - **Updated admin interface to Protogen Admin**
 - **Tenant dropdown navigation with Progress as default**
 
-### 🔄 **In Progress (Phase 5)**
-- Context management UI (basic structure)
-- Document Scene Authoring (pending)
-- Node Selection Interface (pending)
-- Graph Scene Authoring (pending)
+### 🔄 **In Progress (Phase 5 - Core User Experience Foundation)**
+- **Scene Viewing & Navigation Restructuring** (Priority)
+- **Context-Specific User Engagement** (Priority)
+- **Scene Authoring with Permissions Integration** (Priority)
+- **Portal Project as Main Interface** (Priority)
 
-### 📋 **Planned (Phases 8, 9)**
+### 🔄 **In Progress (Phase 6 - Admin Component Repository)**
+- **Admin Component Modularization** (Priority)
+- **Portal Integration with Admin Components** (Priority)
+- **Legacy Admin Interface Migration** (Priority)
+
+### 📋 **Deferred (Phases 7-8)**
+- Advanced Authoring & Scene Management
+- Advanced Standing & Permissions
+- Community Leadership Tools
+
+### 📋 **Planned (Phases 9+)**
 - Performance optimization
-- Advanced tenant features
 - Content sharing system
+- Music & Audio system
+- Flow system
+- Task & Volunteer management
