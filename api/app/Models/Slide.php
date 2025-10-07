@@ -19,10 +19,14 @@ class Slide extends Model
         'slide_index',
         'is_active',
         'transition_config',
+        'entrance_animation',
+        'exit_animation',
     ];
 
     protected $casts = [
         'transition_config' => 'array',
+        'entrance_animation' => 'array',
+        'exit_animation' => 'array',
         'is_active' => 'boolean',
         'slide_index' => 'integer',
     ];
@@ -124,6 +128,8 @@ class Slide extends Model
             'description' => $this->description,
             'isActive' => $this->is_active,
             'transitionConfig' => $this->transition_config,
+            'entranceAnimation' => $this->getEntranceAnimation(),
+            'exitAnimation' => $this->getExitAnimation(),
             'nodeStates' => $this->slideItems->map(function ($item) {
                 return [
                     'nodeId' => $item->node_id,
@@ -136,5 +142,63 @@ class Slide extends Model
                 ];
             })->toArray(),
         ];
+    }
+
+    // Slide Animation Management
+
+    /**
+     * Get effective entrance animation (override or fall back to scene default).
+     */
+    public function getEntranceAnimation(): array
+    {
+        if ($this->entrance_animation) {
+            return $this->entrance_animation;
+        }
+        
+        return $this->scene->getDefaultAnimation('entrance');
+    }
+
+    /**
+     * Get effective exit animation (override or fall back to scene default).
+     */
+    public function getExitAnimation(): array
+    {
+        if ($this->exit_animation) {
+            return $this->exit_animation;
+        }
+        
+        return $this->scene->getDefaultAnimation('exit');
+    }
+
+    /**
+     * Set entrance animation override.
+     */
+    public function setEntranceAnimation(array $animation): void
+    {
+        $this->update(['entrance_animation' => $animation]);
+    }
+
+    /**
+     * Set exit animation override.
+     */
+    public function setExitAnimation(array $animation): void
+    {
+        $this->update(['exit_animation' => $animation]);
+    }
+
+    /**
+     * Clear entrance animation override (use scene default).
+     */
+    public function clearEntranceAnimation(): void
+    {
+        $this->update(['entrance_animation' => null]);
+    }
+
+    /**
+     * Clear exit animation override (use scene default).
+     */
+    public function clearExitAnimation(): void
+    {
+        $this->update(['exit_animation' => null]);
     }
 }

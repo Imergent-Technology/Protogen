@@ -21,6 +21,8 @@ class Scene extends Model
         'config',
         'meta',
         'style',
+        'slide_config',
+        'default_slide_animation',
         'is_active',
         'is_public',
         'created_by',
@@ -33,6 +35,8 @@ class Scene extends Model
         'config' => 'array',
         'meta' => 'array',
         'style' => 'array',
+        'slide_config' => 'array',
+        'default_slide_animation' => 'array',
         'is_active' => 'boolean',
         'is_public' => 'boolean',
         'published_at' => 'datetime',
@@ -231,5 +235,76 @@ class Scene extends Model
     public function slides(): HasMany
     {
         return $this->hasMany(Slide::class);
+    }
+
+    // Slide Animation Management
+
+    /**
+     * Get slide configuration with defaults.
+     */
+    public function getSlideConfig(): array
+    {
+        return $this->slide_config ?? [
+            'auto_advance' => false,
+            'loop' => false,
+            'duration_per_slide' => 5000,
+        ];
+    }
+
+    /**
+     * Get default animation for a specific type (entrance or exit).
+     */
+    public function getDefaultAnimation(string $type = 'entrance'): array
+    {
+        $defaults = $this->default_slide_animation ?? [];
+        
+        if (isset($defaults[$type])) {
+            return $defaults[$type];
+        }
+        
+        // Fall back to system default
+        return $this->getSystemDefaultAnimation($type);
+    }
+
+    /**
+     * Get system default animation (fallback when nothing is specified).
+     */
+    private function getSystemDefaultAnimation(string $type): array
+    {
+        $systemDefaults = [
+            'entrance' => [
+                'type' => 'fade',
+                'duration' => 300,
+                'easing' => 'ease-in',
+            ],
+            'exit' => [
+                'type' => 'fade',
+                'duration' => 300,
+                'easing' => 'ease-out',
+            ],
+        ];
+
+        return $systemDefaults[$type] ?? $systemDefaults['entrance'];
+    }
+
+    /**
+     * Set slide configuration.
+     */
+    public function setSlideConfig(array $config): void
+    {
+        $this->update(['slide_config' => $config]);
+    }
+
+    /**
+     * Set default slide animation.
+     */
+    public function setDefaultSlideAnimation(array $entrance, array $exit): void
+    {
+        $this->update([
+            'default_slide_animation' => [
+                'entrance' => $entrance,
+                'exit' => $exit,
+            ],
+        ]);
     }
 }
