@@ -25,6 +25,10 @@ class User extends Authenticatable
         'password',
         'reputation',
         'is_admin',
+        'standing',
+        'trust_level',
+        'last_active_at',
+        'preferences',
     ];
 
     /**
@@ -49,6 +53,10 @@ class User extends Authenticatable
             'password' => 'hashed',
             'reputation' => 'float',
             'is_admin' => 'boolean',
+            'standing' => 'decimal:2',
+            'trust_level' => 'integer',
+            'last_active_at' => 'datetime',
+            'preferences' => 'array',
         ];
     }
 
@@ -98,5 +106,88 @@ class User extends Authenticatable
     public function hasOAuthProvider(string $provider): bool
     {
         return $this->oauthProviders()->where('provider', $provider)->exists();
+    }
+
+    /**
+     * Get the roles for this user.
+     */
+    public function roles(): BelongsToMany
+    {
+        return $this->belongsToMany(Role::class, 'user_roles')
+            ->withPivot(['tenant_id', 'granted_by', 'granted_at', 'expires_at'])
+            ->withTimestamps();
+    }
+
+    /**
+     * Get the tenant memberships for this user.
+     */
+    public function tenantMemberships(): HasMany
+    {
+        return $this->hasMany(TenantMembership::class);
+    }
+
+    /**
+     * Check if user has a specific role.
+     */
+    public function hasRole(string $roleSlug, ?Tenant $tenant = null): bool
+    {
+        $query = $this->roles()->where('slug', $roleSlug);
+        
+        if ($tenant) {
+            $query->wherePivot('tenant_id', $tenant->id);
+        }
+        
+        return $query->exists();
+    }
+
+    /**
+     * Check if user has a specific permission.
+     */
+    public function hasPermission(string $permission, ?Tenant $tenant = null): bool
+    {
+        // System admin has all permissions
+        if ($this->isAdmin()) {
+            return true;
+        }
+
+        // Check roles for permission
+        foreach ($this->roles as $role) {
+            if (in_array($permission, $role->permissions ?? [])) {
+                // Check if role applies to this tenant
+                if (!$tenant || $role->pivot->tenant_id === $tenant->id) {
+                    return true;
+                }
+            }
+        }
+
+        // Check tenant membership permissions
+        if ($tenant) {
+            $membership = $this->tenantMemberships()
+                ->where('tenant_id', $tenant->id)
+                ->where('status', TenantMembership::STATUS_ACTIVE)
+                ->first();
+                
+            if ($membership && in_array($permission, $membership->permissions ?? [])) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Get user's active tenant memberships.
+     */
+    public function activeTenantMemberships()
+    {
+        return $this->tenantMemberships()->where('status', TenantMembership::STATUS_ACTIVE);
+    }
+
+    /**
+     * Update user's last active timestamp.
+     */
+    public function updateLastActive(): void
+    {
+        $this->update(['last_active_at' => now()]);
     }
 }
