@@ -300,6 +300,99 @@ export const SceneAuthoring: React.FC = () => {
         </Card>
       )}
 
+      {/* New Scene Form */}
+      {isCreatingScene && (
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle>Create New Scene</CardTitle>
+            <CardDescription>Enter details for your new scene</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={async (e) => {
+              e.preventDefault();
+              const formData = new FormData(e.currentTarget);
+              const sceneData = {
+                name: formData.get('name') as string,
+                slug: formData.get('slug') as string,
+                description: formData.get('description') as string,
+                scene_type: formData.get('scene_type') as string,
+                is_public: formData.get('is_public') === 'on',
+              };
+              
+              const newScene = await createScene(sceneData);
+              if (newScene) {
+                setIsCreatingScene(false);
+                setSelectedScene(newScene);
+              }
+            }}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="name" className="block text-sm font-medium mb-2">Scene Name</label>
+                  <Input
+                    id="name"
+                    name="name"
+                    placeholder="Enter scene name"
+                    required
+                  />
+                </div>
+                <div>
+                  <label htmlFor="slug" className="block text-sm font-medium mb-2">Slug</label>
+                  <Input
+                    id="slug"
+                    name="slug"
+                    placeholder="scene-slug"
+                    required
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <label htmlFor="description" className="block text-sm font-medium mb-2">Description</label>
+                  <Input
+                    id="description"
+                    name="description"
+                    placeholder="Enter scene description"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="scene_type" className="block text-sm font-medium mb-2">Scene Type</label>
+                  <select
+                    id="scene_type"
+                    name="scene_type"
+                    className="w-full p-2 border border-border rounded-md"
+                    defaultValue="card"
+                  >
+                    <option value="card">Card</option>
+                    <option value="document">Document</option>
+                    <option value="graph">Graph</option>
+                    <option value="dashboard">Dashboard</option>
+                  </select>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="is_public"
+                    name="is_public"
+                    className="rounded"
+                  />
+                  <label htmlFor="is_public" className="text-sm font-medium">Public Scene</label>
+                </div>
+              </div>
+              <div className="flex justify-end space-x-2 mt-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsCreatingScene(false)}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={loading}>
+                  {loading ? 'Creating...' : 'Create Scene'}
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Scene List */}
         <div className="lg:col-span-1">
