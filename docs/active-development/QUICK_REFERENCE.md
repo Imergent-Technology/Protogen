@@ -19,35 +19,46 @@ ls docs/active-development/
 - `DEVELOPMENT_WORKFLOW.md` - Development workflow guide
 - `README.md` - Active development overview
 
-## 🎯 **Current Priority: Slide System Implementation**
+## 🎯 **Current Priority: Flow System Implementation**
 
-### **Database Schema Ready**
+### **Scene-Centric Architecture Complete** ✅
+- Backend models with animation cascade
+- Frontend Scene System with Framer Motion
+- Scene Authoring UI components
+- Navigator integration complete
+
+### **Database Schema Implemented**
 ```sql
--- Slides table
+-- Slides table (with animation fields)
 CREATE TABLE slides (
     id BIGSERIAL PRIMARY KEY,
     scene_id BIGINT NOT NULL REFERENCES scenes(id) ON DELETE CASCADE,
     name VARCHAR(255) NOT NULL,
     description TEXT,
-    order_index INTEGER NOT NULL,
-    duration INTEGER,
-    transition_type VARCHAR(50),
-    transition_duration INTEGER,
-    transition_easing VARCHAR(50),
-    is_active BOOLEAN DEFAULT true,
+    slide_index INTEGER NOT NULL,
+    is_active BOOLEAN DEFAULT false,
+    entrance_animation JSONB,  -- Slide override
+    exit_animation JSONB,     -- Slide override
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()
 );
+
+-- Scene animation configuration
+ALTER TABLE scenes ADD COLUMN slide_config JSONB;
+ALTER TABLE scenes ADD COLUMN default_slide_animation JSONB;
 
 -- Slide items table
 CREATE TABLE slide_items (
     id BIGSERIAL PRIMARY KEY,
     slide_id BIGINT NOT NULL REFERENCES slides(id) ON DELETE CASCADE,
-    scene_item_id BIGINT NOT NULL REFERENCES scene_items(id) ON DELETE CASCADE,
+    node_id BIGINT NOT NULL REFERENCES scene_items(id) ON DELETE CASCADE,
     position JSONB,
-    dimensions JSONB,
+    scale JSONB,
+    rotation DECIMAL(8,2) DEFAULT 0,
+    opacity DECIMAL(3,2) DEFAULT 1.0,
+    visible BOOLEAN DEFAULT true,
     style JSONB,
-    meta JSONB,
+    transition_config JSONB,
     is_visible BOOLEAN DEFAULT true,
     z_index INTEGER DEFAULT 0,
     transition_duration INTEGER,

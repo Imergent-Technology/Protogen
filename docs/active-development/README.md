@@ -18,8 +18,11 @@ This folder contains documentation for features currently being developed, recen
 ### **Development Planning**
 - `DEVELOPMENT_ROADMAP.md` - Comprehensive development roadmap with phases and timelines
 
-### **Scene Authoring and Slide System**
-- `SCENE_AUTHORING_LIBRARY_STRATEGY.md` - Scene authoring library strategy with Slide System
+### **Scene-Centric Architecture** ✅ **COMPLETE**
+- `SCENE_CENTRIC_ARCHITECTURE.md` - Complete scene-centric slide animation system
+- `IMPLEMENTATION_COMPLETE.md` - Full implementation summary and statistics
+- `ANIMATION_FRAMEWORK_DECISION.md` - Framer Motion vs GSAP decision rationale
+- `SCENE_AUTHORING_LIBRARY_STRATEGY.md` - Scene authoring library strategy
 - `ORCHESTRATOR_SYSTEM_ARCHITECTURE.md` - Orchestrator system with slide coordination
 
 ### **Graph Studio and Flow System**

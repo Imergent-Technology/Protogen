@@ -6,8 +6,8 @@ The Protogen Context System provides a unified way to create anchors and coordin
 ## Core Concepts
 
 ### Context Types
-1. **Scene Contexts** - Coordinates within graph scenes (x, y, z positions)
-2. **Slide Contexts** - Positions within scene slides (slide indices, node states)
+1. **Scene Contexts** - Coordinates within scenes (x, y, z positions)
+2. **Slide Contexts** - Positions within scene slides (slide indices, node states) - *Scene-centric architecture*
 3. **Document Contexts** - Anchors within text documents (paragraph positions, text selections)
 4. **Coordinate Contexts** - Custom coordinate systems for specialized use cases
 
@@ -145,7 +145,23 @@ const nodeContext = {
 };
 ```
 
-### 2. Document Anchors
+### 2. Scene Slide Navigation
+```typescript
+// Create a context for a specific slide within a scene
+const slideContext = {
+    name: "Product Overview Slide",
+    context_type: "slide",
+    target_scene_id: sceneId,
+    target_slide_id: slideId, // Scene owns and manages slides
+    coordinates: { slide_index: 2 },
+    anchor_data: { 
+        slide_name: "Product Overview",
+        description: "Key product features and benefits"
+    }
+};
+```
+
+### 3. Document Anchors
 ```typescript
 // Create a context for a specific text position
 const textContext = {
@@ -156,18 +172,6 @@ const textContext = {
         text: "Introduction",
         selection: { start: 1250, end: 1263 }
     }
-};
-```
-
-### 3. Slide Navigation
-```typescript
-// Create a context for a specific slide position
-const slideContext = {
-    name: "Key Concept Slide",
-    context_type: "slide",
-    target_slide_id: slideId,
-    coordinates: { index: 3, node_state: "highlighted" },
-    anchor_data: { slide_title: "Core Concepts", duration: 120 }
 };
 ```
 
