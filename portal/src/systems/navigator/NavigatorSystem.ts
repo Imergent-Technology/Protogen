@@ -119,24 +119,28 @@ export class NavigatorSystem implements INavigatorSystem {
     }
   }
 
-  // Slide Navigation
+  // Slide Navigation - Integrated with Scene System
   private async navigateToSlide(target: NavigationTarget): Promise<void> {
     try {
-      // Import slide system dynamically to avoid circular dependencies
-      const { slideSystem } = await import('../slide/SlideSystem');
+      // Import scene system dynamically to avoid circular dependencies
+      const { sceneSystem } = await import('../scene/SceneSystem');
       
       if (target.slideIndex !== undefined) {
-        // Navigate by slide index
-        await slideSystem.navigateToSlideByIndex(target.id, target.slideIndex);
+        // Navigate to specific slide index within current scene
+        await sceneSystem.navigateToSlide(target.slideIndex);
       } else {
-        // Navigate by slide ID
-        await slideSystem.navigateToSlide(target.id);
+        // If slide ID is provided, we need to determine which scene it belongs to
+        // For now, assume we're navigating within the current scene
+        console.warn('Slide navigation by ID not yet implemented. Use slideIndex instead.');
       }
 
       // Update current context with slide information
+      const currentSlide = sceneSystem.getCurrentSlide();
+      const currentScene = sceneSystem.getCurrentScene();
       const newContext: CurrentContext = {
         ...this.state.currentContext,
-        slideId: target.id,
+        slideId: currentSlide?.id.toString() || null,
+        sceneId: currentScene?.id.toString() || this.state.currentContext.sceneId,
         timestamp: Date.now(),
       };
 
@@ -145,7 +149,11 @@ export class NavigatorSystem implements INavigatorSystem {
       // Emit slide change event
       this.emit({
         type: 'slide-change',
-        data: { slideId: target.id, slideIndex: target.slideIndex },
+        data: { 
+          slideId: currentSlide?.id, 
+          slideIndex: target.slideIndex || sceneSystem.getCurrentSlideIndex(),
+          sceneId: currentScene?.id 
+        },
         timestamp: Date.now()
       });
 
@@ -286,6 +294,69 @@ export class NavigatorSystem implements INavigatorSystem {
     };
 
     return context;
+  }
+
+  // Scene System Integration Methods
+  async loadSceneInNavigator(sceneId: string | number, slideIndex?: number): Promise<void> {
+    try {
+      const { sceneSystem } = await import('../scene/SceneSystem');
+      
+      // Load the scene
+      await sceneSystem.loadScene(sceneId);
+      
+      // Navigate to specific slide if provided
+      if (slideIndex !== undefined && slideIndex >= 0) {
+        await sceneSystem.navigateToSlide(slideIndex);
+      }
+      
+      // Update navigator context
+      const currentScene = sceneSystem.getCurrentScene();
+      const currentSlide = sceneSystem.getCurrentSlide();
+      
+      const newContext: CurrentContext = {
+        ...this.state.currentContext,
+        sceneId: currentScene?.id.toString() || null,
+        sceneSlug: currentScene?.slug || null,
+        slideId: currentSlide?.id.toString() || null,
+        timestamp: Date.now(),
+      };
+      
+      this.setCurrentContext(newContext);
+      
+      // Emit scene loaded event
+      this.emit({
+        type: 'navigation',
+        data: { sceneId, slideIndex, action: 'scene-loaded' },
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      this.setError(`Failed to load scene in navigator: ${error}`);
+      throw error;
+    }
+  }
+
+  async nextSlideInNavigator(): Promise<void> {
+    const { sceneSystem } = await import('../scene/SceneSystem');
+    await sceneSystem.nextSlide();
+    
+    // Update context
+    const currentSlide = sceneSystem.getCurrentSlide();
+    this.updateContext({
+      slideId: currentSlide?.id.toString() || null,
+      timestamp: Date.now(),
+    });
+  }
+
+  async previousSlideInNavigator(): Promise<void> {
+    const { sceneSystem } = await import('../scene/SceneSystem');
+    await sceneSystem.previousSlide();
+    
+    // Update context
+    const currentSlide = sceneSystem.getCurrentSlide();
+    this.updateContext({
+      slideId: currentSlide?.id.toString() || null,
+      timestamp: Date.now(),
+    });
   }
 
   private generateEntryId(): string {
