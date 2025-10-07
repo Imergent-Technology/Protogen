@@ -213,9 +213,9 @@ export const SceneAuthoring: React.FC = () => {
     ];
 
     for (const slide of sampleSlides) {
-      const slideData = await apiClient.post(`/slides/scene/${sceneId}`, slide);
+      const response = await apiClient.post(`/slides/scene/${sceneId}`, slide);
       // Create slide items for this slide
-      await createSampleSlideItems(slideData.id, slide.slide_index);
+      await createSampleSlideItems(response.data.id, slide.slide_index);
     }
   };
 
