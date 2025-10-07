@@ -59,9 +59,6 @@ export const ProtogenLayout: React.FC<ProtogenLayoutProps> = ({ children, user, 
           </div>
           
           <div className="flex items-center space-x-2">
-            {/* Theme Toggle */}
-            <ThemeToggle size="sm" />
-
             {/* Newsletter Button */}
             <Button
               variant="ghost"

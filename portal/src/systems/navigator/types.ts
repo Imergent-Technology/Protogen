@@ -4,6 +4,7 @@ export interface NavigationTarget {
   type: 'scene' | 'deck' | 'context' | 'slide' | 'external';
   id: string;
   slug?: string;
+  slideIndex?: number; // For slide navigation
   params?: Record<string, any>;
 }
 

@@ -43,6 +43,12 @@ export class NavigatorSystem implements INavigatorSystem {
         timestamp: Date.now()
       });
 
+      // Handle slide navigation
+      if (target.type === 'slide') {
+        await this.navigateToSlide(target);
+        return;
+      }
+
       // Create new context based on navigation target
       const newContext = await this.createContextFromTarget(target);
       
@@ -110,6 +116,43 @@ export class NavigatorSystem implements INavigatorSystem {
       
       // Navigate to the next entry
       await this.navigateTo(entry.target);
+    }
+  }
+
+  // Slide Navigation
+  private async navigateToSlide(target: NavigationTarget): Promise<void> {
+    try {
+      // Import slide system dynamically to avoid circular dependencies
+      const { slideSystem } = await import('../slide/SlideSystem');
+      
+      if (target.slideIndex !== undefined) {
+        // Navigate by slide index
+        await slideSystem.navigateToSlideByIndex(target.id, target.slideIndex);
+      } else {
+        // Navigate by slide ID
+        await slideSystem.navigateToSlide(target.id);
+      }
+
+      // Update current context with slide information
+      const newContext: CurrentContext = {
+        ...this.state.currentContext,
+        slideId: target.id,
+        timestamp: Date.now(),
+      };
+
+      this.updateContext(newContext);
+
+      // Emit slide change event
+      this.emit({
+        type: 'slide-change',
+        data: { slideId: target.id, slideIndex: target.slideIndex },
+        timestamp: Date.now()
+      });
+
+      this.setLoading(false);
+    } catch (error) {
+      this.setError(`Failed to navigate to slide: ${error}`);
+      this.setLoading(false);
     }
   }
 

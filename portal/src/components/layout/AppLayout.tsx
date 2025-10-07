@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button } from '@protogen/shared';
+import { Button, useTheme } from '@protogen/shared';
 import { 
   Menu, 
   X, 
@@ -13,7 +13,9 @@ import {
   Layers,
   MessageSquare,
   Network,
-  BookOpen
+  BookOpen,
+  Moon,
+  Sun
 } from 'lucide-react';
 import { useResponsiveSidebar } from './ResponsiveLayout';
 import { useNavigator, NavigationTarget } from '../../systems/navigator';
@@ -44,6 +46,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
 }) => {
   const { isMobile, sidebarOpen, setSidebarOpen, toggleSidebar } = useResponsiveSidebar();
   const { navigateTo } = useNavigator();
+  const { theme, toggleTheme } = useTheme();
   const [historyOpen, setHistoryOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
 
@@ -193,6 +196,19 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
                           <Settings className="h-4 w-4 mr-2" />
                           Settings
                         </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="w-full justify-start"
+                          onClick={toggleTheme}
+                        >
+                          {theme === 'light' ? (
+                            <Moon className="h-4 w-4 mr-2" />
+                          ) : (
+                            <Sun className="h-4 w-4 mr-2" />
+                          )}
+                          Theme
+                        </Button>
                         <div className="border-t border-border my-1" />
                         <Button 
                           variant="ghost" 
@@ -277,6 +293,19 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
                           <Button variant="ghost" size="sm" className="w-full justify-start">
                             <Settings className="h-4 w-4 mr-2" />
                             Settings
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="w-full justify-start"
+                            onClick={toggleTheme}
+                          >
+                            {theme === 'light' ? (
+                              <Moon className="h-4 w-4 mr-2" />
+                            ) : (
+                              <Sun className="h-4 w-4 mr-2" />
+                            )}
+                            Theme
                           </Button>
                           <div className="border-t border-border my-1" />
                           <Button 
