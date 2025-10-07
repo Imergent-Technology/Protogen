@@ -20,6 +20,7 @@ class Tenant extends Model
         'domain',
         'config',
         'branding',
+        'standing_levels',
         'is_active',
         'is_public',
         'created_by',
@@ -28,6 +29,7 @@ class Tenant extends Model
     protected $casts = [
         'config' => 'array',
         'branding' => 'array',
+        'standing_levels' => 'array',
         'is_active' => 'boolean',
         'is_public' => 'boolean',
     ];
@@ -204,5 +206,44 @@ class Tenant extends Model
         }
         
         return config('app.url') . '/tenant/' . $this->slug;
+    }
+
+    /**
+     * Get standing level name for a given standing value.
+     * Returns tenant-specific name if configured, otherwise returns global default.
+     */
+    public function getStandingLevelName(int $standing): string
+    {
+        // If tenant has custom standing levels, use them
+        if ($this->standing_levels && is_array($this->standing_levels)) {
+            foreach ($this->standing_levels as $level) {
+                if (isset($level['min']) && isset($level['name']) && $standing >= $level['min']) {
+                    return $level['name'];
+                }
+            }
+        }
+
+        // Fall back to global defaults
+        if ($standing >= 900) return 'Guardian';
+        if ($standing >= 750) return 'Curator';
+        if ($standing >= 600) return 'Steward';
+        if ($standing >= 400) return 'Collaborator';
+        if ($standing >= 200) return 'Contributor';
+        
+        return 'Member';
+    }
+
+    /**
+     * Set custom standing levels for this tenant.
+     * Expected format: [['min' => 900, 'name' => 'Custom Level'], ...]
+     */
+    public function setStandingLevels(array $levels): void
+    {
+        // Sort levels by min value descending
+        usort($levels, function($a, $b) {
+            return ($b['min'] ?? 0) - ($a['min'] ?? 0);
+        });
+
+        $this->update(['standing_levels' => $levels]);
     }
 }

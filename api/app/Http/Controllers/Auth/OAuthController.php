@@ -87,6 +87,10 @@ class OAuthController extends Controller
                 'name' => $user->name,
                 'email' => $user->email,
                 'reputation' => $user->reputation,
+                'engagement' => $user->engagement,
+                'affinity' => $user->affinity,
+                'standing' => $user->standing,
+                'standing_level' => $user->getStandingLevelName(),
                 'is_admin' => $user->is_admin,
             ]));
             
