@@ -4,6 +4,8 @@ import { SimpleTest } from './components/SimpleTest';
 import { AppLayout } from './components/layout/AppLayout';
 import { HomePage } from './components/pages/HomePage';
 import { SceneAuthoring } from './components/pages/SceneAuthoring';
+import { AdminDashboard } from './components/admin/AdminDashboard';
+import { UserManagement } from './components/admin/UserManagement';
 import { useState, useEffect } from 'react';
 // Temporary placeholder components for testing
 const SceneManagerDemo = () => <div>Scene Manager Demo - Coming Soon</div>;
@@ -126,6 +128,10 @@ function App() {
     switch (currentPage) {
       case 'authoring':
         return <SceneAuthoring />;
+      case 'admin':
+        return user?.is_admin ? <AdminDashboard /> : <HomePage />;
+      case 'users':
+        return user?.is_admin ? <UserManagement /> : <HomePage />;
       case 'home':
       default:
         return <HomePage />;

@@ -3,6 +3,7 @@
 use App\Http\Middleware\HandleAppearance;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\AdminMiddleware;
+use App\Http\Middleware\CheckPermission;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -32,6 +33,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // Add web middleware to API routes that need session support
         $middleware->alias([
             'admin' => AdminMiddleware::class,
+            'permission' => CheckPermission::class,
             'web' => \Illuminate\Cookie\Middleware\EncryptCookies::class,
         ]);
     })

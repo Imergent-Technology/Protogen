@@ -13,7 +13,9 @@ import {
   BookOpen,
   Moon,
   Sun,
-  Edit
+  Edit,
+  Shield,
+  Users as UsersIcon
 } from 'lucide-react';
 import { useResponsiveSidebar } from './ResponsiveLayout';
 import { useNavigator, NavigationTarget } from '../../systems/navigator';
