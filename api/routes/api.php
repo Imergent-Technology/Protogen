@@ -12,6 +12,8 @@ use App\Http\Controllers\Api\ContextApiController;
 use App\Http\Controllers\Api\DeckApiController;
 use App\Http\Controllers\Api\SubgraphController;
 use App\Http\Controllers\Api\SceneItemController;
+use App\Http\Controllers\Api\SlideController;
+use App\Http\Controllers\Api\SlideItemController;
 use App\Http\Controllers\Auth\AdminAuthController;
 
 /*
@@ -115,6 +117,30 @@ Route::prefix('scenes')->middleware(['auth:sanctum', 'admin'])->group(function (
     Route::get('/{guid}/edges', [SceneApiController::class, 'getEdges']);
     Route::get('/{guid}/items', [SceneApiController::class, 'getSceneItems']);
     Route::post('/{guid}/nodes', [SceneApiController::class, 'addNodeToScene']);
+});
+
+// Slide API routes (admin only)
+Route::prefix('slides')->middleware(['auth:sanctum', 'admin'])->group(function () {
+    Route::get('/scene/{sceneId}', [SlideController::class, 'index']);
+    Route::post('/scene/{sceneId}', [SlideController::class, 'store']);
+    Route::post('/scene/{sceneId}/reorder', [SlideController::class, 'reorder']);
+    Route::get('/{id}', [SlideController::class, 'show']);
+    Route::put('/{id}', [SlideController::class, 'update']);
+    Route::delete('/{id}', [SlideController::class, 'destroy']);
+    Route::post('/{id}/activate', [SlideController::class, 'activate']);
+    Route::post('/{id}/clone', [SlideController::class, 'clone']);
+});
+
+// Slide Item API routes (admin only)
+Route::prefix('slide-items')->middleware(['auth:sanctum', 'admin'])->group(function () {
+    Route::get('/slide/{slideId}', [SlideItemController::class, 'index']);
+    Route::post('/slide/{slideId}', [SlideItemController::class, 'store']);
+    Route::post('/slide/{slideId}/bulk-update', [SlideItemController::class, 'bulkUpdate']);
+    Route::post('/slide/{slideId}/from-scene/{nodeId}', [SlideItemController::class, 'createFromScene']);
+    Route::get('/{id}', [SlideItemController::class, 'show']);
+    Route::put('/{id}', [SlideItemController::class, 'update']);
+    Route::delete('/{id}', [SlideItemController::class, 'destroy']);
+    Route::post('/{id}/apply-to-scene', [SlideItemController::class, 'applyToScene']);
 });
 
 // Snapshot API routes (admin only)

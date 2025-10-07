@@ -224,4 +224,12 @@ class Scene extends Model
             return $this->items()->where('item_type', 'edge')->with('edge')->get()->pluck('edge');
         }
     }
+
+    /**
+     * Get slides for this scene.
+     */
+    public function slides(): HasMany
+    {
+        return $this->hasMany(Slide::class);
+    }
 }

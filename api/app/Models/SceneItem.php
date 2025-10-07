@@ -12,6 +12,7 @@ class SceneItem extends Model
 
     protected $fillable = [
         'scene_id',
+        'slide_id',
         'item_type',
         'item_id',
         'item_guid',
@@ -38,6 +39,14 @@ class SceneItem extends Model
     public function scene(): BelongsTo
     {
         return $this->belongsTo(Scene::class);
+    }
+
+    /**
+     * Get the default slide for this scene item.
+     */
+    public function slide(): BelongsTo
+    {
+        return $this->belongsTo(Slide::class);
     }
 
     /**
