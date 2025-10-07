@@ -115,12 +115,12 @@ class SlideItem extends Model
         return self::create([
             'slide_id' => $slide->id,
             'node_id' => $sceneItem->id,
-            'position' => $sceneItem->position ?? ['x' => 0, 'y' => 0],
-            'scale' => $sceneItem->scale ?? ['x' => 1, 'y' => 1],
-            'rotation' => $sceneItem->rotation ?? 0,
-            'opacity' => $sceneItem->opacity ?? 1.0,
-            'visible' => $sceneItem->visible ?? true,
-            'style' => $sceneItem->style ?? [],
+            'position' => $sceneItem->position ?? ['x' => 100, 'y' => 100, 'z' => 0],
+            'scale' => ['x' => 1, 'y' => 1], // Default scale since SceneItem doesn't have this
+            'rotation' => 0, // Default rotation since SceneItem doesn't have this
+            'opacity' => 1.0, // Default opacity since SceneItem doesn't have this
+            'visible' => $sceneItem->is_visible ?? true,
+            'style' => $sceneItem->style ?? ['backgroundColor' => '#e3f2fd', 'padding' => '16px'],
         ]);
     }
 
