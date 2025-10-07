@@ -6,16 +6,14 @@ import {
   User, 
   Settings, 
   LogOut, 
-  ChevronLeft, 
-  ChevronRight,
-  History,
   Home,
   Layers,
   MessageSquare,
   Network,
   BookOpen,
   Moon,
-  Sun
+  Sun,
+  Edit
 } from 'lucide-react';
 import { useResponsiveSidebar } from './ResponsiveLayout';
 import { useNavigator, NavigationTarget } from '../../systems/navigator';
@@ -35,6 +33,7 @@ interface AppLayoutProps {
   onLogout: () => void;
   currentContext?: string;
   onContextClick?: () => void;
+  onNavigation?: (target: NavigationTarget) => void;
 }
 
 export const AppLayout: React.FC<AppLayoutProps> = ({
@@ -42,7 +41,8 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
   user,
   onLogout,
   currentContext = "Home",
-  onContextClick
+  onContextClick,
+  onNavigation
 }) => {
   const { isMobile, sidebarOpen, setSidebarOpen, toggleSidebar } = useResponsiveSidebar();
   const { navigateTo } = useNavigator();
@@ -51,7 +51,12 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
   const [userMenuOpen, setUserMenuOpen] = useState(false);
 
   const handleNavigation = (target: NavigationTarget) => {
-    navigateTo(target);
+    // Use the parent navigation callback if available, otherwise use the navigator
+    if (onNavigation) {
+      onNavigation(target);
+    } else {
+      navigateTo(target);
+    }
     if (isMobile) {
       setSidebarOpen(false);
     }
@@ -71,6 +76,13 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
       icon: Layers, 
       active: false,
       onClick: () => handleNavigation({ type: 'scene', id: 'scenes', slug: 'scenes' })
+    },
+    { 
+      id: 'authoring', 
+      label: 'Scene Authoring', 
+      icon: Edit, 
+      active: false,
+      onClick: () => handleNavigation({ type: 'scene', id: 'authoring', slug: 'authoring' })
     },
     { 
       id: 'decks', 

@@ -71,24 +71,38 @@ class Scene extends Model
         'created_by', 'tenant_id', 'subgraph_id', 'published_at',
         
         // Enhanced slide configuration
-        'slide_config',        // Slide behavior settings
-        'transition_config',   // Default transitions between slides
-        'tweening_config',     // Tweening settings for this scene
-        'navigation_config',   // Scene-level navigation settings
+        'slide_config',           // Slide behavior settings (auto-advance, loop, etc.)
+        'default_slide_animation', // Default entrance/exit animations for slides
     ];
     
     protected $casts = [
         'config' => 'array',
         'meta' => 'array',
         'style' => 'array',
-        'slide_config' => 'array',      // NEW
-        'transition_config' => 'array',  // NEW
-        'tweening_config' => 'array',    // NEW
-        'navigation_config' => 'array',  // NEW
+        'slide_config' => 'array',             // NEW
+        'default_slide_animation' => 'array',  // NEW
         'is_active' => 'boolean',
         'is_public' => 'boolean',
         'published_at' => 'datetime',
     ];
+    
+    // Default slide animation structure
+    // 'default_slide_animation' => [
+    //     'entrance' => [
+    //         'type' => 'fade',  // fade, slide, expand
+    //         'direction' => 'right',  // left, right, top, bottom, center
+    //         'distance' => 'edge',  // nearby, edge (only for slide type)
+    //         'duration' => 300,  // milliseconds
+    //         'easing' => 'ease-in-out'
+    //     ],
+    //     'exit' => [
+    //         'type' => 'fade',
+    //         'direction' => 'left',
+    //         'distance' => 'edge',
+    //         'duration' => 300,
+    //         'easing' => 'ease-in-out'
+    //     ]
+    // ]
     
     // Relationships
     public function slides(): HasMany;
@@ -106,13 +120,11 @@ class Scene extends Model
     public function getSlideCount(): int;
     public function reorderSlides(array $slideOrder): void;
     
-    // Tweening Management
-    public function getTweeningConfig(): array;
-    public function applyTweenBetweenSlides(Slide $from, Slide $to): array;
-    public function getTransitionForSlides(Slide $from, Slide $to): array;
+    // Animation Management
+    public function getDefaultAnimation(string $direction = 'forward'): array;
+    public function getAnimationForSlide(Slide $slide, string $direction): array;
     
     // Navigation
-    public function getNavigationConfig(): array;
     public function canNavigateToSlide(int $slideIndex): bool;
 }
 ```
@@ -161,12 +173,35 @@ class Slide extends Model
     protected $fillable = [
         'id', 'scene_id',  // MUST have scene_id, no standalone slides
         'name', 'description', 'slide_index',
-        'is_active', 'transition_config', 'meta'
+        'is_active', 
+        'entrance_animation',  // Override scene default entrance
+        'exit_animation',      // Override scene default exit
+        'meta'
     ];
+    
+    protected $casts = [
+        'entrance_animation' => 'array',  // NULL = use scene default
+        'exit_animation' => 'array',      // NULL = use scene default
+        'is_active' => 'boolean',
+        'meta' => 'array',
+    ];
+    
+    // Animation structure (same as scene default)
+    // 'entrance_animation' => [
+    //     'type' => 'slide',  // fade, slide, expand
+    //     'direction' => 'right',  // left, right, top, bottom, center
+    //     'distance' => 'nearby',  // nearby, edge (only for slide type)
+    //     'duration' => 500,
+    //     'easing' => 'ease-out'
+    // ]
     
     // Always belongs to a scene
     public function scene(): BelongsTo;
     public function slideItems(): HasMany;
+    
+    // Get effective animation (use override or fall back to scene default)
+    public function getEntranceAnimation(string $direction = 'forward'): array;
+    public function getExitAnimation(string $direction = 'forward'): array;
     
     // Slide cannot exist without a scene
     protected static function boot() {
@@ -188,22 +223,25 @@ class Slide extends Model
 export class SceneSystem {
   private currentScene: Scene | null = null;
   private currentSlideIndex: number = 0;
-  private tweeningSystem: TweeningSystem;
+  private slideAnimator: SlideAnimator;
   
   // Scene Management
   async loadScene(sceneId: string): Promise<void>;
   async unloadScene(): Promise<void>;
   
   // Slide Management (Scene-Owned)
-  async navigateToSlide(slideIndex: number): Promise<void>;
+  async navigateToSlide(slideIndex: number, direction?: 'forward' | 'reverse'): Promise<void>;
   async nextSlide(): Promise<void>;
   async previousSlide(): Promise<void>;
   getCurrentSlide(): Slide | null;
   getSlideCount(): number;
   
-  // Tweening (Scene-Managed)
-  async transitionBetweenSlides(from: Slide, to: Slide): Promise<void>;
-  getTweeningSystem(): TweeningSystem;
+  // Animation (Scene-Managed)
+  async animateSlideTransition(
+    fromSlide: Slide | null, 
+    toSlide: Slide, 
+    direction: 'forward' | 'reverse'
+  ): Promise<void>;
   
   // Scene Lifecycle
   async play(): Promise<void>;   // Auto-advance slides
@@ -234,36 +272,53 @@ export class NavigatorSystem {
 }
 ```
 
-### Tweening System (Scene-Integrated)
+### Slide Animator (Scene-Integrated)
 ```typescript
-// portal/src/systems/scene/TweeningSystem.ts
-// Moves from systems/slide/ to systems/scene/
-// Tweening is now a capability of scenes, not a separate system
-export class TweeningSystem {
-  // Used by SceneSystem to animate between slides
-  async tween(
-    nodeId: string,
-    fromState: NodeState,
-    toState: NodeState,
-    config: TweeningConfig
+// portal/src/systems/scene/SlideAnimator.ts
+// Simple slide entrance/exit animations
+export class SlideAnimator {
+  // Animation types
+  async fade(element: HTMLElement, config: AnimationConfig): Promise<void>;
+  async slide(element: HTMLElement, config: AnimationConfig): Promise<void>;
+  async expand(element: HTMLElement, config: AnimationConfig): Promise<void>;
+  
+  // Main animation method
+  async animate(
+    element: HTMLElement,
+    animation: SlideAnimation,
+    type: 'entrance' | 'exit'
   ): Promise<void>;
   
-  // Batch tweening for slide transitions
-  async tweenMultiple(transitions: TweenTransition[]): Promise<void>;
-  
-  // Controlled by Scene, not standalone
-  private scene: Scene;
-  constructor(scene: Scene);
+  // Get system default animation
+  static getSystemDefault(): SlideAnimation;
+}
+
+// Animation configuration types
+interface SlideAnimation {
+  type: 'fade' | 'slide' | 'expand';
+  direction?: 'left' | 'right' | 'top' | 'bottom' | 'center';
+  distance?: 'nearby' | 'edge';  // For slide type
+  duration: number;  // milliseconds
+  easing: string;    // CSS easing function
+}
+
+interface AnimationConfig {
+  direction: string;
+  distance?: string;
+  duration: number;
+  easing: string;
 }
 ```
 
 ## Migration Path
 
 ### Phase 1: Backend Model Enhancement
-1. Add new fields to Scene model (slide_config, transition_config, tweening_config)
-2. Create database migration for new Scene fields
-3. Update Scene model with slide management methods
-4. Simplify Deck model (remove navigation, keep loading_strategy)
+1. Add new fields to Scene model (slide_config, default_slide_animation)
+2. Add animation fields to Slide model (entrance_animation, exit_animation)
+3. Create database migration for new Scene and Slide fields
+4. Update Scene model with slide management and animation methods
+5. Update Slide model with animation override methods
+6. Simplify Deck model (remove navigation, keep loading_strategy)
 
 ### Phase 2: API Updates
 1. Update SceneController with slide management endpoints
@@ -272,10 +327,11 @@ export class TweeningSystem {
 4. Update Deck endpoints to remove slide-related logic
 
 ### Phase 3: Frontend Refactoring
-1. Move TweeningSystem from systems/slide/ to systems/scene/
-2. Create SceneSystem that owns slide and tweening logic
+1. Create SlideAnimator for simple entrance/exit animations
+2. Create SceneSystem that owns slide and animation logic
 3. Update Navigator to delegate to SceneSystem
 4. Update components to use SceneSystem instead of separate SlideSystem
+5. Keep TweeningSystem for node state transitions (separate concern)
 
 ### Phase 4: Integration & Testing
 1. Update Scene Authoring UI to manage slides as part of scenes
@@ -310,11 +366,134 @@ export class TweeningSystem {
 - Scenes can be reused across decks
 - Scene types can have specialized slide behavior
 
+## Slide Animation System
+
+### Animation Types
+
+#### 1. **Fade**
+Simple opacity transition, no directional movement.
+```typescript
+{
+  type: 'fade',
+  duration: 300,
+  easing: 'ease-in-out'
+}
+```
+
+#### 2. **Slide**
+Content slides in from a direction.
+```typescript
+{
+  type: 'slide',
+  direction: 'right',  // left, right, top, bottom
+  distance: 'edge',    // 'nearby' (50px) or 'edge' (100vw/vh)
+  duration: 400,
+  easing: 'ease-out'
+}
+```
+
+#### 3. **Expand**
+Content expands from center (or direction).
+```typescript
+{
+  type: 'expand',
+  direction: 'center',  // center, or left/right/top/bottom
+  duration: 350,
+  easing: 'ease-in-out'
+}
+```
+
+### Animation Hierarchy (Cascade)
+
+1. **System Default** (fallback if nothing specified)
+   ```typescript
+   {
+     entrance: { type: 'fade', duration: 300, easing: 'ease-in' },
+     exit: { type: 'fade', duration: 300, easing: 'ease-out' }
+   }
+   ```
+
+2. **Scene Default** (applies to all slides in scene)
+   ```typescript
+   scene.default_slide_animation = {
+     entrance: { type: 'slide', direction: 'right', distance: 'edge', duration: 400, easing: 'ease-out' },
+     exit: { type: 'slide', direction: 'left', distance: 'edge', duration: 400, easing: 'ease-in' }
+   }
+   ```
+
+3. **Slide Override** (specific to individual slide)
+   ```typescript
+   slide.entrance_animation = { type: 'expand', direction: 'center', duration: 500, easing: 'ease-out' }
+   slide.exit_animation = null  // Use scene default
+   ```
+
+### Animation Resolution Logic
+
+```typescript
+function getSlideAnimation(slide: Slide, scene: Scene, type: 'entrance' | 'exit', direction: 'forward' | 'reverse'): SlideAnimation {
+  // 1. Check slide override
+  if (type === 'entrance' && slide.entrance_animation) {
+    return slide.entrance_animation;
+  }
+  if (type === 'exit' && slide.exit_animation) {
+    return slide.exit_animation;
+  }
+  
+  // 2. Check scene default
+  if (scene.default_slide_animation) {
+    return scene.default_slide_animation[type];
+  }
+  
+  // 3. Fall back to system default
+  return SlideAnimator.getSystemDefault()[type];
+}
+```
+
+### Direction-Aware Animations
+
+When navigating **forward** (next slide):
+- Exit current slide (typically to left)
+- Enter next slide (typically from right)
+
+When navigating **reverse** (previous slide):
+- Exit current slide (typically to right)
+- Enter previous slide (typically from left)
+
+The animation configuration can be direction-aware, but starts with simple bidirectional animations.
+
+### Example Animations
+
+```typescript
+// Professional presentation style
+{
+  entrance: { type: 'slide', direction: 'right', distance: 'edge', duration: 400, easing: 'ease-out' },
+  exit: { type: 'fade', duration: 200, easing: 'ease-in' }
+}
+
+// Smooth fade style
+{
+  entrance: { type: 'fade', duration: 300, easing: 'ease-in' },
+  exit: { type: 'fade', duration: 300, easing: 'ease-out' }
+}
+
+// Dynamic expand style
+{
+  entrance: { type: 'expand', direction: 'center', duration: 500, easing: 'ease-out' },
+  exit: { type: 'slide', direction: 'top', distance: 'nearby', duration: 300, easing: 'ease-in' }
+}
+
+// Quick slide style
+{
+  entrance: { type: 'slide', direction: 'bottom', distance: 'nearby', duration: 250, easing: 'ease-out' },
+  exit: { type: 'slide', direction: 'top', distance: 'nearby', duration: 250, easing: 'ease-in' }
+}
+```
+
 ## Example Usage
 
 ### Creating a Scene with Slides
 ```typescript
-// Scene owns and manages its slides
+// Scene owns and manages its slides with default animations
 const scene = await sceneSystem.createScene({
   name: "Introduction",
   scene_type: "card",
@@ -323,23 +502,40 @@ const scene = await sceneSystem.createScene({
     loop: false,
     duration_per_slide: 5000
   },
-  tweening_config: {
-    default_duration: 1000,
-    default_easing: "ease-in-out"
+  default_slide_animation: {
+    entrance: { 
+      type: 'slide', 
+      direction: 'right', 
+      distance: 'edge', 
+      duration: 400, 
+      easing: 'ease-out' 
+    },
+    exit: { 
+      type: 'fade', 
+      duration: 300, 
+      easing: 'ease-in' 
+    }
   }
 });
 
-// Add slides to the scene
+// Add slides to the scene (uses scene default animations)
 await sceneSystem.addSlide(scene.id, {
   name: "Welcome",
-  slide_index: 0,
-  transition_config: { duration: 500, easing: "ease-in" }
+  slide_index: 0
+  // No animation override - uses scene default
 });
 
+// This slide overrides the entrance animation
 await sceneSystem.addSlide(scene.id, {
   name: "Key Points",
   slide_index: 1,
-  transition_config: { duration: 750, easing: "ease-out" }
+  entrance_animation: { 
+    type: 'expand', 
+    direction: 'center', 
+    duration: 600, 
+    easing: 'ease-out' 
+  }
+  // Exit animation not specified - uses scene default
 });
 ```
 
@@ -348,10 +544,16 @@ await sceneSystem.addSlide(scene.id, {
 // Load a scene (loads all its slides)
 await sceneSystem.loadScene(sceneId);
 
-// Navigate between slides (scene handles tweening)
-await sceneSystem.nextSlide();
-await sceneSystem.previousSlide();
-await sceneSystem.navigateToSlide(2);
+// Navigate between slides (scene handles animations)
+await sceneSystem.nextSlide();       // Uses 'forward' animations
+await sceneSystem.previousSlide();   // Uses 'reverse' animations
+await sceneSystem.navigateToSlide(2); // Determines direction automatically
+
+// The SceneSystem handles:
+// 1. Determining the current and target slides
+// 2. Resolving animations (slide override -> scene default -> system default)
+// 3. Animating the exit of current slide
+// 4. Animating the entrance of target slide
 ```
 
 ### Deck as Scene Container
@@ -375,9 +577,35 @@ await navigator.navigateToDeck(deck.id);
 await navigator.nextSceneInDeck();  // Loads next scene, goes to its first slide
 ```
 
+## Important Distinction: Slide Animations vs Node Tweening
+
+### Slide Animations (SlideAnimator)
+- **Purpose**: Whole-slide entrance/exit transitions
+- **Scope**: Slides entering/exiting the viewport
+- **Animations**: Fade, slide, expand (simple, fast)
+- **Owned by**: Scene System
+
+### Node Tweening (TweeningSystem - SEPARATE CONCERN)
+- **Purpose**: Animate individual nodes/elements within a scene
+- **Scope**: Node position, scale, opacity, rotation changes
+- **Animations**: Complex property interpolation over time
+- **Owned by**: Still exists separately, may be coordinated by Navigator
+
+**Example**: A scene with 3 slides might have:
+- Slide 1: Shows nodes A, B, C at positions X, Y, Z
+- Slide 2: Shows same nodes at different positions (tweened by TweeningSystem)
+- Slide 3: Different nodes entirely
+
+When transitioning Slide 1 → Slide 2:
+1. Slide 1 exits (handled by SlideAnimator)
+2. Slide 2 enters (handled by SlideAnimator)
+3. Nodes A, B, C animate to new positions (handled by TweeningSystem)
+
+These are **complementary systems**, not replacements.
+
 ## Summary
 
-This refactoring establishes **Scenes as the primary unit** with full control over their presentation, including slides and tweening. **Decks become pure organizational containers** for loading optimization. **Navigator coordinates** between systems without managing content. This creates a cleaner, more maintainable architecture that matches how users conceptually think about the system.
+This refactoring establishes **Scenes as the primary unit** with full control over their presentation, including slides and slide animations. **Decks become pure organizational containers** for loading optimization. **Navigator coordinates** between systems without managing content. **Slide animations (entrance/exit) are separate from node tweening** (position/property changes). This creates a cleaner, more maintainable architecture that matches how users conceptually think about the system.
 
 ## Next Steps
 

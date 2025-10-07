@@ -8,8 +8,7 @@ import {
   Play, 
   Users, 
   TrendingUp,
-  Clock,
-  Star
+  Clock
 } from 'lucide-react';
 
 export const HomePage: React.FC = () => {

@@ -119,6 +119,16 @@ Route::prefix('scenes')->middleware(['auth:sanctum', 'admin'])->group(function (
     Route::post('/{guid}/nodes', [SceneApiController::class, 'addNodeToScene']);
 });
 
+// Scene Items API routes (admin only) - Additional routes for scene authoring
+Route::prefix('scenes/scene-items')->middleware(['auth:sanctum', 'admin'])->group(function () {
+    Route::get('/scene/{sceneId}', [SceneItemController::class, 'index']);
+    Route::post('/', [SceneItemController::class, 'store']);
+    Route::post('/bulk-update', [SceneItemController::class, 'bulkUpdate']);
+    Route::get('/{id}', [SceneItemController::class, 'show']);
+    Route::put('/{id}', [SceneItemController::class, 'update']);
+    Route::delete('/{id}', [SceneItemController::class, 'destroy']);
+});
+
 // Slide API routes (admin only)
 Route::prefix('slides')->middleware(['auth:sanctum', 'admin'])->group(function () {
     Route::get('/scene/{sceneId}', [SlideController::class, 'index']);

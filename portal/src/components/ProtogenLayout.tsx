@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Input, ThemeToggle } from '@protogen/shared';
+import { Button, Input } from '@protogen/shared';
 import { Mail, MessageSquare, User, LogOut, X } from 'lucide-react';
 
 interface User {

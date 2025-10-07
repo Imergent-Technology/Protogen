@@ -3,6 +3,7 @@ import { OAuthLogin } from './components/OAuthLogin';
 import { SimpleTest } from './components/SimpleTest';
 import { AppLayout } from './components/layout/AppLayout';
 import { HomePage } from './components/pages/HomePage';
+import { SceneAuthoring } from './components/pages/SceneAuthoring';
 import { useState, useEffect } from 'react';
 // Temporary placeholder components for testing
 const SceneManagerDemo = () => <div>Scene Manager Demo - Coming Soon</div>;
@@ -26,6 +27,7 @@ function App() {
   const { toast } = useToast();
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState<string>('home');
 
   // Check for existing authentication on app load
   useEffect(() => {
@@ -120,6 +122,16 @@ function App() {
     });
   };
 
+  const renderPage = () => {
+    switch (currentPage) {
+      case 'authoring':
+        return <SceneAuthoring />;
+      case 'home':
+      default:
+        return <HomePage />;
+    }
+  };
+
   // Show login screen if not authenticated
   if (!user || !token) {
     return (
@@ -145,15 +157,23 @@ function App() {
       <AppLayout 
         user={user} 
         onLogout={handleLogout}
-        currentContext="Home"
+        currentContext={currentPage === 'authoring' ? 'Scene Authoring' : 'Home'}
         onContextClick={() => {
           toast({
             title: "Navigation History",
             description: "History interface would open here",
           });
         }}
+        onNavigation={(target) => {
+          // Simple navigation logic
+          if (target.slug === 'authoring') {
+            setCurrentPage('authoring');
+          } else {
+            setCurrentPage('home');
+          }
+        }}
       >
-        <HomePage />
+        {renderPage()}
       </AppLayout>
       <ModalRenderer />
       <Toaster />
