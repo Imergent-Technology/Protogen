@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, Button, Input } from '@protogen/shared';
+import { apiClient } from '../../services/apiClient';
 import { 
   Plus, 
   Edit, 
@@ -93,18 +94,7 @@ export const SceneAuthoring: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch('http://protogen.local:8080/api/scenes', {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('oauth_token')}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to load scenes');
-      }
-
-      const data = await response.json();
+      const data = await apiClient.get('/scenes');
       setScenes(data.data || []);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load scenes');
@@ -117,20 +107,7 @@ export const SceneAuthoring: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch('http://protogen.local:8080/api/scenes', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('oauth_token')}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(sceneData),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to create scene');
-      }
-
-      const data = await response.json();
+      const data = await apiClient.post('/scenes', sceneData);
       setScenes(prev => [data.data, ...prev]);
       setIsCreatingScene(false);
       return data.data;
@@ -203,14 +180,7 @@ export const SceneAuthoring: React.FC = () => {
     ];
 
     for (const item of sampleItems) {
-      await fetch('http://protogen.local:8080/api/scenes/scene-items', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('oauth_token')}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(item),
-      });
+      await apiClient.post('/scenes/scene-items', item);
     }
   };
 
@@ -243,20 +213,9 @@ export const SceneAuthoring: React.FC = () => {
     ];
 
     for (const slide of sampleSlides) {
-      const response = await fetch(`http://protogen.local:8080/api/slides/scene/${sceneId}`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('oauth_token')}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(slide),
-      });
-
-      if (response.ok) {
-        const slideData = await response.json();
-        // Create slide items for this slide
-        await createSampleSlideItems(slideData.id, slide.slide_index);
-      }
+      const slideData = await apiClient.post(`/slides/scene/${sceneId}`, slide);
+      // Create slide items for this slide
+      await createSampleSlideItems(slideData.id, slide.slide_index);
     }
   };
 
@@ -297,30 +256,14 @@ export const SceneAuthoring: React.FC = () => {
         transition_config: { duration: 1000, easing: 'ease-in-out' }
       };
 
-      await fetch('http://protogen.local:8080/api/slide-items/slide/${slideId}', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('oauth_token')}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(slideItem),
-      });
+      await apiClient.post(`/slide-items/slide/${slideId}`, slideItem);
     }
   };
 
   const loadSceneSlides = async (sceneId: number) => {
     try {
-      const response = await fetch(`http://protogen.local:8080/api/slides/scene/${sceneId}`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('oauth_token')}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (response.ok) {
-        const slides = await response.json();
-        return slides;
-      }
+      const slides = await apiClient.get(`/slides/scene/${sceneId}`);
+      return slides;
     } catch (err) {
       console.error('Failed to load slides:', err);
     }
