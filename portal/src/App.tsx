@@ -1,21 +1,13 @@
 import { ProtogenLayout } from './components/ProtogenLayout';
 import { OAuthLogin } from './components/OAuthLogin';
-import { SimpleTest } from './components/SimpleTest';
 import { AppLayout } from './components/layout/AppLayout';
-import { HomePage } from './components/pages/HomePage';
-import { SceneAuthoring } from './components/pages/SceneAuthoring';
-import { AdminDashboard } from './components/admin/AdminDashboard';
-import { UserManagement } from './components/admin/UserManagement';
+import { SceneContainer } from './components/scene/SceneContainer';
 import { useState, useEffect } from 'react';
-// Temporary placeholder components for testing
-const SceneManagerDemo = () => <div>Scene Manager Demo - Coming Soon</div>;
-const ToolbarDemo = () => <div>Toolbar Demo - Coming Soon</div>;
-const ModalProvider = ({ children }: { children: React.ReactNode }) => <>{children}</>;
-const ModalRenderer = () => null;
-const Toaster = () => null;
-const useToast = () => ({ toast: (_options: unknown) => {/* TODO: Implement toast */} });
-import { Button } from '@protogen/shared';
-import { Layers, Network, MessageSquare, Play } from 'lucide-react';
+import { sceneRouter } from '@protogen/shared/systems/scene';
+import { useNavigator } from '@protogen/shared/systems/navigator';
+import { DialogContainer } from '@protogen/shared/systems/dialog/components';
+import { useDialog } from '@protogen/shared/systems/dialog';
+// Removed unused Button import
 
 interface User {
   id: number;
@@ -26,10 +18,10 @@ interface User {
 }
 
 function App() {
-  const { toast } = useToast();
+  const { openToast } = useDialog();
+  const { navigateTo, currentContext } = useNavigator();
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState<string>('home');
 
   // Check for existing authentication on app load
   useEffect(() => {
@@ -37,7 +29,6 @@ function App() {
     const urlParams = new URLSearchParams(window.location.search);
     const callbackToken = urlParams.get('token');
     const callbackUser = urlParams.get('user');
-    const provider = urlParams.get('provider');
     
     if (callbackToken && callbackUser) {
       try {
@@ -50,9 +41,9 @@ function App() {
         // Clean up URL parameters
         window.history.replaceState({}, document.title, window.location.pathname);
         
-        toast({
+        openToast(`Successfully signed in as ${userData.name}`, {
           title: "Welcome!",
-          description: `Successfully signed in as ${userData.name}`,
+          variant: 'success'
         });
         return;
       } catch (error) {
@@ -82,9 +73,9 @@ function App() {
     localStorage.setItem('oauth_token', token);
     localStorage.setItem('oauth_user', JSON.stringify(user));
     
-    toast({
+    openToast(`Successfully signed in as ${user.name}`, {
       title: "Welcome back!",
-      description: `Successfully signed in as ${user.name}`,
+      variant: 'success'
     });
   };
 
@@ -111,37 +102,28 @@ function App() {
     localStorage.removeItem('oauth_token');
     localStorage.removeItem('oauth_user');
     
-    toast({
+    openToast("You have been successfully signed out", {
       title: "Signed out",
-      description: "You have been successfully signed out",
+      variant: 'info'
     });
   };
 
-  const handleShowToast = () => {
-    toast({
-      title: "Welcome to Protogen!",
-      description: "The stage manager and modal system are now integrated.",
-    });
-  };
-
-  const renderPage = () => {
-    switch (currentPage) {
-      case 'authoring':
-        return <SceneAuthoring />;
-      case 'admin':
-        return user?.is_admin ? <AdminDashboard /> : <HomePage />;
-      case 'users':
-        return user?.is_admin ? <UserManagement /> : <HomePage />;
-      case 'home':
-      default:
-        return <HomePage />;
-    }
-  };
+  // Initialize scene router on mount
+  useEffect(() => {
+    // Load scene router configuration from API
+    // For now, use default configuration
+    sceneRouter.setDefaultScene('system-home');
+    
+    // Set up context-to-scene mappings
+    sceneRouter.setSceneOverride('/explore', 'system-explore', 10);
+    sceneRouter.setSceneOverride('/profile*', 'system-profile', 10);
+    sceneRouter.setSceneOverride('/settings', 'system-settings', 10);
+  }, []);
 
   // Show login screen if not authenticated
   if (!user || !token) {
     return (
-      <ModalProvider>
+      <>
         <ProtogenLayout user={user} onLogout={handleLogout}>
           <div className="pt-16 min-h-screen flex items-center justify-center">
             <OAuthLogin 
@@ -151,39 +133,36 @@ function App() {
               token={token}
             />
           </div>
-          <ModalRenderer />
-          <Toaster />
         </ProtogenLayout>
-      </ModalProvider>
+        <DialogContainer />
+      </>
     );
   }
 
   return (
-    <ModalProvider>
+    <>
       <AppLayout 
         user={user} 
         onLogout={handleLogout}
-        currentContext={currentPage === 'authoring' ? 'Scene Authoring' : 'Home'}
+        currentContext={currentContext.sceneSlug || 'Home'}
         onContextClick={() => {
-          toast({
+          openToast("History interface would open here", {
             title: "Navigation History",
-            description: "History interface would open here",
+            variant: 'info'
           });
         }}
         onNavigation={(target) => {
-          // Simple navigation logic
-          if (target.slug === 'authoring') {
-            setCurrentPage('authoring');
-          } else {
-            setCurrentPage('home');
-          }
+          // Use Navigator system for navigation
+          navigateTo(target);
         }}
       >
-        {renderPage()}
+        {/* Scene-first routing */}
+        <SceneContainer />
       </AppLayout>
-      <ModalRenderer />
-      <Toaster />
-    </ModalProvider>
+      
+      {/* Dialog System for all modal interactions */}
+      <DialogContainer />
+    </>
   );
 }
 
