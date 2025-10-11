@@ -9,6 +9,7 @@ import {
   NavigationEventHandler,
   DEFAULT_CONTEXT
 } from './types';
+import { urlSyncService } from './services/URLSyncService';
 
 export class NavigatorSystem implements INavigatorSystem {
   private state: NavigatorState;
@@ -171,6 +172,9 @@ export class NavigatorSystem implements INavigatorSystem {
   setCurrentContext(context: CurrentContext): void {
     const oldContext = this.state.currentContext;
     this.state.currentContext = { ...context };
+
+    // Sync to URL
+    urlSyncService.syncContextToURL(context);
 
     // Emit context change event
     this.emit({

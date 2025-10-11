@@ -5,6 +5,7 @@ import { SceneContainer } from './components/scene/SceneContainer';
 import { useState, useEffect } from 'react';
 import { sceneRouter } from '@protogen/shared/systems/scene';
 import { useNavigator } from '@protogen/shared/systems/navigator';
+import { urlSyncService } from '@protogen/shared/systems/navigator';
 import { DialogContainer } from '@protogen/shared/systems/dialog/components';
 import { useDialog } from '@protogen/shared/systems/dialog';
 // Removed unused Button import
@@ -108,17 +109,42 @@ function App() {
     });
   };
 
-  // Initialize scene router on mount
+  // Initialize scene router and URL sync on mount
   useEffect(() => {
     // Load scene router configuration from API
     // For now, use default configuration
     sceneRouter.setDefaultScene('system-home');
     
     // Set up context-to-scene mappings
+    sceneRouter.setSceneOverride('/', 'system-home', 10);
     sceneRouter.setSceneOverride('/explore', 'system-explore', 10);
     sceneRouter.setSceneOverride('/profile*', 'system-profile', 10);
     sceneRouter.setSceneOverride('/settings', 'system-settings', 10);
-  }, []);
+
+    // Initialize URL sync
+    urlSyncService.setEnabled(true);
+
+    // Handle browser back/forward buttons
+    const handleURLChange = (event: Event) => {
+      const customEvent = event as CustomEvent;
+      const { context } = customEvent.detail;
+      if (context && context.contextPath) {
+        navigateTo({ contextPath: context.contextPath });
+      }
+    };
+
+    window.addEventListener('navigator:url-changed', handleURLChange as EventListener);
+
+    // Parse initial URL and navigate if needed
+    const initialContext = urlSyncService.urlToContext();
+    if (initialContext.contextPath && initialContext.contextPath !== '/') {
+      navigateTo({ contextPath: initialContext.contextPath });
+    }
+
+    return () => {
+      window.removeEventListener('navigator:url-changed', handleURLChange as EventListener);
+    };
+  }, [navigateTo]);
 
   // Show login screen if not authenticated
   if (!user || !token) {

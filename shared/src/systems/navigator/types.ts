@@ -5,6 +5,7 @@ export interface NavigationTarget {
   id: string;
   slug?: string;
   slideIndex?: number; // For slide navigation
+  contextPath?: string; // For URL-based navigation
   params?: Record<string, any>;
 }
 
