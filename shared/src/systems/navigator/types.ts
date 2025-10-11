@@ -14,6 +14,7 @@ export interface CurrentContext {
   deckId: string | null;
   deckSlug: string | null;
   slideId: string | null;
+  contextPath?: string; // Path for scene routing (e.g., '/explore', '/profile')
   coordinates?: {
     x: number;
     y: number;

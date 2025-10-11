@@ -7,9 +7,14 @@
 // Core System
 export { SceneSystem, sceneSystem } from './SceneSystem';
 export { useScene } from './useScene';
+export { SceneRouter, sceneRouter } from './SceneRouter';
+export { useSceneForContext, useSceneRouter } from './useSceneRouter';
 
 // Components
 export { SlideAnimator, getSystemDefaultAnimation } from './SlideAnimator';
+
+// Default System Scenes
+export * from './default-scenes';
 
 // Animation Presets
 export {
