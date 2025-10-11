@@ -8,6 +8,7 @@ import { useNavigator } from '@protogen/shared/systems/navigator';
 import { urlSyncService } from '@protogen/shared/systems/navigator';
 import { DialogContainer } from '@protogen/shared/systems/dialog/components';
 import { useDialog } from '@protogen/shared/systems/dialog';
+import { toolbarSystem } from '@protogen/shared/systems/toolbar';
 // Removed unused Button import
 
 interface User {
@@ -109,10 +110,9 @@ function App() {
     });
   };
 
-  // Initialize scene router and URL sync on mount
+  // Initialize systems on mount
   useEffect(() => {
-    // Load scene router configuration from API
-    // For now, use default configuration
+    // === Scene Router Configuration ===
     sceneRouter.setDefaultScene('system-home');
     
     // Set up context-to-scene mappings
@@ -121,7 +121,7 @@ function App() {
     sceneRouter.setSceneOverride('/profile*', 'system-profile', 10);
     sceneRouter.setSceneOverride('/settings', 'system-settings', 10);
 
-    // Initialize URL sync
+    // === URL Sync Configuration ===
     urlSyncService.setEnabled(true);
 
     // Handle browser back/forward buttons
@@ -129,7 +129,7 @@ function App() {
       const customEvent = event as CustomEvent;
       const { context } = customEvent.detail;
       if (context && context.contextPath) {
-        navigateTo({ contextPath: context.contextPath });
+        navigateTo({ type: 'context', id: 'url-context', contextPath: context.contextPath });
       }
     };
 
@@ -138,13 +138,62 @@ function App() {
     // Parse initial URL and navigate if needed
     const initialContext = urlSyncService.urlToContext();
     if (initialContext.contextPath && initialContext.contextPath !== '/') {
-      navigateTo({ contextPath: initialContext.contextPath });
+      navigateTo({ type: 'context', id: 'init-context', contextPath: initialContext.contextPath });
     }
+
+    // === Toolbar System Configuration ===
+    // Initialize toolbar with default configuration
+    toolbarSystem.initialize().catch(err => {
+      console.error('Failed to initialize toolbar system:', err);
+    });
+
+    // Wire up toolbar menu actions to Navigator and Dialog systems
+    const handleMenuAction = (data: any) => {
+      const { action } = data;
+      
+      switch (action.type) {
+        case 'navigate-context':
+          navigateTo({ type: 'context', id: 'context', contextPath: action.contextPath });
+          break;
+        
+        case 'navigate-scene':
+          navigateTo({ type: 'scene', id: action.sceneId });
+          break;
+        
+        case 'open-dialog':
+          // Open appropriate dialog based on dialogType
+          if (action.dialogType === 'modal') {
+            // Example: openModal(action.config);
+          } else if (action.dialogType === 'toast') {
+            openToast(action.config.message || 'Notification', action.config);
+          }
+          break;
+        
+        case 'start-flow':
+          // Future: Start a flow
+          console.log('Start flow:', action.flowId);
+          break;
+        
+        case 'external-link':
+          if (action.newTab) {
+            window.open(action.url, '_blank');
+          } else {
+            window.location.href = action.url;
+          }
+          break;
+        
+        default:
+          console.warn('Unknown menu action type:', action.type);
+      }
+    };
+
+    toolbarSystem.on('menu-action', handleMenuAction);
 
     return () => {
       window.removeEventListener('navigator:url-changed', handleURLChange as EventListener);
+      toolbarSystem.off('menu-action', handleMenuAction);
     };
-  }, [navigateTo]);
+  }, [navigateTo, openToast]);
 
   // Show login screen if not authenticated
   if (!user || !token) {
