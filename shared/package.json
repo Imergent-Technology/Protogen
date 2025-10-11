@@ -49,6 +49,10 @@
     "./systems/dialog": {
       "types": "./dist/src/systems/dialog/index.d.ts",
       "import": "./dist/src/systems/dialog/index.js"
+    },
+    "./systems/toolbar": {
+      "types": "./dist/src/systems/toolbar/index.d.ts",
+      "import": "./dist/src/systems/toolbar/index.js"
     }
   },
   "scripts": {

@@ -1459,6 +1459,10 @@
     border-left-style: var(--tw-border-style);
     border-left-width: 4px;
   }
+  .border-none {
+    --tw-border-style: none;
+    border-style: none;
+  }
   .border-\[\#19140035\] {
     border-color: #19140035;
   }
@@ -1716,6 +1720,9 @@
   }
   .bg-yellow-200 {
     background-color: var(--color-yellow-200);
+  }
+  .bg-yellow-500 {
+    background-color: var(--color-yellow-500);
   }
   .bg-zinc-900 {
     background-color: var(--color-zinc-900);
