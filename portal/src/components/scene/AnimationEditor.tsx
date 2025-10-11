@@ -17,8 +17,8 @@ import {
   Eye,
   EyeOff
 } from 'lucide-react';
-import type { SlideAnimation, AnimationPreset } from '../../systems/scene';
-import { ANIMATION_PRESETS, getAnimationPreset } from '../../systems/scene';
+import type { SlideAnimation, AnimationPreset } from '@protogen/shared/systems/scene';
+import { ANIMATION_PRESETS, getAnimationPreset } from '@protogen/shared/systems/scene';
 
 interface AnimationEditorProps {
   animation: SlideAnimation;

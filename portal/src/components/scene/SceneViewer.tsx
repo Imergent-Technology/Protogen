@@ -7,8 +7,8 @@
 import React, { useEffect } from 'react';
 import { Card, CardContent, Button } from '@protogen/shared';
 import { ChevronLeft, ChevronRight, Play, Pause, RotateCcw } from 'lucide-react';
-import { useScene, SlideAnimator } from '../../systems/scene';
-import type { NavigationDirection } from '../../systems/scene';
+import { useScene, SlideAnimator } from '@protogen/shared/systems/scene';
+import type { NavigationDirection } from '@protogen/shared/systems/scene';
 
 interface SceneViewerProps {
   sceneId: number | string;

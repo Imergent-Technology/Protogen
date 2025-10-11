@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Input, Label, Textarea, Card, Badge } from '@protogen/shared';
 import { SceneType } from '../../../stores/deckStore';
-import { SceneTypeManager, SceneType as SceneTypeData } from '@protogen/authoring';
+import { SceneTypeManager, SceneType as SceneTypeData } from '@protogen/shared/systems/authoring';
 
 export interface BasicDetailsData {
   name: string;

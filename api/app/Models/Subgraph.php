@@ -2,16 +2,16 @@
 
 namespace App\Models;
 
+use App\Traits\HasUuid7;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Str;
 
 class Subgraph extends Model
 {
-    use HasFactory;
+    use HasFactory, HasUuid7;
 
     protected $fillable = [
         'guid',
@@ -94,17 +94,4 @@ class Subgraph extends Model
         return $this->nodes()->where('node_id', $node->id)->exists();
     }
 
-    /**
-     * Boot method to generate GUID.
-     */
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::creating(function ($subgraph) {
-            if (empty($subgraph->guid)) {
-                $subgraph->guid = Str::uuid();
-            }
-        });
-    }
 }

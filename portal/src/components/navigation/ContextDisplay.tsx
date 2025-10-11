@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from '@protogen/shared';
 import { ChevronRight, MapPin, Layers, BookOpen, Home } from 'lucide-react';
-import { useCurrentContext } from '../../systems/navigator';
+import { useCurrentContext } from '@protogen/shared/systems/navigator';
 
 interface ContextDisplayProps {
   onClick?: () => void;

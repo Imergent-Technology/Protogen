@@ -6,9 +6,9 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react';
-import { useSlide } from '../../systems/slide/useSlide';
-import { SlideContainerProps, NodeSlideState } from '../../systems/slide/types';
-import { TweeningUtils } from '../../systems/slide/TweeningSystem';
+import { useSlide } from '@protogen/shared/systems/slide/useSlide';
+import { SlideContainerProps, NodeSlideState } from '@protogen/shared/systems/slide/types';
+import { TweeningUtils } from '@protogen/shared/systems/slide/TweeningSystem';
 
 export const SlideContainer: React.FC<SlideContainerProps> = ({
   slideId,

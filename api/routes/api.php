@@ -84,6 +84,13 @@ Route::prefix('graph')->middleware(['auth:sanctum', 'admin'])->group(function ()
     // Node position updates
     Route::put('/nodes/{nodeGuid}/position', [CoreGraphApiController::class, 'updateNodePosition']);
     Route::put('/nodes/positions', [CoreGraphApiController::class, 'updateNodePositions']);
+    
+    // Graph traversal and query endpoints
+    Route::post('/traverse', [App\Http\Controllers\Api\GraphTraversalController::class, 'traverse']);
+    Route::post('/recommend', [App\Http\Controllers\Api\GraphTraversalController::class, 'recommend']);
+    Route::post('/shortest-path', [App\Http\Controllers\Api\GraphTraversalController::class, 'shortestPath']);
+    Route::get('/ego-net', [App\Http\Controllers\Api\GraphTraversalController::class, 'egoNet']);
+    Route::post('/explain', [App\Http\Controllers\Api\GraphTraversalController::class, 'explain']);
 });
 
 // Registry API routes (admin only)

@@ -2,15 +2,15 @@
 
 namespace App\Models;
 
+use App\Traits\HasUuid7;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Str;
 
 class CoreGraphNode extends Model
 {
-    use HasFactory;
+    use HasFactory, HasUuid7;
 
     protected $table = 'nodes';
 
@@ -29,17 +29,6 @@ class CoreGraphNode extends Model
         'position' => 'array',
         'is_active' => 'boolean',
     ];
-
-    protected static function boot()
-    {
-        parent::boot();
-        
-        static::creating(function ($model) {
-            if (empty($model->guid)) {
-                $model->guid = (string) Str::uuid();
-            }
-        });
-    }
 
     /**
      * Get the node type for this node.

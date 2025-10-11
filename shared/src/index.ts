@@ -10,4 +10,16 @@ export * from './contexts/AuthContext';
 export * from './services';
 export * from './types';
 export * from './services/ApiClient';
-export * from './hooks/useApi'; 
+export * from './hooks/useApi';
+
+// Graph System exports
+export * from './types/graph';
+export * from './services/GraphQueryService';
+export * from './hooks/useGraphQuery';
+
+// System Modules - separately loadable
+// Note: These are typically imported via subpath exports:
+// - @protogen/shared/systems/navigator
+// - @protogen/shared/systems/authoring  
+// - @protogen/shared/systems/scene
+// - @protogen/shared/systems/slide 

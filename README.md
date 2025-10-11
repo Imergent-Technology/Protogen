@@ -37,19 +37,18 @@ As the **foundational prototype** in a three-phase evolution (Protogen → Endog
 
 2. **Start the development environment**
    ```bash
-   # Start all services
+   # Start all services (Docker-first approach)
    docker-compose up -d
    
-   # Start CSS watching (required for styling)
-   npm run dev
-   
-   # Start all development servers
+   # Start frontend development servers (for hot-reload)
    npm run dev:all
    ```
+   
+   **Note**: This project uses Docker-first development. All backend services run in containers. Frontend development servers provide hot-reload capabilities.
 
 3. **Access the applications**
-   - **Admin Panel**: http://protogen.local:3001
    - **User Portal**: http://protogen.local:3000
+   - **Admin Panel**: http://protogen.local:3001
    - **API**: http://protogen.local:8080
    - **Database Admin**: http://protogen.local:5050
 
@@ -110,13 +109,19 @@ For detailed setup instructions, see [DEVELOPMENT.md](docs/DEVELOPMENT.md).
 protogen/
 ├── admin/                 # React admin interface (Vite + TypeScript)
 ├── portal/               # React user-facing tenant portal (Vite + TypeScript)
-├── shared/               # Shared components, hooks, services, and types
+├── shared/               # Core UI library - shared components, hooks, services
+│   └── src/
+│       ├── systems/      # System modules (navigator, authoring, scene, slide)
+│       ├── components/   # Shared UI components
+│       ├── hooks/        # Shared React hooks
+│       ├── services/     # Shared services
+│       └── types/        # TypeScript type definitions
 ├── api/                  # Laravel backend API (PHP)
 ├── config/               # Shared configuration files
 ├── docs/                 # Comprehensive documentation
 ├── docker/               # Docker configuration files
 ├── scripts/              # Setup and utility scripts
-└── docker-compose.yml    # Development environment
+└── docker-compose.yml    # Development environment (Docker-first)
 ```
 
 ## 🎯 Current Status

@@ -13,7 +13,6 @@
   },
   "dependencies": {
     "@protogen/shared": "file:../shared",
-    "@protogen/authoring": "file:../authoring",
     "@tailwindcss/typography": "^0.5.16",
     "@tailwindcss/vite": "^4.1.11",
     "@tiptap/extension-code-block": "^3.2.1",

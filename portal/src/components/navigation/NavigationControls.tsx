@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from '@protogen/shared';
 import { ChevronLeft, ChevronRight, RotateCcw } from 'lucide-react';
-import { useNavigator } from '../../systems/navigator';
+import { useNavigator } from '@protogen/shared/systems/navigator';
 
 interface NavigationControlsProps {
   className?: string;

@@ -4,6 +4,11 @@
 
 This document defines the integrated architecture for the Navigator, Flow, Context, and Engagement systems within the Protogen platform. These systems work together to provide sophisticated content navigation, guided experiences, contextual awareness, and community engagement capabilities.
 
+**Location**: `shared/src/systems/navigator/`  
+**Package**: `@protogen/shared`  
+**Import Path**: `@protogen/shared/systems/navigator`  
+**SSR-Ready**: Yes - Can be server-side rendered via API
+
 ## 🏗️ **System Architecture Overview**
 
 ```
@@ -306,3 +311,89 @@ The Navigator Systems Architecture is comprehensive and ready for implementation
 5. **Advanced Features**: Implement advanced features
 
 **The Navigator Systems Architecture provides a clear roadmap for creating sophisticated navigation, guided experiences, contextual awareness, and community engagement capabilities within the Protogen platform.** 🚀
+
+---
+
+## 📦 **Integration & Usage**
+
+### **Importing from Shared Library**
+
+The Navigator System is now part of `@protogen/shared` as a system module:
+
+```typescript
+// Import Navigator System
+import { NavigatorSystem, useNavigator, useCurrentContext } from '@protogen/shared/systems/navigator';
+
+// Or use the type interfaces
+import type { INavigatorSystem, NavigationTarget, CurrentContext } from '@protogen/shared/systems/navigator';
+
+// In a React component
+function MyComponent() {
+  const { navigateTo, getCurrentContext, goBack } = useNavigator();
+  
+  // Navigate to a scene
+  await navigateTo({
+    type: 'scene',
+    sceneId: 'abc123',
+    slideIndex: 0
+  });
+}
+```
+
+### **SSR Integration**
+
+The Navigator System is fully SSR-compatible and can be server-rendered via the API:
+
+```typescript
+// API-side rendering
+import { NavigatorSystem } from '@protogen/shared/systems/navigator';
+
+// Create navigator instance on server
+const navigator = new NavigatorSystem(initialContext);
+
+// Hydrate on client
+const hydrated = NavigatorSystem.hydrate(serverState);
+```
+
+**SSR Benefits:**
+- Initial navigation state server-rendered
+- SEO-friendly routing
+- Fast initial page load
+- Progressive enhancement
+- Reduced client-side JavaScript
+
+### **Orchestrator Integration**
+
+The Navigator System works seamlessly with the Orchestrator:
+
+```typescript
+// Orchestrator can load and coordinate navigator
+import { orchestrator } from '@protogen/orchestrator';
+
+orchestrator.loadSystem('navigator', {
+  initialContext: userContext,
+  enableHistory: true
+});
+
+// Navigator events coordinate with orchestrator
+orchestrator.on('navigation', (event) => {
+  // Trigger scene transitions, load content, etc.
+});
+```
+
+### **Mobile App Integration**
+
+The Navigator System in the shared library enables future mobile app development:
+
+```typescript
+// React Native mobile app
+import { NavigatorSystem } from '@protogen/shared/systems/navigator';
+
+// Works identically on mobile
+const navigator = new NavigatorSystem();
+```
+
+**See Also:**
+- `SSR_ARCHITECTURE.md` - Detailed SSR implementation
+- `AUTHORING_SYSTEM_ARCHITECTURE.md` - Creating navigation flows
+- `ORCHESTRATOR_SYSTEM_ARCHITECTURE.md` - System coordination

@@ -8,8 +8,8 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@protogen/shared';
 import { ChevronLeft, ChevronRight, Play, Pause, Square, RotateCcw } from 'lucide-react';
-import { SlideControlsProps } from '../../systems/slide/types';
-import { useSlide } from '../../systems/slide/useSlide';
+import { SlideControlsProps } from '@protogen/shared/systems/slide/types';
+import { useSlide } from '@protogen/shared/systems/slide/useSlide';
 
 export const SlideControls: React.FC<SlideControlsProps> = ({
   sceneId,
@@ -21,7 +21,7 @@ export const SlideControls: React.FC<SlideControlsProps> = ({
   className = '',
 }) => {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [playInterval, setPlayInterval] = useState<NodeJS.Timeout | null>(null);
+  const [playInterval, setPlayInterval] = useState<number | null>(null);
 
   const {
     isTransitioning,

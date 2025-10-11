@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from '@protogen/shared';
 import { ChevronLeft, ChevronRight, Clock, MapPin, BookOpen, Layers } from 'lucide-react';
-import { useNavigationHistory, NavigationEntry } from '../../systems/navigator';
+import { useNavigationHistory, NavigationEntry } from '@protogen/shared/systems/navigator';
 
 interface NavigationHistoryProps {
   isOpen: boolean;

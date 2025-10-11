@@ -20,7 +20,7 @@ import {
   SceneTypeManager,
   GraphSceneAuthoring,
   DocumentSceneAuthoring,
-} from '@protogen/authoring';
+} from '@protogen/shared/systems/authoring';
 import { SceneWorkflow } from './components/workflows';
 import DeckWorkflow from './components/workflows/deck/DeckWorkflow';
 import { useDeckStore } from './stores/deckStore';

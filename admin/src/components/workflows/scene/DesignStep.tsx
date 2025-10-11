@@ -5,7 +5,7 @@ import {
   GraphSceneAuthoring, 
   CardSceneAuthoring, 
   DocumentSceneAuthoring 
-} from '@protogen/authoring';
+} from '@protogen/shared/systems/authoring';
 
 export interface DesignStepProps {
   data: {

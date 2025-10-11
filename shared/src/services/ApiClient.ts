@@ -186,6 +186,47 @@ export class ApiClient {
     };
   }
 
+  /**
+   * Generic GET request
+   */
+  async get<T>(endpoint: string, options?: { params?: Record<string, any> }): Promise<{ data: ApiResponse<T> }> {
+    const url = options?.params 
+      ? `${endpoint}?${new URLSearchParams(options.params as Record<string, string>).toString()}`
+      : endpoint;
+    const response = await this.request<T>(url, { method: 'GET' });
+    return { data: response };
+  }
+
+  /**
+   * Generic POST request
+   */
+  async post<T>(endpoint: string, data?: any): Promise<{ data: ApiResponse<T> }> {
+    const response = await this.request<T>(endpoint, {
+      method: 'POST',
+      body: data ? JSON.stringify(data) : undefined,
+    });
+    return { data: response };
+  }
+
+  /**
+   * Generic PUT request
+   */
+  async put<T>(endpoint: string, data?: any): Promise<{ data: ApiResponse<T> }> {
+    const response = await this.request<T>(endpoint, {
+      method: 'PUT',
+      body: data ? JSON.stringify(data) : undefined,
+    });
+    return { data: response };
+  }
+
+  /**
+   * Generic DELETE request
+   */
+  async delete<T>(endpoint: string): Promise<{ data: ApiResponse<T> }> {
+    const response = await this.request<T>(endpoint, { method: 'DELETE' });
+    return { data: response };
+  }
+
   private async request<T>(
     endpoint: string,
     options: RequestInit = {}

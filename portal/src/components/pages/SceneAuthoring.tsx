@@ -13,7 +13,7 @@ import {
   Save,
   X
 } from 'lucide-react';
-import { useSlide } from '../../systems/slide';
+import { useSlide } from '@protogen/shared/systems/slide';
 import { SlideContainer, SlideControls, SlidePreview } from '../slide';
 
 interface Scene {

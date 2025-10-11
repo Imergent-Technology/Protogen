@@ -18,7 +18,7 @@ import {
   Users as UsersIcon
 } from 'lucide-react';
 import { useResponsiveSidebar } from './ResponsiveLayout';
-import { useNavigator, NavigationTarget } from '../../systems/navigator';
+import { useNavigator, NavigationTarget } from '@protogen/shared/systems/navigator';
 import { ContextDisplay, NavigationHistory, NavigationControls } from '../navigation';
 
 interface User {

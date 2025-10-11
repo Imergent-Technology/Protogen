@@ -8,7 +8,7 @@
 import React from 'react';
 import { Button } from '@protogen/shared';
 import { Play, Eye, Edit, Copy, Trash2 } from 'lucide-react';
-import { SlidePreviewProps, Slide } from '../../systems/slide/types';
+import { SlidePreviewProps, Slide } from '@protogen/shared/systems/slide/types';
 
 export const SlidePreview: React.FC<SlidePreviewProps> = ({
   slide,

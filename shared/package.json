@@ -21,6 +21,30 @@
     "./types": {
       "types": "./dist/src/types/index.d.ts",
       "import": "./dist/src/types/index.js"
+    },
+    "./systems/authoring": {
+      "types": "./dist/src/systems/authoring/index.d.ts",
+      "import": "./dist/src/systems/authoring/index.js"
+    },
+    "./systems/authoring/components": {
+      "types": "./dist/src/systems/authoring/components/index.d.ts",
+      "import": "./dist/src/systems/authoring/components/index.js"
+    },
+    "./systems/authoring/hooks": {
+      "types": "./dist/src/systems/authoring/hooks/index.d.ts",
+      "import": "./dist/src/systems/authoring/hooks/index.js"
+    },
+    "./systems/navigator": {
+      "types": "./dist/src/systems/navigator/index.d.ts",
+      "import": "./dist/src/systems/navigator/index.js"
+    },
+    "./systems/scene": {
+      "types": "./dist/src/systems/scene/index.d.ts",
+      "import": "./dist/src/systems/scene/index.js"
+    },
+    "./systems/slide": {
+      "types": "./dist/src/systems/slide/index.d.ts",
+      "import": "./dist/src/systems/slide/index.js"
     }
   },
   "scripts": {
@@ -36,13 +60,29 @@
     "@radix-ui/react-separator": "^1.1.7",
     "@radix-ui/react-slot": "^1.2.3",
     "@radix-ui/react-toast": "^1.2.14",
+    "@tiptap/extension-code-block": "^3.2.1",
+    "@tiptap/extension-image": "^3.2.0",
+    "@tiptap/extension-link": "^3.2.0",
+    "@tiptap/extension-placeholder": "^3.2.0",
+    "@tiptap/extension-table": "^3.2.1",
+    "@tiptap/extension-table-cell": "^3.2.1",
+    "@tiptap/extension-table-header": "^3.2.1",
+    "@tiptap/extension-table-row": "^3.2.1",
+    "@tiptap/extension-text-align": "^3.2.0",
+    "@tiptap/pm": "^3.2.0",
+    "@tiptap/react": "^3.2.0",
+    "@tiptap/starter-kit": "^3.2.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "framer-motion": "^12.23.22",
+    "graphology": "^0.26.0",
     "lucide-react": "^0.536.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "sigma": "^3.0.2",
     "tailwind-merge": "^3.3.1",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "zustand": "^5.0.8"
   },
   "devDependencies": {
     "@types/react": "^19.1.8",
