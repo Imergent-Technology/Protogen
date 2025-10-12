@@ -147,17 +147,9 @@ export function useNavigationHistory() {
 }
 
 // Helper hook for current context
-export function useCurrentContext() {
-  const { currentContext, updateContext } = useNavigator();
+export function useCurrentContext(): CurrentContext {
+  const { currentContext } = useNavigator();
   
-  return {
-    context: currentContext,
-    updateContext,
-    sceneId: currentContext.sceneId,
-    sceneSlug: currentContext.sceneSlug,
-    deckId: currentContext.deckId,
-    deckSlug: currentContext.deckSlug,
-    slideId: currentContext.slideId,
-    timestamp: currentContext.timestamp
-  };
+  // Return the currentContext directly, not wrapped
+  return currentContext;
 }
