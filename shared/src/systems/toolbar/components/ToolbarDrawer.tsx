@@ -96,9 +96,13 @@ export const ToolbarDrawer: React.FC<ToolbarDrawerProps> = ({
   };
 
   const handleItemClick = (item: DrawerItem) => {
+    console.log('Drawer item clicked:', item);
     if (item.action) {
+      console.log('Emitting menu-action with:', item.action);
       // Emit the action through the toolbar system
       toolbarSystem.emit('menu-action', { action: item.action });
+    } else {
+      console.log('Item has no action');
     }
     
     // Close drawer after action (if configured)

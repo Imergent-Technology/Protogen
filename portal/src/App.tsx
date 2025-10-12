@@ -229,7 +229,15 @@ function App() {
 
     // Wire up toolbar menu actions to Navigator and Dialog systems
     const handleMenuAction = (data: any) => {
+      console.log('handleMenuAction received:', data);
       const { action } = data;
+      
+      if (!action) {
+        console.error('No action in data:', data);
+        return;
+      }
+      
+      console.log('Processing action:', action);
       
       switch (action.type) {
         case 'navigate-context':
@@ -268,10 +276,12 @@ function App() {
     };
 
     toolbarSystem.on('menu-action', handleMenuAction);
+    console.log('Registered menu-action listener');
 
     return () => {
       window.removeEventListener('navigator:url-changed', handleURLChange as EventListener);
       toolbarSystem.off('menu-action', handleMenuAction);
+      console.log('Unregistered menu-action listener');
     };
   }, [navigateTo, openToast]);
 
