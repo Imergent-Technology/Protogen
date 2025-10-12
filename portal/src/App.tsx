@@ -241,7 +241,9 @@ function App() {
       
       switch (action.type) {
         case 'navigate-context':
+          console.log('Calling navigateTo with:', { type: 'context', id: 'context', contextPath: action.contextPath });
           navigateTo({ type: 'context', id: 'context', contextPath: action.contextPath });
+          console.log('navigateTo called');
           break;
         
         case 'navigate-scene':

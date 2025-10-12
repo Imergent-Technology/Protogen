@@ -293,6 +293,7 @@ export class NavigatorSystem implements INavigatorSystem {
       deckId: target.type === 'deck' ? target.id : null,
       deckSlug: target.type === 'deck' ? target.slug : null,
       slideId: target.type === 'slide' ? target.id : null,
+      contextPath: target.contextPath, // Copy contextPath for context-based navigation
       timestamp: Date.now()
     };
 
