@@ -4,7 +4,7 @@
  * React hook for scene routing based on navigation context
  */
 
-import { useState, useEffect } from 'react';
+import { useMemo } from 'react';
 import { sceneRouter } from './SceneRouter';
 import { useCurrentContext } from '../navigator/useNavigator';
 
@@ -13,18 +13,15 @@ import { useCurrentContext } from '../navigator/useNavigator';
  */
 export function useSceneForContext(): string {
   const currentContext = useCurrentContext();
-  const [sceneId, setSceneId] = useState<string>(() => {
+  
+  // Use useMemo to recompute only when context properties change
+  return useMemo(() => {
     return sceneRouter.getSceneForContext(currentContext);
-  });
-
-  useEffect(() => {
-    const newSceneId = sceneRouter.getSceneForContext(currentContext);
-    if (newSceneId !== sceneId) {
-      setSceneId(newSceneId);
-    }
-  }, [currentContext, sceneId]);
-
-  return sceneId;
+  }, [
+    currentContext.contextPath,
+    currentContext.sceneId,
+    currentContext.sceneSlug
+  ]);
 }
 
 /**

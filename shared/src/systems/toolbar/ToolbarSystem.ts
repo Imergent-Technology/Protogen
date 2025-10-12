@@ -8,23 +8,37 @@ import type {
   ToolbarSystemState, 
   NavigationMenuItem, 
   ContextMenuItem, 
-  MenuItemClickEvent
+  MenuItemClickEvent,
+  ToolbarPosition,
+  ToolbarItem,
+  ToolbarDrawer
 } from './types';
 import { menuConfigService } from './services/MenuConfigService';
 
 type EventListener = (...args: any[]) => void;
+
+export interface ToolbarPlugin {
+  systemId: string;
+  initialize: (toolbar: ToolbarSystem) => void | Promise<void>;
+  getToolbarItems?: (position: ToolbarPosition) => ToolbarItem[];
+  getMenuItems?: (menuId: string) => NavigationMenuItem[];
+  cleanup?: () => void;
+}
 
 export class ToolbarSystem {
   private state: ToolbarSystemState = {
     navigationMenus: new Map(),
     contextMenus: new Map(),
     toolbarConfigs: new Map(),
+    drawers: new Map(),
+    openDrawers: new Set(),
     activeContextMenu: null,
     activeNavigationMenu: null
   };
 
   private subscribers: Set<(state: ToolbarSystemState) => void> = new Set();
   private eventListeners: Map<string, Set<EventListener>> = new Map();
+  private plugins: Map<string, ToolbarPlugin> = new Map();
 
   constructor() {
     // Simple event emitter initialization
@@ -225,6 +239,103 @@ export class ToolbarSystem {
         }
         return item;
       });
+  }
+
+  // ========== Plugin System ==========
+
+  /**
+   * Register a plugin
+   */
+  registerPlugin(plugin: ToolbarPlugin): void {
+    this.plugins.set(plugin.systemId, plugin);
+    plugin.initialize(this);
+  }
+
+  /**
+   * Unregister a plugin
+   */
+  unregisterPlugin(systemId: string): void {
+    const plugin = this.plugins.get(systemId);
+    plugin?.cleanup?.();
+    this.plugins.delete(systemId);
+  }
+
+  /**
+   * Inject toolbar item at runtime
+   */
+  injectToolbarItem(toolbarId: string, position: ToolbarPosition, item: ToolbarItem): void {
+    const config = this.state.toolbarConfigs.get(toolbarId);
+    if (!config) return;
+
+    const section = config.sections.find((s: any) => s.position === position);
+    if (section) {
+      section.items.push(item);
+      this.notifySubscribers();
+    }
+  }
+
+  /**
+   * Inject menu item at runtime
+   */
+  injectMenuItem(menuId: string, item: NavigationMenuItem): void {
+    const menu = this.state.navigationMenus.get(menuId) || this.state.contextMenus.get(menuId);
+    if (menu) {
+      menu.items.push(item);
+      this.notifySubscribers();
+    }
+  }
+
+  // ========== Drawer Management ==========
+
+  /**
+   * Register a drawer
+   */
+  registerDrawer(drawer: ToolbarDrawer): void {
+    this.state.drawers.set(drawer.id, drawer);
+    this.notifySubscribers();
+  }
+
+  /**
+   * Toggle drawer open/closed
+   */
+  toggleDrawer(drawerId: string): void {
+    if (this.state.openDrawers.has(drawerId)) {
+      this.closeDrawer(drawerId);
+    } else {
+      this.openDrawer(drawerId);
+    }
+  }
+
+  /**
+   * Open drawer
+   */
+  openDrawer(drawerId: string): void {
+    this.state.openDrawers.add(drawerId);
+    this.emit('drawer-opened', { drawerId });
+    this.notifySubscribers();
+  }
+
+  /**
+   * Close drawer
+   */
+  closeDrawer(drawerId: string): void {
+    this.state.openDrawers.delete(drawerId);
+    this.emit('drawer-closed', { drawerId });
+    this.notifySubscribers();
+  }
+
+  /**
+   * Check if drawer is open
+   */
+  isDrawerOpen(drawerId: string): boolean {
+    return this.state.openDrawers.has(drawerId);
+  }
+
+  /**
+   * Get drawer configuration
+   */
+  getDrawer(drawerId: string): ToolbarDrawer | undefined {
+    return this.state.drawers.get(drawerId);
   }
 }
 

@@ -34,14 +34,35 @@ export function useToolbar() {
     toolbarSystem.toggleNavigationMenu(menuId);
   }, []);
 
+  const openDrawer = useCallback((drawerId: string) => {
+    toolbarSystem.openDrawer(drawerId);
+  }, []);
+
+  const closeDrawer = useCallback((drawerId: string) => {
+    toolbarSystem.closeDrawer(drawerId);
+  }, []);
+
+  const toggleDrawer = useCallback((drawerId: string) => {
+    toolbarSystem.toggleDrawer(drawerId);
+  }, []);
+
+  const isDrawerOpen = useCallback((drawerId: string) => {
+    return toolbarSystem.isDrawerOpen(drawerId);
+  }, []);
+
   return {
     handleMenuItemClick,
     openContextMenu,
     closeContextMenu,
     toggleNavigationMenu,
+    openDrawer,
+    closeDrawer,
+    toggleDrawer,
+    isDrawerOpen,
     getNavigationMenu: (id: string) => toolbarSystem.getNavigationMenu(id),
     getContextMenu: (id: string) => toolbarSystem.getContextMenu(id),
-    getToolbarConfig: (id: string) => toolbarSystem.getToolbarConfig(id)
+    getToolbarConfig: (id: string) => toolbarSystem.getToolbarConfig(id),
+    getDrawer: (id: string) => toolbarSystem.getDrawer(id)
   };
 }
 
@@ -119,5 +140,22 @@ export function useFilteredMenuItems<T extends NavigationMenuItem | ContextMenuI
   userPermissions: string[]
 ): T[] {
   return toolbarSystem.filterMenuItems(items, userPermissions);
+}
+
+/**
+ * Hook to get drawer configuration and open state
+ */
+export function useToolbarDrawer(drawerId: string) {
+  const state = useToolbarState();
+  const drawer = state.drawers.get(drawerId);
+  const isOpen = state.openDrawers.has(drawerId);
+
+  return {
+    drawer,
+    isOpen,
+    open: () => toolbarSystem.openDrawer(drawerId),
+    close: () => toolbarSystem.closeDrawer(drawerId),
+    toggle: () => toolbarSystem.toggleDrawer(drawerId)
+  };
 }
 

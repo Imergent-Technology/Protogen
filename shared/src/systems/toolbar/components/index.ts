@@ -9,4 +9,5 @@ export { ToolbarSection } from './ToolbarSection';
 export { ToolbarItemRenderer } from './ToolbarItemRenderer';
 export { NavigationMenu } from './NavigationMenu';
 export { ContextMenu } from './ContextMenu';
+export { ToolbarDrawer } from './ToolbarDrawer';
 

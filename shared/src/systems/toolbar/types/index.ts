@@ -14,6 +14,8 @@ export interface ToolbarSystemState {
   navigationMenus: Map<string, any>; // MenuId -> NavigationMenuConfig
   contextMenus: Map<string, any>; // MenuId -> ContextMenuConfig
   toolbarConfigs: Map<string, any>; // ToolbarId -> ToolbarConfig
+  drawers: Map<string, any>; // DrawerId -> ToolbarDrawer
+  openDrawers: Set<string>; // Set of open drawer IDs
   activeContextMenu: string | null;
   activeNavigationMenu: string | null;
 }

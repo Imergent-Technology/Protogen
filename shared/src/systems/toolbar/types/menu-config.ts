@@ -4,7 +4,17 @@
  * Configuration for navigation and context menus
  */
 
-import type { NavigationMenuItem, ContextMenuItem, MenuGroup } from './menu-item';
+import type { NavigationMenuItem, ContextMenuItem, MenuGroup, MenuAction } from './menu-item';
+
+/**
+ * Menu display mode
+ */
+export type MenuDisplayMode = 'drawer' | 'popover';
+
+/**
+ * Toolbar position (three-position layout)
+ */
+export type ToolbarPosition = 'start' | 'middle' | 'end';
 
 /**
  * Navigation menu configuration
@@ -43,40 +53,79 @@ export interface ContextMenuCondition {
 }
 
 /**
+ * Toolbar drawer configuration
+ */
+export interface ToolbarDrawer {
+  id: string;
+  edge: 'left' | 'right' | 'top' | 'bottom';
+  width?: string;
+  height?: string;
+  overlay?: boolean;
+  closeOnClickOutside?: boolean;
+  items: DrawerItem[];
+}
+
+/**
+ * Drawer item
+ */
+export interface DrawerItem {
+  type: 'nav-item' | 'section-header' | 'separator' | 'user-info';
+  label?: string;
+  icon?: string;
+  active?: boolean;
+  action?: MenuAction;
+  items?: DrawerItem[];
+}
+
+/**
  * Toolbar configuration
  */
 export interface ToolbarConfig {
   id: string;
-  position: 'top' | 'bottom';
+  edge?: 'top' | 'bottom' | 'left' | 'right';
   sections: ToolbarSection[];
   style?: {
-    height?: number;
+    height?: string;
     variant?: 'default' | 'compact' | 'prominent';
     transparent?: boolean;
   };
 }
 
 /**
- * Toolbar section (left, center, right)
+ * Toolbar section (start, middle, end)
  */
 export interface ToolbarSection {
   id: string;
-  position: 'left' | 'center' | 'right';
+  position: ToolbarPosition;
   items: ToolbarItem[];
+  responsive?: {
+    collapseThreshold?: string;
+    overflowBehavior?: 'hide' | 'collapse' | 'overflow-menu';
+  };
 }
 
 /**
- * Toolbar item types
+ * Toolbar item
  */
-export type ToolbarItem =
-  | { type: 'menu'; menuId: string; label?: string; icon?: string }
-  | { type: 'button'; label?: string; icon: string; action: any; tooltip?: string }
-  | { type: 'separator' }
-  | { type: 'search'; placeholder?: string }
-  | { type: 'breadcrumb' }
-  | { type: 'context-indicator' }
-  | { type: 'user-menu' }
-  | { type: 'notifications'; badgeCount?: number }
-  | { type: 'bookmarks' }
-  | { type: 'custom'; component: React.ComponentType<any>; props?: Record<string, any> };
+export interface ToolbarItem {
+  id: string;
+  type: 'button' | 'menu-button' | 'separator' | 'search' | 'notifications' | 'user-menu' | 'context-indicator' | 'custom';
+  label?: string;
+  icon?: string;
+  badge?: {
+    count?: number;
+    text?: string;
+    variant?: 'default' | 'danger' | 'warning';
+  };
+  action?: MenuAction;
+  subMenu?: {
+    displayMode: MenuDisplayMode;
+    menuId: string;
+  };
+  responsive?: {
+    hideOnMobile?: boolean;
+    collapseToIcon?: boolean;
+    priority?: number;
+  };
+}
 
