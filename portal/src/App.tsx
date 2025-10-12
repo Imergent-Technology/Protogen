@@ -147,6 +147,86 @@ function App() {
       console.error('Failed to initialize toolbar system:', err);
     });
 
+    // Configure top toolbar
+    toolbarSystem.registerToolbarConfig({
+      id: 'top-toolbar',
+      edge: 'top',
+      sections: [
+        {
+          id: 'start-section',
+          position: 'start',
+          items: [
+            {
+              id: 'menu-button',
+              type: 'button',
+              icon: 'menu',
+              action: {
+                type: 'custom',
+                handler: () => toolbarSystem.toggleDrawer('main-nav-drawer')
+              },
+              responsive: { priority: 100 }
+            }
+          ]
+        },
+        {
+          id: 'middle-section',
+          position: 'middle',
+          items: [
+            {
+              id: 'context-indicator',
+              type: 'context-indicator',
+              responsive: { priority: 90 }
+            }
+          ]
+        },
+        {
+          id: 'end-section',
+          position: 'end',
+          items: [],
+          responsive: {
+            collapseThreshold: 'md',
+            overflowBehavior: 'overflow-menu'
+          }
+        }
+      ]
+    });
+
+    // Configure main navigation drawer
+    toolbarSystem.registerDrawer({
+      id: 'main-nav-drawer',
+      edge: 'left',
+      width: '256px',
+      overlay: true,
+      closeOnClickOutside: true,
+      items: [
+        { type: 'section-header', label: 'Navigation' },
+        {
+          type: 'nav-item',
+          label: 'Home',
+          icon: 'home',
+          action: { type: 'navigate-context', contextPath: '/' }
+        },
+        {
+          type: 'nav-item',
+          label: 'Explore',
+          icon: 'compass',
+          action: { type: 'navigate-context', contextPath: '/explore' }
+        },
+        {
+          type: 'nav-item',
+          label: 'Profile',
+          icon: 'user',
+          action: { type: 'navigate-context', contextPath: '/profile' }
+        },
+        {
+          type: 'nav-item',
+          label: 'Settings',
+          icon: 'settings',
+          action: { type: 'navigate-context', contextPath: '/settings' }
+        }
+      ]
+    });
+
     // Wire up toolbar menu actions to Navigator and Dialog systems
     const handleMenuAction = (data: any) => {
       const { action } = data;
@@ -216,21 +296,7 @@ function App() {
 
   return (
     <>
-      <AppLayout 
-        user={user} 
-        onLogout={handleLogout}
-        currentContext={currentContext.sceneSlug || 'Home'}
-        onContextClick={() => {
-          openToast("History interface would open here", {
-            title: "Navigation History",
-            variant: 'info'
-          });
-        }}
-        onNavigation={(target) => {
-          // Use Navigator system for navigation
-          navigateTo(target);
-        }}
-      >
+      <AppLayout>
         {/* Scene-first routing */}
         <SceneContainer />
       </AppLayout>
