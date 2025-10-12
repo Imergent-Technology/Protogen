@@ -38,26 +38,20 @@ export function useNavigator(_initialContext?: CurrentContext): UseNavigatorRetu
 
   // Subscribe to navigator events
   useEffect(() => {
-    console.log('useNavigator - Subscribing to singleton navigatorSystem events');
-    
     // Set up event listeners
-    const handleNavigationEvent: NavigationEventHandler = (event) => {
-      console.log('useNavigator - received event:', event.type, event.data);
+    const handleNavigationEvent: NavigationEventHandler = (_event) => {
       setState(navigatorSystem.getState());
-      console.log('useNavigator - new state:', navigatorSystem.getState());
     };
 
     navigatorSystem.on('navigation', handleNavigationEvent);
     navigatorSystem.on('context-change', handleNavigationEvent);
     navigatorSystem.on('history-update', handleNavigationEvent);
-    console.log('useNavigator - Event listeners subscribed to singleton');
 
     // Set initial state
     setState(navigatorSystem.getState());
 
     // Cleanup
     return () => {
-      console.log('useNavigator - Unsubscribing from singleton navigatorSystem events');
       navigatorSystem.off('navigation', handleNavigationEvent);
       navigatorSystem.off('context-change', handleNavigationEvent);
       navigatorSystem.off('history-update', handleNavigationEvent);
@@ -66,7 +60,6 @@ export function useNavigator(_initialContext?: CurrentContext): UseNavigatorRetu
 
   // Navigation Methods
   const navigateTo = useCallback(async (target: NavigationTarget) => {
-    console.log('useNavigator navigateTo called on singleton');
     await navigatorSystem.navigateTo(target);
   }, []);
 

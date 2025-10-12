@@ -32,7 +32,6 @@ class NavigatorSystemClass implements INavigatorSystem {
 
   // Core Navigation Methods
   async navigateTo(target: NavigationTarget): Promise<void> {
-    console.log('NavigatorSystem.navigateTo called with:', target);
     try {
       this.setLoading(true);
       this.clearError();
@@ -43,7 +42,6 @@ class NavigatorSystemClass implements INavigatorSystem {
         data: { target, action: 'start' },
         timestamp: Date.now()
       });
-      console.log('Navigation start event emitted');
 
       // Handle slide navigation
       if (target.type === 'slide') {
@@ -52,11 +50,7 @@ class NavigatorSystemClass implements INavigatorSystem {
       }
 
       // Create new context based on navigation target
-      console.log('Creating context from target...');
       const newContext = await this.createContextFromTarget(target);
-      console.log('New context created:', newContext);
-      console.log('New context contextPath:', newContext.contextPath);
-      console.log('Target contextPath was:', target.contextPath);
       
       // Create navigation entry
       const entry: NavigationEntry = {
@@ -67,25 +61,19 @@ class NavigatorSystemClass implements INavigatorSystem {
       };
 
       // Add to history
-      console.log('Adding to history...');
       this.addHistoryEntry(entry);
       
       // Update current context
-      console.log('Setting current context...');
       this.setCurrentContext(newContext);
-      console.log('Current context set');
 
       // Emit navigation end event
-      console.log('Emitting navigation end event...');
       this.emit({
         type: 'navigation',
         data: { target, action: 'end', context: newContext },
         timestamp: Date.now()
       });
-      console.log('Navigation complete!');
 
     } catch (error) {
-      console.error('Navigation error caught:', error);
       this.setError(error instanceof Error ? error.message : 'Navigation failed');
       this.emit({
         type: 'navigation',
@@ -93,7 +81,6 @@ class NavigatorSystemClass implements INavigatorSystem {
         timestamp: Date.now()
       });
     } finally {
-      console.log('Navigation finally block, setting loading to false');
       this.setLoading(false);
     }
   }
@@ -268,12 +255,10 @@ class NavigatorSystemClass implements INavigatorSystem {
 
   // Event System
   on(event: NavigatorEvent['type'], handler: NavigationEventHandler): void {
-    console.log(`NavigatorSystem.on('${event}') - Registering handler. Current handlers for this event:`, this.eventHandlers.get(event)?.length || 0);
     if (!this.eventHandlers.has(event)) {
       this.eventHandlers.set(event, []);
     }
     this.eventHandlers.get(event)!.push(handler);
-    console.log(`NavigatorSystem.on('${event}') - Handler registered. Total handlers for this event:`, this.eventHandlers.get(event)!.length);
   }
 
   off(event: NavigatorEvent['type'], handler: NavigationEventHandler): void {
@@ -288,19 +273,14 @@ class NavigatorSystemClass implements INavigatorSystem {
 
   emit(event: NavigatorEvent): void {
     const handlers = this.eventHandlers.get(event.type);
-    console.log(`NavigatorSystem.emit('${event.type}') - Found ${handlers?.length || 0} handlers`);
     if (handlers) {
-      handlers.forEach((handler, index) => {
+      handlers.forEach(handler => {
         try {
-          console.log(`NavigatorSystem.emit('${event.type}') - Calling handler ${index + 1}/${handlers.length}`);
           handler(event);
-          console.log(`NavigatorSystem.emit('${event.type}') - Handler ${index + 1} completed`);
         } catch (error) {
           console.error('Error in navigation event handler:', error);
         }
       });
-    } else {
-      console.warn(`NavigatorSystem.emit('${event.type}') - NO HANDLERS REGISTERED for this event!`);
     }
   }
 

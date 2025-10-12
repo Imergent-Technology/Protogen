@@ -229,7 +229,6 @@ function App() {
 
     // Wire up toolbar menu actions to Navigator and Dialog systems
     const handleMenuAction = (data: any) => {
-      console.log('handleMenuAction received:', data);
       const { action } = data;
       
       if (!action) {
@@ -237,13 +236,9 @@ function App() {
         return;
       }
       
-      console.log('Processing action:', action);
-      
       switch (action.type) {
         case 'navigate-context':
-          console.log('Calling navigateTo with:', { type: 'context', id: 'context', contextPath: action.contextPath });
           navigateTo({ type: 'context', id: 'context', contextPath: action.contextPath });
-          console.log('navigateTo called');
           break;
         
         case 'navigate-scene':
@@ -261,7 +256,6 @@ function App() {
         
         case 'start-flow':
           // Future: Start a flow
-          console.log('Start flow:', action.flowId);
           break;
         
         case 'external-link':
@@ -278,12 +272,10 @@ function App() {
     };
 
     toolbarSystem.on('menu-action', handleMenuAction);
-    console.log('Registered menu-action listener');
 
     return () => {
       window.removeEventListener('navigator:url-changed', handleURLChange as EventListener);
       toolbarSystem.off('menu-action', handleMenuAction);
-      console.log('Unregistered menu-action listener');
     };
   }, [navigateTo, openToast]);
 

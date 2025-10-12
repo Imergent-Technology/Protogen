@@ -12,12 +12,10 @@ import { useScene } from '@protogen/shared/systems/scene';
 
 export const SceneContainer: React.FC = () => {
   const sceneId = useSceneForContext();
-  console.log('SceneContainer rendering, sceneId:', sceneId);
   const [isLoading, setIsLoading] = useState(true);
 
   // Check if this is a system scene
   const isSystem = isSystemScene(sceneId);
-  console.log('Is system scene?', isSystem);
 
   // For system scenes, get the component
   const SystemSceneComponent = isSystem ? getSystemSceneComponent(sceneId) : null;
