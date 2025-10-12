@@ -125,17 +125,19 @@ This document outlines the comprehensive development roadmap for the Protogen pl
 - [x] Validator composition with combine()
 - [x] Custom validator registration
 
-#### **2.4 Enhanced Step Components** (Deferred)
-- [ ] Extract reusable step primitives (FormStep, SelectionStep, ReviewStep)
-- [ ] Advanced guidance UI (tooltips, focus ring, animations)
-- [ ] Conditional field display within steps
+#### **2.4 Enhanced Step Components** ✅
+- [x] Extract reusable step primitives (FormStep, SelectionStep, ReviewStep)
+- [x] Advanced guidance UI (GuidanceOverlay with focus ring, Tooltip component)
+- [x] FormStep with auto-slug generation and field type support
+- [x] SelectionStep with multiple display modes (radio, card, button)
+- [x] ReviewStep for data review before submission
 
 #### **Deliverables**
 - ✅ Extracted wizard system in shared library (`@protogen/shared/systems/flow/wizard`)
 - ✅ Dialog integration complete
 - ✅ Flow system integration (wizard as sub-module)
 - ✅ Validation framework with built-in and custom validators
-- 🔄 Reusable step components (deferred to Phase 2.4)
+- ✅ Reusable step components (FormStep, SelectionStep, ReviewStep, GuidanceOverlay, Tooltip)
 
 ---
 

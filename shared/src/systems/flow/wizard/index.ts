@@ -15,6 +15,15 @@ export { Wizard } from './components/Wizard';
 export { WizardProgress } from './components/WizardProgress';
 export { WizardStepHeader } from './components/WizardStepHeader';
 export { WizardNavigation } from './components/WizardNavigation';
+export { GuidanceOverlay, Tooltip } from './components/GuidanceOverlay';
+
+// Reusable Step Components
+export { FormStep } from './components/steps/FormStep';
+export type { FormField, FormStepData, FormStepProps } from './components/steps/FormStep';
+export { SelectionStep } from './components/steps/SelectionStep';
+export type { SelectionOption, SelectionStepData, SelectionStepProps } from './components/steps/SelectionStep';
+export { ReviewStep } from './components/steps/ReviewStep';
+export type { ReviewSection, ReviewItem, ReviewStepData, ReviewStepProps } from './components/steps/ReviewStep';
 
 // Hooks
 export { useWizard } from './hooks/useWizard';

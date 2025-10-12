@@ -29,8 +29,7 @@ export class WizardDialogService {
       description: config.description,
       content: React.createElement(Wizard, { config }),
       size: dialogSize,
-      closeOnEscape: false,
-      closeOnOutsideClick: false
+      closeOnEscape: false
     });
   }
 
@@ -47,8 +46,7 @@ export class WizardDialogService {
       title: config.title,
       content: React.createElement(Wizard, { config }),
       position: drawerPosition,
-      closeOnEscape: false,
-      closeOnOutsideClick: false
+      closeOnEscape: false
     });
   }
 
