@@ -22,8 +22,17 @@ interface User {
 function App() {
   const { openToast } = useDialog();
   const { navigateTo } = useNavigator();
-  const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(null);
+  
+  // TEMPORARY: Mock user for testing UserMenu widget
+  // TODO: Remove this and restore authentication flow
+  const [user, setUser] = useState<User | null>({
+    id: 1,
+    name: "Test User",
+    email: "test@example.com",
+    reputation: 0.85,
+    is_admin: true
+  });
+  const [token, setToken] = useState<string | null>("mock-token");
 
   // Check for existing authentication on app load
   useEffect(() => {
