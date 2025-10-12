@@ -126,7 +126,6 @@ function App() {
 
     // === Widget System Configuration ===
     // Register the UserMenu widget
-    const { widgetRegistry, userMenuWidgetDefinition } = require('@protogen/shared/systems/toolbar');
     widgetRegistry.register(userMenuWidgetDefinition);
 
     // Handle browser back/forward buttons
