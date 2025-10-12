@@ -44,87 +44,98 @@ This document outlines the comprehensive development roadmap for the Protogen pl
 
 ---
 
-## 🎯 **Phase 1: Navigation History & Breadcrumbs UI**
-
-### **Priority: High (Current Phase)**
-**Estimated Time: 1 week**
+## ✅ **Phase 1: Navigation History & Breadcrumbs UI** *(Completed)*
 
 #### **1.1 Breadcrumb System**
-- [ ] **useBreadcrumbs Hook**
+- [x] **useBreadcrumbs Hook**
   - Compute breadcrumb trail from current context
   - Map contextPath to human-readable labels
   - Support custom breadcrumb overrides
   - Handle scene/deck/slide breadcrumbs
+  - Ellipsis for long trails
 
-- [ ] **Breadcrumb Components**
+- [x] **Breadcrumb Components**
   - `Breadcrumbs.tsx` - Main breadcrumb container
   - `BreadcrumbItem.tsx` - Individual breadcrumb item
   - Clickable navigation to previous locations
   - Responsive design for mobile
+  - Accessible with ARIA labels
 
 #### **1.2 Navigation History UI**
-- [ ] **NavigationHistory Component**
+- [x] **NavigationHistory Component**
   - Display recent navigation entries
   - Back/forward navigation buttons
   - History list with timestamps
   - Clear history option
+  - Click any entry to navigate
   - Integration with existing `useNavigationHistory()` hook
 
 #### **1.3 Toolbar Integration**
-- [ ] Replace generic "Current Context" indicator
-- [ ] Breadcrumbs in top toolbar
-- [ ] Responsive behavior on small screens
-- [ ] Accessibility (ARIA labels, keyboard nav)
+- [x] Replace generic "Current Context" indicator
+- [x] Breadcrumbs in top toolbar (ToolbarItemRenderer)
+- [x] Responsive behavior on small screens
+- [x] Accessibility (ARIA labels, keyboard nav)
 
 #### **Deliverables**
-- Working breadcrumb navigation
-- Visual navigation history interface
-- Toolbar integration complete
-- URL synchronization with breadcrumbs
+- ✅ Working breadcrumb navigation
+- ✅ Visual navigation history interface
+- ✅ Toolbar integration complete
+- ✅ URL synchronization with breadcrumbs
 
 ---
 
-## 🧙 **Phase 2: Wizard System Extraction**
+## 🧙 **Phase 2: Wizard System Extraction** *(Core Complete)*
 
-### **Priority: High**
-**Estimated Time: 2-3 weeks**
+### **Status: Phases 2.1-2.3 Completed**
 
-#### **2.1 Admin Wizard Analysis**
-- [ ] Review existing admin wizard implementation
-- [ ] Identify reusable patterns and components
-- [ ] Extract core wizard logic
-- [ ] Design wizard step types
-
-#### **2.2 Wizard System Core**
-- [ ] **Wizard Data Models**
-  - `Wizard` interface with steps
+#### **2.1 Core Wizard System** ✅
+- [x] Review existing admin wizard implementation
+- [x] Extract WorkflowWizard → Wizard component
+- [x] Create comprehensive type system
+- [x] **Wizard Data Models**
+  - `WizardConfig` interface with steps and options
   - `WizardStep` interface for individual steps
-  - `WizardValidation` for step validation
-  - Step progression logic
+  - `WizardStepValidation` for step validation
+  - `WizardState` for wizard state management
+  - `WizardContext` for step component props
 
-- [ ] **Wizard State Management**
+- [x] **Wizard State Management**
   - Current step tracking
-  - Step completion validation
-  - Form data persistence
-  - Step navigation (next/previous/jump)
+  - Step completion validation with async support
+  - Form data persistence across steps
+  - Step navigation (next/previous)
+  - Step lifecycle hooks (onEnter, onExit, onNext, onBack, onSave)
 
-#### **2.3 Dialog System Integration**
-- [ ] Wizard as dialog type
-- [ ] Step-based dialog flows
-- [ ] Validation feedback in dialogs
-- [ ] Wizard completion handling
+- [x] **WizardSystem Class**
+  - Template registration and management
+  - Validator registry
+  - State persistence hooks
+  - Instance management
 
-#### **2.4 Flow System Integration**
-- [ ] Wizard as flow sub-module
-- [ ] Guided wizard experiences
-- [ ] Animation support via flow
-- [ ] Wizard-flow coordination
+#### **2.2 Dialog System Integration** ✅
+- [x] WizardDialogService for opening wizards in dialogs
+- [x] Support for modal, drawer, and full-screen modes
+- [x] Integration with dialogSystem.openModal/openDrawer
+- [x] Configurable dialog options (size, position, close behavior)
+
+#### **2.3 Validation Framework** ✅
+- [x] ValidationService with centralized validation
+- [x] Built-in validators (required, email, url, minLength, maxLength, pattern, range, uniqueSlug)
+- [x] Support for sync and async validators
+- [x] Validator composition with combine()
+- [x] Custom validator registration
+
+#### **2.4 Enhanced Step Components** (Deferred)
+- [ ] Extract reusable step primitives (FormStep, SelectionStep, ReviewStep)
+- [ ] Advanced guidance UI (tooltips, focus ring, animations)
+- [ ] Conditional field display within steps
 
 #### **Deliverables**
-- Extracted wizard system in shared library
-- Dialog integration complete
-- Flow system integration
-- Reusable wizard components
+- ✅ Extracted wizard system in shared library (`@protogen/shared/systems/flow/wizard`)
+- ✅ Dialog integration complete
+- ✅ Flow system integration (wizard as sub-module)
+- ✅ Validation framework with built-in and custom validators
+- 🔄 Reusable step components (deferred to Phase 2.4)
 
 ---
 
