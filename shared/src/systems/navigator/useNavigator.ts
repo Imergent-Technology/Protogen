@@ -48,8 +48,11 @@ export function useNavigator(initialContext?: CurrentContext): UseNavigatorRetur
 
   // Initialize Navigator System
   useEffect(() => {
+    console.log('useNavigator useEffect running, navigatorRef.current:', navigatorRef.current);
     if (!navigatorRef.current) {
+      console.log('Creating new NavigatorSystem instance');
       navigatorRef.current = new NavigatorSystem(initialContext);
+      console.log('NavigatorSystem instance created:', navigatorRef.current);
       
       // Set up event listeners
       const handleNavigationEvent: NavigationEventHandler = (event) => {
@@ -58,9 +61,11 @@ export function useNavigator(initialContext?: CurrentContext): UseNavigatorRetur
         console.log('useNavigator - new state:', navigatorRef.current!.getState());
       };
 
+      console.log('Subscribing to NavigatorSystem events...');
       navigatorRef.current.on('navigation', handleNavigationEvent);
       navigatorRef.current.on('context-change', handleNavigationEvent);
       navigatorRef.current.on('history-update', handleNavigationEvent);
+      console.log('Event listeners subscribed');
 
       // Set initial state
       setState(navigatorRef.current.getState());
@@ -78,8 +83,12 @@ export function useNavigator(initialContext?: CurrentContext): UseNavigatorRetur
 
   // Navigation Methods
   const navigateTo = useCallback(async (target: NavigationTarget) => {
+    console.log('useNavigator navigateTo called, navigatorRef.current:', navigatorRef.current);
     if (navigatorRef.current) {
+      console.log('Calling navigateTo on NavigatorSystem instance');
       await navigatorRef.current.navigateTo(target);
+    } else {
+      console.error('navigatorRef.current is null!');
     }
   }, []);
 

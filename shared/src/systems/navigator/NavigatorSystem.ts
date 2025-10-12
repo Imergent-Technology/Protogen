@@ -55,6 +55,8 @@ export class NavigatorSystem implements INavigatorSystem {
       console.log('Creating context from target...');
       const newContext = await this.createContextFromTarget(target);
       console.log('New context created:', newContext);
+      console.log('New context contextPath:', newContext.contextPath);
+      console.log('Target contextPath was:', target.contextPath);
       
       // Create navigation entry
       const entry: NavigationEntry = {
@@ -265,10 +267,12 @@ export class NavigatorSystem implements INavigatorSystem {
 
   // Event System
   on(event: NavigatorEvent['type'], handler: NavigationEventHandler): void {
+    console.log(`NavigatorSystem.on('${event}') - Registering handler. Current handlers for this event:`, this.eventHandlers.get(event)?.length || 0);
     if (!this.eventHandlers.has(event)) {
       this.eventHandlers.set(event, []);
     }
     this.eventHandlers.get(event)!.push(handler);
+    console.log(`NavigatorSystem.on('${event}') - Handler registered. Total handlers for this event:`, this.eventHandlers.get(event)!.length);
   }
 
   off(event: NavigatorEvent['type'], handler: NavigationEventHandler): void {
@@ -283,14 +287,19 @@ export class NavigatorSystem implements INavigatorSystem {
 
   emit(event: NavigatorEvent): void {
     const handlers = this.eventHandlers.get(event.type);
+    console.log(`NavigatorSystem.emit('${event.type}') - Found ${handlers?.length || 0} handlers`);
     if (handlers) {
-      handlers.forEach(handler => {
+      handlers.forEach((handler, index) => {
         try {
+          console.log(`NavigatorSystem.emit('${event.type}') - Calling handler ${index + 1}/${handlers.length}`);
           handler(event);
+          console.log(`NavigatorSystem.emit('${event.type}') - Handler ${index + 1} completed`);
         } catch (error) {
           console.error('Error in navigation event handler:', error);
         }
       });
+    } else {
+      console.warn(`NavigatorSystem.emit('${event.type}') - NO HANDLERS REGISTERED for this event!`);
     }
   }
 
