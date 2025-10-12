@@ -14,11 +14,13 @@ import { useCurrentContext } from '../navigator/useNavigator';
 export function useSceneForContext(): string {
   const currentContext = useCurrentContext();
   console.log('useSceneForContext - currentContext:', currentContext);
+  console.log('useSceneForContext - contextPath:', currentContext.contextPath);
+  console.log('useSceneForContext - timestamp:', currentContext.timestamp);
   
   // Use useMemo to recompute only when context properties change
   const sceneId = useMemo(() => {
     const result = sceneRouter.getSceneForContext(currentContext);
-    console.log('useSceneForContext - computed sceneId:', result);
+    console.log('useSceneForContext - computed sceneId from path:', currentContext.contextPath, '→', result);
     return result;
   }, [
     currentContext.contextPath,

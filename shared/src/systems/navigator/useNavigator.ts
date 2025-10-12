@@ -52,8 +52,10 @@ export function useNavigator(initialContext?: CurrentContext): UseNavigatorRetur
       navigatorRef.current = new NavigatorSystem(initialContext);
       
       // Set up event listeners
-      const handleNavigationEvent: NavigationEventHandler = (_event) => {
+      const handleNavigationEvent: NavigationEventHandler = (event) => {
+        console.log('useNavigator - received event:', event.type, event.data);
         setState(navigatorRef.current!.getState());
+        console.log('useNavigator - new state:', navigatorRef.current!.getState());
       };
 
       navigatorRef.current.on('navigation', handleNavigationEvent);
