@@ -28,7 +28,7 @@ export interface UserMenuWidgetData {
   onSettingsClick?: () => void;
 }
 
-export const UserMenuWidget: React.FC<ToolbarWidgetProps> = ({ widgetId, data, isCollapsed }) => {
+export const UserMenuWidget: React.FC<ToolbarWidgetProps> = ({ data }) => {
   const widgetData = data as UserMenuWidgetData | undefined;
   const user = widgetData?.user;
 
