@@ -1888,6 +1888,9 @@
   .pt-8 {
     padding-top: calc(var(--spacing) * 8);
   }
+  .pt-12 {
+    padding-top: calc(var(--spacing) * 12);
+  }
   .pt-14 {
     padding-top: calc(var(--spacing) * 14);
   }

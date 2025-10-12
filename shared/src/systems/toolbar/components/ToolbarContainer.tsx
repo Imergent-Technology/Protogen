@@ -36,8 +36,8 @@ export const ToolbarContainer: React.FC<ToolbarContainerProps> = ({
     <div
       className={`
         fixed z-40 bg-card border-border
-        ${edge === 'top' && 'top-0 left-0 right-0 h-14 border-b'}
-        ${edge === 'bottom' && 'bottom-0 left-0 right-0 h-14 border-t'}
+        ${edge === 'top' && 'top-0 left-0 right-0 h-12 border-b'}
+        ${edge === 'bottom' && 'bottom-0 left-0 right-0 h-12 border-t'}
         ${edge === 'left' && 'left-0 top-0 bottom-0 w-16 border-r'}
         ${edge === 'right' && 'right-0 top-0 bottom-0 w-16 border-l'}
         ${className}
@@ -47,25 +47,25 @@ export const ToolbarContainer: React.FC<ToolbarContainerProps> = ({
       }}
     >
       <div className={`
-        h-full w-full flex gap-4 px-4
-        ${isHorizontal ? 'flex-row' : 'flex-col py-4'}
+        h-full w-full flex items-center px-4
+        ${isHorizontal ? 'flex-row gap-6' : 'flex-col gap-4 py-4'}
       `}>
         {/* Start Section */}
-        <div className={`flex gap-2 ${isHorizontal ? 'justify-start' : 'items-start'}`}>
+        <div className={`flex items-center gap-3 ${isHorizontal ? 'justify-start' : 'items-start'}`}>
           {startItems.map((section: ToolbarSectionType) => (
             <ToolbarSection key={section.id} section={section} />
           ))}
         </div>
         
         {/* Middle Section - grows to fill space */}
-        <div className={`flex-1 flex gap-2 ${isHorizontal ? 'justify-center' : 'items-center'}`}>
+        <div className={`flex-1 flex items-center gap-3 ${isHorizontal ? 'justify-center' : 'items-center'}`}>
           {middleItems.map((section: ToolbarSectionType) => (
             <ToolbarSection key={section.id} section={section} />
           ))}
         </div>
         
         {/* End Section */}
-        <div className={`flex gap-2 ${isHorizontal ? 'justify-end' : 'items-end'}`}>
+        <div className={`flex items-center gap-3 ${isHorizontal ? 'justify-end' : 'items-end'}`}>
           {endItems.map((section: ToolbarSectionType) => (
             <ToolbarSection key={section.id} section={section} />
           ))}

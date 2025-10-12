@@ -21,11 +21,11 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         isOpen={isOpen}
         onClose={close}
         edge="left"
-        topToolbarHeight="3.5rem" // 56px (h-14)
+        topToolbarHeight="3rem" // 48px (h-12)
       />
       
       {/* Main content with padding for top toolbar */}
-      <div className="absolute inset-0 pt-14">
+      <div className="absolute inset-0 pt-12">
         <main className="h-full w-full overflow-auto">
           {children}
         </main>
