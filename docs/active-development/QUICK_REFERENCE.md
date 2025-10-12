@@ -6,6 +6,7 @@
 ```bash
 # Quick status check
 cat docs/active-development/DEVELOPMENT_STATUS.md
+cat docs/active-development/DEVELOPMENT_ROADMAP.md
 ```
 
 ### **2. Review Active Development**
@@ -16,209 +17,392 @@ ls docs/active-development/
 
 ### **3. Key Files to Review**
 - `DEVELOPMENT_STATUS.md` - Current implementation status
+- `DEVELOPMENT_ROADMAP.md` - Roadmap and priorities
 - `DEVELOPMENT_WORKFLOW.md` - Development workflow guide
 - `README.md` - Active development overview
 
-## 🎯 **Current Priority: Flow System Implementation**
+## 🎯 **Current Priority: Navigation History & Breadcrumbs UI**
 
-### **Scene-Centric Architecture Complete** ✅
-- Backend models with animation cascade
-- Frontend Scene System with Framer Motion
-- Scene Authoring UI components
-- Navigator integration complete
+### **Foundation Complete** ✅
+- Shared Library Architecture (`@protogen/shared`)
+- Dialog System (modal, drawer, toast, confirmation)
+- Scene-First Routing with SceneRouter
+- Toolbar & Menu System (multi-edge, drawers, plugins)
+- Navigator System (singleton pattern, event-driven)
 
-### **Database Schema Implemented**
-```sql
--- Slides table (with animation fields)
-CREATE TABLE slides (
-    id BIGSERIAL PRIMARY KEY,
-    scene_id BIGINT NOT NULL REFERENCES scenes(id) ON DELETE CASCADE,
-    name VARCHAR(255) NOT NULL,
-    description TEXT,
-    slide_index INTEGER NOT NULL,
-    is_active BOOLEAN DEFAULT false,
-    entrance_animation JSONB,  -- Slide override
-    exit_animation JSONB,     -- Slide override
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW()
-);
+### **Current Phase: Phase 1**
+Navigation History & Breadcrumbs UI implementation to provide visual navigation feedback and clickable breadcrumb trails.
 
--- Scene animation configuration
-ALTER TABLE scenes ADD COLUMN slide_config JSONB;
-ALTER TABLE scenes ADD COLUMN default_slide_animation JSONB;
+---
 
--- Slide items table
-CREATE TABLE slide_items (
-    id BIGSERIAL PRIMARY KEY,
-    slide_id BIGINT NOT NULL REFERENCES slides(id) ON DELETE CASCADE,
-    node_id BIGINT NOT NULL REFERENCES scene_items(id) ON DELETE CASCADE,
-    position JSONB,
-    scale JSONB,
-    rotation DECIMAL(8,2) DEFAULT 0,
-    opacity DECIMAL(3,2) DEFAULT 1.0,
-    visible BOOLEAN DEFAULT true,
-    style JSONB,
-    transition_config JSONB,
-    is_visible BOOLEAN DEFAULT true,
-    z_index INTEGER DEFAULT 0,
-    transition_duration INTEGER,
-    transition_easing VARCHAR(50),
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW(),
-    UNIQUE(slide_id, scene_item_id)
-);
+## 📦 **Shared Library System Locations**
 
--- Scene items enhancement
-ALTER TABLE scene_items ADD COLUMN slide_id BIGINT REFERENCES slides(id) ON DELETE SET NULL;
-CREATE INDEX idx_scene_items_slide_id ON scene_items(slide_id);
-```
-
-### **API Endpoints Ready**
-```
-GET    /api/slides                    # List slides for a scene
-POST   /api/slides                    # Create new slide
-GET    /api/slides/{id}               # Get specific slide
-PUT    /api/slides/{id}               # Update slide
-DELETE /api/slides/{id}               # Delete slide
-
-GET    /api/slides/{id}/items        # Get slide items for a slide
-POST   /api/slides/{id}/items         # Create slide item
-PUT    /api/slide-items/{id}          # Update slide item
-DELETE /api/slide-items/{id}          # Delete slide item
-
-PUT    /api/scene-items/{id}/slide    # Associate scene item with slide
-DELETE /api/scene-items/{id}/slide    # Remove slide association
-```
-
-### **TypeScript Interfaces Ready**
+### **Import Paths**
 ```typescript
-interface Slide {
+// Navigator System
+import { 
+  navigatorSystem, 
+  useNavigator, 
+  useCurrentContext,
+  useNavigationHistory 
+} from '@protogen/shared/systems/navigator';
+
+// Scene System
+import { 
+  sceneRouter,
+  useScene,
+  useSceneForContext,
+  isSystemScene,
+  getSystemSceneComponent
+} from '@protogen/shared/systems/scene';
+
+// Dialog System
+import {
+  dialogSystem,
+  useDialog
+} from '@protogen/shared/systems/dialog';
+
+// Toolbar System
+import {
+  toolbarSystem,
+  useToolbar,
+  useToolbarDrawer,
+  ToolbarContainer,
+  ToolbarDrawer
+} from '@protogen/shared/systems/toolbar';
+
+// Authoring System
+import {
+  authoringSystem,
+  useAuthoring
+} from '@protogen/shared/systems/authoring';
+
+// Slide System
+import {
+  slideSystem,
+  useSlide
+} from '@protogen/shared/systems/slide';
+
+// Components
+import { Button } from '@protogen/shared/components/ui/button';
+import { Card } from '@protogen/shared/components/ui/card';
+// ... other shared components
+```
+
+### **System Locations**
+```
+shared/src/
+├── systems/
+│   ├── navigator/          # Navigation and routing
+│   ├── scene/              # Scene management
+│   ├── dialog/             # Dialog system
+│   ├── toolbar/            # Toolbar and menus
+│   ├── authoring/          # Content authoring
+│   ├── slide/              # Slide management
+│   └── flow/               # Flow system (future)
+├── components/             # Reusable UI components
+├── hooks/                  # Shared React hooks
+├── services/               # API and service layer
+└── types/                  # TypeScript type definitions
+```
+
+---
+
+## 🎨 **Key React Hooks**
+
+### **Navigator Hooks**
+```typescript
+// Main navigator hook
+const { navigateTo, navigateBack, currentContext, history } = useNavigator();
+
+// Current context only
+const currentContext = useCurrentContext();
+
+// Navigation history
+const { entries, canGoBack, canGoForward, navigateBack } = useNavigationHistory();
+
+// Future: Breadcrumbs hook
+const breadcrumbs = useBreadcrumbs();
+```
+
+### **Dialog Hooks**
+```typescript
+const {
+  openModal,
+  openDrawer,
+  openToast,
+  openConfirmation,
+  closeDialog,
+  closeAll
+} = useDialog();
+
+// Example usage
+openModal({
+  title: 'Edit Profile',
+  content: <ProfileForm />,
+  size: 'large'
+});
+
+openToast('Changes saved!', { variant: 'success' });
+```
+
+### **Toolbar Hooks**
+```typescript
+const {
+  openDrawer,
+  closeDrawer,
+  toggleDrawer,
+  isDrawerOpen
+} = useToolbar();
+
+// Drawer-specific hook
+const { isOpen, open, close, toggle } = useToolbarDrawer('main-nav-drawer');
+```
+
+### **Scene Hooks**
+```typescript
+// Get scene for current context
+const sceneId = useSceneForContext();
+
+// Load scene data
+const { currentScene, isLoading } = useScene(sceneId);
+
+// Check if system scene
+const isSystem = isSystemScene(sceneId);
+```
+
+---
+
+## 🎯 **TypeScript Interfaces**
+
+### **Navigator Types**
+```typescript
+interface NavigationTarget {
+  type: 'scene' | 'deck' | 'slide' | 'context';
   id: string;
-  scene_id: string;
-  name: string;
-  description?: string;
-  order: number;
-  duration?: number;
-  transition_type?: 'fade' | 'slide' | 'zoom' | 'custom';
-  transition_duration?: number;
-  transition_easing?: string;
-  is_active: boolean;
-  created_at: string;
-  updated_at: string;
+  slug?: string;
+  contextPath?: string;
+  slideIndex?: number;
 }
 
-interface SlideItem {
+interface CurrentContext {
+  sceneId: string | null;
+  sceneSlug: string | null;
+  deckId: string | null;
+  deckSlug: string | null;
+  slideId: string | null;
+  contextPath?: string;
+  timestamp: number;
+}
+
+interface NavigationEntry {
   id: string;
-  slide_id: string;
-  scene_item_id: string;
-  position: { x: number; y: number; z?: number };
-  dimensions: { width: number; height: number };
-  style: Record<string, any>;
-  meta: Record<string, any>;
-  is_visible: boolean;
-  z_index: number;
-  transition_duration?: number;
-  transition_easing?: string;
-  created_at: string;
-  updated_at: string;
+  target: NavigationTarget;
+  context: CurrentContext;
+  timestamp: number;
 }
 ```
 
-## 🏗️ **Next Priority: Unified Portal**
+### **Dialog Types**
+```typescript
+interface ModalDialogConfig {
+  type: 'modal';
+  title?: string;
+  content: React.ReactNode;
+  size?: 'small' | 'medium' | 'large' | 'fullscreen';
+  closeOnOverlayClick?: boolean;
+  showCloseButton?: boolean;
+}
 
-### **Migration Strategy Ready**
-- Authentication unification
-- Role-based access control
-- Component migration plan
-- Navigation integration
-- Validation checklist
+interface ToastConfig {
+  type: 'toast';
+  message: string;
+  variant?: 'default' | 'success' | 'warning' | 'error';
+  duration?: number;
+}
+```
 
-### **Key Integration Points**
-- Navigator system coordination
-- Context system enhancement
-- Flow system implementation
-- Engagement system replacement
+### **Toolbar Types**
+```typescript
+interface ToolbarConfig {
+  id: string;
+  edge?: 'top' | 'bottom' | 'left' | 'right';
+  sections: ToolbarSection[];
+  style?: ToolbarStyle;
+}
 
-## 🧭 **Following Priority: Navigator System**
+interface ToolbarDrawer {
+  id: string;
+  edge: 'left' | 'right' | 'top' | 'bottom';
+  width?: string;
+  height?: string;
+  overlay?: boolean;
+  closeOnClickOutside?: boolean;
+  items: DrawerItem[];
+}
+```
 
-### **Architecture Ready**
-- Context system integration
-- Flow system coordination
-- Engagement system replacement
-- Orchestrator coordination
-
-### **Implementation Sequence**
-1. Context system enhancements
-2. Flow system implementation
-3. Engagement system implementation
-4. Orchestrator system implementation
-5. Integration testing
+---
 
 ## 🔧 **Development Environment**
 
 ### **Start Development**
 ```bash
-# Start development environment
+# Start Docker services (always use Docker)
 docker-compose up -d
+
+# Start development servers (run from root)
+npm run dev
+
+# This runs concurrently:
+# - portal: http://localhost:3000
+# - admin: http://localhost:3001
+# - shared library watch mode
+```
+
+### **Build Shared Library**
+```bash
+cd shared
+npm run build
+
+# Watch mode for development
 npm run dev
 ```
 
 ### **Database Management**
 ```bash
 # Run migrations
-php artisan migrate
+docker exec -it protogen-api php artisan migrate
 
 # Check status
-php artisan migrate:status
+docker exec -it protogen-api php artisan migrate:status
+
+# Seed database
+docker exec -it protogen-api php artisan db:seed
 ```
 
 ### **Frontend Development**
 ```bash
-# Start development server
+# Portal development
+cd portal
 npm run dev
 
-# Build for production
-npm run build
+# Admin development
+cd admin
+npm run dev
+
+# Shared library development
+cd shared
+npm run dev
 ```
+
+---
 
 ## 📚 **Key Documentation**
 
-### **For Slide System**
-- `SCENE_AUTHORING_LIBRARY_STRATEGY.md` - Complete architecture
-- `ORCHESTRATOR_SYSTEM_ARCHITECTURE.md` - Coordination
-- `context-system.md` - Integration points
+### **Architecture Documents**
+- `ORCHESTRATOR_SYSTEM_ARCHITECTURE.md` - System coordination
+- `NAVIGATOR_SYSTEMS_ARCHITECTURE.md` - Navigation architecture
+- `DIALOG_SYSTEM_ARCHITECTURE.md` - Dialog system
+- `SCENE_FIRST_ROUTING.md` - Scene routing
+- `AUTHORING_SYSTEM_ARCHITECTURE.md` - Authoring system
+- `SSR_ARCHITECTURE.md` - Server-side rendering
 
-### **For Unified Portal**
-- `UNIFIED_PORTAL_ARCHITECTURE.md` - Architecture
-- `UNIFIED_PORTAL_MIGRATION_STRATEGY.md` - Migration plan
-- `UNIFIED_PORTAL_VALIDATION_CHECKLIST.md` - Validation criteria
+### **Implementation Guides**
+- `SHARED_LIBRARY_MIGRATION_GUIDE.md` - Shared library migration
+- `TYPESCRIPT_FIX_GUIDE.md` - TypeScript error fixing
+- `DEVELOPMENT_WORKFLOW.md` - Development workflow
+- `TESTING_CHECKLIST.md` - Testing procedures
 
-### **For Navigator System**
-- `NAVIGATOR_FLOW_CONTEXT_ENGAGEMENT_ARCHITECTURE.md` - Architecture
-- `NAVIGATOR_FLOW_CONTEXT_ENGAGEMENT_ROADMAP.md` - Implementation plan
+### **Roadmaps**
+- `DEVELOPMENT_ROADMAP.md` - Overall development plan
+- `CENTRAL_GRAPH_ROADMAP.md` - Graph system evolution
+
+---
 
 ## 🎯 **Success Criteria**
 
-### **Slide System Success**
-- [ ] Slides can be created and managed
-- [ ] Scene items transition smoothly
-- [ ] Tweening system works
-- [ ] Performance optimized
+### **Foundation Success** ✅
+- [x] Shared library architecture established
+- [x] Dialog system operational
+- [x] Scene-first routing working
+- [x] Toolbar system functional
+- [x] Navigator singleton pattern
+- [x] URL synchronization working
 
-### **Unified Portal Success**
-- [ ] Single authentication system
-- [ ] Role-based access control
-- [ ] Admin functionality preserved
-- [ ] User experience improved
+### **Phase 1 Success** (Current)
+- [ ] Breadcrumb trail displays correctly
+- [ ] Clickable breadcrumb navigation
+- [ ] Navigation history UI functional
+- [ ] Back/forward buttons working
+- [ ] Toolbar integration complete
 
-### **Navigator System Success**
-- [ ] Context-aware navigation
-- [ ] Flow system integration
-- [ ] Engagement system replacement
-- [ ] Orchestrator coordination
+### **Future Phase Success**
+- [ ] Wizard system extracted
+- [ ] Admin toolbar configuration UI
+- [ ] Bookmarks and comments operational
+- [ ] Flow system implemented
+
+---
+
+## 🚨 **Common Tasks**
+
+### **Adding a New System Module**
+1. Create system directory in `shared/src/systems/[system-name]/`
+2. Implement system class with singleton pattern
+3. Create React hooks for system interaction
+4. Add to `shared/package.json` exports
+5. Export from `shared/src/systems/[system-name]/index.ts`
+6. Document in architecture docs
+
+### **Creating a New Dialog**
+```typescript
+// In your component
+const { openModal } = useDialog();
+
+const handleOpenDialog = () => {
+  openModal({
+    title: 'My Dialog',
+    content: <MyDialogContent />,
+    size: 'medium',
+    closeOnOverlayClick: true
+  });
+};
+```
+
+### **Adding a Toolbar Menu Item**
+```typescript
+// In App.tsx or toolbar configuration
+toolbarSystem.injectMenuItem('main-menu', {
+  type: 'nav-item',
+  label: 'New Item',
+  icon: 'star',
+  action: { type: 'navigate-context', contextPath: '/new-item' }
+});
+```
+
+### **Navigating to a New Context**
+```typescript
+const { navigateTo } = useNavigator();
+
+navigateTo({
+  type: 'context',
+  id: 'context',
+  contextPath: '/path/to/content'
+});
+```
+
+---
 
 ## 🚀 **Ready to Start Development**
 
-With comprehensive documentation, clear implementation priorities, and detailed success criteria, you're ready to implement the slide system, unified portal, and navigator system with confidence.
+With the foundation complete and comprehensive documentation available, you're ready to implement Phase 1: Navigation History & Breadcrumbs UI.
+
+**Next immediate steps:**
+1. Create `useBreadcrumbs` hook
+2. Build `Breadcrumbs` component
+3. Create `NavigationHistory` component
+4. Integrate with Toolbar
+5. Test and polish
 
 The foundation is solid, the path is clear, and the success criteria are well-defined. Time to build! 🎉

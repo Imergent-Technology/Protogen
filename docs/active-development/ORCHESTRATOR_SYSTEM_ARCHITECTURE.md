@@ -2,194 +2,400 @@
 
 ## 🎯 **Overview**
 
-The Orchestrator System manages scene lifecycles, coordinates system interactions, and optimizes performance across the Protogen platform. It serves as the central coordination layer that ensures smooth operation of scenes, slides, and related systems.
+The Orchestrator System manages system lifecycles, coordinates interactions between major subsystems, and optimizes performance across the Protogen platform. It serves as the central coordination layer that ensures smooth operation of scenes, navigation, dialogs, toolbars, and engagement features.
 
 ## 🏗️ **Core Responsibilities**
 
-### **Scene Lifecycle Management**
-- **Scene Loading**: Coordinate scene initialization and resource loading
-- **Scene Unloading**: Manage scene cleanup and resource disposal
-- **State Management**: Maintain scene state across navigation and interactions
-- **Performance Optimization**: Optimize scene loading and rendering performance
+### **System Lifecycle Management**
+- **Scene Loading**: Coordinate scene initialization and resource loading via SceneRouter
+- **Dialog Management**: Coordinate dialog states and transitions
+- **Toolbar Coordination**: Manage toolbar configurations and menu states
+- **Resource Management**: Optimize loading and memory usage across systems
+- **Performance Optimization**: Implement intelligent caching and lazy loading
 
 ### **System Coordination**
-- **Event Orchestration**: Coordinate events between Navigator, Context, Flow, and Engagement systems
+- **Event Orchestration**: Coordinate events between Navigator, Scene, Dialog, and Toolbar systems
 - **State Synchronization**: Ensure consistent state across all systems
-- **Resource Management**: Manage shared resources and dependencies
+- **Shared Resources**: Manage shared resources and dependencies
 - **Error Handling**: Centralized error handling and recovery
+- **Cross-System Communication**: Facilitate inter-system messaging
 
 ### **Performance Management**
-- **Caching Strategy**: Implement intelligent caching for scenes and slides
+- **Caching Strategy**: Implement intelligent caching for scenes and components
 - **Resource Optimization**: Optimize loading and memory usage
 - **Lazy Loading**: Implement lazy loading for non-critical resources
 - **Background Processing**: Handle background tasks and updates
+- **Bundle Optimization**: Coordinate with SSR for optimal bundle delivery
 
-## 🎬 **Slide System Integration**
+## 🌐 **Shared Library Integration**
 
-### **Slide Lifecycle Management**
-The Orchestrator coordinates slide states with scene lifecycles:
+### **SSR Architecture**
+The Orchestrator coordinates with the API for Server-Side Rendering of JavaScript bundles:
 
 ```typescript
-interface SlideOrchestration {
-  // Slide State Management
-  loadSlideState(slideId: string): Promise<SlideState>;
-  unloadSlideState(slideId: string): void;
-  transitionToSlide(fromSlideId: string, toSlideId: string): Promise<void>;
+interface OrchestratorSSRIntegration {
+  // Bundle Management
+  requestBundle(systemId: string): Promise<BundleManifest>;
+  cacheBundle(systemId: string, bundle: Bundle): void;
+  invalidateCache(systemId: string): void;
+  
+  // Hydration Coordination
+  hydrateSystem(systemId: string, initialState: any): Promise<void>;
+  dehydrateSystem(systemId: string): SerializedState;
   
   // Performance Optimization
-  preloadSlide(slideId: string): Promise<void>;
-  cacheSlideState(slideId: string, state: SlideState): void;
-  optimizeSlideTransitions(sceneId: string): void;
-  
-  // Event Coordination
-  onSlideEnter(slideId: string, handler: SlideEventHandler): void;
-  onSlideExit(slideId: string, handler: SlideEventHandler): void;
-  onSlideTransition(slideId: string, handler: TransitionEventHandler): void;
+  preloadCriticalBundles(): Promise<void>;
+  lazyLoadSystem(systemId: string): Promise<void>;
 }
 ```
 
-### **Slide Performance Optimization**
-- **Preloading**: Preload upcoming slides for smooth transitions
-- **Caching**: Cache slide states and animations for performance
-- **Memory Management**: Efficiently manage slide-related memory usage
-- **Transition Optimization**: Optimize slide transition performance
+### **System Module Loading**
+Dynamic loading of system modules from shared library:
 
-### **Slide-Scene Coordination**
-- **Scene Loading**: Coordinate slide loading with scene initialization
-- **State Synchronization**: Ensure slide states are synchronized with scene states
-- **Resource Management**: Manage slide resources within scene lifecycle
-- **Error Recovery**: Handle slide-related errors and recovery
-
-## 🔄 **System Integration**
-
-### **Navigator Integration**
-- **Navigation Coordination**: Coordinate scene navigation with slide transitions
-- **Context Management**: Maintain slide context within navigation context
-- **Transition Orchestration**: Orchestrate slide transitions with navigation
-
-### **Context Integration**
-- **Slide Contexts**: Support slide-specific coordinate systems
-- **Navigation Anchors**: Enable slide positions as navigation anchors
-- **Cross-Slide References**: Support linking between slides
-
-### **Flow Integration**
-- **Flow-Slide Coordination**: Coordinate flow progression with slide states
-- **Step Transitions**: Manage slide transitions within flow steps
-- **Flow State Management**: Maintain slide state within flow context
-
-## 🚀 **Performance Architecture**
-
-### **Caching Strategy**
 ```typescript
-interface OrchestratorCache {
-  // Scene Caching
-  cacheScene(sceneId: string, data: SceneData): void;
-  getCachedScene(sceneId: string): SceneData | null;
+interface SystemModuleLoader {
+  // Module Resolution
+  resolveModule(path: string): Promise<Module>;
+  loadSystem(systemId: 'navigator' | 'dialog' | 'toolbar' | 'scene'): Promise<System>;
   
-  // Slide Caching
-  cacheSlide(slideId: string, data: SlideData): void;
-  getCachedSlide(slideId: string): SlideData | null;
+  // Dependency Management
+  resolveDependencies(systemId: string): string[];
+  loadDependencies(systemId: string): Promise<void>;
   
-  // Performance Metrics
-  getCacheStats(): CacheStats;
-  optimizeCache(): void;
+  // Cache Management
+  getCachedModule(path: string): Module | null;
+  invalidateModule(path: string): void;
 }
 ```
 
-### **Resource Management**
+## 🎬 **Scene-First Routing Coordination**
+
+### **SceneRouter Integration**
+The Orchestrator coordinates with SceneRouter for context-based scene resolution:
+
 ```typescript
-interface ResourceManager {
-  // Resource Loading
-  loadResource(resourceId: string): Promise<Resource>;
-  preloadResource(resourceId: string): Promise<void>;
+interface SceneOrchestration {
+  // Scene Resolution
+  resolveScene(context: CurrentContext): string;
+  loadScene(sceneId: string): Promise<SceneData>;
+  unloadScene(sceneId: string): void;
   
-  // Memory Management
-  trackMemoryUsage(): MemoryStats;
-  optimizeMemoryUsage(): void;
+  // Scene State Management
+  cacheSceneState(sceneId: string, state: SceneState): void;
+  getSceneState(sceneId: string): SceneState | null;
   
-  // Cleanup
-  cleanupUnusedResources(): void;
-  disposeResource(resourceId: string): void;
+  // System Scene Handling
+  loadSystemScene(sceneId: string): Promise<React.ComponentType>;
+  isSystemScene(sceneId: string): boolean;
+  
+  // Performance Optimization
+  preloadScene(sceneId: string): Promise<void>;
+  optimizeSceneTransitions(): void;
 }
 ```
 
-## 📊 **Monitoring and Analytics**
+### **Navigation Coordination**
+Coordinates Navigator system events with scene loading:
 
-### **Performance Metrics**
-- **Scene Load Times**: Track scene loading performance
-- **Slide Transition Performance**: Monitor slide transition smoothness
-- **Memory Usage**: Track memory usage across scenes and slides
-- **Cache Hit Rates**: Monitor caching effectiveness
+```typescript
+interface NavigationOrchestration {
+  // Navigation Events
+  onNavigationStart(target: NavigationTarget): void;
+  onNavigationEnd(context: CurrentContext): void;
+  onNavigationError(error: Error): void;
+  
+  // Context Synchronization
+  syncContextToScene(context: CurrentContext): void;
+  updateURLForContext(context: CurrentContext): void;
+  
+  // History Management
+  trackNavigationEntry(entry: NavigationEntry): void;
+  optimizeHistoryStorage(): void;
+}
+```
 
-### **Error Handling**
-- **Error Recovery**: Automatic recovery from slide-related errors
-- **Fallback Mechanisms**: Fallback strategies for failed slide transitions
-- **Error Reporting**: Comprehensive error reporting and logging
-- **Performance Degradation**: Handle performance issues gracefully
+## 🎭 **Dialog System Coordination**
 
-## 🔧 **Implementation Guidelines**
+### **Dialog Lifecycle Management**
+The Orchestrator manages dialog states and transitions:
 
-### **Scene Lifecycle**
-1. **Initialization**: Load scene and associated slides
-2. **Activation**: Activate scene and prepare for interaction
-3. **Runtime**: Manage scene state and slide transitions
-4. **Deactivation**: Clean up scene resources
-5. **Disposal**: Final cleanup and memory management
+```typescript
+interface DialogOrchestration {
+  // Dialog State Management
+  openDialog(config: DialogConfig): string;
+  closeDialog(dialogId: string): void;
+  updateDialog(dialogId: string, updates: Partial<DialogConfig>): void;
+  
+  // Dialog Stack Management
+  getDialogStack(): Dialog[];
+  clearDialogStack(): void;
+  prioritizeDialog(dialogId: string): void;
+  
+  // Dialog-Scene Interaction
+  pauseSceneForDialog(dialogId: string): void;
+  resumeSceneAfterDialog(dialogId: string): void;
+  
+  // Performance Optimization
+  preloadDialogContent(dialogType: string): Promise<void>;
+  optimizeDialogAnimations(): void;
+}
+```
 
-### **Slide Coordination**
-1. **Slide Loading**: Load slide data and prepare for display
-2. **State Management**: Track slide states and transitions
-3. **Animation Coordination**: Coordinate slide animations with scene rendering
-4. **Cleanup**: Clean up slide resources when no longer needed
+### **Modal and Drawer Coordination**
+Special handling for modal dialogs and drawer overlays:
 
-### **Performance Optimization**
-1. **Resource Preloading**: Preload resources for smooth transitions
-2. **Caching Strategy**: Implement intelligent caching for performance
-3. **Memory Management**: Efficient memory usage and cleanup
-4. **Background Processing**: Handle non-critical tasks in background
+```typescript
+interface OverlayOrchestration {
+  // Overlay Management
+  showOverlay(config: OverlayConfig): void;
+  hideOverlay(overlayId: string): void;
+  
+  // Z-Index Management
+  allocateZIndex(componentType: 'toolbar' | 'drawer' | 'dialog'): number;
+  releaseZIndex(zIndex: number): void;
+  
+  // Focus Management
+  trapFocus(containerId: string): void;
+  releaseFocus(containerId: string): void;
+  restoreFocus(previousElement: HTMLElement): void;
+}
+```
 
-## 🎯 **Future Enhancements**
+## 🎛️ **Toolbar System Coordination**
 
-### **Advanced Slide Features**
-- **Slide Templates**: Reusable slide templates and patterns
-- **Dynamic Slide Generation**: Generate slides based on content
-- **Slide Analytics**: Track slide usage and performance
-- **Slide Collaboration**: Collaborative slide editing and management
+### **Toolbar and Menu Management**
+The Orchestrator coordinates toolbar configurations and menu states:
 
-### **Performance Improvements**
-- **Predictive Loading**: Predict and preload likely next slides
-- **Adaptive Quality**: Adjust slide quality based on performance
-- **Background Optimization**: Optimize slides in background
-- **Real-time Performance**: Real-time performance monitoring and adjustment
+```typescript
+interface ToolbarOrchestration {
+  // Toolbar Configuration
+  loadToolbarConfig(toolbarId: string): ToolbarConfig;
+  updateToolbarConfig(toolbarId: string, config: Partial<ToolbarConfig>): void;
+  
+  // Menu State Management
+  openMenu(menuId: string): void;
+  closeMenu(menuId: string): void;
+  toggleMenu(menuId: string): void;
+  
+  // Drawer Coordination
+  openDrawer(drawerId: string): void;
+  closeDrawer(drawerId: string): void;
+  positionDrawer(drawerId: string, position: DrawerPosition): void;
+  
+  // Plugin Management
+  registerToolbarPlugin(plugin: ToolbarPlugin): void;
+  unregisterToolbarPlugin(pluginId: string): void;
+  injectMenuItem(menuId: string, item: MenuItem): void;
+}
+```
 
-## 📋 **Integration Checklist**
+### **Multi-Edge Toolbar Coordination**
+Special handling for multiple toolbars on different edges:
 
-### **Scene Authoring Integration**
-- [ ] Coordinate slide creation with scene authoring
-- [ ] Support slide editing within scene authoring tools
-- [ ] Integrate slide preview with scene preview
-- [ ] Support slide templates and patterns
+```typescript
+interface MultiEdgeOrchestration {
+  // Edge Management
+  getToolbarForEdge(edge: 'top' | 'bottom' | 'left' | 'right'): ToolbarConfig | null;
+  allocateEdge(edge: string, toolbarId: string): void;
+  releaseEdge(edge: string): void;
+  
+  // Responsive Behavior
+  condenseToolbars(viewportSize: ViewportSize): void;
+  expandToolbars(viewportSize: ViewportSize): void;
+  optimizeForMobile(): void;
+}
+```
 
-### **Navigator Integration**
-- [ ] Coordinate slide navigation with scene navigation
-- [ ] Support slide history and breadcrumbs
-- [ ] Integrate slide transitions with navigation transitions
-- [ ] Support slide-based navigation anchors
+## 🔄 **Event Orchestration**
 
-### **Context Integration**
-- [ ] Support slide-specific coordinate systems
-- [ ] Enable slide positions as navigation anchors
-- [ ] Support cross-slide references and linking
-- [ ] Integrate slide context with overall navigation context
+### **Cross-System Event Flow**
+The Orchestrator manages events flowing between systems:
 
-### **Performance Integration**
-- [ ] Implement slide caching and preloading
-- [ ] Optimize slide transition performance
-- [ ] Monitor slide performance metrics
-- [ ] Handle slide-related errors and recovery
+```mermaid
+graph TD
+    A[Navigator Event] --> B[Orchestrator]
+    B --> C[Scene System]
+    B --> D[Dialog System]
+    B --> E[Toolbar System]
+    C --> B
+    D --> B
+    E --> B
+    B --> F[URL Sync Service]
+```
 
-## 🎉 **Conclusion**
+### **Event Coordination Patterns**
 
-The Orchestrator System provides the essential coordination layer for managing scenes, slides, and system interactions within the Protogen platform. By coordinating slide lifecycles with scene management and optimizing performance across all systems, the Orchestrator ensures smooth, efficient operation of the entire platform.
+```typescript
+interface EventOrchestration {
+  // Event Registration
+  registerEventBus(systemId: string, eventBus: EventEmitter): void;
+  unregisterEventBus(systemId: string): void;
+  
+  // Event Routing
+  routeEvent(event: SystemEvent, targetSystems: string[]): void;
+  broadcastEvent(event: SystemEvent): void;
+  
+  // Event Filtering
+  filterEventsByType(eventType: string): SystemEvent[];
+  filterEventsBySystem(systemId: string): SystemEvent[];
+  
+  // Event History
+  trackEvent(event: SystemEvent): void;
+  getEventHistory(limit?: number): SystemEvent[];
+  clearEventHistory(): void;
+}
+```
 
-The integration of slide coordination with scene lifecycle management, performance optimization, and system coordination creates a robust foundation for dynamic, interactive presentations that scale with the platform's growth and evolution.
+## 🎯 **Resource Management**
+
+### **Memory Optimization**
+The Orchestrator implements intelligent memory management:
+
+```typescript
+interface ResourceOrchestration {
+  // Resource Tracking
+  trackResource(resourceId: string, size: number): void;
+  releaseResource(resourceId: string): void;
+  getResourceUsage(): ResourceUsageReport;
+  
+  // Cache Management
+  setCachePolicy(policy: CachePolicy): void;
+  evictLRUResources(threshold: number): void;
+  clearCache(scope?: 'all' | 'scenes' | 'dialogs'): void;
+  
+  // Preloading Strategy
+  preloadCriticalResources(): Promise<void>;
+  preloadForContext(context: CurrentContext): Promise<void>;
+  cancelPreload(resourceId: string): void;
+}
+```
+
+### **Bundle Management**
+Coordinates with API for optimal bundle delivery:
+
+```typescript
+interface BundleOrchestration {
+  // Bundle Loading
+  loadBundle(bundleId: string): Promise<Bundle>;
+  preloadBundle(bundleId: string): Promise<void>;
+  
+  // Bundle Caching
+  cacheBundleLocally(bundleId: string, bundle: Bundle): void;
+  getCachedBundle(bundleId: string): Bundle | null;
+  
+  // Bundle Versioning
+  checkBundleVersion(bundleId: string): Promise<string>;
+  updateBundle(bundleId: string): Promise<void>;
+}
+```
+
+## 🔒 **Error Handling & Recovery**
+
+### **Centralized Error Management**
+
+```typescript
+interface ErrorOrchestration {
+  // Error Capture
+  captureError(error: Error, context: ErrorContext): void;
+  captureSystemError(systemId: string, error: Error): void;
+  
+  // Error Recovery
+  attemptRecovery(error: Error): Promise<boolean>;
+  fallbackToSafeState(systemId: string): void;
+  
+  // Error Reporting
+  reportError(error: Error, severity: 'low' | 'medium' | 'high'): void;
+  getErrorHistory(): ErrorReport[];
+  
+  // Error UI
+  showErrorDialog(error: Error): void;
+  showErrorToast(message: string): void;
+}
+```
+
+## 📊 **Performance Monitoring**
+
+### **System Performance Tracking**
+
+```typescript
+interface PerformanceOrchestration {
+  // Metrics Collection
+  trackNavigationTime(duration: number): void;
+  trackSceneLoadTime(sceneId: string, duration: number): void;
+  trackDialogRenderTime(dialogId: string, duration: number): void;
+  
+  // Performance Analysis
+  getAverageNavigationTime(): number;
+  getSlowScenes(): string[];
+  getPerformanceReport(): PerformanceReport;
+  
+  // Optimization Triggers
+  optimizeSlowSystems(): Promise<void>;
+  recommendOptimizations(): Optimization[];
+}
+```
+
+## 🧪 **Testing Coordination**
+
+### **Integration Testing Support**
+
+```typescript
+interface TestOrchestration {
+  // Test Setup
+  setupTestEnvironment(): void;
+  teardownTestEnvironment(): void;
+  
+  // Mock Systems
+  mockSystem(systemId: string, mockImpl: any): void;
+  restoreSystem(systemId: string): void;
+  
+  // State Inspection
+  getSystemState(systemId: string): any;
+  setSystemState(systemId: string, state: any): void;
+  
+  // Event Testing
+  emitTestEvent(event: SystemEvent): void;
+  getEmittedEvents(): SystemEvent[];
+  clearEmittedEvents(): void;
+}
+```
+
+## 🚀 **Future Enhancements**
+
+### **Planned Improvements**
+- [ ] Real-time collaboration coordination
+- [ ] Advanced caching strategies (IndexedDB, Service Worker)
+- [ ] Predictive preloading based on user behavior
+- [ ] Performance budgets and enforcement
+- [ ] Offline mode coordination
+- [ ] Multi-tenant resource isolation
+- [ ] GraphQL subscription coordination
+- [ ] WebSocket event streaming
+
+### **Mobile App Preparation**
+The Orchestrator is designed to support future mobile app integration:
+- Platform-agnostic system loading
+- Native bridge communication
+- Mobile-specific resource optimization
+- Offline-first coordination
+- Platform-specific performance tuning
+
+## 📚 **Related Documentation**
+
+- [SSR Architecture](./SSR_ARCHITECTURE.md) - Server-side rendering details
+- [Navigator Systems Architecture](./NAVIGATOR_SYSTEMS_ARCHITECTURE.md) - Navigation system details
+- [Dialog System Architecture](./DIALOG_SYSTEM_ARCHITECTURE.md) - Dialog system implementation
+- [Scene-First Routing](./SCENE_FIRST_ROUTING.md) - Scene routing architecture
+- [Shared Library Migration Guide](./SHARED_LIBRARY_MIGRATION_GUIDE.md) - Migration details
+
+## 🎯 **Success Criteria**
+
+The Orchestrator System is successful when:
+- All systems coordinate smoothly without conflicts
+- Performance remains optimal across all interactions
+- Error recovery is automatic and transparent
+- Resource usage is efficient and bounded
+- Testing and debugging are simplified
+- New systems integrate easily
+
+**The Orchestrator provides the backbone for a cohesive, performant, and maintainable system architecture.** 🚀

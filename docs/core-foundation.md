@@ -14,6 +14,78 @@ Protogen represents a significant architectural evolution to the current Scene &
 
 The project has evolved through 7 completed phases, with a clean, modern architecture. The system now operates entirely on the Scene & Deck foundation described in this document.
 
+## 🎨 **Shared Library Architecture**
+
+### **Core UI Module** (`@protogen/shared`)
+The Protogen platform features a comprehensive shared library that serves as the foundation for all UI implementations across web, mobile, and future platforms. This architecture enables:
+
+- **Code Reusability**: Single source of truth for UI components and system logic
+- **Type Safety**: Comprehensive TypeScript types shared across all applications
+- **System Modularity**: Major systems packaged as separately loadable modules
+- **SSR Support**: Server-side rendering of bundles via API (see [SSR Architecture](./active-development/SSR_ARCHITECTURE.md))
+- **Platform Agnostic**: Designed for web (current), mobile (future), and potential desktop applications
+- **Bundle Optimization**: Tree-shakable exports for optimal bundle sizes
+
+### **System Modules**
+Major systems are organized as modules within the shared library:
+
+```typescript
+// System imports from shared library
+import { navigatorSystem } from '@protogen/shared/systems/navigator';
+import { dialogSystem } from '@protogen/shared/systems/dialog';
+import { toolbarSystem } from '@protogen/shared/systems/toolbar';
+import { sceneRouter } from '@protogen/shared/systems/scene';
+import { authoringSystem } from '@protogen/shared/systems/authoring';
+```
+
+Each system module provides:
+- **Core System Class**: Singleton instance for system operations
+- **React Hooks**: Hooks for component integration
+- **TypeScript Types**: Complete type definitions
+- **Components**: System-specific React components
+
+### **Key Shared Systems**
+
+#### **Dialog System**
+Extensible dialog architecture for all non-scene user interactions:
+- **Multiple Dialog Types**: Modal, Drawer, Toast, Confirmation, Custom
+- **State Management**: Centralized dialog state with singleton pattern
+- **Event-Driven**: Dialog lifecycle events for system coordination
+- **Accessible**: ARIA compliant with focus management
+- **Responsive**: Adapts to different screen sizes
+
+#### **Toolbar & Menu System**
+Admin-maintained navigation with sophisticated menu management:
+- **Multi-Edge Support**: Toolbars on all four edges (top, bottom, left, right)
+- **Drawer System**: Slide-out navigation with overlay and positioning
+- **Plugin Architecture**: Extensible system for injecting menu items
+- **Responsive Behavior**: Intelligent condensation on smaller viewports
+- **Configuration Service**: Dynamic menu configuration at runtime
+
+#### **Scene-First Routing**
+Context-based routing with scene as the primary navigation unit:
+- **SceneRouter**: Maps navigation contexts to scenes
+- **System Scenes**: Built-in scenes (Home, Explore, Profile, Settings)
+- **Scene Override System**: Custom routing rules with priority
+- **URL Synchronization**: Bi-directional sync between URL and Navigator context
+- **Dynamic Scene Loading**: Authored scenes loaded on-demand from API
+
+#### **Navigator System**
+Singleton navigation system with event-driven architecture:
+- **Context-Based Navigation**: Navigation by context path, scene, or deck
+- **History Management**: Full history tracking with back/forward
+- **Event Propagation**: Proper event distribution to all subscribers
+- **URL Synchronization**: Browser URL kept in sync with navigation state
+- **Cross-System Coordination**: Integrates with Scene, Dialog, and Toolbar systems
+
+### **Mobile App Preparation**
+The shared library is designed with future mobile app support in mind:
+- **Platform-Agnostic Core**: Business logic independent of platform
+- **Native Bridge Ready**: Architecture supports native bridge communication
+- **Offline-First Design**: State management prepared for offline scenarios
+- **Performance Optimized**: Bundle sizes and loading strategies for mobile
+- **Responsive by Default**: All components adapt to mobile viewports
+
 ## 🚀 **Current Evolution: Central Graph System**
 
 **Status**: In Development - See [Central Graph Roadmap](../CENTRAL_GRAPH_ROADMAP.md)
