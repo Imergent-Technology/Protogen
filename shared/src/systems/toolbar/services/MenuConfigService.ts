@@ -98,30 +98,29 @@ export class MenuConfigService {
     // Default toolbar
     const defaultToolbar: ToolbarConfig = {
       id: 'main-toolbar',
-      position: 'top',
+      edge: 'top',
       sections: [
         {
           id: 'left',
-          position: 'left',
+          position: 'start',
           items: [
-            { type: 'menu', menuId: 'main-navigation', icon: 'menu' },
-            { type: 'breadcrumb' }
+            { id: 'menu', type: 'menu-button', icon: 'menu' },
+            { id: 'breadcrumb', type: 'context-indicator' }
           ]
         },
         {
           id: 'center',
-          position: 'center',
+          position: 'middle',
           items: [
-            { type: 'search', placeholder: 'Search...' }
+            { id: 'search', type: 'search' }
           ]
         },
         {
           id: 'right',
-          position: 'right',
+          position: 'end',
           items: [
-            { type: 'bookmarks' },
-            { type: 'notifications', badgeCount: 0 },
-            { type: 'user-menu' }
+            { id: 'notifications', type: 'notifications', badge: { count: 0 } },
+            { id: 'user-menu', type: 'user-menu' }
           ]
         }
       ]

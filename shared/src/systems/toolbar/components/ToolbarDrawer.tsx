@@ -6,7 +6,7 @@
 
 import React, { useEffect } from 'react';
 import { useToolbarDrawer } from '../useToolbar';
-import type { DrawerItem, MenuAction } from '../types';
+import type { DrawerItem } from '../types';
 import { Home, Compass, User, Settings, Users, Edit, ChevronRight } from 'lucide-react';
 
 const iconMap: Record<string, React.ComponentType<any>> = {
@@ -63,13 +63,6 @@ export const ToolbarDrawer: React.FC<ToolbarDrawerProps> = ({
     bottom: isOpen ? 'translate-y-0' : 'translate-y-full'
   };
 
-  const sizeClasses = {
-    left: `w-[${drawer.width || '256px'}]`,
-    right: `w-[${drawer.width || '256px'}]`,
-    top: `h-[${drawer.height || '200px'}]`,
-    bottom: `h-[${drawer.height || '200px'}]`
-  };
-
   const borderClasses = {
     left: 'border-r',
     right: 'border-l',
@@ -93,7 +86,7 @@ export const ToolbarDrawer: React.FC<ToolbarDrawerProps> = ({
     }
   };
 
-  const renderItem = (item: DrawerItem, index: number) => {
+  const renderItem = (item: DrawerItem, index: number): React.ReactElement | null => {
     switch (item.type) {
       case 'section-header':
         return (
@@ -178,7 +171,7 @@ export const ToolbarDrawer: React.FC<ToolbarDrawerProps> = ({
         }}
       >
         <div className="py-4">
-          {drawer.items.map((item, index) => renderItem(item, index))}
+          {drawer.items.map((item: DrawerItem, index: number) => renderItem(item, index))}
         </div>
       </aside>
     </>
