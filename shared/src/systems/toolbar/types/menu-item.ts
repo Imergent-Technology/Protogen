@@ -14,7 +14,7 @@ export type MenuAction =
   | { type: 'navigate-context'; contextPath: string; params?: Record<string, any> }
   | { type: 'start-flow'; flowId: string; config?: Record<string, any> }
   | { type: 'open-dialog'; dialogType: string; config: Record<string, any> }
-  | { type: 'custom'; handler: string; data?: Record<string, any> }
+  | { type: 'custom'; handler: () => void; data?: Record<string, any> }
   | { type: 'external-link'; url: string; newTab?: boolean };
 
 /**
