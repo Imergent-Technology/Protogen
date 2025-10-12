@@ -1,15 +1,14 @@
 import React from 'react';
 import { ToolbarContainer } from '@protogen/shared/systems/toolbar/components';
 import { ToolbarDrawer } from '@protogen/shared/systems/toolbar/components';
-import { useToolbar } from '@protogen/shared/systems/toolbar';
-import { toolbarSystem } from '@protogen/shared/systems/toolbar';
+import { useToolbarDrawer } from '@protogen/shared/systems/toolbar';
 
 interface AppLayoutProps {
   children: React.ReactNode;
 }
 
 export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
-  const { isDrawerOpen } = useToolbar();
+  const { isOpen, close } = useToolbarDrawer('main-nav-drawer');
   
   return (
     <div className="h-screen w-screen overflow-hidden bg-background">
@@ -19,8 +18,8 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
       {/* Main Navigation Drawer */}
       <ToolbarDrawer
         drawerId="main-nav-drawer"
-        isOpen={isDrawerOpen('main-nav-drawer')}
-        onClose={() => toolbarSystem.closeDrawer('main-nav-drawer')}
+        isOpen={isOpen}
+        onClose={close}
         edge="left"
       />
       

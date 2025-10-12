@@ -6,6 +6,7 @@
 
 // Core system
 export { ToolbarSystem, toolbarSystem } from './ToolbarSystem';
+export type { ToolbarPlugin } from './ToolbarSystem';
 
 // React hooks
 export {
@@ -17,12 +18,14 @@ export {
   useIsContextMenuActive,
   useIsNavigationMenuActive,
   useMenuActions,
-  useFilteredMenuItems
+  useFilteredMenuItems,
+  useToolbarDrawer
 } from './useToolbar';
 
 // Components
 export { 
   ToolbarContainer,
+  ToolbarDrawer,
   NavigationMenu,
   ContextMenu,
   ToolbarItemRenderer
