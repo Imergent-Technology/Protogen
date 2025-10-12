@@ -9,6 +9,7 @@ import { Button } from '../../../components';
 import { Menu, Search, Bookmark, Bell, User } from 'lucide-react';
 import type { ToolbarItem } from '../types';
 import { toolbarSystem } from '../ToolbarSystem';
+import { Breadcrumbs } from '../../navigator/components/Breadcrumbs';
 
 export interface ToolbarItemRendererProps {
   item: ToolbarItem;
@@ -86,9 +87,11 @@ export const ToolbarItemRenderer: React.FC<ToolbarItemRendererProps> = ({ item }
 
     case 'context-indicator':
       return (
-        <div className="text-sm font-medium px-3">
-          {item.label || 'Current Context'}
-        </div>
+        <Breadcrumbs
+          maxItems={5}
+          showHome={true}
+          className="flex-1"
+        />
       );
 
     case 'notifications':

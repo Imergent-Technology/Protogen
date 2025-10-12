@@ -1232,6 +1232,9 @@
   .justify-items-start {
     justify-items: start;
   }
+  .gap-0 {
+    gap: calc(var(--spacing) * 0);
+  }
   .gap-1 {
     gap: calc(var(--spacing) * 1);
   }
@@ -2134,6 +2137,12 @@
   .text-muted-foreground {
     color: var(--color-muted-foreground);
   }
+  .text-muted-foreground\/50 {
+    color: color-mix(in srgb, rgb(100, 116, 139) 50%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      color: color-mix(in oklab, var(--color-muted-foreground) 50%, transparent);
+    }
+  }
   .text-neutral-300 {
     color: var(--color-neutral-300);
   }
@@ -2958,6 +2967,26 @@
     &:hover {
       @media (hover: hover) {
         background-color: var(--color-accent);
+      }
+    }
+  }
+  .hover\:bg-accent\/50 {
+    &:hover {
+      @media (hover: hover) {
+        background-color: color-mix(in srgb, rgb(241, 245, 249) 50%, transparent);
+        @supports (color: color-mix(in lab, red, red)) {
+          background-color: color-mix(in oklab, var(--color-accent) 50%, transparent);
+        }
+      }
+    }
+  }
+  .hover\:bg-accent\/80 {
+    &:hover {
+      @media (hover: hover) {
+        background-color: color-mix(in srgb, rgb(241, 245, 249) 80%, transparent);
+        @supports (color: color-mix(in lab, red, red)) {
+          background-color: color-mix(in oklab, var(--color-accent) 80%, transparent);
+        }
       }
     }
   }
