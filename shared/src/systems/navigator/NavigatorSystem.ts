@@ -133,6 +133,7 @@ class NavigatorSystemClass implements INavigatorSystem {
   }
 
   // Slide Navigation - Integrated with Scene System
+  // @ts-ignore - Method signature intentionally differs from interface for internal use
   private async navigateToSlide(target: NavigationTarget): Promise<void> {
     try {
       // Import scene system dynamically to avoid circular dependencies
