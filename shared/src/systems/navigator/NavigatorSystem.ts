@@ -11,7 +11,7 @@ import {
 } from './types';
 import { urlSyncService } from './services/URLSyncService';
 
-export class NavigatorSystem implements INavigatorSystem {
+class NavigatorSystemClass implements INavigatorSystem {
   private state: NavigatorState;
   private eventHandlers: Map<string, NavigationEventHandler[]> = new Map();
   private maxHistorySize = 50;
@@ -309,9 +309,9 @@ export class NavigatorSystem implements INavigatorSystem {
     // In the future, this will integrate with the API to get scene/deck data
     const context: CurrentContext = {
       sceneId: target.type === 'scene' ? target.id : null,
-      sceneSlug: target.type === 'scene' ? target.slug : null,
+      sceneSlug: target.type === 'scene' ? (target.slug ?? null) : null,
       deckId: target.type === 'deck' ? target.id : null,
-      deckSlug: target.type === 'deck' ? target.slug : null,
+      deckSlug: target.type === 'deck' ? (target.slug ?? null) : null,
       slideId: target.type === 'slide' ? target.id : null,
       contextPath: target.contextPath, // Copy contextPath for context-based navigation
       timestamp: Date.now()
@@ -410,3 +410,9 @@ export class NavigatorSystem implements INavigatorSystem {
     this.state.error = null;
   }
 }
+
+// Export singleton instance as the default export
+export const navigatorSystem = new NavigatorSystemClass();
+
+// Also export the class for type purposes
+export { NavigatorSystemClass as NavigatorSystem };

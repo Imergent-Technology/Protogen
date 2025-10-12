@@ -173,13 +173,6 @@ export class ToolbarSystem {
   }
 
   /**
-   * Get toolbar config by ID
-   */
-  getToolbarConfig(id: string) {
-    return this.state.toolbarConfigs.get(id);
-  }
-
-  /**
    * Get current state
    */
   getState(): ToolbarSystemState {

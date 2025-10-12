@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { NavigatorSystem } from './NavigatorSystem';
+import { useState, useEffect, useCallback } from 'react';
+import { navigatorSystem } from './NavigatorSystem';
 import {
   NavigationTarget,
   CurrentContext,
@@ -32,90 +32,60 @@ export interface UseNavigatorReturn {
   canGoForward: boolean;
 }
 
-export function useNavigator(initialContext?: CurrentContext): UseNavigatorReturn {
-  const navigatorRef = useRef<NavigatorSystem | null>(null);
-  const [state, setState] = useState<NavigatorState>({
-    currentContext: initialContext || DEFAULT_CONTEXT,
-    history: {
-      entries: [],
-      currentIndex: -1,
-      canGoBack: false,
-      canGoForward: false
-    },
-    isLoading: false,
-    error: null
-  });
+export function useNavigator(_initialContext?: CurrentContext): UseNavigatorReturn {
+  // Use the singleton navigator system
+  const [state, setState] = useState<NavigatorState>(navigatorSystem.getState());
 
-  // Initialize Navigator System
+  // Subscribe to navigator events
   useEffect(() => {
-    console.log('useNavigator useEffect running, navigatorRef.current:', navigatorRef.current);
-    if (!navigatorRef.current) {
-      console.log('Creating new NavigatorSystem instance');
-      navigatorRef.current = new NavigatorSystem(initialContext);
-      console.log('NavigatorSystem instance created:', navigatorRef.current);
-      
-      // Set up event listeners
-      const handleNavigationEvent: NavigationEventHandler = (event) => {
-        console.log('useNavigator - received event:', event.type, event.data);
-        setState(navigatorRef.current!.getState());
-        console.log('useNavigator - new state:', navigatorRef.current!.getState());
-      };
+    console.log('useNavigator - Subscribing to singleton navigatorSystem events');
+    
+    // Set up event listeners
+    const handleNavigationEvent: NavigationEventHandler = (event) => {
+      console.log('useNavigator - received event:', event.type, event.data);
+      setState(navigatorSystem.getState());
+      console.log('useNavigator - new state:', navigatorSystem.getState());
+    };
 
-      console.log('Subscribing to NavigatorSystem events...');
-      navigatorRef.current.on('navigation', handleNavigationEvent);
-      navigatorRef.current.on('context-change', handleNavigationEvent);
-      navigatorRef.current.on('history-update', handleNavigationEvent);
-      console.log('Event listeners subscribed');
+    navigatorSystem.on('navigation', handleNavigationEvent);
+    navigatorSystem.on('context-change', handleNavigationEvent);
+    navigatorSystem.on('history-update', handleNavigationEvent);
+    console.log('useNavigator - Event listeners subscribed to singleton');
 
-      // Set initial state
-      setState(navigatorRef.current.getState());
+    // Set initial state
+    setState(navigatorSystem.getState());
 
-      // Cleanup
-      return () => {
-        if (navigatorRef.current) {
-          navigatorRef.current.off('navigation', handleNavigationEvent);
-          navigatorRef.current.off('context-change', handleNavigationEvent);
-          navigatorRef.current.off('history-update', handleNavigationEvent);
-        }
-      };
-    }
-  }, [initialContext]);
+    // Cleanup
+    return () => {
+      console.log('useNavigator - Unsubscribing from singleton navigatorSystem events');
+      navigatorSystem.off('navigation', handleNavigationEvent);
+      navigatorSystem.off('context-change', handleNavigationEvent);
+      navigatorSystem.off('history-update', handleNavigationEvent);
+    };
+  }, []); // Empty deps - only run once on mount
 
   // Navigation Methods
   const navigateTo = useCallback(async (target: NavigationTarget) => {
-    console.log('useNavigator navigateTo called, navigatorRef.current:', navigatorRef.current);
-    if (navigatorRef.current) {
-      console.log('Calling navigateTo on NavigatorSystem instance');
-      await navigatorRef.current.navigateTo(target);
-    } else {
-      console.error('navigatorRef.current is null!');
-    }
+    console.log('useNavigator navigateTo called on singleton');
+    await navigatorSystem.navigateTo(target);
   }, []);
 
   const navigateBack = useCallback(async () => {
-    if (navigatorRef.current) {
-      await navigatorRef.current.navigateBack();
-    }
+    await navigatorSystem.navigateBack();
   }, []);
 
   const navigateForward = useCallback(async () => {
-    if (navigatorRef.current) {
-      await navigatorRef.current.navigateForward();
-    }
+    await navigatorSystem.navigateForward();
   }, []);
 
   // Context Management
   const updateContext = useCallback((updates: Partial<CurrentContext>) => {
-    if (navigatorRef.current) {
-      navigatorRef.current.updateContext(updates);
-    }
+    navigatorSystem.updateContext(updates);
   }, []);
 
   // History Management
   const clearHistory = useCallback(() => {
-    if (navigatorRef.current) {
-      navigatorRef.current.clearHistory();
-    }
+    navigatorSystem.clearHistory();
   }, []);
 
   return {
