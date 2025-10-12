@@ -58,6 +58,10 @@
       "types": "./dist/src/systems/flow/index.d.ts",
       "import": "./dist/src/systems/flow/index.js"
     },
+    "./systems/flow/form": {
+      "types": "./dist/src/systems/flow/form/index.d.ts",
+      "import": "./dist/src/systems/flow/form/index.js"
+    },
     "./systems/flow/wizard": {
       "types": "./dist/src/systems/flow/wizard/index.d.ts",
       "import": "./dist/src/systems/flow/wizard/index.js"
