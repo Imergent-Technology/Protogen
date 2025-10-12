@@ -1,13 +1,11 @@
 /**
- * Toolbar System Components
- * 
- * Export all toolbar components
+ * Toolbar Components - Public API
  */
 
-export { ToolbarContainer } from './ToolbarContainer';
-export { ToolbarSection } from './ToolbarSection';
-export { ToolbarItemRenderer } from './ToolbarItemRenderer';
-export { NavigationMenu } from './NavigationMenu';
-export { ContextMenu } from './ContextMenu';
-export { ToolbarDrawer } from './ToolbarDrawer';
-
+export * from './ToolbarContainer';
+export * from './ToolbarDrawer';
+export * from './ToolbarItemRenderer';
+export * from './ToolbarSection';
+export * from './NavigationMenu';
+export * from './ContextMenu';
+export * from './WidgetRenderer';

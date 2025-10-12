@@ -10,6 +10,7 @@ import { Menu, Search, Bookmark, Bell, User } from 'lucide-react';
 import type { ToolbarItem } from '../types';
 import { toolbarSystem } from '../ToolbarSystem';
 import { Breadcrumbs } from '../../navigator/components/Breadcrumbs';
+import { WidgetRenderer } from './WidgetRenderer';
 
 export interface ToolbarItemRendererProps {
   item: ToolbarItem;
@@ -122,6 +123,9 @@ export const ToolbarItemRenderer: React.FC<ToolbarItemRendererProps> = ({ item }
           <User className="h-4 w-4" />
         </Button>
       );
+
+    case 'widget':
+      return <WidgetRenderer item={item} />;
 
     case 'custom':
       // Custom components not yet implemented

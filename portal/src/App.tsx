@@ -124,6 +124,11 @@ function App() {
     // === URL Sync Configuration ===
     urlSyncService.setEnabled(true);
 
+    // === Widget System Configuration ===
+    // Register the UserMenu widget
+    const { widgetRegistry, userMenuWidgetDefinition } = require('@protogen/shared/systems/toolbar');
+    widgetRegistry.register(userMenuWidgetDefinition);
+
     // Handle browser back/forward buttons
     const handleURLChange = (event: Event) => {
       const customEvent = event as CustomEvent;
@@ -182,7 +187,22 @@ function App() {
         {
           id: 'end-section',
           position: 'end',
-          items: [],
+          items: [
+            {
+              id: 'user-menu-widget',
+              type: 'widget',
+              widget: {
+                type: 'user-menu',
+                data: {
+                  user,
+                  onLogout: handleLogout,
+                  onProfileClick: () => navigateTo({ type: 'context', id: 'profile-nav', target: { contextPath: '/profile' } }),
+                  onSettingsClick: () => navigateTo({ type: 'context', id: 'settings-nav', target: { contextPath: '/settings' } }),
+                }
+              },
+              responsive: { priority: 95 }
+            }
+          ],
           responsive: {
             collapseThreshold: 'md',
             overflowBehavior: 'overflow-menu'

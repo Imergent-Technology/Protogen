@@ -28,7 +28,8 @@ export {
   ToolbarDrawer,
   NavigationMenu,
   ContextMenu,
-  ToolbarItemRenderer
+  ToolbarItemRenderer,
+  WidgetRenderer
 } from './components';
 
 // Types
@@ -36,4 +37,8 @@ export * from './types';
 
 // Services
 export { menuConfigService } from './services/MenuConfigService';
+
+// Widgets
+export { widgetRegistry, userMenuWidgetDefinition, UserMenuWidget } from './widgets';
+export type { UserMenuWidgetData } from './widgets/UserMenuWidget';
 

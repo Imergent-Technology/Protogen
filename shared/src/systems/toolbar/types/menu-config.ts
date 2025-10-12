@@ -109,7 +109,7 @@ export interface ToolbarSection {
  */
 export interface ToolbarItem {
   id: string;
-  type: 'button' | 'menu-button' | 'separator' | 'search' | 'notifications' | 'user-menu' | 'context-indicator' | 'custom';
+  type: 'button' | 'menu-button' | 'separator' | 'search' | 'notifications' | 'user-menu' | 'context-indicator' | 'widget' | 'custom';
   label?: string;
   icon?: string;
   badge?: {
@@ -121,6 +121,11 @@ export interface ToolbarItem {
   subMenu?: {
     displayMode: MenuDisplayMode;
     menuId: string;
+  };
+  // Widget configuration (when type === 'widget')
+  widget?: {
+    type: string; // Widget type ID from registry
+    data?: Record<string, any>; // Data passed to widget
   };
   responsive?: {
     hideOnMobile?: boolean;
