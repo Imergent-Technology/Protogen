@@ -21,7 +21,7 @@ interface User {
 
 function App() {
   const { openToast } = useDialog();
-  const { navigateTo, currentContext } = useNavigator();
+  const { navigateTo } = useNavigator();
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
 

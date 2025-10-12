@@ -337,6 +337,53 @@ export class ToolbarSystem {
   getDrawer(drawerId: string): ToolbarDrawer | undefined {
     return this.state.drawers.get(drawerId);
   }
+
+  // ========== Configuration Registration ==========
+
+  /**
+   * Register toolbar configuration
+   */
+  registerToolbarConfig(config: any): void {
+    this.state.toolbarConfigs.set(config.id, config);
+    this.notifySubscribers();
+  }
+
+  /**
+   * Get toolbar configuration
+   */
+  getToolbarConfig(toolbarId: string): any | undefined {
+    return this.state.toolbarConfigs.get(toolbarId);
+  }
+
+  /**
+   * Register navigation menu
+   */
+  registerNavigationMenu(menu: any): void {
+    this.state.navigationMenus.set(menu.id, menu);
+    this.notifySubscribers();
+  }
+
+  /**
+   * Get navigation menu
+   */
+  getNavigationMenu(menuId: string): any | undefined {
+    return this.state.navigationMenus.get(menuId);
+  }
+
+  /**
+   * Register context menu
+   */
+  registerContextMenu(menu: any): void {
+    this.state.contextMenus.set(menu.id, menu);
+    this.notifySubscribers();
+  }
+
+  /**
+   * Get context menu
+   */
+  getContextMenu(menuId: string): any | undefined {
+    return this.state.contextMenus.get(menuId);
+  }
 }
 
 // Singleton instance
