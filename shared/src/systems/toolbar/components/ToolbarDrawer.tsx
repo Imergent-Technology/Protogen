@@ -6,6 +6,7 @@
 
 import React, { useEffect } from 'react';
 import { useToolbarDrawer } from '../useToolbar';
+import { toolbarSystem } from '../ToolbarSystem';
 import type { DrawerItem } from '../types';
 import { Home, Compass, User, Settings, Users, Edit, ChevronRight } from 'lucide-react';
 
@@ -97,11 +98,7 @@ export const ToolbarDrawer: React.FC<ToolbarDrawerProps> = ({
   const handleItemClick = (item: DrawerItem) => {
     if (item.action) {
       // Emit the action through the toolbar system
-      (window as any).dispatchEvent(
-        new CustomEvent('toolbar:menu-action', {
-          detail: { action: item.action }
-        })
-      );
+      toolbarSystem.emit('menu-action', { action: item.action });
     }
     
     // Close drawer after action (if configured)
