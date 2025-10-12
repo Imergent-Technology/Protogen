@@ -32,6 +32,7 @@ export class NavigatorSystem implements INavigatorSystem {
 
   // Core Navigation Methods
   async navigateTo(target: NavigationTarget): Promise<void> {
+    console.log('NavigatorSystem.navigateTo called with:', target);
     try {
       this.setLoading(true);
       this.clearError();
@@ -42,6 +43,7 @@ export class NavigatorSystem implements INavigatorSystem {
         data: { target, action: 'start' },
         timestamp: Date.now()
       });
+      console.log('Navigation start event emitted');
 
       // Handle slide navigation
       if (target.type === 'slide') {
@@ -50,7 +52,9 @@ export class NavigatorSystem implements INavigatorSystem {
       }
 
       // Create new context based on navigation target
+      console.log('Creating context from target...');
       const newContext = await this.createContextFromTarget(target);
+      console.log('New context created:', newContext);
       
       // Create navigation entry
       const entry: NavigationEntry = {
@@ -61,19 +65,25 @@ export class NavigatorSystem implements INavigatorSystem {
       };
 
       // Add to history
+      console.log('Adding to history...');
       this.addHistoryEntry(entry);
       
       // Update current context
+      console.log('Setting current context...');
       this.setCurrentContext(newContext);
+      console.log('Current context set');
 
       // Emit navigation end event
+      console.log('Emitting navigation end event...');
       this.emit({
         type: 'navigation',
         data: { target, action: 'end', context: newContext },
         timestamp: Date.now()
       });
+      console.log('Navigation complete!');
 
     } catch (error) {
+      console.error('Navigation error caught:', error);
       this.setError(error instanceof Error ? error.message : 'Navigation failed');
       this.emit({
         type: 'navigation',
@@ -81,6 +91,7 @@ export class NavigatorSystem implements INavigatorSystem {
         timestamp: Date.now()
       });
     } finally {
+      console.log('Navigation finally block, setting loading to false');
       this.setLoading(false);
     }
   }
