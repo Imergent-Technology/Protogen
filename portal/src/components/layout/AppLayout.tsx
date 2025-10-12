@@ -21,6 +21,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         isOpen={isOpen}
         onClose={close}
         edge="left"
+        topToolbarHeight="3.5rem" // 56px (h-14)
       />
       
       {/* Main content with padding for top toolbar */}

@@ -364,25 +364,11 @@ export class ToolbarSystem {
   }
 
   /**
-   * Get navigation menu
-   */
-  getNavigationMenu(menuId: string): any | undefined {
-    return this.state.navigationMenus.get(menuId);
-  }
-
-  /**
    * Register context menu
    */
   registerContextMenu(menu: any): void {
     this.state.contextMenus.set(menu.id, menu);
     this.notifySubscribers();
-  }
-
-  /**
-   * Get context menu
-   */
-  getContextMenu(menuId: string): any | undefined {
-    return this.state.contextMenus.get(menuId);
   }
 }
 

@@ -23,13 +23,17 @@ export interface ToolbarDrawerProps {
   isOpen: boolean;
   onClose: () => void;
   edge: 'left' | 'right' | 'top' | 'bottom';
+  topToolbarHeight?: string; // Height of top toolbar (e.g., '56px' or '3.5rem')
+  bottomToolbarHeight?: string; // Height of bottom toolbar
 }
 
 export const ToolbarDrawer: React.FC<ToolbarDrawerProps> = ({
   drawerId,
   isOpen,
   onClose,
-  edge
+  edge,
+  topToolbarHeight = '3.5rem', // Default 56px / 14 * 0.25rem
+  bottomToolbarHeight = '0'
 }) => {
   const { drawer } = useToolbarDrawer(drawerId);
 
@@ -49,11 +53,31 @@ export const ToolbarDrawer: React.FC<ToolbarDrawerProps> = ({
 
   if (!drawer) return null;
 
-  const edgeClasses = {
-    left: 'left-0 top-0 bottom-0',
-    right: 'right-0 top-0 bottom-0',
-    top: 'top-0 left-0 right-0',
-    bottom: 'bottom-0 left-0 right-0'
+  // Position classes that respect toolbar space
+  const getPositionClasses = () => {
+    switch (edge) {
+      case 'left':
+        return 'left-0';
+      case 'right':
+        return 'right-0';
+      case 'top':
+        return 'top-0 left-0 right-0';
+      case 'bottom':
+        return 'bottom-0 left-0 right-0';
+      default:
+        return '';
+    }
+  };
+
+  // Calculate top/bottom offsets for vertical drawers
+  const getVerticalOffset = () => {
+    if (edge === 'left' || edge === 'right') {
+      return {
+        top: topToolbarHeight,
+        bottom: bottomToolbarHeight
+      };
+    }
+    return {};
   };
 
   const transformClasses = {
@@ -150,7 +174,8 @@ export const ToolbarDrawer: React.FC<ToolbarDrawerProps> = ({
       {/* Backdrop */}
       {isOpen && drawer.overlay && (
         <div
-          className="fixed inset-0 bg-black/50 z-40 transition-opacity"
+          className="fixed inset-0 bg-black/50 transition-opacity"
+          style={{ zIndex: 20 }} // Below toolbar and drawer, above content
           onClick={drawer.closeOnClickOutside ? onClose : undefined}
         />
       )}
@@ -158,16 +183,18 @@ export const ToolbarDrawer: React.FC<ToolbarDrawerProps> = ({
       {/* Drawer */}
       <aside
         className={`
-          fixed z-50 bg-card border-border
-          ${edgeClasses[edge]}
+          fixed bg-card border-border
+          ${getPositionClasses()}
           ${borderClasses[edge]}
           ${transformClasses[edge]}
           transition-transform duration-300 ease-in-out
           overflow-y-auto
         `}
         style={{
+          zIndex: 30, // Below toolbar (z-40) but above content
           width: (edge === 'left' || edge === 'right') ? drawer.width : undefined,
-          height: (edge === 'top' || edge === 'bottom') ? drawer.height : undefined
+          height: (edge === 'top' || edge === 'bottom') ? drawer.height : undefined,
+          ...getVerticalOffset()
         }}
       >
         <div className="py-4">
