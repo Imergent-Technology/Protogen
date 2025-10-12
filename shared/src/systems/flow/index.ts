@@ -1,10 +1,14 @@
 /**
  * Flow System - Public API
- * 
- * The Flow System manages guided user experiences, wizards, and animations.
- * Currently includes the Wizard sub-module.
  */
 
-// Wizard sub-module
-export * from './wizard';
+// Core Flow System
+export * from './core';
+export * from './types';
 
+// Form Flow Sub-system
+export * from './form';
+
+// Legacy Wizard System (deprecated, use Form Flow instead)
+// @deprecated Use Form Flow instead
+export * from './wizard';
