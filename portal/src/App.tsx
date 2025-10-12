@@ -8,7 +8,7 @@ import { useNavigator } from '@protogen/shared/systems/navigator';
 import { urlSyncService } from '@protogen/shared/systems/navigator';
 import { DialogContainer } from '@protogen/shared/systems/dialog/components';
 import { useDialog } from '@protogen/shared/systems/dialog';
-import { toolbarSystem } from '@protogen/shared/systems/toolbar';
+import { toolbarSystem, widgetRegistry, userMenuWidgetDefinition } from '@protogen/shared/systems/toolbar';
 // Removed unused Button import
 
 interface User {
