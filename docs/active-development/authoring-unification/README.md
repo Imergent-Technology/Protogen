@@ -40,25 +40,27 @@ This directory contains the 18 specification documents for Protogen's evolution 
   - Dependency graph and import patterns
   - Migration strategy
 
-### 🔄 Phase 1: Core Contracts & Events (In Progress)
+### ✅ Phase 1: Core Contracts & Events (Complete)
 
-- **02-event-taxonomy.md** - Event Taxonomy & Contracts
-  - Event types for authoring interactions
-  - Extends existing event system
-  - Payload schemas and error handling
-  - Sequence diagrams for key flows
+- **[02-event-taxonomy.md](./02-event-taxonomy.md)** - Event Taxonomy & Contracts
+  - 17 event types defined (MODE_CHANGED, SELECTION_CHANGED, EDIT_*, CONTENT_*, PREVIEW_*, TOC_*, NAVIGATE extended)
+  - Payload schemas with TypeScript contracts
+  - Error handling and idempotency strategies
+  - 3 sequence diagrams for key flows
 
-- **03-navigator-enhancements.md** - Navigator State & Flows
-  - State machine extensions
-  - Authoring mode integration
-  - Deck→Scene→Slide/Page flows
-  - URL/routing strategy
+- **[03-navigator-enhancements.md](./03-navigator-enhancements.md)** - Navigator State & Flows
+  - Extended state model with mode, locus, focus, selection
+  - State machine with transitions
+  - Item navigation methods (navigate, next, prev, zoom)
+  - Enhanced URL synchronization for authoring
 
-- **04-authoring-overlay.md** - Authoring Overlay Framework
-  - Overlay framework interfaces
-  - Selection model and highlighting
-  - Mode toggle mechanism
-  - Keyboard interaction spec
+- **[04-authoring-overlay.md](./04-authoring-overlay.md)** - Authoring Overlay Framework
+  - AuthoringSystem class with mode management
+  - Hit test layer with scene-type handlers
+  - Selection engine (single and multi-select)
+  - Inline editor and editing handles
+  - Plugin architecture for scene types
+  - Keyboard shortcuts and focus management
 
 ### ⏳ Phase 2: Interaction Systems (Pending)
 
@@ -97,14 +99,17 @@ This directory contains the 18 specification documents for Protogen's evolution 
 
 ## Progress Summary
 
-### Completed: 2 of 18 (11%)
+### Completed: 5 of 18 (28%)
 
 **Phase 0** (2 specs): ✅ Complete
 - Project context and guardrails established
 - Module structure and integration points defined
 - Foundation ready for detailed specifications
 
-**Phase 1** (3 specs): 🔄 Ready to begin
+**Phase 1** (3 specs): ✅ Complete
+- Event taxonomy extending existing event system
+- Navigator enhancements for authoring mode and item navigation
+- Authoring overlay framework with selection and editing
 **Phase 2** (3 specs): ⏳ Pending  
 **Phase 3** (2 specs): ⏳ Pending  
 **Phase 4** (4 specs): ⏳ Pending  
