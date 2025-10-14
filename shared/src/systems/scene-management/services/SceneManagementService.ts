@@ -37,17 +37,23 @@ export class SceneManagementServiceClass {
     if (params?.search) queryParams.append('search', params.search);
 
     const url = `${this.baseUrl}${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
-    const rawScenes = await this.apiClient.get<any[]>(url);
+    const response = await this.apiClient.get<any[]>(url);
+    
+    // ApiClient returns {data: {success, data, message}}
+    // Unwrap to get actual scenes array
+    const rawScenes = response.data?.data || response.data || response;
     
     // Transform API response to SceneConfig (use guid as id)
-    return rawScenes.map(this.transformSceneResponse);
+    return Array.isArray(rawScenes) ? rawScenes.map(s => this.transformSceneResponse(s)) : [];
   }
 
   /**
    * Get a single scene by ID (guid)
    */
   async getScene(id: string): Promise<SceneConfig> {
-    const rawScene = await this.apiClient.get<any>(`${this.baseUrl}/${id}`);
+    const response = await this.apiClient.get<any>(`${this.baseUrl}/${id}`);
+    // Unwrap nested response
+    const rawScene = response.data?.data || response.data || response;
     return this.transformSceneResponse(rawScene);
   }
 
