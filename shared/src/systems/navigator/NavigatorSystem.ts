@@ -366,13 +366,13 @@ class NavigatorSystemClass implements INavigatorSystem {
         await sceneSystem.navigateToSlide(slideIndex);
       }
       
-      // Update navigator context
+      // Update navigator context (M1: use GUID for API compatibility)
       const currentScene = sceneSystem.getCurrentScene();
       const currentSlide = sceneSystem.getCurrentSlide();
       
       const newContext: CurrentContext = {
         ...this.state.currentContext,
-        sceneId: currentScene?.id.toString() || null,
+        sceneId: currentScene?.guid || null,  // Use GUID instead of integer ID
         sceneSlug: currentScene?.slug || null,
         slideId: currentSlide?.id.toString() || null,
         timestamp: Date.now(),
