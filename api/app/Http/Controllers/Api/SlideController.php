@@ -17,7 +17,10 @@ class SlideController extends Controller
      */
     public function index(Request $request, string $sceneId): JsonResponse
     {
-        $scene = Scene::findOrFail($sceneId);
+        // Accept both GUID and integer ID
+        $scene = is_numeric($sceneId) 
+            ? Scene::findOrFail($sceneId)
+            : Scene::where('guid', $sceneId)->firstOrFail();
         
         // Check permissions - temporarily disabled for testing
         // $this->authorize('view', $scene);
@@ -40,7 +43,10 @@ class SlideController extends Controller
      */
     public function store(Request $request, string $sceneId): JsonResponse
     {
-        $scene = Scene::with('items')->findOrFail($sceneId);
+        // Accept both GUID and integer ID
+        $scene = is_numeric($sceneId)
+            ? Scene::with('items')->findOrFail($sceneId)
+            : Scene::with('items')->where('guid', $sceneId)->firstOrFail();
         
         // Check permissions
         // $this->authorize('update', $scene);
