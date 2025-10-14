@@ -309,6 +309,9 @@
   .collapse {
     visibility: collapse;
   }
+  .invisible {
+    visibility: hidden;
+  }
   .visible {
     visibility: visible;
   }
@@ -328,9 +331,6 @@
   }
   .fixed {
     position: fixed;
-  }
-  .fixed\! {
-    position: fixed !important;
   }
   .relative {
     position: relative;
@@ -778,9 +778,6 @@
   .h-12 {
     height: calc(var(--spacing) * 12);
   }
-  .h-14 {
-    height: calc(var(--spacing) * 14);
-  }
   .h-14\.5 {
     height: calc(var(--spacing) * 14.5);
   }
@@ -885,9 +882,6 @@
   }
   .w-\(--sidebar-width\) {
     width: var(--sidebar-width);
-  }
-  .w-0 {
-    width: calc(var(--spacing) * 0);
   }
   .w-1\.5 {
     width: calc(var(--spacing) * 1.5);
@@ -1527,10 +1521,6 @@
   .border-dashed {
     --tw-border-style: dashed;
     border-style: dashed;
-  }
-  .border-none {
-    --tw-border-style: none;
-    border-style: none;
   }
   .border-\[\#19140035\] {
     border-color: #19140035;

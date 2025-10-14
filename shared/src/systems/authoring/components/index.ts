@@ -25,6 +25,9 @@ export * from './ToC';
 export { default as PreviewCarousel } from './Carousel/PreviewCarousel';
 export type { PreviewCarouselProps } from './Carousel/PreviewCarousel';
 
+// M1 Week 7-8: Card Scene Components
+export * from './CardScene';
+
 // Re-export types for convenience
 export type { NodeMetadata, NodeSelectionProps, NodeSelectionOptions } from '../types/node-selection';
 export type { SceneType, SceneTypeManagerProps } from '../types/common';

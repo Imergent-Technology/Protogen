@@ -11,5 +11,23 @@ export * from './preview';
 export * from './toc';
 export * from './carousel';
 
+// M1 Week 7-8: Card Scene Types (explicit exports to avoid conflicts)
+export type { 
+  CardScene, 
+  CardSceneConfig, 
+  CardThemeConfig, 
+  TransitionType,
+  CardSlideUnion,
+  SlideKind,
+  TextSlide,
+  ImageSlide,
+  LayeredSlide,
+  AnimationType,
+  DEFAULT_CARD_SCENE_CONFIG,
+  DEFAULT_TEXT_SLIDE,
+  DEFAULT_IMAGE_SLIDE,
+  DEFAULT_LAYERED_SLIDE
+} from './card-scene';
+
 // Re-export shared types that are commonly used
 // export type { User, Tenant } from '@protogen/shared';

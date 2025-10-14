@@ -200,9 +200,144 @@ export class ThumbnailGenerator {
     dims: { width: number; height: number },
     _options?: GenerateOptions
   ): Promise<void> {
-    // TODO: Implement actual slide rendering in M1 Week 7-8
-    // Will render Card slide content
-    this.renderPlaceholder(ctx, dims, `Slide ${target.slideId}`);
+    // M1 Week 7-8: Render Card slide content
+    try {
+      // TODO: Fetch slide data from API
+      // For now, use placeholder data
+      const slide = await this.fetchSlideData(target.slideId);
+
+      if (!slide) {
+        this.renderPlaceholder(ctx, dims, `Slide ${target.slideId}`);
+        return;
+      }
+
+      // Render based on slide kind
+      switch (slide.kind) {
+        case 'text':
+          this.renderTextSlide(ctx, slide, dims);
+          break;
+        case 'image':
+          await this.renderImageSlide(ctx, slide, dims);
+          break;
+        case 'layered':
+          await this.renderLayeredSlide(ctx, slide, dims);
+          break;
+        default:
+          this.renderPlaceholder(ctx, dims, `Slide ${target.slideId}`);
+      }
+    } catch (error) {
+      this.renderPlaceholder(ctx, dims, `Error: Slide ${target.slideId}`);
+    }
+  }
+
+  private async fetchSlideData(slideId: string): Promise<any> {
+    // TODO: Implement API call in production
+    // For now, return mock data
+    return {
+      id: slideId,
+      kind: 'text',
+      text: 'Sample Slide',
+      fontSize: 24,
+      textColor: '#000000',
+      backgroundColor: '#ffffff',
+      alignment: 'center',
+      padding: 32
+    };
+  }
+
+  private renderTextSlide(ctx: CanvasRenderingContext2D, slide: any, dims: { width: number; height: number }): void {
+    // Background
+    ctx.fillStyle = slide.backgroundColor;
+    ctx.fillRect(0, 0, dims.width, dims.height);
+
+    // Text
+    ctx.fillStyle = slide.textColor;
+    ctx.font = `${Math.min(slide.fontSize, dims.height / 4)}px ${slide.fontFamily || 'sans-serif'}`;
+    ctx.textAlign = slide.alignment;
+    ctx.textBaseline = 'middle';
+
+    const x = slide.alignment === 'left' ? slide.padding :
+               slide.alignment === 'right' ? dims.width - slide.padding :
+               dims.width / 2;
+
+    this.wrapText(ctx, slide.text, x, dims.height / 2, dims.width - (slide.padding * 2));
+  }
+
+  private async renderImageSlide(ctx: CanvasRenderingContext2D, slide: any, dims: { width: number; height: number }): Promise<void> {
+    // For preview, just show a placeholder with image indicator
+    ctx.fillStyle = '#f0f0f0';
+    ctx.fillRect(0, 0, dims.width, dims.height);
+
+    ctx.fillStyle = '#666';
+    ctx.font = '16px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('🖼️ Image Slide', dims.width / 2, dims.height / 2);
+
+    // Caption if present
+    if (slide.caption) {
+      const captionY = slide.caption.position === 'top' ? 20 : dims.height - 20;
+      ctx.fillStyle = slide.caption.backgroundColor;
+      ctx.fillRect(0, captionY - 10, dims.width, 20);
+      ctx.fillStyle = slide.caption.textColor;
+      ctx.fillText(slide.caption.text, dims.width / 2, captionY);
+    }
+  }
+
+  private async renderLayeredSlide(ctx: CanvasRenderingContext2D, slide: any, dims: { width: number; height: number }): Promise<void> {
+    // Background image (placeholder)
+    ctx.fillStyle = '#333';
+    ctx.fillRect(0, 0, dims.width, dims.height);
+
+    // Dim overlay
+    ctx.fillStyle = `rgba(0, 0, 0, ${slide.backgroundDim / 100})`;
+    ctx.fillRect(0, 0, dims.width, dims.height);
+
+    // Text overlay
+    ctx.fillStyle = slide.textColor;
+    ctx.font = `${Math.min(slide.fontSize, dims.height / 3)}px ${slide.fontFamily || 'sans-serif'}`;
+    ctx.textAlign = slide.alignment;
+    ctx.textBaseline = 'middle';
+
+    const x = slide.alignment === 'left' ? 32 :
+               slide.alignment === 'right' ? dims.width - 32 :
+               dims.width / 2;
+
+    const y = slide.textPosition.vertical === 'top' ? dims.height / 4 :
+               slide.textPosition.vertical === 'bottom' ? (dims.height * 3) / 4 :
+               dims.height / 2;
+
+    this.wrapText(ctx, slide.text, x, y, dims.width - 64);
+  }
+
+  private wrapText(ctx: CanvasRenderingContext2D, text: string, x: number, y: number, maxWidth: number): void {
+    const words = text.split(' ');
+    const lines: string[] = [];
+    let currentLine = '';
+
+    words.forEach(word => {
+      const testLine = currentLine + (currentLine ? ' ' : '') + word;
+      const metrics = ctx.measureText(testLine);
+
+      if (metrics.width > maxWidth && currentLine) {
+        lines.push(currentLine);
+        currentLine = word;
+      } else {
+        currentLine = testLine;
+      }
+    });
+
+    if (currentLine) {
+      lines.push(currentLine);
+    }
+
+    // Draw lines
+    const lineHeight = parseInt(ctx.font) * 1.2;
+    const startY = y - ((lines.length - 1) * lineHeight) / 2;
+
+    lines.forEach((line, index) => {
+      ctx.fillText(line, x, startY + (index * lineHeight));
+    });
   }
 
   private async renderPage(

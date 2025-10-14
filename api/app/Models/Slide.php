@@ -2,38 +2,98 @@
 
 namespace App\Models;
 
-// Removed HasUuids since we're using bigint IDs
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * M1 Week 7-8: Slide Model
+ * 
+ * Represents a slide in a Card scene.
+ * Supports three variants: text, image, layered.
+ * 
+ * Based on Spec 09: Card Scene Type
+ * 
+ * @property int $id
+ * @property int $scene_id
+ * @property string $kind
+ * @property int $order
+ * @property string|null $title
+ * @property string|null $notes
+ * @property int|null $duration
+ * @property string|null $text
+ * @property int|null $font_size
+ * @property string|null $font_family
+ * @property string $alignment
+ * @property string|null $text_color
+ * @property int|null $image_asset_id
+ * @property string|null $fit
+ * @property array|null $position
+ * @property array|null $caption
+ * @property int|null $background_asset_id
+ * @property array|null $text_overlay
+ * @property string|null $background_color
+ * @property array|null $background_gradient
+ * @property int $padding
+ * @property string $enter_animation
+ * @property int $animation_duration
+ */
 class Slide extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
+    /**
+     * The attributes that are mass assignable.
+     */
     protected $fillable = [
         'scene_id',
-        'name',
-        'description',
-        'slide_index',
-        'is_active',
-        'transition_config',
-        'entrance_animation',
-        'exit_animation',
+        'kind',
+        'order',
+        'title',
+        'notes',
+        'duration',
+        'text',
+        'font_size',
+        'font_family',
+        'alignment',
+        'text_color',
+        'image_asset_id',
+        'fit',
+        'position',
+        'caption',
+        'background_asset_id',
+        'text_overlay',
+        'background_color',
+        'background_gradient',
+        'padding',
+        'enter_animation',
+        'animation_duration',
     ];
 
+    /**
+     * The attributes that should be cast.
+     */
     protected $casts = [
-        'transition_config' => 'array',
-        'entrance_animation' => 'array',
-        'exit_animation' => 'array',
-        'is_active' => 'boolean',
-        'slide_index' => 'integer',
+        'order' => 'integer',
+        'duration' => 'integer',
+        'font_size' => 'integer',
+        'padding' => 'integer',
+        'animation_duration' => 'integer',
+        'position' => 'array',
+        'caption' => 'array',
+        'text_overlay' => 'array',
+        'background_gradient' => 'array',
     ];
 
+    /**
+     * Default values for attributes.
+     */
     protected $attributes = [
-        'slide_index' => 0,
-        'is_active' => false,
+        'alignment' => 'center',
+        'padding' => 32,
+        'enter_animation' => 'fade',
+        'animation_duration' => 300,
     ];
 
     /**
@@ -45,160 +105,82 @@ class Slide extends Model
     }
 
     /**
-     * Get the slide items for the slide.
+     * Get the image asset for image slides.
      */
-    public function slideItems(): HasMany
+    public function imageAsset(): BelongsTo
     {
-        return $this->hasMany(SlideItem::class);
+        return $this->belongsTo(Asset::class, 'image_asset_id');
     }
 
     /**
-     * Get the scene items that reference this slide as their default state.
+     * Get the background asset for layered slides.
      */
-    public function sceneItems(): HasMany
+    public function backgroundAsset(): BelongsTo
     {
-        return $this->hasMany(SceneItem::class);
+        return $this->belongsTo(Asset::class, 'background_asset_id');
     }
 
     /**
-     * Scope to get active slides.
+     * Scope to get slides for a scene ordered by order field.
      */
-    public function scopeActive($query)
+    public function scopeForScene($query, int $sceneId)
     {
-        return $query->where('is_active', true);
+        return $query->where('scene_id', $sceneId)->orderBy('order');
     }
 
     /**
-     * Scope to order by slide index.
+     * Scope to get slides by kind.
      */
-    public function scopeOrdered($query)
+    public function scopeOfKind($query, string $kind)
     {
-        return $query->orderBy('slide_index');
+        return $query->where('kind', $kind);
     }
 
     /**
-     * Get the next slide in the sequence.
+     * Reorder slide within scene.
      */
-    public function getNextSlide(): ?Slide
+    public function reorder(int $newOrder): void
     {
-        return $this->scene->slides()
-            ->where('slide_index', '>', $this->slide_index)
-            ->ordered()
-            ->first();
+        $this->order = $newOrder;
+        $this->save();
     }
 
     /**
-     * Get the previous slide in the sequence.
+     * Duplicate slide.
      */
-    public function getPreviousSlide(): ?Slide
+    public function duplicate(): self
     {
-        return $this->scene->slides()
-            ->where('slide_index', '<', $this->slide_index)
-            ->ordered()
-            ->latest('slide_index')
-            ->first();
-    }
-
-    /**
-     * Check if this is the first slide.
-     */
-    public function isFirstSlide(): bool
-    {
-        return $this->scene->slides()->min('slide_index') === $this->slide_index;
-    }
-
-    /**
-     * Check if this is the last slide.
-     */
-    public function isLastSlide(): bool
-    {
-        return $this->scene->slides()->max('slide_index') === $this->slide_index;
-    }
-
-    /**
-     * Get the slide state for the Navigator System.
-     */
-    public function getSlideState(): array
-    {
-        return [
-            'id' => $this->id,
-            'sceneId' => $this->scene_id,
-            'slideIndex' => $this->slide_index,
-            'name' => $this->name,
-            'description' => $this->description,
-            'isActive' => $this->is_active,
-            'transitionConfig' => $this->transition_config,
-            'entranceAnimation' => $this->getEntranceAnimation(),
-            'exitAnimation' => $this->getExitAnimation(),
-            'nodeStates' => $this->slideItems->map(function ($item) {
-                return [
-                    'nodeId' => $item->node_id,
-                    'position' => $item->position,
-                    'scale' => $item->scale,
-                    'rotation' => $item->rotation,
-                    'opacity' => $item->opacity,
-                    'visible' => $item->visible,
-                    'style' => $item->style,
-                ];
-            })->toArray(),
-        ];
-    }
-
-    // Slide Animation Management
-
-    /**
-     * Get effective entrance animation (override or fall back to scene default).
-     */
-    public function getEntranceAnimation(): array
-    {
-        if ($this->entrance_animation) {
-            return $this->entrance_animation;
-        }
+        $attributes = $this->toArray();
+        unset($attributes['id'], $attributes['created_at'], $attributes['updated_at']);
         
-        return $this->scene->getDefaultAnimation('entrance');
-    }
-
-    /**
-     * Get effective exit animation (override or fall back to scene default).
-     */
-    public function getExitAnimation(): array
-    {
-        if ($this->exit_animation) {
-            return $this->exit_animation;
-        }
+        $duplicate = self::create($attributes);
+        $duplicate->order = $this->order + 1;
+        $duplicate->save();
         
-        return $this->scene->getDefaultAnimation('exit');
+        return $duplicate;
     }
 
     /**
-     * Set entrance animation override.
+     * Check if slide is text slide.
      */
-    public function setEntranceAnimation(array $animation): void
+    public function isTextSlide(): bool
     {
-        $this->update(['entrance_animation' => $animation]);
+        return $this->kind === 'text';
     }
 
     /**
-     * Set exit animation override.
+     * Check if slide is image slide.
      */
-    public function setExitAnimation(array $animation): void
+    public function isImageSlide(): bool
     {
-        $this->update(['exit_animation' => $animation]);
+        return $this->kind === 'image';
     }
 
     /**
-     * Clear entrance animation override (use scene default).
+     * Check if slide is layered slide.
      */
-    public function clearEntranceAnimation(): void
+    public function isLayeredSlide(): bool
     {
-        $this->update(['entrance_animation' => null]);
-    }
-
-    /**
-     * Clear exit animation override (use scene default).
-     */
-    public function clearExitAnimation(): void
-    {
-        $this->update(['exit_animation' => null]);
+        return $this->kind === 'layered';
     }
 }
