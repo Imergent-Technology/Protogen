@@ -226,6 +226,12 @@ class NavigatorSystemClass implements INavigatorSystem {
     const oldContext = this.state.currentContext;
     this.state.currentContext = { ...context };
 
+    // Debug: Log context change
+    console.log('[Navigator] Context changed:', {
+      old: { sceneId: oldContext.sceneId, contextPath: oldContext.contextPath },
+      new: { sceneId: context.sceneId, contextPath: context.contextPath }
+    });
+
     // Sync to URL
     urlSyncService.syncContextToURL(context);
 
@@ -379,6 +385,13 @@ class NavigatorSystemClass implements INavigatorSystem {
       };
       
       this.setCurrentContext(newContext);
+      
+      // Debug: Log context update
+      console.log('[Navigator] Scene loaded, updated context:', {
+        sceneId: newContext.sceneId,
+        sceneSlug: newContext.sceneSlug,
+        contextPath: newContext.contextPath
+      });
       
       // Emit scene loaded event
       this.emit({

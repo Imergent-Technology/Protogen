@@ -74,7 +74,8 @@ export function useNavigator(_initialContext?: CurrentContext): UseNavigatorRetu
   // Subscribe to navigator events
   useEffect(() => {
     // Set up event listeners
-    const handleNavigationEvent: NavigationEventHandler = (_event) => {
+    const handleNavigationEvent: NavigationEventHandler = (event) => {
+      console.log('[useNavigator] Received event:', event.type);
       setState(navigatorSystem.getState());
     };
 

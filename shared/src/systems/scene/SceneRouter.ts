@@ -37,7 +37,13 @@ export class SceneRouter {
    * Get scene ID for the given context
    */
   getSceneForContext(context: CurrentContext): string {
-    // Check for exact context path match
+    // Priority 1: Check if context specifies a scene directly (M1: highest priority)
+    // This allows loadSceneInNavigator to override route patterns
+    if (context.sceneId) {
+      return context.sceneId;
+    }
+
+    // Priority 2: Check for exact context path match
     if (context.contextPath) {
       const exactMatch = this.contextOverrides.get(context.contextPath);
       if (exactMatch) {
@@ -45,7 +51,7 @@ export class SceneRouter {
       }
     }
 
-    // Check route mappings (with pattern matching)
+    // Priority 3: Check route mappings (with pattern matching)
     const contextPath = context.contextPath || '/';
     for (const mapping of this.routeMappings) {
       if (this.matchesPattern(contextPath, mapping)) {
@@ -53,12 +59,7 @@ export class SceneRouter {
       }
     }
 
-    // Check if context specifies a scene directly
-    if (context.sceneId) {
-      return context.sceneId;
-    }
-
-    // Fallback to default scene
+    // Priority 4: Fallback to default scene
     return this.defaultSceneId;
   }
 
