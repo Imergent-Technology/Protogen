@@ -1,8 +1,15 @@
 # Wizard System Extraction Plan
 
+> **⚠️ SUPERSEDED**: This plan has been superseded by the Flow System implementation. The wizard functionality was merged into the Flow System as the "Form Flow" sub-module instead of being a separate wizard system. See [WIZARD_FLOW_FEATURE_PARITY.md](./WIZARD_FLOW_FEATURE_PARITY.md) for the analysis and [FLOW_SCENE_MGMT_SESSION.md](./FLOW_SCENE_MGMT_SESSION.md) for implementation details.
+>
+> **Status**: ✅ Complete via Flow System / Form Flow  
+> **Date Completed**: October 13, 2025
+
 ## Overview
 
-Extract and enhance the existing `WorkflowWizard` from the admin site and integrate it into the shared library as a sub-module of the Flow System. The wizard will interface with the Dialog System for presentation and provide a cohesive, user-friendly experience for complex multi-step data input.
+~~Extract and enhance the existing `WorkflowWizard` from the admin site and integrate it into the shared library as a sub-module of the Flow System. The wizard will interface with the Dialog System for presentation and provide a cohesive, user-friendly experience for complex multi-step data input.~~
+
+**Actual Implementation**: Wizard functionality integrated into Flow System as Form Flow sub-module with FormStep, SelectionStep, and ReviewStep components. Provides same capabilities with better integration.
 
 ## Current State Analysis
 

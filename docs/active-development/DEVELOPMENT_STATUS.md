@@ -9,15 +9,18 @@
 - **Multi-Tenant Architecture** - Tenant isolation and management
 - **Permissions System** - Standing-based access control
 - **Scene-Centric Architecture** - Complete slide animation system
+- **Flow System** - Multi-step flows with branching and form support
+- **Form Flow** - Wizard-like guided form experiences
+- **Full-Screen Dialog** - Large dialogs for data management UIs
+- **Scene Management Services** - CRUD operations for scenes/decks/slides
 
 ### **📋 Ready for Implementation**
-- **Flow System** - Vision documented, ready for implementation
 - **Engagement System** - Architecture documented, ready to replace feedback
 - **Unified Portal** - Migration strategy complete, ready for implementation
 
 ### **🚧 In Progress**
-- **Portal Integration** - Currently in Phase 5
-- **Scene Authoring** - Library extraction in progress
+- **Scene Management UI** - Phase 2.5: Services and dialogs complete (2.5.1 & 2.5.2 ✅), viewer integration next (2.5.3)
+- **Portal Integration** - Toolbar, dialogs, and navigation complete
 
 ## 🎬 **Scene-Centric Architecture Implementation Status**
 

@@ -645,3 +645,6 @@ export class FlowSystemClass extends EventEmitter<FlowEvents> {
 // Export singleton instance
 export const flowSystem = new FlowSystemClass();
 
+// Also export the class as FlowSystem for convenience
+export { FlowSystemClass as FlowSystem };
+

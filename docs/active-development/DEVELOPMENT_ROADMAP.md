@@ -15,7 +15,8 @@ This document outlines the comprehensive development roadmap for the Protogen pl
 
 ### **Dialog System**
 - [x] Extensible dialog architecture
-- [x] Multiple dialog types (modal, drawer, toast, confirmation)
+- [x] Multiple dialog types (modal, drawer, toast, confirmation, fullscreen)
+- [x] Full-screen dialog for data management UIs
 - [x] Dialog state management with singleton pattern
 - [x] React hooks for dialog interactions (`useDialog`)
 - [x] Integration with other systems
@@ -141,6 +142,68 @@ This document outlines the comprehensive development roadmap for the Protogen pl
 
 ---
 
+## 🎬 **Phase 2.5: Scene Management System** *(Phases 2.5.1-2.5.2 Complete)*
+
+### **Status: Services and Dialog UI Complete, Viewer Integration Next**
+
+#### **2.5.1 Scene Management Services** ✅
+- [x] **Type Definitions**
+  - SceneConfig, DeckConfig, SlideConfig interfaces
+  - CreateSceneInput, UpdateSceneInput, DeleteScene types
+  - Scene permissions and metadata types
+
+- [x] **Services**
+  - SceneManagementService with CRUD operations
+  - DeckManagementService for deck operations
+  - SlideManagementService for slide operations
+  - API integration with field mapping (type → scene_type)
+  - Proper API endpoint paths (/scenes not /api/scenes)
+
+- [x] **React Hooks**
+  - useSceneManagement for scene operations
+  - useDeckManagement for deck operations
+  - useSlideManagement for slide operations
+
+#### **2.5.2 Dialog-Based Management UI** ✅
+- [x] **Create Scene Dialog**
+  - 4-step Form Flow (Basic Details, Scene Type, Visibility, Review)
+  - Field validation with error display
+  - Auto-slug generation from name
+  - Scene type selection (Graph, Card, Document, Dashboard)
+  - Public/Active toggles with proper boolean handling
+
+- [x] **Manage Scenes Dialog**
+  - Full-screen dialog with table view
+  - Search by name, slug, or description
+  - Filter by type and status
+  - Client-side pagination (10/25/50/100 per page)
+  - View/Edit/Delete actions per scene
+  - Refresh on CRUD operations
+
+- [x] **Edit Scene Dialog**
+  - Pre-filled form with existing scene data
+  - Same 4-step flow as create
+  - Integration ready (needs testing)
+
+- [x] **Create Deck Dialog**
+  - Form flow for deck creation
+  - Integration ready (needs testing)
+
+#### **2.5.3 Scene Viewer Integration** (Next)
+- [ ] SceneEditButton in scene viewer
+- [ ] SceneContextMenu for quick actions
+- [ ] Permission-based UI controls
+- [ ] Toast notifications for actions
+
+#### **Deliverables**
+- ✅ Scene Management services in shared library
+- ✅ Full-screen dialog type for data management
+- ✅ End-to-end scene creation working
+- ✅ Scene list management with search/filter/pagination
+- 🔄 Edit/Delete operations (implemented, needs comprehensive testing)
+
+---
+
 ## ⚙️ **Phase 3: Admin UI for Toolbar Configuration**
 
 ### **Priority: Medium**
@@ -230,54 +293,56 @@ This document outlines the comprehensive development roadmap for the Protogen pl
 
 ---
 
-## 🌊 **Phase 5: Flow System Implementation**
+## ✅ **Phase 5: Flow System Implementation** *(Completed)*
 
-### **Priority: Medium**
-**Estimated Time: 3-4 weeks**
+### **Status: All sub-phases complete**
 
-#### **5.1 Flow System Core**
-- [ ] **Flow Data Models**
-  - `Flow` interface with scene association
-  - `FlowStep` interface for guided experiences
-  - `FlowTransition` for step transitions
-  - Database schema for flows
+#### **5.1 Flow System Core** ✅
+- [x] **Flow Data Models**
+  - `Flow` interface with metadata and steps
+  - `FlowStep` interface (form, selection, review types)
+  - `FlowBranch` and `ConditionalRule` for branching
+  - `FlowTemplate` for reusable flow definitions
 
-- [ ] **Flow State Management**
-  - Flow session management
-  - Step progression tracking
-  - Branching logic implementation
-  - Flow completion handling
+- [x] **Flow State Management**
+  - FlowSystem singleton class
+  - Template registration and instance management
+  - Step progression tracking with validation
+  - Flow instance lifecycle management
 
-#### **5.2 Flow Navigation**
-- [ ] **Step Management**
-  - Next/previous step navigation
-  - Step completion validation
-  - Flow progress indicators
-  - Step-specific UI controls
+#### **5.2 Form Flow Sub-Module** ✅
+- [x] **Form Flow Integration**
+  - Merged wizard functionality into Flow System
+  - FlowRenderer component for multi-step forms
+  - FormStep component with field types (text, textarea, checkbox, select)
+  - SelectionStep for choice-based steps
+  - ReviewStep for data confirmation
 
-- [ ] **Flow Transitions**
-  - Step-to-step animations
-  - Scene transitions within flows
-  - Progress visualization
-  - Conditional branching
+- [x] **Advanced Features**
+  - Field validation and error handling
+  - Form data persistence across steps
+  - Auto-generation (slug from name)
+  - Conditional field visibility
+  - Step-level guidance messages
 
-#### **5.3 Wizard Integration**
-- [ ] Wizard-powered flow steps
-- [ ] Form validation in flows
-- [ ] Multi-step data collection
-- [ ] Flow-wizard coordination
+#### **5.3 Scene Integration** ✅
+- [x] **Production Usage**
+  - Flow-powered scene creation dialog (4 steps)
+  - Integration with Scene Management services
+  - Field mapping between frontend/backend
+  - End-to-end scene creation working
 
-#### **5.4 Scene Integration**
-- [ ] Flow steps within scenes
-- [ ] Scene-specific flow behaviors
-- [ ] Flow-guided scene navigation
-- [ ] Scene context in flows
+- [x] **Dialog Integration**
+  - Flows render in modal dialogs
+  - Progress indicators and navigation
+  - Validation feedback
+  - Success/error toast notifications
 
 #### **Deliverables**
-- Working Flow System
-- Wizard integration complete
-- Scene-flow coordination
-- Flow authoring tools
+- ✅ Working Flow System with templates and instances
+- ✅ Form Flow sub-module replacing Wizard concept
+- ✅ Scene-flow coordination functional
+- ✅ Used in production (Scene Management dialogs)
 
 ---
 

@@ -14,4 +14,5 @@ export { PopoverDialog } from './PopoverDialog';
 export { FormDialog } from './FormDialog';
 export { CommentThreadDialog } from './CommentThreadDialog';
 export { MediaViewerDialog } from './MediaViewerDialog';
+export { FullScreenDialog } from './FullScreenDialog';
 

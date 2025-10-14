@@ -21,17 +21,25 @@ ls docs/active-development/
 - `DEVELOPMENT_WORKFLOW.md` - Development workflow guide
 - `README.md` - Active development overview
 
-## 🎯 **Current Priority: Navigation History & Breadcrumbs UI**
+## 🎯 **Current Priority: Scene Management (Phase 2.5.3 Next)**
+
+### **Recently Completed** ✅
+- Flow System with Form Flow sub-module (Phase 5)
+- Scene Management Services and Dialog UI (Phase 2.5.1-2.5.2)
+- Full-Screen Dialog type for data management
+- Navigation History & Breadcrumbs (Phase 1)
+- Toolbar & Menu System (Phase 3 foundation)
 
 ### **Foundation Complete** ✅
 - Shared Library Architecture (`@protogen/shared`)
-- Dialog System (modal, drawer, toast, confirmation)
+- Dialog System (modal, drawer, toast, confirmation, fullscreen)
 - Scene-First Routing with SceneRouter
 - Toolbar & Menu System (multi-edge, drawers, plugins)
 - Navigator System (singleton pattern, event-driven)
+- Flow System (multi-step flows, branching, form support)
 
-### **Current Phase: Phase 1**
-Navigation History & Breadcrumbs UI implementation to provide visual navigation feedback and clickable breadcrumb trails.
+### **Current Phase: Phase 2.5.3**
+Scene Viewer Integration - adding edit buttons, context menus, and permission controls to the scene viewer.
 
 ---
 
@@ -61,6 +69,27 @@ import {
   dialogSystem,
   useDialog
 } from '@protogen/shared/systems/dialog';
+
+// Flow System
+import {
+  flowSystem,
+  FlowRenderer
+} from '@protogen/shared/systems/flow';
+import {
+  FormStep,
+  SelectionStep,
+  ReviewStep
+} from '@protogen/shared/systems/flow/form';
+
+// Scene Management System
+import {
+  sceneManagementService,
+  deckManagementService,
+  slideManagementService,
+  useSceneManagement,
+  useDeckManagement,
+  useSlideManagement
+} from '@protogen/shared/systems/scene-management';
 
 // Toolbar System
 import {
@@ -94,12 +123,13 @@ import { Card } from '@protogen/shared/components/ui/card';
 shared/src/
 ├── systems/
 │   ├── navigator/          # Navigation and routing
-│   ├── scene/              # Scene management
+│   ├── scene/              # Scene rendering
 │   ├── dialog/             # Dialog system
 │   ├── toolbar/            # Toolbar and menus
 │   ├── authoring/          # Content authoring
 │   ├── slide/              # Slide management
-│   └── flow/               # Flow system (future)
+│   ├── flow/               # Flow system (multi-step flows)
+│   └── scene-management/   # Scene/deck/slide CRUD
 ├── components/             # Reusable UI components
 ├── hooks/                  # Shared React hooks
 ├── services/               # API and service layer
@@ -169,6 +199,76 @@ const { currentScene, isLoading } = useScene(sceneId);
 
 // Check if system scene
 const isSystem = isSystemScene(sceneId);
+```
+
+### **Flow System Hooks**
+```typescript
+// Register a flow template
+flowSystem.registerTemplate({
+  id: 'my-flow-template',
+  name: 'My Flow',
+  description: 'A custom flow',
+  category: 'custom',
+  template: myFlowDefinition
+});
+
+// Create a flow instance from template
+const instance = flowSystem.createFlowFromTemplate('my-flow-template');
+
+// Register and render flow
+flowSystem['flows'].set(instance.id, instance);
+<FlowRenderer 
+  flowId={instance.id}
+  onComplete={(data) => console.log('Flow complete:', data)}
+  onCancel={() => console.log('Flow cancelled')}
+/>
+```
+
+### **Scene Management Hooks**
+```typescript
+// Scene management
+const {
+  scenes,
+  loading,
+  error,
+  loadScenes,
+  createScene,
+  updateScene,
+  deleteScene
+} = useSceneManagement();
+
+// Create a scene
+await createScene({
+  name: 'My Scene',
+  slug: 'my-scene',
+  type: 'card',
+  is_active: true,
+  is_public: false
+});
+
+// Or use dialogs directly
+import { openCreateSceneDialog, openManageScenesDialog } from 'portal/features/scene-management';
+
+openCreateSceneDialog({
+  onSuccess: (sceneId) => console.log('Created:', sceneId)
+});
+
+openManageScenesDialog();
+```
+
+### **Full-Screen Dialog Usage**
+```typescript
+// Open full-screen dialog for data management
+dialogSystem.openFullScreen({
+  title: 'Data Management',
+  description: 'Manage your data',
+  fullscreenSize: 'xlarge', // 'default' | 'large' | 'xlarge'
+  content: <MyManagementUI />,
+  footer: <PaginationControls />,
+  headerActions: <SearchAndFilters />,
+  closeOnEscape: true,
+  closeOnBackdrop: true
+});
 ```
 
 ---

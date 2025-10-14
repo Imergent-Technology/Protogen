@@ -18,6 +18,7 @@ import type {
   CommentThreadDialogConfig,
   MediaViewerDialogConfig,
   FormDialogConfig,
+  FullScreenDialogConfig,
   CustomDialogConfig,
   WizardDialogConfig
 } from './types';
@@ -189,6 +190,30 @@ export class DialogSystem {
   // Open wizard dialog (for later integration with Flow System)
   openWizard(config: Omit<WizardDialogConfig, 'type'>): string {
     const dialog = this.createDialog({ ...config, type: 'wizard' });
+    this.stateService.addDialog(dialog);
+    this.updateZIndices();
+    
+    config.onOpen?.();
+    return dialog.id;
+  }
+
+  // Open full-screen dialog (for data management interfaces)
+  openFullScreen(config: Omit<FullScreenDialogConfig, 'type'>): string {
+    const { title, description, content, footer, headerActions, fullscreenSize, ...baseConfig } = config;
+    
+    const dialog = this.createDialog({ 
+      ...baseConfig, 
+      type: 'fullscreen',
+      content,
+      metadata: {
+        title,
+        description,
+        footer,
+        headerActions,
+        size: fullscreenSize
+      }
+    } as DialogConfig);
+    
     this.stateService.addDialog(dialog);
     this.updateZIndices();
     

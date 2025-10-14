@@ -1,8 +1,0 @@
-.gitignore
-README.md
-admin/src/components/GraphStudio.tsx
-docker-compose.yml
-docs/DEPLOYMENT.md
-docs/DEVELOPMENT.md
-env.template
-scripts/setup-dev.sh

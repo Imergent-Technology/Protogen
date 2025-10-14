@@ -17,6 +17,7 @@ export type DialogType =
   | 'comment-thread'
   | 'media-viewer'
   | 'form'
+  | 'fullscreen'
   | 'custom';
 
 // Dialog priority for z-index management

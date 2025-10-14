@@ -65,6 +65,10 @@
     "./systems/flow/wizard": {
       "types": "./dist/src/systems/flow/wizard/index.d.ts",
       "import": "./dist/src/systems/flow/wizard/index.js"
+    },
+    "./systems/scene-management": {
+      "types": "./dist/src/systems/scene-management/index.d.ts",
+      "import": "./dist/src/systems/scene-management/index.js"
     }
   },
   "scripts": {

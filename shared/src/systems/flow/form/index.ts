@@ -15,5 +15,5 @@ export * from './components';
 export * from './services';
 
 // Re-export StepGuidance from base flow types for convenience
-export { StepGuidance } from '../types/flow';
+export type { StepGuidance } from '../types/flow';
 

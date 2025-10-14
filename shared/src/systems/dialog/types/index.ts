@@ -17,6 +17,7 @@ export * from './wizard';
 export * from './comment-thread';
 export * from './media-viewer';
 export * from './form';
+export * from './fullscreen';
 export * from './custom';
 
 // Union type for all dialog configs
@@ -29,6 +30,7 @@ import type { WizardDialogConfig } from './wizard';
 import type { CommentThreadDialogConfig } from './comment-thread';
 import type { MediaViewerDialogConfig } from './media-viewer';
 import type { FormDialogConfig } from './form';
+import type { FullScreenDialogConfig } from './fullscreen';
 import type { CustomDialogConfig } from './custom';
 
 export type DialogConfig =
@@ -41,5 +43,6 @@ export type DialogConfig =
   | CommentThreadDialogConfig
   | MediaViewerDialogConfig
   | FormDialogConfig
+  | FullScreenDialogConfig
   | CustomDialogConfig;
 

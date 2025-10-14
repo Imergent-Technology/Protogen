@@ -15,6 +15,7 @@ import { PopoverDialog } from './PopoverDialog';
 import { CommentThreadDialog } from './CommentThreadDialog';
 import { MediaViewerDialog } from './MediaViewerDialog';
 import { FormDialog } from './FormDialog';
+import { FullScreenDialog } from './FullScreenDialog';
 
 export interface DialogStackProps {
   dialogs: Dialog[];
@@ -54,6 +55,9 @@ export const DialogStack: React.FC<DialogStackProps> = ({ dialogs }) => {
       
       case 'form':
         return <FormDialog {...commonProps} />;
+      
+      case 'fullscreen':
+        return <FullScreenDialog {...commonProps} />;
       
       case 'wizard':
         // Wizard will be implemented when we extract from admin

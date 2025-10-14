@@ -220,39 +220,80 @@ function App() {
     });
 
     // Configure main navigation drawer
+    const drawerItems: any[] = [
+      { type: 'section-header', label: 'Navigation' },
+      {
+        type: 'nav-item',
+        label: 'Home',
+        icon: 'home',
+        action: { type: 'navigate-context', contextPath: '/' }
+      },
+      {
+        type: 'nav-item',
+        label: 'Explore',
+        icon: 'compass',
+        action: { type: 'navigate-context', contextPath: '/explore' }
+      },
+      {
+        type: 'nav-item',
+        label: 'Profile',
+        icon: 'user',
+        action: { type: 'navigate-context', contextPath: '/profile' }
+      },
+      {
+        type: 'nav-item',
+        label: 'Settings',
+        icon: 'settings',
+        action: { type: 'navigate-context', contextPath: '/settings' }
+      }
+    ];
+
+    // Add admin items if user is admin
+    if (user?.is_admin) {
+      drawerItems.push(
+        { type: 'separator' },
+        { type: 'section-header', label: 'Content Management' },
+        {
+          type: 'nav-item',
+          label: 'Create Scene',
+          icon: 'plus-circle',
+          action: { type: 'custom', handler: () => {
+            // Import dynamically to avoid circular dependencies
+            import('./features/scene-management').then(({ openCreateSceneDialog }) => {
+              openCreateSceneDialog();
+            });
+          }}
+        },
+        {
+          type: 'nav-item',
+          label: 'Create Deck',
+          icon: 'layers',
+          action: { type: 'custom', handler: () => {
+            import('./features/scene-management').then(({ openCreateDeckDialog }) => {
+              openCreateDeckDialog();
+            });
+          }}
+        },
+        {
+          type: 'nav-item',
+          label: 'Manage Scenes',
+          icon: 'layout-grid',
+          action: { type: 'custom', handler: () => {
+            import('./features/scene-management').then(({ openManageScenesDialog }) => {
+              openManageScenesDialog();
+            });
+          }}
+        }
+      );
+    }
+
     toolbarSystem.registerDrawer({
       id: 'main-nav-drawer',
       edge: 'left',
       width: '256px',
       overlay: true,
       closeOnClickOutside: true,
-      items: [
-        { type: 'section-header', label: 'Navigation' },
-        {
-          type: 'nav-item',
-          label: 'Home',
-          icon: 'home',
-          action: { type: 'navigate-context', contextPath: '/' }
-        },
-        {
-          type: 'nav-item',
-          label: 'Explore',
-          icon: 'compass',
-          action: { type: 'navigate-context', contextPath: '/explore' }
-        },
-        {
-          type: 'nav-item',
-          label: 'Profile',
-          icon: 'user',
-          action: { type: 'navigate-context', contextPath: '/profile' }
-        },
-        {
-          type: 'nav-item',
-          label: 'Settings',
-          icon: 'settings',
-          action: { type: 'navigate-context', contextPath: '/settings' }
-        }
-      ]
+      items: drawerItems
     });
 
     // Wire up toolbar menu actions to Navigator and Dialog systems
@@ -291,6 +332,15 @@ function App() {
             window.open(action.url, '_blank');
           } else {
             window.location.href = action.url;
+          }
+          break;
+        
+        case 'custom':
+          // Execute custom handler function
+          if (typeof action.handler === 'function') {
+            action.handler();
+          } else {
+            console.error('Custom action has no handler function:', action);
           }
           break;
         

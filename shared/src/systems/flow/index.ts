@@ -6,9 +6,11 @@
 export * from './core';
 export * from './types';
 
+// Components
+export * from './components';
+
 // Form Flow Sub-system
 export * from './form';
 
-// Legacy Wizard System (deprecated, use Form Flow instead)
-// @deprecated Use Form Flow instead
-export * from './wizard';
+// Note: Legacy Wizard System has been migrated to Form Flow
+// The ./wizard directory is kept for reference but not exported

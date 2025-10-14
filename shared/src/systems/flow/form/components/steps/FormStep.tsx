@@ -45,19 +45,26 @@ export const FormStep: React.FC<FormStepComponentProps> = ({
 }) => {
   const [formData, setFormData] = useState<FormStepData>(data || {});
 
-  // Initialize form data with field defaults
+  // Sync local state when data prop changes (navigation backward/forward)
   useEffect(() => {
     const initialData: FormStepData = {};
     fields.forEach(field => {
-      initialData[field.id] = data?.[field.id] ?? field.defaultValue ?? '';
+      // Use incoming data first, then field default, then appropriate fallback based on type
+      if (data?.[field.id] !== undefined) {
+        initialData[field.id] = data[field.id];
+      } else if (field.defaultValue !== undefined) {
+        initialData[field.id] = field.defaultValue;
+      } else {
+        // Type-appropriate defaults
+        initialData[field.id] = field.type === 'checkbox' ? false : '';
+      }
     });
     setFormData(initialData);
-  }, []);
+  }, [data, fields]);
 
   const handleFieldChange = (fieldId: string, value: any) => {
     const newData = { ...formData, [fieldId]: value };
     setFormData(newData);
-    onDataChange(newData);
 
     // Auto-generate dependent fields
     fields.forEach(field => {
@@ -66,9 +73,11 @@ export const FormStep: React.FC<FormStepComponentProps> = ({
         const generatedValue = transform(value);
         newData[field.id] = generatedValue;
         setFormData(newData);
-        onDataChange(newData);
       }
     });
+
+    // Call onDataChange with the complete updated data
+    onDataChange(newData);
   };
 
   const getFieldError = (fieldId: string): ValidationError | undefined => {
@@ -114,7 +123,7 @@ export const FormStep: React.FC<FormStepComponentProps> = ({
             <input
               type="checkbox"
               id={field.id}
-              checked={formData[field.id] || false}
+              checked={!!formData[field.id]}
               onChange={(e) => handleFieldChange(field.id, e.target.checked)}
               disabled={field.disabled || isValidating}
               className="text-primary"

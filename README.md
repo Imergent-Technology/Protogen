@@ -86,9 +86,9 @@ For detailed setup instructions, see [DEVELOPMENT.md](docs/DEVELOPMENT.md).
 | Document | Description |
 |----------|-------------|
 | [**Implementation Roadmap**](docs/implementation-roadmap.md) | Complete phase-by-phase development plan |
-| [**Phase 5 Authoring Vision**](docs/phase-5-authoring-vision.md) | UI integration and authoring tools expansion |
-| [**Graph Studio Enhancement**](docs/GRAPH_STUDIO_ENHANCEMENT.md) | Advanced graph visualization capabilities |
-| [**Flow System Vision**](docs/FLOW_SYSTEM_VISION.md) | Sophisticated content navigation and exploration system |
+| [**Development Roadmap**](docs/active-development/DEVELOPMENT_ROADMAP.md) | Current development phases and status |
+| [**Central Graph Roadmap**](docs/active-development/CENTRAL_GRAPH_ROADMAP.md) | Central graph system implementation |
+| [**Project Status Summary**](docs/active-development/PROJECT_STATUS_SUMMARY.md) | Current project status and metrics |
 
 ### 📊 System Documentation
 
@@ -97,11 +97,23 @@ For detailed setup instructions, see [DEVELOPMENT.md](docs/DEVELOPMENT.md).
 | [**Snapshot System**](docs/snapshot-system.md) | Versioning, storage, and content delivery system |
 | [**Multi-Tenancy Vision**](docs/MULTI_TENANCY_VISION.md) | Multi-tenant architecture design and implementation status |
 
+### 🎯 Architectural Decisions
+
+| Document | Description |
+|----------|-------------|
+| [**ADR-001: Graph Dual Execution**](docs/decisions/ADR-001-graph-dual-execution.md) | Graph execution on server and client |
+| [**ADR-002: Flow System**](docs/decisions/ADR-002-flow-system.md) | Flow System over Wizard pattern |
+| [**ADR-003: Central Graph**](docs/decisions/ADR-003-central-graph.md) | Central Graph architecture |
+| [**ADR-004: Scene Routing**](docs/decisions/ADR-004-scene-routing.md) | Scene-first routing design |
+| [**ADR-005: SSR Architecture**](docs/decisions/ADR-005-ssr-architecture.md) | Server-side rendering architecture |
+| [**ADR-006: Unified Portal**](docs/decisions/ADR-006-unified-portal.md) | Unified portal design strategy |
+
 ### 📝 Project History
 
 | Document | Description |
 |----------|-------------|
 | [**Changelog**](docs/changelog.md) | Version history and release notes |
+| [**Documentation Archive**](docs/archive/README.md) | Historical documentation and completed phases |
 
 ## 🏗️ Project Structure
 
@@ -136,7 +148,7 @@ protogen/
 
 ### 🚀 **Current Evolution: Central Graph System**
 
-**Status**: In Development - See [Central Graph Roadmap](CENTRAL_GRAPH_ROADMAP.md)
+**Status**: Completed October 2025 - See [Central Graph Roadmap](docs/active-development/CENTRAL_GRAPH_ROADMAP.md)
 
 The system is evolving to a **Central Graph System** that simplifies graph traversal while maintaining the excellent multi-tenant, snapshot, and scene type systems. This evolution introduces:
 
@@ -214,7 +226,7 @@ docker exec -it api php artisan db:seed
 - **Sigma.js** for graph visualization
 
 ### Backend
-- **Laravel 10** with PHP 8.2
+- **Laravel 12** with PHP 8.2
 - **PostgreSQL** for data storage
 - **Laravel Sanctum** for API authentication
 - **Laravel Storage** for file management
