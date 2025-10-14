@@ -122,15 +122,21 @@ export class SceneSystem {
 
       const scene = data.data;
 
-      // Load slides for this scene
-      const slidesResponse = await fetch(`${this.apiBaseUrl}/slides/scene/${sceneId}`, {
-        headers: this.getHeaders(),
-      });
+      // Load slides for this scene (M1: gracefully handle errors)
+      try {
+        const slidesResponse = await fetch(`${this.apiBaseUrl}/slides/scene/${sceneId}`, {
+          headers: this.getHeaders(),
+        });
 
-      if (slidesResponse.ok) {
-        const slidesData = await slidesResponse.json();
-        scene.slides = Array.isArray(slidesData) ? slidesData : slidesData.data || [];
-      } else {
+        if (slidesResponse.ok) {
+          const slidesData = await slidesResponse.json();
+          scene.slides = Array.isArray(slidesData) ? slidesData : slidesData.data || [];
+        } else {
+          console.warn(`Slides endpoint returned ${slidesResponse.status} for scene ${sceneId}`);
+          scene.slides = [];
+        }
+      } catch (err) {
+        console.warn(`Failed to load slides for scene ${sceneId}:`, err);
         scene.slides = [];
       }
 
