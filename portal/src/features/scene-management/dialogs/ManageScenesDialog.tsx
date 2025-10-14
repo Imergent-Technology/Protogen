@@ -7,6 +7,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { dialogSystem } from '@protogen/shared/systems/dialog';
 import { sceneManagementService } from '@protogen/shared/systems/scene-management';
+import { navigatorSystem } from '@protogen/shared/systems/navigator';
 import type { SceneConfig } from '@protogen/shared/systems/scene-management';
 import { Button, Input, Label } from '@protogen/shared/components';
 import { Pencil, Trash2, Eye, Plus, Search, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -95,6 +96,25 @@ const ManageScenesContent: React.FC<ManageScenesDialogProps> = () => {
       onSuccess: () => {
         loadScenes();
       }
+    });
+  };
+
+  const handleView = (scene: SceneConfig) => {
+    // Close the manage scenes dialog
+    dialogSystem.closeAll();
+
+    // Navigate to the scene using Navigator
+    navigatorSystem.navigateTo({
+      type: 'scene',
+      id: scene.id.toString(),
+      slug: scene.slug
+    }).catch((err) => {
+      dialogSystem.openToast({
+        title: 'Navigation Error',
+        description: err instanceof Error ? err.message : 'Failed to navigate to scene',
+        variant: 'error',
+        duration: 3000,
+      });
     });
   };
 
@@ -299,14 +319,7 @@ const ManageScenesContent: React.FC<ManageScenesDialogProps> = () => {
                       <Button
                         size="sm"
                         variant="ghost"
-                        onClick={() => {
-                          dialogSystem.openToast({
-                            title: 'View Scene',
-                            description: 'Scene viewing not yet implemented',
-                            variant: 'default',
-                            duration: 2000,
-                          });
-                        }}
+                        onClick={() => handleView(scene)}
                         title="View scene"
                       >
                         <Eye className="w-4 h-4" />

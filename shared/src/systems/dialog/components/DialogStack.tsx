@@ -25,39 +25,39 @@ export const DialogStack: React.FC<DialogStackProps> = ({ dialogs }) => {
   // Render appropriate component based on dialog type
   const renderDialog = (dialog: Dialog) => {
     const zIndex = dialogSystem.getZIndex(dialog.id);
-    const commonProps = {
-      key: dialog.id,
+    // Extract key separately - React doesn't allow spreading key prop
+    const dialogProps = {
       dialog,
       zIndex
     };
 
     switch (dialog.type) {
       case 'modal':
-        return <ModalDialog {...commonProps} />;
+        return <ModalDialog key={dialog.id} {...dialogProps} />;
       
       case 'drawer':
-        return <DrawerDialog {...commonProps} />;
+        return <DrawerDialog key={dialog.id} {...dialogProps} />;
       
       case 'confirmation':
-        return <ConfirmationDialog {...commonProps} />;
+        return <ConfirmationDialog key={dialog.id} {...dialogProps} />;
       
       case 'toast':
-        return <ToastDialog {...commonProps} />;
+        return <ToastDialog key={dialog.id} {...dialogProps} />;
       
       case 'popover':
-        return <PopoverDialog {...commonProps} />;
+        return <PopoverDialog key={dialog.id} {...dialogProps} />;
       
       case 'comment-thread':
-        return <CommentThreadDialog {...commonProps} />;
+        return <CommentThreadDialog key={dialog.id} {...dialogProps} />;
       
       case 'media-viewer':
-        return <MediaViewerDialog {...commonProps} />;
+        return <MediaViewerDialog key={dialog.id} {...dialogProps} />;
       
       case 'form':
-        return <FormDialog {...commonProps} />;
+        return <FormDialog key={dialog.id} {...dialogProps} />;
       
       case 'fullscreen':
-        return <FullScreenDialog {...commonProps} />;
+        return <FullScreenDialog key={dialog.id} {...dialogProps} />;
       
       case 'wizard':
         // Wizard will be implemented when we extract from admin
