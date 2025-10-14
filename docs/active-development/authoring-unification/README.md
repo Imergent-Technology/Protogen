@@ -154,10 +154,27 @@ This directory contains the 18 specification documents for Protogen's evolution 
   - Deferral rationale
   - Success criteria for future implementation
 
-### ⏳ Phase 5: System Integration (Pending)
+### ✅ Phase 5: System Integration (Complete)
 
-- **13-orchestrator-integration.md** - Orchestrator Integration
-- **14-persistence-models.md** - Persistence Models & Migrations
+- **[13-orchestrator-integration.md](./13-orchestrator-integration.md)** - Orchestrator Integration
+  - Extends existing Orchestrator system (NOT new "OrchestratorBridge")
+  - Dynamic library loading with LibraryRegistry
+  - Scene-type library management (viewing + authoring)
+  - Policy enforcement (authoring libs only in author mode)
+  - Failure handling with retry logic
+  - State persistence for authoring session
+  - Integration sequences for enter/exit author mode
+  - Event emission patterns
+
+- **[14-persistence-models.md](./14-persistence-models.md)** - Persistence Models & Migrations
+  - 6 new tables (slides, document_pages, anchors, links, previews, content_revisions)
+  - Enhanced assets table
+  - Laravel models for all entities
+  - 6 migration files (additive, non-breaking)
+  - API endpoint specifications
+  - Sample JSON fixtures
+  - Entity Relationship Diagram
+  - Backward compatibility with existing scenes
 
 ### ⏳ Phase 6: Quality & Testing (Pending)
 
@@ -173,7 +190,7 @@ This directory contains the 18 specification documents for Protogen's evolution 
 
 ## Progress Summary
 
-### Completed: 14 of 18 (78%)
+### Completed: 16 of 18 (89%)
 
 **Phase 0** (2 specs): ✅ Complete
 - Project context and guardrails established
@@ -198,8 +215,11 @@ This directory contains the 18 specification documents for Protogen's evolution 
 - Card scene type with text/image/layered slide variants
 - Document scene type with multi-page, blocks, and anchors
 - Graph scene planning stub (requires design workshop)
-- Video scene deferred stub (complexity documented)  
-**Phase 5** (2 specs): ⏳ Pending  
+- Video scene deferred stub (complexity documented)
+
+**Phase 5** (2 specs): ✅ Complete
+- Orchestrator integration for dynamic library loading
+- Persistence models and database migrations  
 **Phase 6** (2 specs): ⏳ Pending  
 **Phase 7** (2 specs): ⏳ Pending
 
