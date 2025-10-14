@@ -18,6 +18,13 @@ export type { InlineEditorProps } from './InlineEditor';
 export { default as EditingHandles } from './EditingHandles';
 export type { EditingHandlesProps } from './EditingHandles';
 
+// M1 Week 6: ToC Components
+export * from './ToC';
+
+// M1 Week 6: Carousel Component
+export { default as PreviewCarousel } from './Carousel/PreviewCarousel';
+export type { PreviewCarouselProps } from './Carousel/PreviewCarousel';
+
 // Re-export types for convenience
 export type { NodeMetadata, NodeSelectionProps, NodeSelectionOptions } from '../types/node-selection';
 export type { SceneType, SceneTypeManagerProps } from '../types/common';
