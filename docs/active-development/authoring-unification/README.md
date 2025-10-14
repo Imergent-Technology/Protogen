@@ -62,11 +62,33 @@ This directory contains the 18 specification documents for Protogen's evolution 
   - Plugin architecture for scene types
   - Keyboard shortcuts and focus management
 
-### ⏳ Phase 2: Interaction Systems (Pending)
+### ✅ Phase 2: Interaction Systems (Complete)
 
-- **05-context-menu.md** - Context Menu System
-- **06-highlighting-strategies.md** - Selection & Highlighting Strategies
-- **07-preview-service.md** - Preview Service Specification
+- **[05-context-menu.md](./05-context-menu.md)** - Context Menu System
+  - ContextActionRegistry with scene-type and element-type keying
+  - Card scene actions (text, image, layered slides + blank space)
+  - Document scene actions (blocks, text, pages + blank space)
+  - Graph and Video stubs
+  - Integration with Dialog system
+  - Keyboard navigation and mobile long-press support
+
+- **[06-highlighting-strategies.md](./06-highlighting-strategies.md)** - Selection & Highlighting Strategies
+  - Scene-type specific strategies (Card, Document, Graph stub, Video stub)
+  - Theme integration with adaptive contrast
+  - Multi-selection visual differentiation
+  - Hover states and animations
+  - Busy background fallback strategies
+  - Accessibility (high contrast, screen readers)
+
+- **[07-preview-service.md](./07-preview-service.md)** - Preview Service Specification
+  - PreviewService with size tiers (XS, SM, MD)
+  - Offscreen canvas rendering
+  - Cache management with LRU eviction
+  - Preview queue with debouncing and prioritization
+  - Content hashing for staleness detection
+  - Performance budgets and optimization
+  - Database schema and API endpoints
+  - React hooks (usePreview, useBatchPreviews)
 
 ### ⏳ Phase 3: UI Components (Pending)
 
@@ -99,7 +121,7 @@ This directory contains the 18 specification documents for Protogen's evolution 
 
 ## Progress Summary
 
-### Completed: 5 of 18 (28%)
+### Completed: 8 of 18 (44%)
 
 **Phase 0** (2 specs): ✅ Complete
 - Project context and guardrails established
@@ -110,7 +132,11 @@ This directory contains the 18 specification documents for Protogen's evolution 
 - Event taxonomy extending existing event system
 - Navigator enhancements for authoring mode and item navigation
 - Authoring overlay framework with selection and editing
-**Phase 2** (3 specs): ⏳ Pending  
+
+**Phase 2** (3 specs): ✅ Complete
+- Context menu system with scene-type specific actions
+- Selection and highlighting strategies for all scene types
+- Preview service with size tiers, caching, and staleness detection  
 **Phase 3** (2 specs): ⏳ Pending  
 **Phase 4** (4 specs): ⏳ Pending  
 **Phase 5** (2 specs): ⏳ Pending  
