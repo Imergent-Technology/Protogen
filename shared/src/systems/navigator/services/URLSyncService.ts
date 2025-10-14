@@ -3,9 +3,11 @@
  * 
  * Synchronizes Navigator state with browser URL
  * Enables deep linking to scenes, contexts, slides, and even nodes
+ * 
+ * M1 Enhancement: Supports authoring mode and item-level navigation
  */
 
-import type { CurrentContext } from '../types';
+import type { CurrentContext, NavigationLocus, NavigationMode, ItemType } from '../types';
 
 export interface URLSyncConfig {
   enabled: boolean;
@@ -240,6 +242,162 @@ export class URLSyncService {
     if (typeof window !== 'undefined') {
       window.removeEventListener('popstate', this.handlePopState.bind(this));
     }
+  }
+
+  // ============================================================================
+  // M1 ENHANCEMENTS: Authoring Mode & Item Navigation
+  // ============================================================================
+
+  /**
+   * Build URL from enhanced navigation state (M1)
+   * Supports: /author/deck/:deckId/scenes/:sceneId/items/:itemId?zoom=50
+   */
+  buildEnhancedURL(params: {
+    mode: NavigationMode;
+    locus: NavigationLocus;
+    zoomLevel?: number;
+  }): string {
+    const { mode, locus, zoomLevel } = params;
+    let path = '/';
+
+    // Mode prefix
+    if (mode === 'author') {
+      path += 'author/';
+    }
+
+    // Deck
+    if (locus.deckId) {
+      path += `deck/${locus.deckId}/`;
+    }
+
+    // Scene
+    if (locus.sceneId) {
+      path += `scenes/${locus.sceneId}/`;
+    }
+
+    // Item
+    if (locus.itemId) {
+      path += `items/${locus.itemId}`;
+    }
+
+    // Query params
+    const queryParams = new URLSearchParams();
+    if (zoomLevel && zoomLevel !== 0) {
+      queryParams.set('zoom', zoomLevel.toString());
+    }
+    if (locus.coordinate) {
+      queryParams.set('x', locus.coordinate.x.toString());
+      queryParams.set('y', locus.coordinate.y.toString());
+      if (locus.coordinate.z !== undefined) {
+        queryParams.set('z', locus.coordinate.z.toString());
+      }
+    }
+
+    const search = queryParams.toString();
+    const url = search ? `${path}?${search}` : path;
+
+    return url;
+  }
+
+  /**
+   * Parse enhanced URL to navigation state (M1)
+   * Parses: /author/deck/:deckId/scenes/:sceneId/items/:itemId?zoom=50
+   */
+  parseEnhancedURL(url?: string): {
+    mode: NavigationMode;
+    locus: NavigationLocus;
+    zoomLevel: number;
+    focusLevel: 'overview' | 'scene' | 'item';
+  } {
+    const urlStr = url || (typeof window !== 'undefined' ? window.location.href : '');
+    const urlObj = new URL(urlStr, window?.location.origin || 'http://localhost');
+
+    const parts = urlObj.pathname.split('/').filter(Boolean);
+    const params = new URLSearchParams(urlObj.search);
+
+    const result: {
+      mode: NavigationMode;
+      locus: NavigationLocus;
+      zoomLevel: number;
+      focusLevel: 'overview' | 'scene' | 'item';
+    } = {
+      mode: 'view',
+      locus: {},
+      zoomLevel: parseInt(params.get('zoom') || '0'),
+      focusLevel: 'overview'
+    };
+
+    // Check for author mode prefix
+    const offset = parts[0] === 'author' ? 1 : 0;
+    if (parts[0] === 'author') {
+      result.mode = 'author';
+    }
+
+    // Parse path (accounting for optional 'author' prefix)
+    if (parts[offset] === 'deck' && parts[offset + 1]) {
+      result.locus.deckId = parts[offset + 1];
+      result.focusLevel = 'overview';
+    }
+
+    if (parts[offset + 2] === 'scenes' && parts[offset + 3]) {
+      result.locus.sceneId = parts[offset + 3];
+      result.focusLevel = 'scene';
+    }
+
+    if (parts[offset + 4] === 'items' && parts[offset + 5]) {
+      result.locus.itemId = parts[offset + 5];
+      result.locus.itemType = this.inferItemType(result.locus.sceneId);
+      result.focusLevel = 'item';
+    }
+
+    // Parse coordinates
+    if (params.has('x') && params.has('y')) {
+      result.locus.coordinate = {
+        x: parseFloat(params.get('x')!),
+        y: parseFloat(params.get('y')!),
+        z: params.has('z') ? parseFloat(params.get('z')!) : undefined
+      };
+    }
+
+    return result;
+  }
+
+  /**
+   * Sync enhanced navigation state to URL (M1)
+   */
+  syncEnhancedStateToURL(params: {
+    mode: NavigationMode;
+    locus: NavigationLocus;
+    zoomLevel?: number;
+  }, replace: boolean = false): void {
+    if (!this.config.enabled || typeof window === 'undefined') {
+      return;
+    }
+
+    const url = this.buildEnhancedURL(params);
+    const currentPath = window.location.pathname + window.location.search;
+
+    // Only update if URL has changed
+    if (url !== currentPath) {
+      this.ignoreNextPopState = true;
+
+      if (replace) {
+        window.history.replaceState({ ...params }, '', url);
+      } else {
+        window.history.pushState({ ...params }, '', url);
+      }
+    }
+  }
+
+  /**
+   * Infer item type from scene ID (temporary helper)
+   * TODO: Replace with actual scene type lookup in M1 Week 7-8
+   */
+  private inferItemType(sceneId?: string): ItemType {
+    // For now, default to 'slide'
+    // In production, this will query the scene system for the scene type
+    // and return the appropriate item type (slide for Card, page for Document, etc.)
+    return 'slide';
   }
 }
 

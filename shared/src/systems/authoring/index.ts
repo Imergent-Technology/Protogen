@@ -11,3 +11,7 @@ export * from './components';
 
 // Export all services
 export * from './services';
+
+// M1 Week 3-4: Core Authoring System
+export { AuthoringSystem, authoringSystem } from './AuthoringSystem';
+export type { AuthoringSystemConfig, AuthoringLibrary, AuthoringSystemState } from './AuthoringSystem';

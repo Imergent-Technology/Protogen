@@ -6,6 +6,10 @@ import {
   NavigationHistory,
   NavigatorState,
   NavigationEventHandler,
+  NavigationMode,
+  ItemType,
+  SelectionState,
+  FocusLevel,
   DEFAULT_CONTEXT
 } from './types';
 
@@ -30,6 +34,37 @@ export interface UseNavigatorReturn {
   // Utility
   canGoBack: boolean;
   canGoForward: boolean;
+
+  // ✨ M1: Authoring Mode
+  mode: NavigationMode;
+  enterAuthorMode: () => void;
+  exitAuthorMode: () => void;
+  toggleMode: () => void;
+  canEnterAuthorMode: boolean;
+  hasUnsavedChanges: boolean;
+
+  // ✨ M1: Item Navigation
+  navigateToItem: (itemId: string, itemType: ItemType) => void;
+  currentItem: { id: string; type: ItemType } | null;
+  nextItem: () => void;
+  previousItem: () => void;
+
+  // ✨ M1: Zoom & Focus
+  focusOnItem: (itemId: string, itemType: ItemType) => Promise<void>;
+  zoomOut: () => Promise<void>;
+  setZoomLevel: (level: number) => Promise<void>;
+  zoomLevel: number;
+  focusLevel: FocusLevel;
+
+  // ✨ M1: Selection
+  selection: SelectionState | null;
+  updateSelection: (selection: SelectionState | null) => void;
+  clearSelection: () => void;
+
+  // ✨ M1: ToC Drawer
+  tocOpen: boolean;
+  setTocOpen: (open: boolean) => void;
+  toggleToc: () => void;
 }
 
 export function useNavigator(_initialContext?: CurrentContext): UseNavigatorReturn {
@@ -43,9 +78,14 @@ export function useNavigator(_initialContext?: CurrentContext): UseNavigatorRetu
       setState(navigatorSystem.getState());
     };
 
+    // Subscribe to all navigator events including M1 enhancements
     navigatorSystem.on('navigation', handleNavigationEvent);
     navigatorSystem.on('context-change', handleNavigationEvent);
     navigatorSystem.on('history-update', handleNavigationEvent);
+    navigatorSystem.on('mode-changed', handleNavigationEvent);
+    navigatorSystem.on('focus', handleNavigationEvent);
+    navigatorSystem.on('zoom', handleNavigationEvent);
+    navigatorSystem.on('selection-changed', handleNavigationEvent);
 
     // Set initial state
     setState(navigatorSystem.getState());
@@ -55,6 +95,10 @@ export function useNavigator(_initialContext?: CurrentContext): UseNavigatorRetu
       navigatorSystem.off('navigation', handleNavigationEvent);
       navigatorSystem.off('context-change', handleNavigationEvent);
       navigatorSystem.off('history-update', handleNavigationEvent);
+      navigatorSystem.off('mode-changed', handleNavigationEvent);
+      navigatorSystem.off('focus', handleNavigationEvent);
+      navigatorSystem.off('zoom', handleNavigationEvent);
+      navigatorSystem.off('selection-changed', handleNavigationEvent);
     };
   }, []); // Empty deps - only run once on mount
 
@@ -81,6 +125,63 @@ export function useNavigator(_initialContext?: CurrentContext): UseNavigatorRetu
     navigatorSystem.clearHistory();
   }, []);
 
+  // ✨ M1: Authoring Mode
+  const enterAuthorMode = useCallback(() => {
+    navigatorSystem.enterAuthorMode();
+  }, []);
+
+  const exitAuthorMode = useCallback(() => {
+    navigatorSystem.exitAuthorMode();
+  }, []);
+
+  const toggleMode = useCallback(() => {
+    navigatorSystem.toggleMode();
+  }, []);
+
+  // ✨ M1: Item Navigation
+  const navigateToItem = useCallback((itemId: string, itemType: ItemType) => {
+    navigatorSystem.navigateToItem(itemId, itemType);
+  }, []);
+
+  const nextItem = useCallback(async () => {
+    await navigatorSystem.nextItem();
+  }, []);
+
+  const previousItem = useCallback(async () => {
+    await navigatorSystem.previousItem();
+  }, []);
+
+  // ✨ M1: Zoom & Focus
+  const focusOnItem = useCallback(async (itemId: string, itemType: ItemType) => {
+    await navigatorSystem.focusOnItem(itemId, itemType);
+  }, []);
+
+  const zoomOut = useCallback(async () => {
+    await navigatorSystem.zoomOut();
+  }, []);
+
+  const setZoomLevel = useCallback(async (level: number) => {
+    await navigatorSystem.setZoomLevel(level);
+  }, []);
+
+  // ✨ M1: Selection
+  const updateSelectionCb = useCallback((selection: SelectionState | null) => {
+    navigatorSystem.updateSelection(selection);
+  }, []);
+
+  const clearSelectionCb = useCallback(() => {
+    navigatorSystem.clearSelection();
+  }, []);
+
+  // ✨ M1: ToC Drawer
+  const setTocOpenCb = useCallback((open: boolean) => {
+    navigatorSystem.setTocOpen(open);
+  }, []);
+
+  const toggleTocCb = useCallback(() => {
+    navigatorSystem.toggleToc();
+  }, []);
+
   return {
     // Navigation Methods
     navigateTo,
@@ -101,7 +202,38 @@ export function useNavigator(_initialContext?: CurrentContext): UseNavigatorRetu
     
     // Utility
     canGoBack: state.history.canGoBack,
-    canGoForward: state.history.canGoForward
+    canGoForward: state.history.canGoForward,
+
+    // ✨ M1: Authoring Mode
+    mode: state.mode,
+    enterAuthorMode,
+    exitAuthorMode,
+    toggleMode,
+    canEnterAuthorMode: navigatorSystem.canEnterAuthorMode(),
+    hasUnsavedChanges: navigatorSystem.hasUnsavedChanges(),
+
+    // ✨ M1: Item Navigation
+    navigateToItem,
+    currentItem: navigatorSystem.getCurrentItem(),
+    nextItem,
+    previousItem,
+
+    // ✨ M1: Zoom & Focus
+    focusOnItem,
+    zoomOut,
+    setZoomLevel,
+    zoomLevel: state.focus.zoomLevel,
+    focusLevel: state.focus.level,
+
+    // ✨ M1: Selection
+    selection: state.selection,
+    updateSelection: updateSelectionCb,
+    clearSelection: clearSelectionCb,
+
+    // ✨ M1: ToC Drawer
+    tocOpen: state.tocOpen,
+    setTocOpen: setTocOpenCb,
+    toggleToc: toggleTocCb
   };
 }
 

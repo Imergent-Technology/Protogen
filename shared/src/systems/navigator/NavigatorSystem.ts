@@ -26,7 +26,18 @@ class NavigatorSystemClass implements INavigatorSystem {
         canGoForward: false
       },
       isLoading: false,
-      error: null
+      error: null,
+      // ✨ M1: Authoring mode enhancements
+      mode: 'view',
+      locus: {},
+      focus: {
+        level: 'overview',
+        zoomLevel: 0,
+        animated: true
+      },
+      selection: null,
+      tocOpen: false,
+      editing: false
     };
   }
 
@@ -97,8 +108,8 @@ class NavigatorSystemClass implements INavigatorSystem {
       // Update history index
       this.updateHistoryIndex(targetIndex);
       
-      // Navigate to the previous entry
-      await this.navigateTo(entry.target);
+      // Restore full state from history entry
+      this.restoreFromHistoryEntry(entry);
     }
   }
 
@@ -114,9 +125,50 @@ class NavigatorSystemClass implements INavigatorSystem {
       // Update history index
       this.updateHistoryIndex(targetIndex);
       
-      // Navigate to the next entry
-      await this.navigateTo(entry.target);
+      // Restore full state from history entry
+      this.restoreFromHistoryEntry(entry);
     }
+  }
+
+  private restoreFromHistoryEntry(entry: NavigationEntry): void {
+    // Restore mode
+    if (entry.mode && entry.mode !== this.state.mode) {
+      if (entry.mode === 'author') {
+        this.enterAuthorMode();
+      } else {
+        this.exitAuthorMode();
+      }
+    }
+
+    // Restore locus
+    if (entry.locus) {
+      this.state.locus = { ...entry.locus };
+    }
+
+    // Restore focus
+    if (entry.focusLevel) {
+      this.state.focus.level = entry.focusLevel;
+    }
+    if (entry.zoomLevel !== undefined) {
+      this.state.focus.zoomLevel = entry.zoomLevel;
+    }
+
+    // Emit navigate event
+    this.emit({
+      type: 'navigation',
+      data: {
+        path: entry.target.contextPath || this.getCurrentPath(),
+        sceneId: entry.locus?.sceneId,
+        deckId: entry.locus?.deckId,
+        itemId: entry.locus?.itemId,
+        itemType: entry.locus?.itemType,
+        authoringMode: entry.mode === 'author'
+      },
+      timestamp: Date.now()
+    });
+
+    // Update URL
+    this.updateURL();
   }
 
   // Slide Navigation - Integrated with Scene System
@@ -389,6 +441,479 @@ class NavigatorSystemClass implements INavigatorSystem {
 
   private clearError(): void {
     this.state.error = null;
+  }
+
+  // ============================================================================
+  // M1 ENHANCEMENTS: Authoring Mode Management
+  // ============================================================================
+
+  enterAuthorMode(): void {
+    if (!this.canEnterAuthorMode()) {
+      throw new Error('Insufficient permissions to enter authoring mode');
+    }
+
+    if (this.state.mode === 'author') {
+      // Already in author mode
+      return;
+    }
+
+    const previousMode = this.state.mode;
+    this.state.mode = 'author';
+
+    this.emit({
+      type: 'mode-changed',
+      data: {
+        previousMode,
+        currentMode: 'author',
+        timestamp: Date.now(),
+        triggeredBy: 'user'
+      },
+      timestamp: Date.now()
+    });
+
+    // Note: Authoring system will listen to this event and load libraries
+  }
+
+  exitAuthorMode(): void {
+    if (this.state.mode === 'view') {
+      // Already in view mode
+      return;
+    }
+
+    if (this.hasUnsavedChanges()) {
+      console.warn('Exiting author mode with unsaved changes. Consider implementing auto-save or confirmation dialog.');
+      // TODO: Implement confirmation dialog or auto-save
+    }
+
+    const previousMode = this.state.mode;
+    this.state.mode = 'view';
+
+    // Clear selection when exiting author mode
+    this.state.selection = null;
+    this.state.editing = false;
+
+    this.emit({
+      type: 'mode-changed',
+      data: {
+        previousMode,
+        currentMode: 'view',
+        timestamp: Date.now(),
+        triggeredBy: 'user'
+      },
+      timestamp: Date.now()
+    });
+
+    // Note: Authoring system will listen to this event and unload libraries
+  }
+
+  toggleMode(): void {
+    if (this.state.mode === 'view') {
+      this.enterAuthorMode();
+    } else {
+      this.exitAuthorMode();
+    }
+  }
+
+  getMode(): 'view' | 'author' {
+    return this.state.mode;
+  }
+
+  canEnterAuthorMode(): boolean {
+    // TODO: Integrate with auth service when available
+    // For now, return true to allow development
+    // In production, this will check: this.authService.hasPermission('authoring.access')
+    return true;
+  }
+
+  hasUnsavedChanges(): boolean {
+    // TODO: Integrate with authoring system when available
+    // For now, return false
+    // In production, this will check: this.authoringSystem?.hasUnsavedChanges()
+    return false;
+  }
+
+  // ============================================================================
+  // M1 ENHANCEMENTS: Item Navigation
+  // ============================================================================
+
+  navigateToItem(itemId: string, itemType: 'slide' | 'page' | 'node' | 'edge' | 'block'): void {
+    this.state.locus.itemId = itemId;
+    this.state.locus.itemType = itemType;
+
+    this.updateFocus({
+      level: 'item',
+      zoomLevel: 100,
+      target: { itemId, itemType },
+      animated: true
+    });
+
+    this.updateURL();
+    this.addToHistory();
+
+    this.emit({
+      type: 'navigation',
+      data: {
+        path: this.getCurrentPath(),
+        sceneId: this.state.locus.sceneId,
+        deckId: this.state.locus.deckId,
+        itemId,
+        itemType,
+        authoringMode: this.state.mode === 'author'
+      },
+      timestamp: Date.now()
+    });
+  }
+
+  getCurrentItem(): { id: string; type: 'slide' | 'page' | 'node' | 'edge' | 'block' } | null {
+    if (!this.state.locus.itemId || !this.state.locus.itemType) {
+      return null;
+    }
+
+    return {
+      id: this.state.locus.itemId,
+      type: this.state.locus.itemType
+    };
+  }
+
+  async nextItem(): Promise<void> {
+    const current = this.getCurrentItem();
+    if (!current || !this.state.locus.sceneId) {
+      return;
+    }
+
+    try {
+      const { sceneSystem } = await import('../scene/SceneSystem');
+      
+      // TODO: SceneSystem will implement getNextItem in M1 Week 7-8
+      // For now, use slide navigation as fallback
+      if (current.type === 'slide') {
+        await sceneSystem.nextSlide();
+        const currentSlide = sceneSystem.getCurrentSlide();
+        if (currentSlide) {
+          this.navigateToItem(currentSlide.id.toString(), 'slide');
+        }
+      } else {
+        console.warn('Next item navigation not yet implemented for type:', current.type);
+      }
+    } catch (error) {
+      console.error('Error navigating to next item:', error);
+    }
+  }
+
+  async previousItem(): Promise<void> {
+    const current = this.getCurrentItem();
+    if (!current || !this.state.locus.sceneId) {
+      return;
+    }
+
+    try {
+      const { sceneSystem } = await import('../scene/SceneSystem');
+      
+      // TODO: SceneSystem will implement getPreviousItem in M1 Week 7-8
+      // For now, use slide navigation as fallback
+      if (current.type === 'slide') {
+        await sceneSystem.previousSlide();
+        const currentSlide = sceneSystem.getCurrentSlide();
+        if (currentSlide) {
+          this.navigateToItem(currentSlide.id.toString(), 'slide');
+        }
+      } else {
+        console.warn('Previous item navigation not yet implemented for type:', current.type);
+      }
+    } catch (error) {
+      console.error('Error navigating to previous item:', error);
+    }
+  }
+
+  // ============================================================================
+  // M1 ENHANCEMENTS: Zoom & Focus
+  // ============================================================================
+
+  async focusOnItem(itemId: string, itemType: 'slide' | 'page' | 'node' | 'edge' | 'block'): Promise<void> {
+    const previousFocus = { ...this.state.focus };
+
+    this.state.locus.itemId = itemId;
+    this.state.locus.itemType = itemType;
+
+    this.updateFocus({
+      level: 'item',
+      zoomLevel: 100,
+      target: { itemId, itemType },
+      animated: true
+    });
+
+    this.emit({
+      type: 'focus',
+      data: {
+        sceneId: this.state.locus.sceneId || '',
+        itemId,
+        itemType,
+        previousFocus: previousFocus.target,
+        zoomLevel: 100,
+        animated: true
+      },
+      timestamp: Date.now()
+    });
+
+    await this.animateZoom(previousFocus.zoomLevel, 100);
+    this.updateURL();
+  }
+
+  async zoomOut(): Promise<void> {
+    const previousZoom = this.state.focus.zoomLevel;
+    let targetZoom = 0;
+
+    if (this.state.focus.level === 'item') {
+      // Item → Scene
+      this.state.locus.itemId = undefined;
+      this.state.locus.itemType = undefined;
+      this.updateFocus({ level: 'scene', zoomLevel: 50 });
+      targetZoom = 50;
+    } else if (this.state.focus.level === 'scene') {
+      // Scene → Overview
+      this.state.locus.sceneId = undefined;
+      this.updateFocus({ level: 'overview', zoomLevel: 0 });
+      targetZoom = 0;
+    }
+
+    this.emit({
+      type: 'zoom',
+      data: {
+        sceneId: this.state.locus.sceneId || '',
+        previousZoom,
+        currentZoom: targetZoom,
+        target: this.state.focus.target
+      },
+      timestamp: Date.now()
+    });
+
+    await this.animateZoom(previousZoom, targetZoom);
+    this.updateURL();
+  }
+
+  async setZoomLevel(level: number): Promise<void> {
+    const previousZoom = this.state.focus.zoomLevel;
+    this.state.focus.zoomLevel = Math.max(0, Math.min(100, level));
+
+    this.emit({
+      type: 'zoom',
+      data: {
+        sceneId: this.state.locus.sceneId || '',
+        previousZoom,
+        currentZoom: this.state.focus.zoomLevel,
+        target: this.state.focus.target
+      },
+      timestamp: Date.now()
+    });
+
+    if (this.state.focus.animated) {
+      await this.animateZoom(previousZoom, this.state.focus.zoomLevel);
+    }
+  }
+
+  getZoomLevel(): number {
+    return this.state.focus.zoomLevel;
+  }
+
+  getFocusLevel(): 'overview' | 'scene' | 'item' {
+    return this.state.focus.level;
+  }
+
+  private async animateZoom(from: number, to: number): Promise<void> {
+    // Smooth zoom animation using requestAnimationFrame
+    return new Promise(resolve => {
+      const duration = 300; // ms
+      const startTime = performance.now();
+
+      const animate = (currentTime: number) => {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+
+        // Ease-in-out
+        const eased = progress < 0.5
+          ? 2 * progress * progress
+          : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+
+        const currentZoom = from + (to - from) * eased;
+
+        // Emit zoom progress event for listeners
+        this.emit({
+          type: 'zoom',
+          data: {
+            progress: currentZoom,
+            animating: progress < 1
+          },
+          timestamp: currentTime
+        });
+
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        } else {
+          resolve();
+        }
+      };
+
+      requestAnimationFrame(animate);
+    });
+  }
+
+  private updateFocus(partial: Partial<{
+    level: 'overview' | 'scene' | 'item';
+    zoomLevel: number;
+    target?: { itemId: string; itemType: 'slide' | 'page' | 'node' | 'edge' | 'block' };
+    animated: boolean;
+  }>): void {
+    this.state.focus = {
+      ...this.state.focus,
+      ...partial
+    };
+  }
+
+  // ============================================================================
+  // M1 ENHANCEMENTS: Selection Integration
+  // ============================================================================
+
+  updateSelection(selection: {
+    targetId: string;
+    targetType: 'slide' | 'page' | 'node' | 'edge' | 'block';
+    multi?: boolean;
+    selectedIds?: string[];
+    range?: { start: string; end: string };
+  } | null): void {
+    this.state.selection = selection;
+
+    this.emit({
+      type: 'selection-changed',
+      data: {
+        selection,
+        timestamp: Date.now()
+      },
+      timestamp: Date.now()
+    });
+
+    // Optionally focus on selected item
+    if (selection && selection.targetId && !selection.multi) {
+      // Don't await - let focus happen in background
+      this.focusOnItem(selection.targetId, selection.targetType).catch(err => {
+        console.error('Error focusing on selected item:', err);
+      });
+    }
+  }
+
+  clearSelection(): void {
+    this.state.selection = null;
+
+    this.emit({
+      type: 'selection-changed',
+      data: {
+        selection: null,
+        timestamp: Date.now()
+      },
+      timestamp: Date.now()
+    });
+  }
+
+  getSelection(): {
+    targetId: string;
+    targetType: 'slide' | 'page' | 'node' | 'edge' | 'block';
+    multi?: boolean;
+    selectedIds?: string[];
+    range?: { start: string; end: string };
+  } | null {
+    return this.state.selection;
+  }
+
+  // ============================================================================
+  // M1 ENHANCEMENTS: ToC Drawer
+  // ============================================================================
+
+  setTocOpen(open: boolean): void {
+    this.state.tocOpen = open;
+  }
+
+  isTocOpen(): boolean {
+    return this.state.tocOpen;
+  }
+
+  toggleToc(): void {
+    this.state.tocOpen = !this.state.tocOpen;
+  }
+
+  // ============================================================================
+  // M1 ENHANCEMENTS: Helper Methods
+  // ============================================================================
+
+  private getCurrentPath(): string {
+    let path = '/';
+
+    if (this.state.mode === 'author') {
+      path += 'author/';
+    }
+
+    if (this.state.locus.deckId) {
+      path += `deck/${this.state.locus.deckId}/`;
+    }
+
+    if (this.state.locus.sceneId) {
+      path += `scenes/${this.state.locus.sceneId}/`;
+    }
+
+    if (this.state.locus.itemId) {
+      path += `items/${this.state.locus.itemId}`;
+    }
+
+    return path;
+  }
+
+  private updateURL(): void {
+    // M1: Use enhanced URL sync for authoring mode support
+    urlSyncService.syncEnhancedStateToURL({
+      mode: this.state.mode,
+      locus: this.state.locus,
+      zoomLevel: this.state.focus.zoomLevel
+    });
+  }
+
+  private addToHistory(): void {
+    const history = this.state.history;
+
+    // If we're not at the end of history, remove future entries
+    if (history.currentIndex < history.entries.length - 1) {
+      history.entries = history.entries.slice(0, history.currentIndex + 1);
+    }
+
+    // Add new entry with full state
+    const entry = {
+      id: this.generateEntryId(),
+      target: {
+        type: 'scene' as const,
+        id: this.state.locus.sceneId || '',
+        contextPath: this.getCurrentPath()
+      },
+      context: this.state.currentContext,
+      timestamp: Date.now(),
+      mode: this.state.mode,
+      locus: { ...this.state.locus },
+      focusLevel: this.state.focus.level,
+      zoomLevel: this.state.focus.zoomLevel
+    };
+
+    history.entries.push(entry);
+    history.currentIndex = history.entries.length - 1;
+
+    // Enforce max history size
+    if (history.entries.length > this.maxHistorySize) {
+      history.entries = history.entries.slice(-this.maxHistorySize);
+      history.currentIndex = history.entries.length - 1;
+    }
+
+    this.updateNavigationCapabilities();
+
+    this.emit({
+      type: 'history-update',
+      data: { action: 'add', entry },
+      timestamp: Date.now()
+    });
   }
 }
 

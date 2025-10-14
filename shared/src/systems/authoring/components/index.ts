@@ -5,6 +5,19 @@ export { default as CardSceneAuthoring } from './CardSceneAuthoring';
 export { default as DocumentSceneAuthoring } from './DocumentSceneAuthoring';
 export { default as SceneTypeManager } from './SceneTypeManager';
 
+// M1 Week 3-4: Authoring Overlay Components
+export { default as AuthoringOverlay } from './AuthoringOverlay';
+export type { AuthoringOverlayProps } from './AuthoringOverlay';
+
+export { default as SelectionHighlight } from './SelectionHighlight';
+export type { SelectionHighlightProps } from './SelectionHighlight';
+
+export { default as InlineEditor } from './InlineEditor';
+export type { InlineEditorProps } from './InlineEditor';
+
+export { default as EditingHandles } from './EditingHandles';
+export type { EditingHandlesProps } from './EditingHandles';
+
 // Re-export types for convenience
 export type { NodeMetadata, NodeSelectionProps, NodeSelectionOptions } from '../types/node-selection';
 export type { SceneType, SceneTypeManagerProps } from '../types/common';
