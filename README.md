@@ -157,17 +157,29 @@ The system is evolving to a **Central Graph System** that simplifies graph trave
 - **Enhanced Scene Items**: Spatial positioning for all scene types
 - **Improved Performance**: Optimized graph operations and caching
 
-### 🔄 Previous Phase: UI Integration & Authoring
+### 🎨 Current Focus: Authoring-Viewing Unification
 
-**Phase 5** focused on building sophisticated authoring tools:
+**Status**: Planning Complete (October 2025) - Ready for Implementation
 
-- ✅ **Card-Based Scene Management**: Preview thumbnails, hover metadata, click-to-edit
-- ✅ **Enhanced Card Scene Authoring**: Advanced slideshow system with backgrounds, text, and CTAs
-- ✅ **Preview Thumbnail System**: Automatic base64 generation for all scene types
-- ✅ **Card Scene Authoring**: Comprehensive slideshow authoring with advanced features
-- ✅ **Document Scene Authoring**: Rich text editing with TipTap integration
-- ✅ **Node Selection Interface**: Global node selection across scene types
-- ✅ **Graph Studio Integration**: Admin panel integration
+Comprehensive plan for unified authoring-viewing experience:
+
+- 📋 **18 Specifications Complete**: Architecture, integration, scene types, testing
+- 🎯 **3 Milestones Defined**: M1 (Card+Core, 6-8 weeks), M2 (Document, 4-6 weeks), M3 (Graph, 4-6 weeks)
+- 🏗️ **Extends Existing Systems**: Navigator, Toolbar, Scene, Dialog, Orchestrator
+- 🎬 **Scene Types**: Card (text/image/layered), Document (multi-page, anchors), Graph (design workshop), Video (deferred)
+- ✨ **New Capabilities**: Authoring overlay, preview service, ToC drawer, preview carousel
+- 🎪 **Implementation Ready**: Target start December 2025, completion June 2026
+
+See [Authoring-Viewing Unification Plan](docs/active-development/AUTHORING_VIEWING_UNIFICATION.md) for details.
+
+### 🔄 Previous Achievements
+
+- ✅ **Scene Management**: CRUD operations with Flow System (Phase 2.5)
+- ✅ **Flow System**: Multi-step workflows replacing wizards
+- ✅ **Central Graph System**: Subgraphs and scene items (October 2025)
+- ✅ **Navigation**: Breadcrumbs, history, scene-first routing
+- ✅ **Dialog System**: 6 dialog types including full-screen
+- ✅ **Toolbar System**: Multi-edge support with drawers
 
 ### 📋 Upcoming Phases
 
