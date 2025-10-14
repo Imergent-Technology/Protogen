@@ -176,10 +176,29 @@ This directory contains the 18 specification documents for Protogen's evolution 
   - Entity Relationship Diagram
   - Backward compatibility with existing scenes
 
-### ⏳ Phase 6: Quality & Testing (Pending)
+### ✅ Phase 6: Quality & Testing (Complete)
 
-- **15-qa-accessibility.md** - QA & Accessibility Strategy
-- **16-adrs.md** - Architectural Decision Records
+- **[15-qa-accessibility.md](./15-qa-accessibility.md)** - QA & Accessibility Strategy
+  - WCAG 2.1 AA compliance requirements
+  - Keyboard navigation coverage (all components)
+  - ARIA roles and attributes
+  - Screen reader announcements
+  - Reduced motion support
+  - Unit test matrix (163 tests, 90% coverage target)
+  - Integration test scenarios (3 workflows)
+  - E2E test scenarios (2 complete flows)
+  - Performance budgets (Lighthouse >= 90)
+  - Tooling recommendations (Jest, axe, Playwright, Lighthouse)
+
+- **[16-adrs.md](./16-adrs.md)** - Architectural Decision Records
+  - ADR-007: Authoring Overlay Architecture
+  - ADR-008: Preview Service and Thumbnail Strategy
+  - ADR-009: ToC Drawer Integration
+  - ADR-010: Preview Carousel Widget Design
+  - ADR-011: Scene Type Extensibility Model
+  - ADR-012: Orchestrator Integration Pattern
+  - Cross-references with existing ADRs (001-006)
+  - ADR documentation process defined
 
 ### ⏳ Phase 7: Demo & Roadmap (Pending)
 
@@ -219,8 +238,11 @@ This directory contains the 18 specification documents for Protogen's evolution 
 
 **Phase 5** (2 specs): ✅ Complete
 - Orchestrator integration for dynamic library loading
-- Persistence models and database migrations  
-**Phase 6** (2 specs): ⏳ Pending  
+- Persistence models and database migrations
+
+**Phase 6** (2 specs): ✅ Complete
+- QA and accessibility strategy with WCAG 2.1 AA compliance
+- Architectural Decision Records (ADRs 007-012)  
 **Phase 7** (2 specs): ⏳ Pending
 
 ---
