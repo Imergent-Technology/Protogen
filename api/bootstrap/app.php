@@ -20,14 +20,13 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->encryptCookies(except: ['appearance', 'sidebar_state']);
 
+        // Add CORS to global middleware (runs first)
+        $middleware->append(HandleCors::class);
+
         $middleware->web(append: [
             HandleAppearance::class,
             HandleInertiaRequests::class,
             AddLinkHeadersForPreloadedAssets::class,
-        ]);
-
-        $middleware->api(append: [
-            HandleCors::class,
         ]);
 
         // Add web middleware to API routes that need session support
