@@ -99,23 +99,29 @@ const ManageScenesContent: React.FC<ManageScenesDialogProps> = () => {
     });
   };
 
-  const handleView = (scene: SceneConfig) => {
-    // Close the manage scenes dialog
-    dialogSystem.closeAll();
+  const handleView = async (scene: SceneConfig) => {
+    try {
+      // Close the manage scenes dialog
+      dialogSystem.closeAll();
 
-    // Navigate to the scene using Navigator
-    navigatorSystem.navigateTo({
-      type: 'scene',
-      id: scene.id.toString(),
-      slug: scene.slug
-    }).catch((err) => {
+      // Load the scene into the Navigator and scene system
+      await navigatorSystem.loadSceneInNavigator(scene.id);
+
+      // Show success toast
+      dialogSystem.openToast({
+        title: 'Scene Loaded',
+        description: `Viewing "${scene.name}"`,
+        variant: 'success',
+        duration: 2000,
+      });
+    } catch (err) {
       dialogSystem.openToast({
         title: 'Navigation Error',
-        description: err instanceof Error ? err.message : 'Failed to navigate to scene',
+        description: err instanceof Error ? err.message : 'Failed to load scene',
         variant: 'error',
         duration: 3000,
       });
-    });
+    }
   };
 
   const handleDelete = async (scene: SceneConfig) => {
