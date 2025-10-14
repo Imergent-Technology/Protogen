@@ -200,16 +200,34 @@ This directory contains the 18 specification documents for Protogen's evolution 
   - Cross-references with existing ADRs (001-006)
   - ADR documentation process defined
 
-### ⏳ Phase 7: Demo & Roadmap (Pending)
+### ✅ Phase 7: Demo & Roadmap (Complete)
 
-- **17-demo-script.md** - Integration Demo Script
-- **18-roadmap-milestones.md** - Milestone Roadmap
+- **[17-demo-script.md](./17-demo-script.md)** - Integration Demo Script
+  - 5-part demo scenario (Setup, Card Edit, Navigate, Document Edit, Viewing)
+  - Complete user journey as content creator
+  - 19 screenshots identified
+  - 40+ success criteria checkpoints
+  - Mock data requirements
+  - Validation points for each part
+  - Tests all major integration points
+
+- **[18-roadmap-milestones.md](./18-roadmap-milestones.md)** - Milestone Roadmap
+  - M1: Card Scene + Core (6-8 weeks, Feb 2026 target)
+  - M2: Document Scene (4-6 weeks, April 2026 target)
+  - M3: Graph Scene (4-6 weeks, June 2026 target)
+  - M4: Video Scene (deferred, TBD)
+  - Entry/exit criteria for each milestone
+  - Resource requirements (2-3 FTE per milestone)
+  - Risk assessment with mitigation plans
+  - Go/No-Go decision points
+  - Release strategy (Alpha → Beta → V1.0)
+  - Budget estimates (36.5-52 person-weeks total)
 
 ---
 
 ## Progress Summary
 
-### Completed: 16 of 18 (89%)
+### Completed: 18 of 18 (100%) 🎉
 
 **Phase 0** (2 specs): ✅ Complete
 - Project context and guardrails established
@@ -242,8 +260,11 @@ This directory contains the 18 specification documents for Protogen's evolution 
 
 **Phase 6** (2 specs): ✅ Complete
 - QA and accessibility strategy with WCAG 2.1 AA compliance
-- Architectural Decision Records (ADRs 007-012)  
-**Phase 7** (2 specs): ⏳ Pending
+- Architectural Decision Records (ADRs 007-012)
+
+**Phase 7** (2 specs): ✅ Complete
+- Integration demo script with complete user journey
+- Milestone roadmap with timeline and resource estimates
 
 ---
 
