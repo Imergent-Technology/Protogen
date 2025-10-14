@@ -115,12 +115,44 @@ This directory contains the 18 specification documents for Protogen's evolution 
   - Virtualization for 100+ items
   - Future: Repositionable to any toolbar slot
 
-### ⏳ Phase 4: Scene Types (Pending)
+### ✅ Phase 4: Scene Types (Complete)
 
-- **09-card-scene-type.md** - Card Scene Type
-- **10-document-scene-type.md** - Document Scene Type
-- **11-graph-planning-stub.md** - Graph Scene Planning Stub
-- **12-video-deferred-stub.md** - Video Scene Deferred Stub
+- **[09-card-scene-type.md](./09-card-scene-type.md)** - Card Scene Type
+  - Three slide variants: Text, Image, Layered
+  - Text slide: typography, colors, spacing
+  - Image slide: asset, fit, positioning, caption
+  - Layered slide: background + text overlay with timing
+  - Declarative animations (fade, slide-up, slide-down, zoom)
+  - Property inspector schemas
+  - Preview generation without animations
+  - Slide transitions
+
+- **[10-document-scene-type.md](./10-document-scene-type.md)** - Document Scene Type
+  - Multi-page support with rich text blocks
+  - 8 block types (Paragraph, Heading, Image, Code, Quote, List, Divider, Embed)
+  - Anchor system (heading, text-selection, block, coordinate)
+  - Cross-page and cross-scene linking
+  - TipTap integration for rich text editing
+  - Page management (add, split, remove)
+  - ToC generation from headings
+  - Preview per page
+
+- **[11-graph-planning-stub.md](./11-graph-planning-stub.md)** - Graph Scene Planning Stub
+  - User stories and UX challenges
+  - Selection/highlighting options (glow, ring, overlay)
+  - Layout algorithm considerations
+  - 6 open questions for design workshop
+  - Phased implementation plan (10 weeks)
+  - Integration with existing Graph Studio
+  - Performance considerations for large graphs
+
+- **[12-video-deferred-stub.md](./12-video-deferred-stub.md)** - Video Scene Deferred Stub
+  - Complexity drivers (timeline editing, media management, playback sync)
+  - Conceptual data model (clips, transitions, captions)
+  - Dependencies (Video.js, FFmpeg, transcoding, CDN)
+  - Effort estimate (10-15 weeks)
+  - Deferral rationale
+  - Success criteria for future implementation
 
 ### ⏳ Phase 5: System Integration (Pending)
 
@@ -141,7 +173,7 @@ This directory contains the 18 specification documents for Protogen's evolution 
 
 ## Progress Summary
 
-### Completed: 10 of 18 (56%)
+### Completed: 14 of 18 (78%)
 
 **Phase 0** (2 specs): ✅ Complete
 - Project context and guardrails established
@@ -160,8 +192,13 @@ This directory contains the 18 specification documents for Protogen's evolution 
 
 **Phase 3** (2 specs): ✅ Complete
 - ToC drawer integration with tree navigation and thumbnails
-- Preview Carousel widget with visibility rules and keyboard navigation  
-**Phase 4** (4 specs): ⏳ Pending  
+- Preview Carousel widget with visibility rules and keyboard navigation
+
+**Phase 4** (4 specs): ✅ Complete
+- Card scene type with text/image/layered slide variants
+- Document scene type with multi-page, blocks, and anchors
+- Graph scene planning stub (requires design workshop)
+- Video scene deferred stub (complexity documented)  
 **Phase 5** (2 specs): ⏳ Pending  
 **Phase 6** (2 specs): ⏳ Pending  
 **Phase 7** (2 specs): ⏳ Pending
