@@ -30,7 +30,8 @@ export * from './CardScene';
 
 // Re-export types for convenience
 export type { NodeMetadata, NodeSelectionProps, NodeSelectionOptions } from '../types/node-selection';
-export type { SceneType, SceneTypeManagerProps } from '../types/common';
+export type { SceneTypeManagerProps } from '../types/common';
+// Note: SceneType conflicts - available from services/HitTestLayer
 export type { CardSceneData, CardSlide, CardSceneAuthoringProps } from '../types/scene';
 export type { GraphSceneData, GraphEdge, GraphSceneAuthoringProps } from '../types/scene';
 export type { DocumentSceneData, DocumentMedia, DocumentLink, DocumentSceneAuthoringProps } from '../types/scene';

@@ -1,7 +1,21 @@
 // Main exports for @protogen/authoring library
 
-// Export all types
-export * from './types';
+// Export all types (explicit to avoid conflicts)
+export type { 
+  CardScene, 
+  CardSlideUnion,
+  TextSlide,
+  ImageSlide,
+  LayeredSlide,
+  SlideKind,
+  AnimationType
+} from './types/card-scene';
+export type { PreviewTarget, PreviewSize, PreviewMetadata, CachedPreview } from './types/preview';
+export type { ToCNode, ToCConfig } from './types/toc';
+export type { CarouselConfig, CarouselItem, VisibilityRules } from './types/carousel';
+export * from './types/permissions';
+export * from './types/node-selection';
+// Note: scene.ts types conflicts resolved by explicit imports above
 
 // Export all hooks
 export * from './hooks';

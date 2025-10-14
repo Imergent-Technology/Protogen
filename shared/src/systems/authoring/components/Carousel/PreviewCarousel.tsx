@@ -13,9 +13,9 @@ import { useBatchPreviews } from '../../hooks/useBatchPreviews';
 import type {
   CarouselConfig,
   CarouselItem,
-  VisibilityRules,
-  DEFAULT_CAROUSEL_CONFIG
+  VisibilityRules
 } from '../../types/carousel';
+import { DEFAULT_CAROUSEL_CONFIG } from '../../types/carousel';
 import type { PreviewTarget } from '../../types/preview';
 
 export interface PreviewCarouselProps {

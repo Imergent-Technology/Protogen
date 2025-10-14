@@ -10,7 +10,8 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigator } from '../../../navigator/useNavigator';
 import { useTocPreviews } from '../../hooks/useBatchPreviews';
-import type { ToCNode, ToCConfig, DEFAULT_TOC_CONFIG } from '../../types/toc';
+import type { ToCNode, ToCConfig } from '../../types/toc';
+import { DEFAULT_TOC_CONFIG } from '../../types/toc';
 import { ToCTreeNode } from './ToCTreeNode';
 
 export interface ToCTreeProps {
