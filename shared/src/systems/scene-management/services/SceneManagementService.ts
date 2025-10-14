@@ -37,14 +37,39 @@ export class SceneManagementServiceClass {
     if (params?.search) queryParams.append('search', params.search);
 
     const url = `${this.baseUrl}${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
-    return this.apiClient.get<SceneConfig[]>(url);
+    const rawScenes = await this.apiClient.get<any[]>(url);
+    
+    // Transform API response to SceneConfig (use guid as id)
+    return rawScenes.map(this.transformSceneResponse);
   }
 
   /**
-   * Get a single scene by ID
+   * Get a single scene by ID (guid)
    */
   async getScene(id: string): Promise<SceneConfig> {
-    return this.apiClient.get<SceneConfig>(`${this.baseUrl}/${id}`);
+    const rawScene = await this.apiClient.get<any>(`${this.baseUrl}/${id}`);
+    return this.transformSceneResponse(rawScene);
+  }
+
+  /**
+   * Transform API scene response to SceneConfig
+   * Maps guid to id field
+   */
+  private transformSceneResponse(apiScene: any): SceneConfig {
+    return {
+      id: apiScene.guid || apiScene.id?.toString(), // Use guid as id
+      name: apiScene.name,
+      slug: apiScene.slug,
+      type: apiScene.scene_type || apiScene.type,
+      description: apiScene.description,
+      is_active: apiScene.is_active,
+      is_public: apiScene.is_public,
+      deckIds: apiScene.deck_ids || [],
+      metadata: apiScene.meta || apiScene.metadata || {},
+      created_at: apiScene.created_at,
+      updated_at: apiScene.updated_at,
+      created_by: apiScene.created_by
+    };
   }
 
   /**
@@ -71,14 +96,16 @@ export class SceneManagementServiceClass {
       style: input.style || {},
     };
     
-    return this.apiClient.post<SceneConfig>(this.baseUrl, payload);
+    const rawScene = await this.apiClient.post<any>(this.baseUrl, payload);
+    return this.transformSceneResponse(rawScene);
   }
 
   /**
    * Update an existing scene
    */
   async updateScene(id: string, input: UpdateSceneInput): Promise<SceneConfig> {
-    return this.apiClient.put<SceneConfig>(`${this.baseUrl}/${id}`, input);
+    const rawScene = await this.apiClient.put<any>(`${this.baseUrl}/${id}`, input);
+    return this.transformSceneResponse(rawScene);
   }
 
   /**
@@ -92,23 +119,26 @@ export class SceneManagementServiceClass {
    * Publish a scene (make it active and public)
    */
   async publishScene(id: string): Promise<SceneConfig> {
-    return this.apiClient.post<SceneConfig>(`${this.baseUrl}/${id}/publish`, {});
+    const rawScene = await this.apiClient.post<any>(`${this.baseUrl}/${id}/publish`, {});
+    return this.transformSceneResponse(rawScene);
   }
 
   /**
    * Unpublish a scene (make it inactive)
    */
   async unpublishScene(id: string): Promise<SceneConfig> {
-    return this.apiClient.post<SceneConfig>(`${this.baseUrl}/${id}/unpublish`, {});
+    const rawScene = await this.apiClient.post<any>(`${this.baseUrl}/${id}/unpublish`, {});
+    return this.transformSceneResponse(rawScene);
   }
 
   /**
    * Duplicate a scene
    */
   async duplicateScene(id: string, newName?: string): Promise<SceneConfig> {
-    return this.apiClient.post<SceneConfig>(`${this.baseUrl}/${id}/duplicate`, {
+    const rawScene = await this.apiClient.post<any>(`${this.baseUrl}/${id}/duplicate`, {
       name: newName
     });
+    return this.transformSceneResponse(rawScene);
   }
 
   /**
@@ -122,18 +152,20 @@ export class SceneManagementServiceClass {
    * Link decks to a scene
    */
   async linkDecks(id: string, deckIds: string[]): Promise<SceneConfig> {
-    return this.apiClient.post<SceneConfig>(`${this.baseUrl}/${id}/link-decks`, {
+    const rawScene = await this.apiClient.post<any>(`${this.baseUrl}/${id}/link-decks`, {
       deckIds
     });
+    return this.transformSceneResponse(rawScene);
   }
 
   /**
    * Unlink decks from a scene
    */
   async unlinkDecks(id: string, deckIds: string[]): Promise<SceneConfig> {
-    return this.apiClient.post<SceneConfig>(`${this.baseUrl}/${id}/unlink-decks`, {
+    const rawScene = await this.apiClient.post<any>(`${this.baseUrl}/${id}/unlink-decks`, {
       deckIds
     });
+    return this.transformSceneResponse(rawScene);
   }
 }
 
