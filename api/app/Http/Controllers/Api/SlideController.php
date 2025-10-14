@@ -14,6 +14,7 @@ class SlideController extends Controller
 {
     /**
      * Get all slides for a scene.
+     * M1: Updated to work with M1 Slide model
      */
     public function index(Request $request, string $sceneId): JsonResponse
     {
@@ -25,16 +26,12 @@ class SlideController extends Controller
         // Check permissions - temporarily disabled for testing
         // $this->authorize('view', $scene);
         
-        $slides = $scene->slides()
-            ->with(['slideItems'])
-            ->ordered()
-            ->get();
+        // M1: Use Slide::forScene() and orderBy('order')
+        $slides = Slide::forScene($scene->id)->get();
         
         return response()->json([
             'success' => true,
-            'data' => $slides->map(function ($slide) {
-                return $slide->getSlideState();
-            }),
+            'data' => $slides,
         ]);
     }
 
