@@ -90,10 +90,30 @@ This directory contains the 18 specification documents for Protogen's evolution 
   - Database schema and API endpoints
   - React hooks (usePreview, useBatchPreviews)
 
-### ⏳ Phase 3: UI Components (Pending)
+### ✅ Phase 3: UI Components (Complete)
 
-- **08-toc-integration.md** - ToC Drawer Integration
-- **08a-preview-carousel.md** - Preview Carousel Widget
+- **[08-toc-integration.md](./08-toc-integration.md)** - ToC Drawer Integration
+  - Integration with existing Toolbar left drawer
+  - Tree structure: Deck → Scenes → Slides/Pages
+  - Thumbnail previews (XS size)
+  - State sync with Navigator
+  - Keyboard navigation (arrow keys, Enter, Home/End)
+  - Search/filter capability
+  - Mobile: single drawer with tabs
+  - Virtual scrolling for large trees
+  - ARIA tree pattern for accessibility
+
+- **[08a-preview-carousel.md](./08a-preview-carousel.md)** - Preview Carousel Widget
+  - New Toolbar widget type
+  - Phase 1: Top toolbar placement
+  - Visibility rules system (declarative conditions)
+  - Collection item loading (Card/Document scenes)
+  - Navigation on click and keyboard
+  - Drag-to-scroll with snap-to-item
+  - Current item highlighting
+  - Responsive configs (desktop/tablet/mobile)
+  - Virtualization for 100+ items
+  - Future: Repositionable to any toolbar slot
 
 ### ⏳ Phase 4: Scene Types (Pending)
 
@@ -121,7 +141,7 @@ This directory contains the 18 specification documents for Protogen's evolution 
 
 ## Progress Summary
 
-### Completed: 8 of 18 (44%)
+### Completed: 10 of 18 (56%)
 
 **Phase 0** (2 specs): ✅ Complete
 - Project context and guardrails established
@@ -136,8 +156,11 @@ This directory contains the 18 specification documents for Protogen's evolution 
 **Phase 2** (3 specs): ✅ Complete
 - Context menu system with scene-type specific actions
 - Selection and highlighting strategies for all scene types
-- Preview service with size tiers, caching, and staleness detection  
-**Phase 3** (2 specs): ⏳ Pending  
+- Preview service with size tiers, caching, and staleness detection
+
+**Phase 3** (2 specs): ✅ Complete
+- ToC drawer integration with tree navigation and thumbnails
+- Preview Carousel widget with visibility rules and keyboard navigation  
 **Phase 4** (4 specs): ⏳ Pending  
 **Phase 5** (2 specs): ⏳ Pending  
 **Phase 6** (2 specs): ⏳ Pending  
