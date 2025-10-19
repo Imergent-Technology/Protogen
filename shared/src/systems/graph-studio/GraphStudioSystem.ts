@@ -6,7 +6,7 @@
  */
 
 import { EventEmitter } from '../../utils/EventEmitter';
-import { CoreGraphNode, CoreGraphEdge } from '../../types';
+import { CoreGraphNode, CoreGraphEdge } from '../../services/ApiClient';
 import {
   GraphStudioState,
   GraphStudioEvent,

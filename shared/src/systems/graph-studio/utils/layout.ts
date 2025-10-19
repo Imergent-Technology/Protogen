@@ -5,7 +5,7 @@
  */
 
 import { NodePosition } from '../types';
-import { CoreGraphNode } from '../../../types';
+import { CoreGraphNode } from '../../../services/ApiClient';
 
 /**
  * Generate grid position for a node

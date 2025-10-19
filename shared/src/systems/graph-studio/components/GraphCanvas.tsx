@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { CoreGraphNode, CoreGraphEdge } from '../../../types';
+import { CoreGraphNode, CoreGraphEdge } from '../../../services/ApiClient';
 import * as Sigma from 'sigma';
 import * as Graph from 'graphology';
 import { GraphCanvasProps, NodePosition } from '../types';
@@ -110,7 +110,7 @@ export function GraphCanvas({
       };
     }
 
-    let initTimer: number;
+    let initTimer: ReturnType<typeof setTimeout>;
     
     loadNodePositions().then((positions) => {
       initTimer = setTimeout(() => {

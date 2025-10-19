@@ -4,7 +4,7 @@
  * Core types for graph visualization and interaction
  */
 
-import { CoreGraphNode, CoreGraphEdge } from '../../../types';
+import { CoreGraphNode, CoreGraphEdge } from '../../../services/ApiClient';
 
 /**
  * Node position in 2D space

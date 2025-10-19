@@ -13,7 +13,7 @@ import {
   GraphDisplayMode,
   GraphFilters,
 } from '../types';
-import { CoreGraphNode, CoreGraphEdge } from '../../../types';
+import { CoreGraphNode, CoreGraphEdge } from '../../../services/ApiClient';
 
 export interface UseGraphStudioReturn {
   // State
