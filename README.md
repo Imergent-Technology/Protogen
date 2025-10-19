@@ -63,6 +63,21 @@ For detailed setup instructions, see [DEVELOPMENT.md](docs/DEVELOPMENT.md).
 
 ## 📚 Documentation
 
+### ⭐ Current Strategic Focus
+
+**📍 START HERE for current development priorities:**
+
+| Document | Description |
+|----------|-------------|
+| [**Strategic Focus**](docs/active-development/strategic-focus/README.md) | **Current North Star** - Graph-first development plan, active sprint, and prioritized backlog |
+| [**Current Sprint**](docs/active-development/strategic-focus/CURRENT_SPRINT.md) | Active sprint tasks and progress (Sprint 1: Graph Studio Extraction) |
+| [**Backlog**](docs/active-development/strategic-focus/BACKLOG.md) | Prioritized feature backlog (P0-P4) with sprint breakdown |
+| [**Strategic Decisions**](docs/active-development/strategic-focus/DECISIONS.md) | Key decisions and rationale (Graph-first priority, Card authoring pause) |
+
+**For AI Agents**: Reference `/docs/active-development/strategic-focus/` to orient on current priorities.
+
+---
+
 ### 🏗️ Architecture & Foundation
 
 | Document | Description |
