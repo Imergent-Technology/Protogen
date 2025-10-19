@@ -2,13 +2,15 @@
  * Scene Viewer Component
  * 
  * Displays a scene with its slides and handles navigation.
+ * Supports multiple scene types: card (slides), graph, document.
  */
 
 import React, { useEffect } from 'react';
 import { Card, CardContent, Button } from '@protogen/shared';
-import { ChevronLeft, ChevronRight, Play, Pause, RotateCcw } from 'lucide-react';
+import { ChevronLeft, ChevronRight, RotateCcw } from 'lucide-react';
 import { useScene, SlideAnimator } from '@protogen/shared/systems/scene';
 import type { NavigationDirection } from '@protogen/shared/systems/scene';
+import { GraphSceneViewer } from '../../features/graph-viewer';
 
 interface SceneViewerProps {
   sceneId: number | string;
@@ -60,6 +62,20 @@ export const SceneViewer: React.FC<SceneViewerProps> = ({ sceneId, className }) 
     );
   }
 
+  // Handle graph scenes
+  if (currentScene.scene_type === 'graph') {
+    return (
+      <div className={className}>
+        <GraphSceneViewer
+          sceneId={sceneId}
+          subgraphId={(currentScene as any).subgraph_id}
+          className="h-full"
+        />
+      </div>
+    );
+  }
+
+  // Handle slide-based scenes (card, document, etc.)
   if (slideCount === 0) {
     return (
       <Card className={className}>
