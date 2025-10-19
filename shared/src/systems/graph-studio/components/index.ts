@@ -5,4 +5,5 @@
  */
 
 export * from './GraphCanvas';
+export * from './GraphStudio';
 
