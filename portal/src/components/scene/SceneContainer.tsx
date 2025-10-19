@@ -56,7 +56,7 @@ export const SceneContainer: React.FC = () => {
   if (currentScene) {
     return (
       <div className="scene-container h-full w-full">
-        <SceneViewer sceneId={currentScene.id} />
+        <SceneViewer sceneId={currentScene.guid || currentScene.id} />
       </div>
     );
   }

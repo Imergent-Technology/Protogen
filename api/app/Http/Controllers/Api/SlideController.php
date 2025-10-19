@@ -26,8 +26,10 @@ class SlideController extends Controller
         // Check permissions - temporarily disabled for testing
         // $this->authorize('view', $scene);
         
-        // M1: Use Slide::forScene() and orderBy('order')
-        $slides = Slide::forScene($scene->id)->get();
+        // M1: Query slides for this scene
+        $slides = Slide::where('scene_id', $scene->id)
+            ->orderBy('order')
+            ->get();
         
         return response()->json([
             'success' => true,
