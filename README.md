@@ -19,6 +19,21 @@ As the **foundational prototype** in a three-phase evolution (Protogen → Endog
 - **🔗 Context System**: Precise content anchoring and navigation
 - **📈 Analytics & Feedback**: Comprehensive engagement tracking and community insights
 
+## ⚠️ IMPORTANT: Development Caching Issue
+
+**If UI changes don't appear in your browser**, this is a known multi-layer caching issue.
+
+**Quick Fix**:
+```bash
+./dev-refresh.sh all
+```
+
+Then hard refresh your browser (Ctrl+Shift+R / Cmd+Shift+R).
+
+📖 **Full documentation**: [docs/CACHING_ISSUES.md](docs/CACHING_ISSUES.md)
+
+---
+
 ## 🚀 Quick Start
 
 ### Prerequisites
