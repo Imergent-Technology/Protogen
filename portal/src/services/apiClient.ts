@@ -1,5 +1,5 @@
 // API Client for Portal
-const API_BASE_URL = 'http://protogen.local:8081/api';
+const API_BASE_URL = 'http://api.protogen.local:3333/api';
 
 class ApiClient {
   private baseURL: string;

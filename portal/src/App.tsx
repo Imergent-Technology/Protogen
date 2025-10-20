@@ -94,7 +94,7 @@ function App() {
     try {
       // Call logout API if we have a token
       if (token) {
-        await fetch('http://protogen.local:8081/api/auth/oauth/logout', {
+        await fetch('http://api.protogen.local:3333/api/auth/oauth/logout', {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -122,7 +122,7 @@ function App() {
   // Initialize systems on mount
   useEffect(() => {
     // === API Configuration ===
-    apiClient.setBaseUrl('http://protogen.local:8081/api');
+    apiClient.setBaseUrl('http://api.protogen.local:3333/api');
     
     // === Scene Router Configuration ===
     sceneRouter.setDefaultScene('system-home');

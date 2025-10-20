@@ -62,10 +62,11 @@ Then hard refresh your browser (Ctrl+Shift+R / Cmd+Shift+R).
    **Note**: This project uses Docker-first development. All backend services run in containers. Frontend development servers provide hot-reload capabilities.
 
 3. **Access the applications**
-   - **User Portal**: http://protogen.local:3000
-   - **Admin Panel**: http://protogen.local:3001
-   - **API**: http://protogen.local:8080
-   - **Database Admin**: http://protogen.local:5050
+   - **User Portal**: http://portal.protogen.local:3388 (or http://localhost:3388)
+   - **Admin Panel**: http://admin.protogen.local:3355 (or http://localhost:3355)
+   - **API**: http://api.protogen.local:3333 (or http://localhost:3333)
+   - **Database Admin**: http://pgadmin.protogen.local:3322 (or http://localhost:3322)
+   - **PostgreSQL**: localhost:3311
 
 ### First-Time Setup
 
