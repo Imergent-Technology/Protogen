@@ -178,7 +178,7 @@ export class ApiClient {
   private baseUrl: string;
   private defaultHeaders: Record<string, string>;
 
-      constructor(baseUrl: string = 'http://protogen.local:8080/api') {
+      constructor(baseUrl: string = 'http://protogen.local:8081/api') {
     this.baseUrl = baseUrl;
     this.defaultHeaders = {
       'Content-Type': 'application/json',

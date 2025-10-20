@@ -21,7 +21,7 @@ services:
     image: nginx:alpine
     container_name: protogen-webserver
     ports:
-      - "8080:80"
+      - "8081:80"
     volumes:
       - ./docker/nginx:/etc/nginx/conf.d
       - ./api:/var/www
