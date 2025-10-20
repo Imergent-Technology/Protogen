@@ -234,6 +234,15 @@ function App() {
         icon: 'compass',
         action: { type: 'navigate-context', contextPath: '/explore' }
       },
+      { type: 'separator' },
+      { type: 'section-header', label: 'Test Graph Viewer (Sprint 2)' },
+      {
+        type: 'nav-item',
+        label: 'System Graph',
+        icon: 'network',
+        action: { type: 'navigate-scene', sceneId: 'system-graph' }
+      },
+      { type: 'separator' },
       {
         type: 'nav-item',
         label: 'Profile',
